@@ -1,0 +1,49 @@
+{
+  "id": "psp",
+  "description": "PSP shared DS1 and Perf Cluster",
+  "bu": "SBSEG",
+  "dbName": "pspprfdb",
+  "multiAZ": "false",
+  "region": "us-west-2",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow": "05:00-05:30",
+  "maintenanceWindow": "Mon:07:00-Mon:07:30",
+  "backupRetention": "3",
+  "clusterParameterGroupRef": "ppsp:shared-pg14-cluster",
+  "instanceParameterGroupRef": "ppsp:shared-pg14-instance",
+  "subnetGroupRef": "ppsp:pspshareddbsubnetgrp",
+  "securityGroupRef": "ppsp:pspshareddbsecuritygrp",
+  "engineMajorVersion": "14",
+  "engineMinorVersion": "7",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "shared",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-shared-aud",
+          "clusters": [
+            {
+              "id": "aud",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "7",
+              "instanceType": "r6g.4xlarge"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: |
+  EC2 instance stack with Elegant Restacking
+
+Parameters:
+  #awsManagedPolicy:
+   # Type: String
+   # Description: 'ARN of the IAM Managed Policy to add to the role'
+  KeyPair:
+    Type: String
+    Description: 'Name of the EC2 key pair'
+  SubnetIDName:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: 'Subnet ID for EC2 instance'
+  AmiId:
+    Type: String
+    Description: 'AMI ID for the EC2 instance'
+    AllowedPattern: '(ami-[a-zA-Z0-9]+)'
+  InstanceName:
+    Type: String
+    Description: 'Name of the EC2 instance'
+  InstanceType:
+    Default: m4.large
+    Description: The instance type of the hosts
+    Type: String
+  SecurityGroupId:
+    Description: 'Provide security groupid to attach the instance to'
+    Type: List<AWS::EC2::SecurityGroup::Id>
+  BucketName:
+    Description: 'S3 bucket name where user data is stored.'
+    Type: String
+  FileName:
+    Description: 'File name for user data.'
+    Type: String
+  LaunchTemplateName:
+    Description: 'Provide Launch template name for EC2 instance.'
+    Type: String
+  ASGName:
+    Description: 'Provide ASG name for EC2 instance.'
+    Type: String
+#  ERAppName:
+#    Description: 'Provide App name for elegant restacking onboarding name.'
+#    Type: String
+
+Conditions:
+    UseKeyPair: !Not [!Equals [!Ref KeyPair, ""]]
+    UseBucketName: !Not [!Equals [!Ref BucketName, "" ]]
+    UseFileName: !Not [!Equals [!Ref FileName, ""]]
+
+Resources:
+  InstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: 'InstanceRole-ue2'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+     # ManagedPolicyArns:
+     #   - !Ref awsManagedPolicy
+      Policies:
+        - PolicyName: 'MyPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - 's3:GetObject'
+                Resource: '*'
+              - Effect: Allow
+                Action: ec2:AssociateAddress
+                Resource: "*"
+        - PolicyName: 'DeployInstancePolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:*
+                  - rds:*
+                  - lambda:*
+                  - codebuild:*
+                  - s3:*
+                  - s3api:*
+                  - route53:*
+                  - logs:*
+                  - iam:*
+                  - ecr:*
+                  - ssm:*
+                  - secretsmanager:*
+                  - kms:CreateKey
+                  - kms:CreateAlias
+                  - SNS:SetTopicAttributes
+                  - SNS:CreateTopic
+                  - SNS:Subscribe
+                  - kms:ListAliases
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'sts:AssumeRole'
+                Resource: 'arn:aws:iam::*:role/cdk-*'
+              - Effect: Allow
+                Action:
+                  - 'secretsmanager:GetSecretValue'
+                Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/ips/relational/secrets/instances/deploy/*'
+              - Effect: Allow
+                Action:
+                  - 'elasticfilesystem:DescribeFileSystems'
+                  - 'elasticfilesystem:CreateMountTarget'
+                  - 'elasticfilesystem:DescribeMountTargets'
+                  - 'ec2:DescribeSubnets'
+                  - 'ec2:DescribeTags'
+                  - 'ec2:DescribeNetworkInterfaces'
+                  - 'ec2:CreateNetworkInterface'
+                  - 'ec2:DescribeSecurityGroups'
+                  - 'sns:Publish'
+                  - 'ec2:Describe*'
+                  - 'dynamodb:PutItem'
+                  - 'ec2:CreateTags'                  
+                Resource: '*'
+          
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole
+
+  LaunchTemplate:
+    Type: 'AWS::EC2::LaunchTemplate'
+    Properties:
+      LaunchTemplateName: !Ref LaunchTemplateName
+      LaunchTemplateData:
+        ImageId: !Ref AmiId
+        MetadataOptions:
+          HttpEndpoint: enabled
+          HttpTokens: required
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Arn: !GetAtt
+            - InstanceProfile
+            - Arn
+        KeyName: !If [UseKeyPair, !Ref KeyPair, !Ref 'AWS::NoValue']
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            aws s3 cp s3://psp-ppd-db-admin-ue2/user-data.sh /tmp/user-data.sh
+            chmod +x /tmp/user-data.sh
+            /tmp/user-data.sh > /tmp/user-data.log
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: 50
+              VolumeType: gp3          
+          - DeviceName: /dev/sdf
+            Ebs:
+              VolumeSize: 200
+              VolumeType: gp3
+        SecurityGroupIds: !Ref SecurityGroupId
+
+  AutoScalingGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      AutoScalingGroupName: !Ref ASGName
+      LaunchTemplate:
+        LaunchTemplateName: !Ref LaunchTemplateName
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MinSize: 1
+      MaxSize: 2
+      DesiredCapacity: 1
+      VPCZoneIdentifier: !Ref SubnetIDName
+      Tags:
+        - Key: 'Name'
+          Value: !Ref InstanceName
+          PropagateAtLaunch: 'true'
+
+#  ASGStackTestElegantRestacking:
+#    Type: Custom::OnboardingCustomResource
+#    Properties:
+#      ServiceToken:
+#        Fn::ImportValue: 
+#          !Sub "${AWS::AccountId}:elegant-restacking:${AWS::Region}:onboarder:arn"
+#      application_cfn_stack_id: !Ref AWS::StackId
+#      os: amzn2
+#      app_name: !Ref ERAppName
+#      cron_expression: '30 04 ? * SAT *'
+#      approval_required: yes
+Outputs:
+  InstanceRole:
+    Description: The IAM role used by the EC2 instance
+    Value: !Ref InstanceRole
+  Asg:
+    Description: The Autoscaling Group the EC2 instance belongs to
+    Value: !Ref AutoScalingGroup
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

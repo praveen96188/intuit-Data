@@ -1,0 +1,49 @@
+{
+  "id": "ppsp",
+  "description": "PSP Monolith Cluster",
+  "bu": "SBSEG",
+  "dbName": "pdsmondb",
+  "multiAZ": "false",
+  "region": "us-west-2",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow":"05:00-05:30",
+  "maintenanceWindow":"Mon:07:00-Mon:07:30",
+  "backupRetention" : "3",
+  "clusterParameterGroupRef": "ppsp:mon-pg15-cluster",
+  "instanceParameterGroupRef": "ppsp:mon-pg15-instance",
+  "subnetGroupRef": "ppsp:pdsdbsubnetgrp",
+  "securityGroupRef" : "ppsp:pspmondbsecuritygrp",
+  "engineMajorVersion" : "15",
+  "engineMinorVersion" : "2",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "pds",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-pds-mon",      
+      "clusters": [
+        {
+          "id": "mon",
+          "engineMajorVersion" : "15",
+          "engineMinorVersion" : "2",
+          "instanceType": "r6g.2xlarge"
+        }
+      ]
+    }
+  ]
+   }
+  ]
+}

@@ -1,0 +1,133 @@
+EXTRACT EPD1PG02 
+SOURCEDB ppdspg02, USERID ggs, PASSWORD "CMawJnK4q#(9eQ"
+EXTTRAIL ./dirdat/pduepg02/tr
+discardfile ./dirrpt/epd1pg02.dsc, megabytes 500, append
+DISCARDROLLOVER AT 01:00
+
+SETENV (ODBCINI="/u01/ogg/pspe2eue/postgres/21.9.0.0.3/odbc.ini" )
+
+LOGALLSUPCOLS
+
+TRANLOGOPTIONS FILTERTABLE ggschema.checkpoint 
+
+--tableexclude pspadm.psp_entitlement_message_p* ;
+--tableexclude pspadm.psp_entitlement_message_old;
+--tableexclude pspadm.psp_entitlement_message_20*;
+
+--audit tables
+
+tableexclude pspadm.psp_qbdt_request_info_p0 ;
+tableexclude pspadm.psp_qbdt_request_info_p1 ;
+tableexclude pspadm.psp_qbdt_request_info_p2 ;
+tableexclude pspadm.psp_qbdt_request_info_p3 ;
+tableexclude pspadm.psp_qbdt_request_info ;
+tableexclude pspadm.psp_hcm401k_company_policy ;
+tableexclude pspadm.psp_hcm401k_company_qbdt_pitem ;
+tableexclude pspadm.psp_hcm401k_employee_deduction ;
+tableexclude pspadm.psp_hcm401k_policy ;
+
+--outbox
+
+tableexclude pspadm.outbox ;
+tableexclude pspadm.outbox_heartbeat ;
+tableexclude pspadm.outbox_default ;
+tableexclude pspadm.outbox_p* ;
+
+-- excluding table created on startup/deployment of app
+tableexclude pspadm.temp_psp_source_system ;
+tableexclude pspadm.temp_psp_payroll_item ;
+tableexclude pspadm.temp_psp_ledger_account ;
+tableexclude pspadm.temp_psp_transaction_type;
+tableexclude pspadm.temp_psp_transaction_state  ;
+tableexclude pspadm.temp_psp_posting_rule ;
+tableexclude pspadm.temp_psp_bank_account ;
+tableexclude pspadm.temp_psp_intuit_bank_account ;
+tableexclude pspadm.temp_intuit_bank_acc_txn_type ;
+tableexclude pspadm.temp_psp_bank_holiday ;
+tableexclude pspadm.temp_psp_industry_type;
+tableexclude pspadm.temp_psp_ownership_type ;
+tableexclude pspadm.temp_event_type ;
+tableexclude pspadm.temp_event_detail_type ;
+tableexclude pspadm.temp_evtdtltp_evttp_assoc ;
+tableexclude pspadm.temp_evttp_srcsys_assoc ;
+tableexclude pspadm.temp_psp_funding_model ;
+tableexclude pspadm.temp_psp_payroll_frequency ;
+tableexclude pspadm.temp_psp_system_parameter ;
+tableexclude pspadm.temp_psp_offload_group ;
+tableexclude pspadm.temp_psp_service ;
+tableexclude pspadm.temp_source_payroll_parameter ;
+tableexclude pspadm.temp_fee ;
+tableexclude pspadm.temp_action_event ;
+tableexclude pspadm.temp_financial_txn_action ;
+tableexclude pspadm.temp_payroll_run_action ;
+tableexclude pspadm.temp_ledger_account_action ;
+tableexclude pspadm.temp_intuit_ba_bt_ft ;
+tableexclude pspadm.temp_psp_limit_rule ;
+tableexclude pspadm.temp_psp_limit_value ;
+tableexclude pspadm.temp_psp_fraud_rule ;
+tableexclude pspadm.temp_psp_fraud_value ;
+tableexclude pspadm.temp_psp_offering ;
+tableexclude pspadm.temp_psp_offering_svcchg_grp ;
+tableexclude pspadm.temp_psp_offering_svcchg ;
+tableexclude pspadm.temp_psp_svcchgprice ;
+tableexclude pspadm.temp_psp_offer ;
+tableexclude pspadm.temp_psp_offer_svcchg_assoc ;
+tableexclude pspadm.temp_psp_offer_price ;
+tableexclude pspadm.temp_psp_entitlement_code ;
+tableexclude pspadm.tmp_psp_entitlement_cd_of ;
+tableexclude pspadm.temp_psp_service_status ;
+tableexclude pspadm.temp_psp_service_sub_status ;
+tableexclude pspadm.temp_serv_stat_txn_sku_type ;
+tableexclude pspadm.temp_psp_system_capability ;
+tableexclude pspadm.temp_psp_svcstat_cap_assoc ;
+tableexclude pspadm.temp_psp_svcstat_sps_assoc ;
+tableexclude pspadm.temp_psp_svcstat_svc_assoc ;
+tableexclude pspadm.temp_psp_gems_posting_rule ;
+tableexclude pspadm.temp_psp_auth_domain ;
+tableexclude pspadm.temp_psp_auth_operation ;
+tableexclude pspadm.temp_collection_stage ;
+tableexclude pspadm.temp_psp_auth_role ;
+tableexclude pspadm.temp_psp_role_sub_status ;
+tableexclude pspadm.temp_return_reason_desc ;
+tableexclude pspadm.temp_psp_role_operation_assoc ;
+tableexclude pspadm.temp_psp_report_job_setup ;
+tableexclude pspadm.temp_user_preference ;
+tableexclude pspadm.temp_psp_batch_job_setup;
+tableexclude pspadm.temp_psp_batch_job_parameter ;
+tableexclude pspadm.temp_psp_ach_transaction_code ;
+tableexclude pspadm.temp_psp_address ;
+tableexclude pspadm.temp_psp_reporting_agent ;
+tableexclude pspadm.tmp_psp_agency ;
+tableexclude pspadm.tmp_psp_payment_template ;
+tableexclude pspadm.tmp_psp_law ;
+tableexclude pspadm.tmp_psp_wage_limit ;
+tableexclude pspadm.temp_psp_txntype_service_assoc ;
+tableexclude pspadm.tmp_psp_pmt_template_frequency ;
+tableexclude pspadm.tmp_psp_agency ;
+tableexclude pspadm.tmp_psp_payment_template ;
+tableexclude pspadm.tmp_psp_pmt_template_freq ;
+tableexclude pspadm.tmp_psp_form_template ;
+tableexclude pspadm.temp_psp_law ;
+tableexclude pspadm.tmp_source_system_law_assoc ;
+tableexclude pspadm.temp_deposit_frequency ;
+tableexclude pspadm.temp_intuit_shipper_info ;
+tableexclude pspadm.temp_psp_law_rate_range ;
+tableexclude pspadm.temp_psp_law_rate_value ;
+tableexclude pspadm.temp_ade_law_map ;
+tableexclude pspadm.temp_psp_pmt_template_bankacct ;
+tableexclude pspadm.tmp_payment_template_agency_id ;
+tableexclude pspadm.temp_psp_pmt_template_pmtmtd ;
+tableexclude pspadm.tmp_payment_method_requirement ;
+tableexclude pspadm.temp_sourcesys_printedchkinfo ;
+tableexclude pspadm.temp_pmttemplateprintedchkinfo ;
+tableexclude pspadm.temp_pmttemplate_chkinfo_assoc ;
+tableexclude pspadm.temp_additional_filing_amount ;
+tableexclude pspadm.temp_psp_hours_worked ;
+tableexclude pspadm.temp_psp_agency;
+
+-- excluding staging table created for batchjob
+tableexclude pspadm.psp_entry_detail_record_staging;
+
+--extracting rest of tables
+TABLE pspadm.* ;
+

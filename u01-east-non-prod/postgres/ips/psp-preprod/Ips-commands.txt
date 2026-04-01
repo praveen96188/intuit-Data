@@ -1,0 +1,176 @@
+
+--us-west(Primary cluster) Ips deployment steps:
+
+eiamCli aws_creds -a 152430470825 -r PowerUser -p default
+
+
+
+
+--Pre-prerequisites for all clusters config file and deployment commands
+
+cdk list --all -c env=ppd -c config=ppsp-prerequisites-ppd-us-west.json
+cdk diff --all -c env=ppd -c config=ppsp-prerequisites-ppd-us-west.json
+cdk deploy --all -c env=ppd -c config=ppsp-prerequisites-ppd-us-west.json
+
+
+--SQO (Single Cluster)
+cdk list --all -c env=ppd -c group=primary-sqo -c config=ppsp-ppd-sqo.json
+cdk diff --all -c env=ppd -c group=primary-sqo -c config=ppsp-ppd-sqo.json
+cdk deploy --all -c env=ppd -c group=primary-sqo -c config=ppsp-ppd-sqo.json
+
+--cluster wise config files and deployment commands
+
+1.ppsp-pds-db(Global database).
+
+cdk list --all -c env=pds -c group=primary-pds -c config=ppsp-pds-db.json
+cdk diff --all -c env=pds -c group=primary-pds -c config=ppsp-pds-db.json
+cdk deploy --all -c env=pds -c group=primary-pds -c config=ppsp-pds-db.json
+
+2.spsp-sys-db(single cluster)
+
+cdk list  --all -c env=sys -c group=primary-sys -c config=spsp-sys-db.json
+cdk diff --all -c env=sys -c group=primary-sys -c config=spsp-sys-db.json
+cdk deploy --all -c env=sys -c group=primary-sys -c config=spsp-sys-db.json
+
+3.ppsp-pds-mon (single cluster)
+
+cdk list  --all -c env=pds -c group=primary-pds-mon -c config=ppsp-pds-mon.json
+cdk diff --all -c env=pds -c group=primary-pds-mon -c config=ppsp-pds-mon.json
+cdk deploy --all -c env=pds -c group=primary-pds-mon -c config=ppsp-pds-mon.json
+
+cdk destroy IpsMon-ppsp-pds-mon -c env=pds -c group=primary-pds-mon -c config=ppsp-pds-mon.json
+cdk destroy ppsp-pds-mon -c env=pds -c group=primary-pds-mon -c config=ppsp-pds-mon.json
+
+4.psp-shared-aud(single cluster)
+
+cdk list  --all -c env=shared -c group=primary-shared-aud -c config=psp-shared-aud.json
+cdk diff --all -c env=shared -c group=primary-shared-aud -c config=psp-shared-aud.json
+cdk deploy --all -c env=shared -c group=primary-shared-aud -c config=psp-shared-aud.json
+
+5.pspmock-dev-mock(single cluster)
+
+cdk list  --all -c env=dev -c group=primary-mockclient -c config=pspmock-dev-mock.json
+cdk diff --all -c env=dev -c group=primary-mockclient -c config=pspmock-dev-mock.json
+cdk deploy --all -c env=dev -c group=primary-mockclient -c config=pspmock-dev-mock.json
+
+cdk destroy IpsMon-pspmock-dev-mock -c env=dev -c group=primary-mockclient -c config=pspmock-dev-mock.json
+cdk destroy pspmock-dev-mock -c env=dev -c group=primary-mockclient -c config=pspmock-dev-mock.json
+
+6. ppsp-sys-mon (single cluster)
+
+cdk list  --all -c env=sys -c group=primary-sys-mon -c config=ppsp-sys-mon.json
+cdk diff --all -c env=sys -c group=primary-sys-mon -c config=ppsp-sys-mon.json
+cdk deploy --all -c env=sys -c group=primary-sys-mon -c config=ppsp-sys-mon.json
+
+
+7. ppsp-ppd-arc
+cdk list --all -c env=ppd -c group=primary-ppd-arc -c config=ppsp-ppd-arc.json
+cdk diff --all -c env=ppd -c group=primary-ppd-arc -c config=ppsp-ppd-arc.json
+cdk deploy --all -c env=ppd -c group=primary-ppd-arc -c config=ppsp-ppd-arc.json
+
+cdk list --all -c env=ppd -c group=dr-ppd-arc -c config=ppsp-ppd-arc.json
+cdk diff --all -c env=ppd -c group=dr-ppd-arc -c config=ppsp-ppd-arc.json
+cdk deploy --all -c env=ppd -c group=dr-ppd-arc -c config=ppsp-ppd-arc.json
+cdk destroy IpsMon-ppsp-ppd-arcdr -c env=ppd -c group=dr-ppd-arc -c config=ppsp-ppd-arc.json
+cdk destroy ppsp-ppd-arcdr -c env=ppd -c group=dr-ppd-arc -c config=ppsp-ppd-arc.json
+
+8. ppsp-pds-uw02-global
+cdk list  --all -c env=pds -c group=primary-pds-uw02 -c config=ppsp-pds-uw02.json
+cdk diff --all -c env=pds -c group=primary-pds-uw02 -c config=ppsp-pds-uw02.json
+cdk deploy --all -c env=pds -c group=primary-pds-uw02 -c config=ppsp-pds-uw02.json
+
+cdk list  --all -c env=pds -c group=dr-pds-uw02 -c config=ppsp-pds-uw02.json
+cdk diff --all -c env=pds -c group=dr-pds-uw02 -c config=ppsp-pds-uw02.json
+cdk deploy --all -c env=pds -c group=dr-pds-uw02 -c config=ppsp-pds-uw02.json
+
+
+9. ppsp-test-db-global
+cdk list  --all -c env=test -c group=primary-test -c config=ppsp-test-db.json
+cdk diff --all -c env=test -c group=primary-test -c config=ppsp-test-db.json
+cdk deploy --all -c env=test -c group=primary-test -c config=ppsp-test-db.json
+cdk destroy IpsMon-ppsp-test-db -c env=test -c group=primary-test -c config=ppsp-test-db.json
+cdk destroy ppsp-test-db -c env=test -c group=primary-test -c config=ppsp-test-db.json
+
+
+cdk list  --all -c env=test -c group=dr-test -c config=ppsp-test-db.json
+cdk diff --all -c env=test -c group=dr-test -c config=ppsp-test-db.json
+cdk deploy --all -c env=test -c group=dr-test -c config=ppsp-test-db.json
+
+cdk destroy IpsMon-ppsp-test-testdr -c env=test -c group=dr-test -c config=ppsp-test-db.json
+cdk destroy ppsp-test-testdr -c env=test -c group=dr-test -c config=ppsp-test-db.json
+
+
+--Us-east(DR clusters)
+
+--Pre-prerequisites for all clusters config file and deployment commands
+
+cdk list --all -c env=ppd-east -c config=ppsp-prerequisites-ppd-us-east.json
+cdk diff --all -c env=ppd-east -c config=ppsp-prerequisites-ppd-us-east.json
+cdk deploy --all -c env=ppd-east -c config=ppsp-prerequisites-ppd-us-east.json
+
+
+1.ppsp-pds-dbdr(Global database).
+
+cdk list  --all -c env=pds -c group=dr-pds -c config=ppsp-pds-db.json
+cdk diff --all -c env=pds -c group=dr-pds -c config=ppsp-pds-db.json
+cdk deploy --all -c env=pds -c group=dr-pds -c config=ppsp-pds-db.json
+
+cdk diff --all -c env=pds -c group=primary-pds-uw02 -c config=ppsp-pds-uw02-global.json
+cdk diff --all -c env=pds -c group=dr-pds-uw02 -c config=ppsp-pds-uw02-global.json
+
+2.psp-shared-aud(single cluster)
+
+cdk list --all -c env=shared -c group=dr-shared-aud -c config=psp-shared-aud.json
+cdk diff --all -c env=shared -c group=dr-shared-aud -c config=psp-shared-aud.json
+cdk deploy --all -c env=shared -c group=dr-shared-aud -c config=psp-shared-aud.json
+
+cdk bootstrap aws://152430470825/us-west-2
+
+cdk list  --all -c env=pds -c group=dr-pds-east -c config=ppsp-pds-dbue.json
+cdk diff --all -c env=pds -c group=dr-pds-east -c config=ppsp-pds-dbue.json
+cdk deploy --all -c env=pds -c group=dr-pds-east -c config=ppsp-pds-dbue.json
+
+cdk destroy ppsp-pds-dbue -c env=pds -c group=dr-pds-east -c config=ppsp-pds-dbue.json
+cdk destroy IpsMon-ppsp-pds-dbue -c env=pds -c group=dr-pds-east -c config=ppsp-pds-dbue.json
+
+
+
+alter database pdsibobdb rename to pdsibobue;
+alter user ibob_pds2_pspapp with password "Pzu#JA7M55$%";
+
+
+
+--create schema objects owner
+create role  ibob_pds2_pspapp with login password 'PQWE3zu#JA7M5';
+
+-- grant permission to connect the database 
+grant connect on database pdsibobue to ibob_pds2_pspapp;
+
+-- grant permission to the role to perform activity on the schema, mandatory for any permission including object level permission to work 
+grant usage, create on schema ibobadm_pds to ibob_pds2_pspapp;
+
+-- grant select, DML permission to all the existing tables and views if any to the role 
+grant select, insert, update, delete on all tables in schema ibobadm_pds to ibob_pds2_pspapp;
+
+-- grant select, DML permission on all tables and views at later date to the role 
+alter default privileges in schema ibobadm_pds grant select, insert, update, delete on tables to ibob_pds2_pspapp;
+
+-- grant select, DML permission to all the existing sequences if any to the role 
+grant usage on all sequences in schema ibobadm_pds to ibob_pds2_pspapp;
+
+-- grant select, DML permission to all the sequences created at later date to the role 
+alter default privileges in schema ibobadm_pds grant usage on sequences to ibob_pds2_pspapp;
+
+--set search path for ibobadm_owner
+alter user ibob_pds2_pspapp set search_path to ibobadm_pds;
+
+
+
+
+
+Hostname:ppsp-pds-dbue.cluster-cxph5rnzesrt.us-east-2.rds.amazonaws.com
+port:5432
+dbname: pdsibobue
+
+user:ibob_pds2_pspapp
+

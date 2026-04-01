@@ -1,0 +1,76 @@
+{
+  "targets": [
+    {
+      "name": "primary-cluster",
+      "accountId": "1524-3047-0825",
+      "vpcId": "vpc-02eb1ccd0822b6f9e",
+      "region": "us-west-2"
+    },
+    {
+      "name": "dr-cluster",
+      "accountId": "1524-3047-0825",
+      "vpcId": "vpc-03af2ef666f86d6d2",
+      "region": "us-east-2"
+    }
+  ],
+  "stages": [
+    {
+      "name": "ppd-clusters",
+      "deployments": [
+        {
+          "environment": "dev",
+           "target": "primary-cluster"
+        },
+        {
+          "environment": "dev",
+          "group": "primary-mockclient",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "dev",
+          "group": "primary-test",
+          "target": "primary-cluster"
+        },        
+        {
+          "environment": "sys",
+           "target": "primary-cluster"
+        },        
+        {
+          "environment": "sys",
+          "group": "primary-sys",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "pds",
+           "target": "primary-cluster"
+        },        
+        {
+          "environment": "pds",
+          "group": "primary-pds",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "pds",
+          "group": "dr-pds",
+          "target": "dr-cluster"
+        },
+        {
+          "environment": "pds",
+          "group": "primary-pds-mon",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "shared",
+          "group": "primary-shared-aud",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "temp",
+          "group": "primary-temp",
+          "target": "primary-cluster"
+        }                                  
+      ]
+    }
+  ]
+}
+

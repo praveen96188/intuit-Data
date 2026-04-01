@@ -1,0 +1,49 @@
+#!/bin/bash
+. /l/orcl
+
+# AWS RDS Writer Endpoint (Replace with your actual endpoint)
+RDS_HOST="ppsp-pds-uw02dr.cluster-cxph5rnzesrt.us-east-2.rds.amazonaws.com"  # Example: mydb-instance-name.c9akciq32.rds.amazonaws.com
+RDS_PORT="5432"  # Default port for PostgreSQL
+RDS_DBNAME="ppdspg02"  # Replace with your database name
+RDS_USERNAME="postgres"  # Replace with your database username
+#RDS_PASSWORD='intuit01'  # Replace with your database password
+
+# Set the partitioned table name
+PARTITIONED_TABLE="pspadm.PSP_ENTITY_PUBLISH_default"  # Replace with your partitioned table name
+
+# Export password so psql doesn't prompt for it
+export PGPASSWORD=$RDS_PASSWORD
+
+# Query to get partitioned table details
+QUERY="SELECT COUNT(*) FROM pspadm.PSP_ENTITY_PUBLISH_default;"
+
+# Run the query using psql command
+export PGPASSWORD=`cat .pp|grep ${1}|awk '{print $2}'`
+psql -h $RDS_HOST -p $RDS_PORT -U $RDS_USERNAME -d $RDS_DBNAME -c "$QUERY"  > ./log/partition_table.txt
+
+# ./run_postgres_partition.sh ${instance_name1} $db_name chk_instance_db_mode.sql "-v dbname=${db_name}" > ${logdir}/${instance_name}_${db_name}_chk_instance_db_mode.log
+# Check if the query was successful
+#if [ "$record_count" -gt 0 ]; then
+    # Send email if record count is greater than 0
+    #echo -e "Subject:$SUBJECT\nFrom:$FROM_EMAIL\n\n$BODY" | sendmail -v $TO_EMAIiL
+ #   echo -e "number of records in $instance_name is $record_count"
+#else
+ #   echo -e "number of records is 0"
+    # Alternatively, you can use mailx or mail command depending on your system
+    # echo -e "$BODY" | mailx -s "$SUBJECT" $TO_EMAIL
+#fii
+
+#if [ "`grep "WRITER" ${logdir}/${instance_name}_${db_name}_chk_instance_db_mode.log | wc -l`" -eq "2" ] ; then
+
+ #   ./run_postgres_partition.sh ${instance_name1} $db_name partition_table.sql "-v dbname=${db_name}" > ${logdir}/${instance_name}_${db_name}_partition_table.txt
+    record_count=`tail -3 ./log/partition_table.txt |head -1 |tr -s ' ' ' '`
+    if [ "$record_count" -gt 0 ]; then
+    # Send email if record count is greater than 0
+    #echo -e "Subject:$SUBJECT\nFrom:$FROM_EMAIL\n\n$BODY" | sendmail -v $TO_EMAIiL
+    echo -e "number of records in $instance_name is $record_count"
+else
+    echo -e "number of records is 0"
+    # Alternatively, you can use mailx or mail command depending on your system
+    # echo -e "$BODY" | mailx -s "$SUBJECT" $TO_EMAIL
+fi
+

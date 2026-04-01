@@ -1,0 +1,6 @@
+\t
+select case
+           when pg_is_in_recovery = 'f' then 'WRITER'
+           when pg_is_in_recovery = 't' then 'READER'
+           else 'wrong' end t
+from (SELECT pg_is_in_recovery()) x;

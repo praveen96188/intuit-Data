@@ -1,0 +1,18 @@
+EXTRACT ppdspg02
+
+RMTHOST ggppspo2p1.sbg-psp-ppd.a.intuit.com, mgrport 15000, ENCRYPT AES128, TIMEOUT 120, PARAMS -UL
+
+RMTTRAIL /u01/ogg/ppspo2p1/oracle/21.9.0.0.0/dirdat/pd1pg02/tr
+PASSTHRU
+
+discardfile ./dirrpt/ppdspg02.dsc, megabytes 100, append
+discardrollover at 00:01
+
+STATOPTIONS RESETREPORTSTATS
+Report at 23:55
+ReportRollover at 00:01 on sunday
+
+--REPORTCOUNT EVERY 5 MINTUES RATE
+
+TABLE PSPADM.*;
+
