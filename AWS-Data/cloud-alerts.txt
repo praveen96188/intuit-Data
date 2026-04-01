@@ -1,0 +1,455 @@
+--cli 
+aws cloudwatch put-metric-alarm \
+--alarm-name 'pspapg02-PostgresLog-Error' \
+--alarm-description 'Alarm/Email for any error in Postgres Log.' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--metric-name 'pspapg02-ORA-Errors' \
+--namespace 'APGErrorLog' \
+--statistic 'Maximum' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 0 \
+--comparison-operator 'GreaterThanThreshold' \
+--treat-missing-data 'missing'
+
+
+--cnf json
+{
+    "Type": "AWS::CloudWatch::Alarm",
+    "Properties": {
+        "AlarmName": "pspapg02-PostgresLog-Error",
+        "AlarmDescription": "Alarm/Email for any error in Postgres Log.",
+        "Tags": [],
+        "ActionsEnabled": true,
+        "OKActions": [
+            "arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com"
+        ],
+        "AlarmActions": [
+            "arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com"
+        ],
+        "InsufficientDataActions": [],
+        "MetricName": "pspapg02-ORA-Errors",
+        "Namespace": "APGErrorLog",
+        "Statistic": "Maximum",
+        "Dimensions": [],
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "Threshold": 0,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "missing"
+    }
+}
+
+--cnf yml
+
+Type: AWS::CloudWatch::Alarm
+Properties:
+    AlarmName: pspapg02-PostgresLog-Error
+    AlarmDescription: Alarm/Email for any error in Postgres Log.
+    Tags: []
+    ActionsEnabled: true
+    OKActions:
+        - arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com
+    AlarmActions:
+        - arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com
+    InsufficientDataActions: []
+    MetricName: pspapg02-ORA-Errors
+    Namespace: APGErrorLog
+    Statistic: Maximum
+    Dimensions: []
+    Period: 300
+    EvaluationPeriods: 1
+    DatapointsToAlarm: 1
+    Threshold: 0
+    ComparisonOperator: GreaterThanThreshold
+    TreatMissingData: missing
+
+  --write
+
+  aws cloudwatch put-metric-alarm \
+--alarm-name 'WriteIOPS-Warning - psp-prod-ibob - psp-prod-ibob1' \
+--alarm-description 'Alarm/page when # of db WriteIOPS exceed this threshold' \
+--tags '[{"Key":"aws:cloudformation:logical-id","Value":"IpsMonWriteIOPSWarningpspprodibob117F1B0EF"},{"Key":"aws:cloudformation:stack-id","Value":"arn:aws:cloudformation:us-west-2:893547637742:stack/IpsMon-psp-prod-ibob/0d82bab0-08a6-11f0-b209-0609dc76caa7"},{"Key":"aws:cloudformation:stack-name","Value":"IpsMon-psp-prod-ibob"},{"Key":"intuit:asset_id","Value":"6847740825712235356"},{"Key":"intuit:billing:appenv","Value":"prod"},{"Key":"intuit:billing:bu","Value":"SBSEG"},{"Key":"intuit:billing:component","Value":"PSP"},{"Key":"intuit:billing:fp","Value":"PSP"},{"Key":"intuit:billing:service_assetid","Value":"6847740825712235356"},{"Key":"ipsauroracdk_ver","Value":"0.9.46"},{"Key":"ipsauroramonitoring_ver","Value":"0.0.1.5"},{"Key":"ipsauroratemplate_ver","Value":"null"},{"Key":"rdsClusterId","Value":"psp-prod-ibob"},{"Key":"scope","Value":"monitoring"}]' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:db-sbg-psp-oracle-exit-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:db-sbg-psp-oracle-exit-warning-prod-a-intuit-com' \
+--metric-name 'WriteIOPS' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-ibob1"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 30000 \
+--comparison-operator 'GreaterThanThreshold' \
+--treat-missing-data 'missing'
+
+
+ Type: AWS::CloudWatch::Alarm
+Properties:
+    AlarmName: WriteIOPS-Warning - psp-prod-ibob - psp-prod-ibob1
+    AlarmDescription: "Alarm/page when # of db WriteIOPS exceed this threshold"
+    Tags:
+        - Key: aws:cloudformation:logical-id
+          Value: IpsMonWriteIOPSWarningpspprodibob117F1B0EF
+        - Key: aws:cloudformation:stack-id
+          Value: arn:aws:cloudformation:us-west-2:893547637742:stack/IpsMon-psp-prod-ibob/0d82bab0-08a6-11f0-b209-0609dc76caa7
+        - Key: aws:cloudformation:stack-name
+          Value: IpsMon-psp-prod-ibob
+        - Key: intuit:asset_id
+          Value: "6847740825712235356"
+        - Key: intuit:billing:appenv
+          Value: prod
+        - Key: intuit:billing:bu
+          Value: SBSEG
+        - Key: intuit:billing:component
+          Value: PSP
+        - Key: intuit:billing:fp
+          Value: PSP
+        - Key: intuit:billing:service_assetid
+          Value: "6847740825712235356"
+        - Key: ipsauroracdk_ver
+          Value: 0.9.46
+        - Key: ipsauroramonitoring_ver
+          Value: 0.0.1.5
+        - Key: ipsauroratemplate_ver
+          Value: "null"
+        - Key: rdsClusterId
+          Value: psp-prod-ibob
+        - Key: scope
+          Value: monitoring
+    ActionsEnabled: true
+    OKActions:
+        - arn:aws:sns:us-west-2:893547637742:db-sbg-psp-oracle-exit-warning-prod-a-intuit-com
+    AlarmActions:
+        - arn:aws:sns:us-west-2:893547637742:db-sbg-psp-oracle-exit-warning-prod-a-intuit-com
+    InsufficientDataActions: []
+    MetricName: WriteIOPS
+    Namespace: AWS/RDS
+    Statistic: Average
+    Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: psp-prod-ibob1
+    Period: 300
+    EvaluationPeriods: 1
+    DatapointsToAlarm: 1
+    Threshold: 30000
+    ComparisonOperator: GreaterThanThreshold
+    TreatMissingData: missing
+
+
+{
+    "Type": "AWS::CloudWatch::Alarm",
+    "Properties": {
+        "AlarmName": "WriteIOPS-Warning - psp-prod-ibob - psp-prod-ibob1",
+        "AlarmDescription": "Alarm/page when # of db WriteIOPS exceed this threshold",
+        "Tags": [
+            {
+                "Key": "aws:cloudformation:logical-id",
+                "Value": "IpsMonWriteIOPSWarningpspprodibob117F1B0EF"
+            },
+            {
+                "Key": "aws:cloudformation:stack-id",
+                "Value": "arn:aws:cloudformation:us-west-2:893547637742:stack/IpsMon-psp-prod-ibob/0d82bab0-08a6-11f0-b209-0609dc76caa7"
+            },
+            {
+                "Key": "aws:cloudformation:stack-name",
+                "Value": "IpsMon-psp-prod-ibob"
+            },
+            {
+                "Key": "intuit:asset_id",
+                "Value": "6847740825712235356"
+            },
+            {
+                "Key": "intuit:billing:appenv",
+                "Value": "prod"
+            },
+            {
+                "Key": "intuit:billing:bu",
+                "Value": "SBSEG"
+            },
+            {
+                "Key": "intuit:billing:component",
+                "Value": "PSP"
+            },
+            {
+                "Key": "intuit:billing:fp",
+                "Value": "PSP"
+            },
+            {
+                "Key": "intuit:billing:service_assetid",
+                "Value": "6847740825712235356"
+            },
+            {
+                "Key": "ipsauroracdk_ver",
+                "Value": "0.9.46"
+            },
+            {
+                "Key": "ipsauroramonitoring_ver",
+                "Value": "0.0.1.5"
+            },
+            {
+                "Key": "ipsauroratemplate_ver",
+                "Value": "null"
+            },
+            {
+                "Key": "rdsClusterId",
+                "Value": "psp-prod-ibob"
+            },
+            {
+                "Key": "scope",
+                "Value": "monitoring"
+            }
+        ],
+        "ActionsEnabled": true,
+        "OKActions": [
+            "arn:aws:sns:us-west-2:893547637742:db-sbg-psp-oracle-exit-warning-prod-a-intuit-com"
+        ],
+        "AlarmActions": [
+            "arn:aws:sns:us-west-2:893547637742:db-sbg-psp-oracle-exit-warning-prod-a-intuit-com"
+        ],
+        "InsufficientDataActions": [],
+        "MetricName": "WriteIOPS",
+        "Namespace": "AWS/RDS",
+        "Statistic": "Average",
+        "Dimensions": [
+            {
+                "Name": "DBInstanceIdentifier",
+                "Value": "psp-prod-ibob1"
+            }
+        ],
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "Threshold": 30000,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "missing"
+    }
+}
+
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'Read-Iops-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Read Iops exceed 95% of total IOPS' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--metric-name 'ReadIOPS' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 2 \
+--datapoints-to-alarm 2 \
+--threshold 150000 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+
+Type: AWS::CloudWatch::Alarm
+Properties:
+    AlarmName: Read-Iops-Critical-psp-prod-uw02-psp-prod-uw024
+    AlarmDescription: "Alarm/page when # of db Read Iops exceed 95% of total IOPS"
+    Tags: []
+    ActionsEnabled: true
+    OKActions:
+        - arn:aws:sns:us-west-2:893547637742:psp-prod-slack
+        - arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com
+    AlarmActions:
+        - arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com
+        - arn:aws:sns:us-west-2:893547637742:psp-prod-slack
+    InsufficientDataActions: []
+    MetricName: ReadIOPS
+    Namespace: AWS/RDS
+    Statistic: Average
+    Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: psp-prod-uw024
+    Period: 300
+    EvaluationPeriods: 2
+    DatapointsToAlarm: 2
+    Threshold: 150000
+    ComparisonOperator: GreaterThanOrEqualToThreshold
+
+
+    {
+    "Type": "AWS::CloudWatch::Alarm",
+    "Properties": {
+        "AlarmName": "Read-Iops-Critical-psp-prod-uw02-psp-prod-uw024",
+        "AlarmDescription": "Alarm/page when # of db Read Iops exceed 95% of total IOPS",
+        "Tags": [],
+        "ActionsEnabled": true,
+        "OKActions": [
+            "arn:aws:sns:us-west-2:893547637742:psp-prod-slack",
+            "arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com"
+        ],
+        "AlarmActions": [
+            "arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com",
+            "arn:aws:sns:us-west-2:893547637742:psp-prod-slack"
+        ],
+        "InsufficientDataActions": [],
+        "MetricName": "ReadIOPS",
+        "Namespace": "AWS/RDS",
+        "Statistic": "Average",
+        "Dimensions": [
+            {
+                "Name": "DBInstanceIdentifier",
+                "Value": "psp-prod-uw024"
+            }
+        ],
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "DatapointsToAlarm": 2,
+        "Threshold": 150000,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold"
+    }
+}
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'DatabaseActiveConnection-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db active connectoins exceed this threshold' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--metric-name 'psp-prod-uw024' \
+--namespace 'DatabaseActiveConnection' \
+--statistic 'Average' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 240 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'MaximumUsedTransactionIDs-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Free Storage Space exceed this threshold (20%)' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--metric-name 'MaximumUsedTransactionIDs' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 210000000 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'FreeLocalStorage-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Free Storage Space exceed this threshold (20%)' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' \
+--metric-name 'FreeLocalStorage' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 107374182400 \
+--comparison-operator 'LessThanOrEqualToThreshold'
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'TransactionLogsDiskUsage-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Free Storage Space exceed this threshold (20%)' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--metric-name 'TransactionLogsDiskUsage' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 107374182400 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'CPUUtilization-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db CPU utilization exceed this threshold' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' \
+--metric-name 'CPUUtilization' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 60 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'ReplicationSlotDiskUsage-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Write Iops exceed 80% of total IOPS' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' \
+--metric-name 'ReplicationSlotDiskUsage' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 2 \
+--datapoints-to-alarm 2 \
+--threshold 214748364800 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'Write-Iops-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Write Iops exceed 80% of total IOPS' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' \
+--metric-name 'WriteIOPS' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 2 \
+--datapoints-to-alarm 2 \
+--threshold 50000 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'FreeableMemory-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db Freeable Memory exceed this threshold' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' \
+--metric-name 'FreeableMemory' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 107374182400 \
+--comparison-operator 'LessThanOrEqualToThreshold'
+
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'DatabaseConnections-Critical-psp-prod-uw02-psp-prod-uw024' \
+--alarm-description 'Alarm/page when # of db connectoins exceed this threshold' \
+--actions-enabled \
+--ok-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-warning-prod-a-intuit-com' \
+--alarm-actions 'arn:aws:sns:us-west-2:893547637742:psp-prod-slack' 'arn:aws:sns:us-west-2:893547637742:apg-db-sbg-psp-critical-prod-a-intuit-com' \
+--metric-name 'DatabaseConnections' \
+--namespace 'AWS/RDS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"DBInstanceIdentifier","Value":"psp-prod-uw024"}]' \
+--period 300 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 1400 \
+--comparison-operator 'GreaterThanOrEqualToThreshold'
+
