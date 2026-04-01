@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - SQL Data Import Tool</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+  <body>
+    <p>
+      <center> <img src="images/logo.jpg" alt="DB Solo" /> </center>
+      <a href="DBSolo.html"> Back to Index </a>
+    </p>
+    <hr align="left" />
+
+
+
+
+
+   <h2 class="pHeading1">SQL Data Import Tool</h2>
+		<h2 class="pHeading1"></h2>
+		<p>
+The SQL Import Tool allows you to import data from a file containing comma-separated values (CSV) or fixed-length values into a database table. 
+The import tool works with all supported databases, including Oracle, DB2, Sybase, SQL Server, PostgreSQL and MySQL.
+You can invoke the import tool from the Tools-menu or by right-clicking a table and selecting the 'Import Data Into Table' option. 
+Since all rows are not read into memory at the same time, it is possible to import thousands or even millions of rows into a table.
+It's always a good idea to start with a small file containing just a couple of values and make sure it works, before trying to import thousands of entries.
+</p>
+
+		
+<h3 class="pHeading2">Selecting Import File And Table</h3>
+<p>
+The first page of the SQL import tool allows you to select the file to be imported as well as the table that the data will be inserted into. You can start by clicking on
+the open file button to browse to the file containing your data. You can optionally select the file encoding from the list of supported encoding, although in most cases the
+default encoding should be correct.
+In the Output-section you can enter the number of rows that will be shown in the Preview-pane on the following page. If you make this number too big you may run out of memory as
+all these rows must be in memory at the same time. This section also lets you decide if you want to import the data directly into the table or if you want to create INSERT-statements
+that you can run later on. If you select the INSERT-statements option, you need to provide the name of the output file.
+After making all the necessary selections, click on Next to proceed to the Column Mappings panel.
+</p>
+		<h2 class="pHeading1"><img src="images/import_select_table.png" alt="Select Import Destination" height="755" width="1062" border="0"/></h2>
+
+
+
+<h3 class="pHeading2">Column Mappings</h3>
+<p>
+The 'File Contents' section of this screen lets you view the data in the input file, only the number of rows you indicated on the first page will be shown. First you need to select if your
+input file contains CSV (comma separated values) or fixed-length fields. If you choose 'Delimited Fields' you can change the default delimiter character which is comma (,). If you choose
+fixed-width fields, you need to enter the sizes for each field in the file. You must separate the lengths by a comma, e.g. 5,12,3,22. Finally, this section lets you also select if blank rows should 
+be skipped and if your file's fist row contains column headers or not.
+The lower part of this screen contains the column mappings grid. This grid lets you decide what will be inserted into each of the table's columns, if anything. Start by selecting the first column of
+the table, i.e. the first row of the Column Mappings-grid. Next, click on the 'Inserted Value' cell and pick one of the following options:
+</p>
+<ul>
+ <li><b>Not Inserted</b> - This column will not appear in the INSERT-statement at all. This is useful if you want to use the default value defined for the column (e.g. the column is an IDENTITY column)
+ <li><b>Fixed String</b> - The same fixed value will be inserted in this column for all rows. This can be used among other things to pick a value from a sequence, e.g. you would enter MYSEQUENCE.NEXTVAL if you 
+were inserting into Oracle.
+ <li><b>NULL</b> - The value NULL will be inserted in this column for each row. 
+ <li><b>File Column 1-N</b> - The selected column from the input file will be inserted in this database column. 
+</ul>
+
+<p>
+If you picked one of the file columns, you need to specify how the value is formatted in the input file and under what conditions will a NULL inserted into the column. For example, if the data type of the 
+database column is VARCHAR, the input value is treated as a string, i.e. it doesn't need to be converted to a different data type. However, you need to specify if the string is quoted and if so, what is the
+quote character. By default it is a single quote. Similarly for temporal (DATE, TIME, DATETIME) and numerical columns, you need to specify how the values are formatted in the file.
+</p>
+
+<p>
+<b>NOTICE: The column values CANNOT contain the delimiter character, otherwise the import will fail for that row.</b>
+</p>
+
+<p>
+Once you have configured all of the table's columns, click on Next to start the import. Depending on what you selected on the first page, either a SQL file will be generated or the imported values
+will be directly inserted into the database table. While the import is being performed, you can monitor the number of imported rows in the progress dialog.
+</p>
+		<p><img src="images/import_map_columns.png" alt="Column Mappings" height="753" width="1057" border="0"/></p>
+
+
+
+<h3 class="pHeading2">Results</h3>
+<p>
+The last screen of the SQL Import Tool will show the results of the import. The upper section will show all the failed rows and the failure reason. If the selected import format was INSERT-statements, the 
+lower part will contain a preview of the generated SQL statements. If you selected the values to be imported directly into the table, the lower part will contain a summary of the import process, including 
+the following values:
+</p>
+
+<ul>
+  <li><b>Total import time</b> - How long did the import process take in milliseconds
+  <li><b>Total number of rows processed</b> - How many rows did the Import Tool go thru during the import 
+  <li><b>Number of rows successfully inserted</b> - How many rows had no errors and were inserted
+  <li><b>Number of failed rows</b> - How many rows had errors and were not inserted
+  <li><b>Number of skipped rows</b> - How many rows were skipped
+</ul>		<p></p>
+		<p><img src="images/import_results.png" alt="Import Results" height="470" width="906" border="0"/></p>
+
+		<h3 class="pHeading2">Saving and Loading Import Project Files</h3>
+<p class="pBody">On the last page of the import wizard you can click on the 'Save Project' button to save the selected import 
+settings to a project file. These saved project files can then be loaded on the first page using the 'Load Project' button.
+The project file contains all selected options including the destination table and column formats.</p>
+
+
+<h3 class="pHeading2">Running the Import Tool from Command Line</h3>
+<p class="pBody">The import tool can be invoked from a command shell using settings from a saved project file. This allows you to run import regularly using cron or a similar mechanism. The following shell command will run 
+an import from settings in 'myproject.xml':</p>
+<p class="pBody"><b>commandLine -import myproject.xml</b></p>
+<p class="pBody">where 'myproject.xml' is a saved project file. You can use project files on different machines as long as the configured server connection names match. The project files are standard xml text files that can be edited manually outside DB Solo.</p>
+<p class="pBody">The command line tool will output errors and other messages in <b>import.log </b>file.</p>
+		<p></p>
+		<p></p>
+		<hr/>
+
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td align="left">
+           <a href="DBSolo.html"> Back to Index </a>
+        </td>
+        <td align="right">
+          <span style="font-size: 16px ; font-weight: bold">
+            DB Solo<br />
+          </span>
+          <span style="font-size: 10px">
+            <a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+            <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+          </span>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

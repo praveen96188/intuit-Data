@@ -1,0 +1,130 @@
+<form>
+<label>IPS PostgreSQL Demo Dashboard</label>
+<description>Aurora PostgreSQL Health</description>
+<fieldset submitButton="false" autoRun="true">
+    <input type="time" token="time_token" searchWhenChanged="true">
+        <label>Select the time</label>
+        <default>
+            <earliest>-60m@m</earliest>
+            <latest>now</latest>
+        </default>
+    </input>
+    <input type="dropdown" token="dbclusteridentifier">
+        <label>dbclusteridentifier</label>
+        <choice value="ppsp-sys-db">ppsp-sys-db</choice>
+    </input>
+    <input type="dropdown" token="dbinstanceidentifier">
+        <label>dbinstanceidentifier</label>
+        <choice value="*">*</choice>
+        <choice value="ppsp-sys-db1">ppsp-sys-db1</choice>
+    </input>
+</fieldset>
+<row>
+    <panel>
+        <table>
+            <title>Activity by Table</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ dbinstanceidentifier=$form.dbinstanceidentifier$ type=summary | rename relname AS "table name", hot_updates AS "hot updates", live_tuples AS "live tuples", dead_tuples AS "dead tuples" | dedup "table name" sortby -"_time" | table "table name", inserts, updates, deletes, "hot updates", "live tuples", "dead tuples"</query>
+                <earliest>$time_token.earliest$</earliest>
+                <latest>$time_token.latest$</latest>
+                <refresh>1m</refresh>
+                <refreshType>delay</refreshType>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+    <panel>
+        <table>
+            <title>Last Action Time by Table</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ dbinstanceidentifier=$form.dbinstanceidentifier$ type=summary NOT (last_vacuum=None AND last_analyze=None AND last_autoanalyze=None AND last_autovacuum=None) | dedup last_vacuum,last_analyze,last_autoanalyze,last_autovacuum | rename relname AS "table name" | head 20 | eval analyze=strftime(last_analyze,"%m/%d/%y %H:%M:%S") | eval autoanalyze=strftime(last_autoanalyze,"%m/%d/%y %H:%M:%S") | eval vacuum=strftime(last_vacuum,"%m/%d/%y %H:%M:%S") | eval autovacuum=strftime(last_autovacuum,"%m/%d/%y %H:%M:%S") | table "table name", "analyze", "autoanalyze", "vacuum", "autovacuum"</query>
+                <earliest>$time_token.earliest$</earliest>
+                <latest>$time_token.latest$</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+</row>
+<row>
+    <panel>
+        <table>
+            <title>Top 5 Queries</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ dbinstanceidentifier=$form.dbinstanceidentifier$ type=top_sql | dedup sql_text | sort -avg_time | head 5 | table sql_text, avg_time, num_execs,  avg_pio_time, avg_cpu_n_wait_time,avg_lio, avg_pio, avg_disksort_wrt, avg_disksort_reads, avg_rows, max_time, pct_tot_time, pct_pio_time, pct_cpu_n_wait_time</query>
+                <earliest>$time_token.earliest$</earliest>
+                <latest>$time_token.latest$</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+</row>
+<row>
+    <panel id="unusedIndexesPanel">
+        <table>
+            <title>Unused Indexes</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ dbinstanceidentifier=$form.dbinstanceidentifier$ type=unused_indexes| dedup relname, indexrelname | rename relname AS "table", indexrelname AS "index" | table "table", "index"</query>
+                <earliest>$time_token.earliest$</earliest>
+                <latest>$time_token.latest$</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+    <panel id="extensionsPanel">
+        <table>
+            <title>Extensions</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ type=extension_list | dedup extname, extver | rename extname AS name, extver AS version | table name, version</query>
+                <earliest>$time_token.earliest$</earliest>
+                <latest>$time_token.latest$</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+    <panel id="qpmDataPanel">
+        <table>
+            <title>QPM Data</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ type type=qpm_data | stats count by status, enabled</query>
+                <earliest>$time_token.earliest$</earliest>
+                <latest>$time_token.latest$</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+</row>
+<row>
+    <panel>
+        <table>
+            <title>Table Bloat</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ type=table_bloat | rename schema_name AS "schema name", table_name AS "table name", bloat_pct AS "bloat %", bloat_mb AS "bloat mb", table_mb AS "table mb"  | dedup "table name" sortby -"_time" | table "table name", "schema name", "bloat %", "bloat mb", "table mb"</query>
+                <earliest>-24h@h</earliest>
+                <latest>now</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+</row>
+<row>
+    <panel>
+        <table>
+            <title>Index Bloat</title>
+            <search>
+                <query>index=lambda_logs dbclusteridentifier=$form.dbclusteridentifier$ type=index_bloat | rename schema_name AS "schema name", table_name AS "table name", index_name AS "index name", bloat_pct AS "bloat %", bloat_mb AS "bloat mb", table_mb AS "table mb", index_mb AS "index mb", index_scans AS "index scans"  | dedup "table name" sortby -"_time" | table "table name", "schema name", "index name", "bloat %", "bloat mb", "table mb", "index mb", "index scans"</query>
+                <earliest>-24h@h</earliest>
+                <latest>now</latest>
+            </search>
+            <option name="drilldown">none</option>
+            <option name="refresh.display">progressbar</option>
+        </table>
+    </panel>
+</row>
+</form>

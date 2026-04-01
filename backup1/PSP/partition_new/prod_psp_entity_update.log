@@ -1,0 +1,428 @@
+pspapg02=> \i c_info.sql 
+You are connected to database "pspapg02" as user "postgres" on host "psp-prod-uw02.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com" (address "10.95.110.22") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+       current_timestamp       
+-------------------------------
+ 2025-11-29 22:29:09.101918-08
+(1 row)
+
+pspapg02=> set search_path to pspadm;
+SET
+pspapg02=> ALTER TABLE pspadm.psp_entity_update DETACH PARTITION pspadm.psp_entity_update_m122026;
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update ATTACH PARTITION pspadm.psp_entity_update_m122026
+pspapg02-> FOR VALUES FROM ('2026-12-01 00:00:00') TO ('2027-01-01 00:00:00');
+ALTER TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m012027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2027-02-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m022027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-02-01 00:00:00') TO ('2027-03-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m032027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-03-01 00:00:00') TO ('2027-04-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m4-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m042027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-04-01 00:00:00') TO ('2027-05-01 00:00:00');
+CREATE TABLE
+pspapg02=>  CREATE TABLE pspadm.psp_entity_update_m052027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-05-01 00:00:00') TO ('2027-06-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m6-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m062027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-06-01 00:00:00') TO ('2027-07-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m7-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m072027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-07-01 00:00:00') TO ('2027-08-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m8-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m082027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-08-01 00:00:00') TO ('2027-09-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m092027 
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-09-01 00:00:00') TO ('2027-10-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m10-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m102027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-10-01 00:00:00') TO ('2027-11-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m11-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m112027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-11-01 00:00:00') TO ('2027-12-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m12-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m122027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-12-01 00:00:00') TO ('2028-01-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m1-2028
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m012028
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m012027 ADD CONSTRAINT psp_entity_update_m012027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m022027 ADD CONSTRAINT psp_entity_update_m022027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m032027 ADD CONSTRAINT psp_entity_update_m032027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m042027 ADD CONSTRAINT psp_entity_update_m042027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m052027 ADD CONSTRAINT psp_entity_update_m052027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m062027 ADD CONSTRAINT psp_entity_update_m062027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m072027 ADD CONSTRAINT psp_entity_update_m072027_pk PRIMARY KEY (entity_update_seq, realm_id);
+EY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m092027 ADD CONSTRAINT psp_entity_update_m092027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m102027 ADD CONSTRAINT psp_entity_update_m102027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m112027 ADD CONSTRAINT psp_entity_update_m112027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m122027 ADD CONSTRAINT psp_entity_update_m122027_pk PRIMARY KEY (entity_update_seq, realm_id);ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m082027 ADD CONSTRAINT psp_entity_update_m082027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m092027 ADD CONSTRAINT psp_entity_update_m092027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m102027 ADD CONSTRAINT psp_entity_update_m102027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m112027 ADD CONSTRAINT psp_entity_update_m112027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m122027 ADD CONSTRAINT psp_entity_update_m122027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m012028 ADD CONSTRAINT psp_entity_update_m012028_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012027_created_date_idx RENAME TO idx_entityupdate_crdate_m012027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m022027_created_date_idx RENAME TO idx_entityupdate_crdate_m022027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m032027_created_date_idx RENAME TO idx_entityupdate_crdate_m032027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m042027_created_date_idx RENAME TO idx_entityupdate_crdate_m042027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m052027_created_date_idx RENAME TO idx_entityupdate_crdate_m052027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m062027_created_date_idx RENAME TO idx_entityupdate_crdate_m062027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m072027_created_date_idx RENAME TO idx_entityupdate_crdate_m072027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m082027_created_date_idx RENAME TO idx_entityupdate_crdate_m082027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m092027_created_date_idx RENAME TO idx_entityupdate_crdate_m092027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m102027_created_date_idx RENAME TO idx_entityupdate_crdate_m102027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m112027_created_date_idx RENAME TO idx_entityupdate_crdate_m112027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m122027_created_date_idx RENAME TO idx_entityupdate_crdate_m122027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m012027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m022027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m022027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m032027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m032027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m042027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m042027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m052027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m052027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m062027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m062027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m072027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m072027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m082027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m082027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m092027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m092027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m102027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m102027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m112027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m112027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m122027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m122027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012028_created_date_idx RENAME TO idx_entityupdate_crdate_m012028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012028_modified_date_idx RENAME TO idx_ent_upd_mod_date_m012028;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m012027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m022027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m032027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m042027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m052027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m062027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m072027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m082027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m092027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m102027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m112027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m122027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m012028;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m012027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m022027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m032027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m042027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m052027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m062027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m072027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m082027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m092027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m102027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m112027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m122027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m012028;
+ALTER INDEX
+pspapg02=> \d+ pspadm.psp_entity_update;
+                                                   Partitioned table "pspadm.psp_entity_update"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_ent_upd_mod_date" btree (modified_date)
+    "idx_entityupdate_crdate" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[])) NOT VALID
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character var
+ying]::text[])) NOT VALID
+Partitions: psp_entity_update_m012023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2023-02-01 00:00:00'),
+            psp_entity_update_m012024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2024-02-01 00:00:00'),
+            psp_entity_update_m012025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2025-02-01 00:00:00'),
+            psp_entity_update_m012026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2026-02-01 00:00:00'),
+            psp_entity_update_m012027 FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2027-02-01 00:00:00'),
+            psp_entity_update_m012028 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE),
+            psp_entity_update_m022023 FOR VALUES FROM ('2023-02-01 00:00:00') TO ('2023-03-01 00:00:00'),
+            psp_entity_update_m022024 FOR VALUES FROM ('2024-02-01 00:00:00') TO ('2024-03-01 00:00:00'),
+            psp_entity_update_m022025 FOR VALUES FROM ('2025-02-01 00:00:00') TO ('2025-03-01 00:00:00'),
+            psp_entity_update_m022026 FOR VALUES FROM ('2026-02-01 00:00:00') TO ('2026-03-01 00:00:00'),
+            psp_entity_update_m022027 FOR VALUES FROM ('2027-02-01 00:00:00') TO ('2027-03-01 00:00:00'),
+            psp_entity_update_m032023 FOR VALUES FROM ('2023-03-01 00:00:00') TO ('2023-04-01 00:00:00'),
+            psp_entity_update_m032024 FOR VALUES FROM ('2024-03-01 00:00:00') TO ('2024-04-01 00:00:00'),
+            psp_entity_update_m032025 FOR VALUES FROM ('2025-03-01 00:00:00') TO ('2025-04-01 00:00:00'),
+            psp_entity_update_m032026 FOR VALUES FROM ('2026-03-01 00:00:00') TO ('2026-04-01 00:00:00'),
+            psp_entity_update_m032027 FOR VALUES FROM ('2027-03-01 00:00:00') TO ('2027-04-01 00:00:00'),
+            psp_entity_update_m042023 FOR VALUES FROM ('2023-04-01 00:00:00') TO ('2023-05-01 00:00:00'),
+            psp_entity_update_m042024 FOR VALUES FROM ('2024-04-01 00:00:00') TO ('2024-05-01 00:00:00'),
+            psp_entity_update_m042025 FOR VALUES FROM ('2025-04-01 00:00:00') TO ('2025-05-01 00:00:00'),
+            psp_entity_update_m042026 FOR VALUES FROM ('2026-04-01 00:00:00') TO ('2026-05-01 00:00:00'),
+            psp_entity_update_m042027 FOR VALUES FROM ('2027-04-01 00:00:00') TO ('2027-05-01 00:00:00'),
+            psp_entity_update_m052023 FOR VALUES FROM ('2023-05-01 00:00:00') TO ('2023-06-01 00:00:00'),
+            psp_entity_update_m052024 FOR VALUES FROM ('2024-05-01 00:00:00') TO ('2024-06-01 00:00:00'),
+            psp_entity_update_m052025 FOR VALUES FROM ('2025-05-01 00:00:00') TO ('2025-06-01 00:00:00'),
+            psp_entity_update_m052026 FOR VALUES FROM ('2026-05-01 00:00:00') TO ('2026-06-01 00:00:00'),
+            psp_entity_update_m052027 FOR VALUES FROM ('2027-05-01 00:00:00') TO ('2027-06-01 00:00:00'),
+            psp_entity_update_m062023 FOR VALUES FROM ('2023-06-01 00:00:00') TO ('2023-07-01 00:00:00'),
+            psp_entity_update_m062024 FOR VALUES FROM ('2024-06-01 00:00:00') TO ('2024-07-01 00:00:00'),
+            psp_entity_update_m062025 FOR VALUES FROM ('2025-06-01 00:00:00') TO ('2025-07-01 00:00:00'),
+            psp_entity_update_m062026 FOR VALUES FROM ('2026-06-01 00:00:00') TO ('2026-07-01 00:00:00'),
+            psp_entity_update_m062027 FOR VALUES FROM ('2027-06-01 00:00:00') TO ('2027-07-01 00:00:00'),
+            psp_entity_update_m072023 FOR VALUES FROM ('2023-07-01 00:00:00') TO ('2023-08-01 00:00:00'),
+            psp_entity_update_m072024 FOR VALUES FROM ('2024-07-01 00:00:00') TO ('2024-08-01 00:00:00'),
+            psp_entity_update_m072025 FOR VALUES FROM ('2025-07-01 00:00:00') TO ('2025-08-01 00:00:00'),
+            psp_entity_update_m072026 FOR VALUES FROM ('2026-07-01 00:00:00') TO ('2026-08-01 00:00:00'),
+            psp_entity_update_m072027 FOR VALUES FROM ('2027-07-01 00:00:00') TO ('2027-08-01 00:00:00'),
+            psp_entity_update_m082023 FOR VALUES FROM ('2023-08-01 00:00:00') TO ('2023-09-01 00:00:00'),
+            psp_entity_update_m082024 FOR VALUES FROM ('2024-08-01 00:00:00') TO ('2024-09-01 00:00:00'),
+            psp_entity_update_m082025 FOR VALUES FROM ('2025-08-01 00:00:00') TO ('2025-09-01 00:00:00'),
+            psp_entity_update_m082026 FOR VALUES FROM ('2026-08-01 00:00:00') TO ('2026-09-01 00:00:00'),
+            psp_entity_update_m082027 FOR VALUES FROM ('2027-08-01 00:00:00') TO ('2027-09-01 00:00:00'),
+            psp_entity_update_m092023 FOR VALUES FROM ('2023-09-01 00:00:00') TO ('2023-10-01 00:00:00'),
+            psp_entity_update_m092024 FOR VALUES FROM ('2024-09-01 00:00:00') TO ('2024-10-01 00:00:00'),
+            psp_entity_update_m092025 FOR VALUES FROM ('2025-09-01 00:00:00') TO ('2025-10-01 00:00:00'),
+            psp_entity_update_m092026 FOR VALUES FROM ('2026-09-01 00:00:00') TO ('2026-10-01 00:00:00'),
+            psp_entity_update_m092027 FOR VALUES FROM ('2027-09-01 00:00:00') TO ('2027-10-01 00:00:00'),
+            psp_entity_update_m102023 FOR VALUES FROM ('2023-10-01 00:00:00') TO ('2023-11-01 00:00:00'),
+            psp_entity_update_m102024 FOR VALUES FROM ('2024-10-01 00:00:00') TO ('2024-11-01 00:00:00'),
+            psp_entity_update_m102025 FOR VALUES FROM ('2025-10-01 00:00:00') TO ('2025-11-01 00:00:00'),
+            psp_entity_update_m102026 FOR VALUES FROM ('2026-10-01 00:00:00') TO ('2026-11-01 00:00:00'),
+            psp_entity_update_m102027 FOR VALUES FROM ('2027-10-01 00:00:00') TO ('2027-11-01 00:00:00'),
+            psp_entity_update_m112022 FOR VALUES FROM (MINVALUE) TO ('2022-12-01 00:00:00'),
+            psp_entity_update_m112023 FOR VALUES FROM ('2023-11-01 00:00:00') TO ('2023-12-01 00:00:00'),
+            psp_entity_update_m112024 FOR VALUES FROM ('2024-11-01 00:00:00') TO ('2024-12-01 00:00:00'),
+            psp_entity_update_m112025 FOR VALUES FROM ('2025-11-01 00:00:00') TO ('2025-12-01 00:00:00'),
+            psp_entity_update_m112026 FOR VALUES FROM ('2026-11-01 00:00:00') TO ('2026-12-01 00:00:00'),
+            psp_entity_update_m112027 FOR VALUES FROM ('2027-11-01 00:00:00') TO ('2027-12-01 00:00:00'),
+            psp_entity_update_m122022 FOR VALUES FROM ('2022-12-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_entity_update_m122023 FOR VALUES FROM ('2023-12-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_entity_update_m122024 FOR VALUES FROM ('2024-12-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_entity_update_m122025 FOR VALUES FROM ('2025-12-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_entity_update_m122026 FOR VALUES FROM ('2026-12-01 00:00:00') TO ('2027-01-01 00:00:00'),
+            psp_entity_update_m122027 FOR VALUES FROM ('2027-12-01 00:00:00') TO ('2028-01-01 00:00:00')
+
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> \d+ pspadm.psp_entity_update_m012027;
+                                                     Table "pspadm.psp_entity_update_m012027"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_entity_update FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2027-02-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-02-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entity_update_m012027_pk" PRIMARY KEY, btree (entity_update_seq, realm_id)
+    "idx_ent_upd_mod_date_m012027" btree (modified_date)
+    "idx_entityupdate_crdate_m012027" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[]))
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entity_update_m012028;
+                                                     Table "pspadm.psp_entity_update_m012028"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_entity_update FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entity_update_m012028_pk" PRIMARY KEY, btree (entity_update_seq, realm_id)
+    "idx_ent_upd_mod_date_m012028" btree (modified_date)
+    "idx_entityupdate_crdate_m012028" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[]))
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entity_update_m062027;
+                                                     Table "pspadm.psp_entity_update_m062027"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_entity_update FOR VALUES FROM ('2027-06-01 00:00:00') TO ('2027-07-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-06-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-07-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entity_update_m062027_pk" PRIMARY KEY, btree (entity_update_seq, realm_id)
+    "idx_ent_upd_mod_date_m062027" btree (modified_date)
+    "idx_entityupdate_crdate_m062027" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[]))
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)
+

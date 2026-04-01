@@ -1,0 +1,100 @@
+# USAGE: Run as a cron job like
+# 	*/3 * * * * cd /u01/ogg/scripts; ./chk_active_connection.sh 1>/dev/null 2>&1
+#
+#	To disable AZ failover capability, run the command "touch /u01/ogg/scripts/log/chk_active_connection_failover.stop"
+
+. ~/.bash_profile
+. /l/orcl
+log_dir=./log
+mkdir -p $log_dir
+
+# number of active sessions will trigger AZ failover
+NUM_ACITVE_SESSIONS_TRIGGER_FAILOVER=800
+# Will not AZ failover within GRACE_PERIOD minutes after last AZ failover
+GRACE_PERIOD=15
+# number of times exceeding threadhold consecutively before triggering AZ failover
+NUM_OVER_THRESHOLD=2
+# number of days to keep log files
+DAYS_KEPT_LOG=14
+
+disable_failover=${log_dir}/chk_active_connection_failover.stop
+log_file=${log_dir}/chk_active_connection.lst
+log_file_hist=${log_dir}/chk_active_connection_`date +\%Y\%m\%d`.log
+tmp_file=${log_dir}/chk_active_connection.tmp
+count_file=${log_dir}/chk_active_connection.count
+
+rm -f ${tmp_file}
+
+encryption_password=`head -1 /dev/shm/goldengate/db/password_file`
+encryption_key=`tail -1 /dev/shm/goldengate/db/password_file`
+#password=`echo $encryption_password| openssl aes-256-cbc -a -d -salt -k $encryption_key`
+password=`echo Salsa!23`
+login_string=ops_user/${password}@${RDS_SID}
+
+export AWS_DEFAULT_REGION=`curl --noproxy "*" -s "http://169.254.169.254/latest/meta-data/placement/availability-zone" | awk '{print substr($0, 0, length($0) - 1)}'`
+
+if [ "${VPC_ENV}" == "ppd" ]; then
+  topic_arn="arn:aws:sns:${AWS_DEFAULT_REGION}:475968958217:db-sbg-qbo-warning-${VPC_ENV}-a-intuit-com"
+elif [ "${VPC_ENV}" == "prod" ]; then
+  topic_arn="arn:aws:sns:${AWS_DEFAULT_REGION}:094918931292:db-and-app-sbg-qbo-critical-${VPC_ENV}-a-intuit-com"
+else
+  echo "Wrong VPC_ENV" >> ${tmp_file}
+  exit 1
+fi
+
+sqlplus -s << EOF
+$login_string
+spool ${log_file}
+set feed on
+column sid format 99999
+column event format a30
+column p1 format 9999999999999999
+column p2 format 999999999999999
+column p3 format 99999999
+column action format a15
+column wait_sec format 999,999,999
+set linesize 220
+set pagesize 10000
+
+select sid, serial#, username, event, seconds_in_wait wait_sec, action, sql_id, p1, p2, p3, blocking_session 
+  from v\$session where type != 'BACKGROUND' and status = 'ACTIVE';
+spool off
+exit
+EOF
+
+chk_active_connection=`egrep "rows selected|row selected" ${log_file} |cut -d' ' -f1`
+if [ $chk_active_connection == "no" ]; then
+  chk_active_connection=0
+fi
+echo "chk_active_connection=$chk_active_connection" >> ${tmp_file}
+
+aws cloudwatch put-metric-data --metric-name ${RDS_SID} --namespace "DatabaseActiveConnection" --value $chk_active_connection --timestamp `date +\%Y-%m-%dT\%H:%M:%S%z`
+
+if [ ! -f ${disable_failover} -a $chk_active_connection -gt ${NUM_ACITVE_SESSIONS_TRIGGER_FAILOVER} ]; then
+  echo 'X' >> ${count_file}
+  if [[ ( ! -f ${log_dir}/chk_active_connection.flag || 
+          `find ${log_dir} -name chk_active_connection.flag -cmin +${GRACE_PERIOD} |wc -l` -gt 0 ) && 
+        ( `grep 'X' ${count_file} |wc -l ` -ge ${NUM_OVER_THRESHOLD} ) ]]; then
+    echo "AZ failover due to high active sessions ($chk_active_connection)" >> ${tmp_file}
+    aws rds reboot-db-instance --db-instance-identifier ${RDS_SID} --force-failover
+    /usr/bin/aws sns publish --topic-arn ${topic_arn} --subject "ALERT: AZ failover ${RDS_SID} due to high active sessions" --message "`cat ${log_file}`"
+    rm -f ${count_file}
+    touch ${log_dir}/chk_active_connection.flag
+  else
+    echo "Do not AZ failover again since it is in grace period of ${GRACE_PERIOD} minutes" >> ${tmp_file}
+  fi
+else
+  rm -f ${count_file}
+fi
+
+echo "TIME: `date +\%Y-%m-%dT\%H:%M:%S%z`" >> ${log_file_hist}
+cat ${log_file} >> ${log_file_hist}
+
+# Delete the old log files.
+if [[ -L ${log_dir} ]]; then
+  find ${log_dir} -follow -name "chk_active_connection_*.log" -mtime +${DAYS_KEPT_LOG} -exec rm {} \;
+else
+  find ${log_dir} -name "chk_active_connection_*.log" -mtime +${DAYS_KEPT_LOG} -exec rm {} \;
+fi
+
+

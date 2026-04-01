@@ -1,0 +1,945 @@
+
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_as400 on ibobadm.psp_source_system_transmission_m012023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_cris on ibobadm.psp_source_system_transmission_m012023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_dflt on ibobadm.psp_source_system_transmission_m012023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_ews on ibobadm.psp_source_system_transmission_m012023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_null on ibobadm.psp_source_system_transmission_m012023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_psp on ibobadm.psp_source_system_transmission_m012023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m012023_from_qbdt on ibobadm.psp_source_system_transmission_m012023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_as400 on ibobadm.psp_source_system_transmission_m022023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_cris on ibobadm.psp_source_system_transmission_m022023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_dflt on ibobadm.psp_source_system_transmission_m022023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_ews on ibobadm.psp_source_system_transmission_m022023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_null on ibobadm.psp_source_system_transmission_m022023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_psp on ibobadm.psp_source_system_transmission_m022023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m022023_from_qbdt on ibobadm.psp_source_system_transmission_m022023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_as400 on ibobadm.psp_source_system_transmission_m032023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_cris on ibobadm.psp_source_system_transmission_m032023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_dflt on ibobadm.psp_source_system_transmission_m032023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_ews on ibobadm.psp_source_system_transmission_m032023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_null on ibobadm.psp_source_system_transmission_m032023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_psp on ibobadm.psp_source_system_transmission_m032023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m032023_from_qbdt on ibobadm.psp_source_system_transmission_m032023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_as400 on ibobadm.psp_source_system_transmission_m042023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_cris on ibobadm.psp_source_system_transmission_m042023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_dflt on ibobadm.psp_source_system_transmission_m042023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_ews on ibobadm.psp_source_system_transmission_m042023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_null on ibobadm.psp_source_system_transmission_m042023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_psp on ibobadm.psp_source_system_transmission_m042023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m042023_from_qbdt on ibobadm.psp_source_system_transmission_m042023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_as400 on ibobadm.psp_source_system_transmission_m052023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_cris on ibobadm.psp_source_system_transmission_m052023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_dflt on ibobadm.psp_source_system_transmission_m052023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_ews on ibobadm.psp_source_system_transmission_m052023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_null on ibobadm.psp_source_system_transmission_m052023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_psp on ibobadm.psp_source_system_transmission_m052023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m052023_from_qbdt on ibobadm.psp_source_system_transmission_m052023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_as400 on ibobadm.psp_source_system_transmission_m062023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_cris on ibobadm.psp_source_system_transmission_m062023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_dflt on ibobadm.psp_source_system_transmission_m062023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_ews on ibobadm.psp_source_system_transmission_m062023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_null on ibobadm.psp_source_system_transmission_m062023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_psp on ibobadm.psp_source_system_transmission_m062023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m062023_from_qbdt on ibobadm.psp_source_system_transmission_m062023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_as400 on ibobadm.psp_source_system_transmission_m072023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_cris on ibobadm.psp_source_system_transmission_m072023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_dflt on ibobadm.psp_source_system_transmission_m072023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_ews on ibobadm.psp_source_system_transmission_m072023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_null on ibobadm.psp_source_system_transmission_m072023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_psp on ibobadm.psp_source_system_transmission_m072023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m072023_from_qbdt on ibobadm.psp_source_system_transmission_m072023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_as400 on ibobadm.psp_source_system_transmission_m082023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_cris on ibobadm.psp_source_system_transmission_m082023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_dflt on ibobadm.psp_source_system_transmission_m082023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_ews on ibobadm.psp_source_system_transmission_m082023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_null on ibobadm.psp_source_system_transmission_m082023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_psp on ibobadm.psp_source_system_transmission_m082023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m082023_from_qbdt on ibobadm.psp_source_system_transmission_m082023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_as400 on ibobadm.psp_source_system_transmission_m092023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_cris on ibobadm.psp_source_system_transmission_m092023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_dflt on ibobadm.psp_source_system_transmission_m092023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_ews on ibobadm.psp_source_system_transmission_m092023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_null on ibobadm.psp_source_system_transmission_m092023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_psp on ibobadm.psp_source_system_transmission_m092023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m092023_from_qbdt on ibobadm.psp_source_system_transmission_m092023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_as400 on ibobadm.psp_source_system_transmission_m102023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_cris on ibobadm.psp_source_system_transmission_m102023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_dflt on ibobadm.psp_source_system_transmission_m102023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_ews on ibobadm.psp_source_system_transmission_m102023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_null on ibobadm.psp_source_system_transmission_m102023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_psp on ibobadm.psp_source_system_transmission_m102023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m102023_from_qbdt on ibobadm.psp_source_system_transmission_m102023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_as400 on ibobadm.psp_source_system_transmission_m112023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_cris on ibobadm.psp_source_system_transmission_m112023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_dflt on ibobadm.psp_source_system_transmission_m112023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_ews on ibobadm.psp_source_system_transmission_m112023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_null on ibobadm.psp_source_system_transmission_m112023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_psp on ibobadm.psp_source_system_transmission_m112023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m112023_from_qbdt on ibobadm.psp_source_system_transmission_m112023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_as400 on ibobadm.psp_source_system_transmission_m122023_from_as400 USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_cris on ibobadm.psp_source_system_transmission_m122023_from_cris USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_dflt on ibobadm.psp_source_system_transmission_m122023_from_dflt USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_ews on ibobadm.psp_source_system_transmission_m122023_from_ews USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_null on ibobadm.psp_source_system_transmission_m122023_from_null USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_psp on ibobadm.psp_source_system_transmission_m122023_from_psp USING BTREE (created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i2_m122023_from_qbdt on ibobadm.psp_source_system_transmission_m122023_from_qbdt USING BTREE (created_date ASC) ;
+
+
+
+
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_as400 on ibobadm.psp_source_system_transmission_m012023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_cris on ibobadm.psp_source_system_transmission_m012023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_dflt on ibobadm.psp_source_system_transmission_m012023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_ews on ibobadm.psp_source_system_transmission_m012023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_null on ibobadm.psp_source_system_transmission_m012023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_psp on ibobadm.psp_source_system_transmission_m012023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m012023_from_qbdt on ibobadm.psp_source_system_transmission_m012023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_as400 on ibobadm.psp_source_system_transmission_m022023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_cris on ibobadm.psp_source_system_transmission_m022023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_dflt on ibobadm.psp_source_system_transmission_m022023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_ews on ibobadm.psp_source_system_transmission_m022023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_null on ibobadm.psp_source_system_transmission_m022023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_psp on ibobadm.psp_source_system_transmission_m022023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m022023_from_qbdt on ibobadm.psp_source_system_transmission_m022023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_as400 on ibobadm.psp_source_system_transmission_m032023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_cris on ibobadm.psp_source_system_transmission_m032023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_dflt on ibobadm.psp_source_system_transmission_m032023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_ews on ibobadm.psp_source_system_transmission_m032023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_null on ibobadm.psp_source_system_transmission_m032023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_psp on ibobadm.psp_source_system_transmission_m032023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m032023_from_qbdt on ibobadm.psp_source_system_transmission_m032023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_as400 on ibobadm.psp_source_system_transmission_m042023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_cris on ibobadm.psp_source_system_transmission_m042023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_dflt on ibobadm.psp_source_system_transmission_m042023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_ews on ibobadm.psp_source_system_transmission_m042023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_null on ibobadm.psp_source_system_transmission_m042023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_psp on ibobadm.psp_source_system_transmission_m042023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m042023_from_qbdt on ibobadm.psp_source_system_transmission_m042023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_as400 on ibobadm.psp_source_system_transmission_m052023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_cris on ibobadm.psp_source_system_transmission_m052023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_dflt on ibobadm.psp_source_system_transmission_m052023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_ews on ibobadm.psp_source_system_transmission_m052023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_null on ibobadm.psp_source_system_transmission_m052023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_psp on ibobadm.psp_source_system_transmission_m052023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m052023_from_qbdt on ibobadm.psp_source_system_transmission_m052023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_as400 on ibobadm.psp_source_system_transmission_m062023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_cris on ibobadm.psp_source_system_transmission_m062023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_dflt on ibobadm.psp_source_system_transmission_m062023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_ews on ibobadm.psp_source_system_transmission_m062023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_null on ibobadm.psp_source_system_transmission_m062023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_psp on ibobadm.psp_source_system_transmission_m062023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m062023_from_qbdt on ibobadm.psp_source_system_transmission_m062023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_as400 on ibobadm.psp_source_system_transmission_m072023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_cris on ibobadm.psp_source_system_transmission_m072023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_dflt on ibobadm.psp_source_system_transmission_m072023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_ews on ibobadm.psp_source_system_transmission_m072023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_null on ibobadm.psp_source_system_transmission_m072023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_psp on ibobadm.psp_source_system_transmission_m072023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m072023_from_qbdt on ibobadm.psp_source_system_transmission_m072023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_as400 on ibobadm.psp_source_system_transmission_m082023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_cris on ibobadm.psp_source_system_transmission_m082023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_dflt on ibobadm.psp_source_system_transmission_m082023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_ews on ibobadm.psp_source_system_transmission_m082023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_null on ibobadm.psp_source_system_transmission_m082023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_psp on ibobadm.psp_source_system_transmission_m082023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m082023_from_qbdt on ibobadm.psp_source_system_transmission_m082023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_as400 on ibobadm.psp_source_system_transmission_m092023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_cris on ibobadm.psp_source_system_transmission_m092023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_dflt on ibobadm.psp_source_system_transmission_m092023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_ews on ibobadm.psp_source_system_transmission_m092023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_null on ibobadm.psp_source_system_transmission_m092023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_psp on ibobadm.psp_source_system_transmission_m092023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m092023_from_qbdt on ibobadm.psp_source_system_transmission_m092023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_as400 on ibobadm.psp_source_system_transmission_m102023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_cris on ibobadm.psp_source_system_transmission_m102023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_dflt on ibobadm.psp_source_system_transmission_m102023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_ews on ibobadm.psp_source_system_transmission_m102023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_null on ibobadm.psp_source_system_transmission_m102023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_psp on ibobadm.psp_source_system_transmission_m102023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m102023_from_qbdt on ibobadm.psp_source_system_transmission_m102023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_as400 on ibobadm.psp_source_system_transmission_m112023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_cris on ibobadm.psp_source_system_transmission_m112023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_dflt on ibobadm.psp_source_system_transmission_m112023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_ews on ibobadm.psp_source_system_transmission_m112023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_null on ibobadm.psp_source_system_transmission_m112023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_psp on ibobadm.psp_source_system_transmission_m112023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m112023_from_qbdt on ibobadm.psp_source_system_transmission_m112023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_as400 on ibobadm.psp_source_system_transmission_m122023_from_as400 USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_cris on ibobadm.psp_source_system_transmission_m122023_from_cris USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_dflt on ibobadm.psp_source_system_transmission_m122023_from_dflt USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_ews on ibobadm.psp_source_system_transmission_m122023_from_ews USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_null on ibobadm.psp_source_system_transmission_m122023_from_null USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_psp on ibobadm.psp_source_system_transmission_m122023_from_psp USING BTREE (company_id ASC, created_date ASC) ;
+CREATE INDEX psp_source_system_transmis_i4_m122023_from_qbdt on ibobadm.psp_source_system_transmission_m122023_from_qbdt USING BTREE (company_id ASC, created_date ASC) ;
+
+
+
+
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_as400 on ibobadm.psp_source_system_transmission_m012023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_cris on ibobadm.psp_source_system_transmission_m012023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_dflt on ibobadm.psp_source_system_transmission_m012023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_ews on ibobadm.psp_source_system_transmission_m012023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_null on ibobadm.psp_source_system_transmission_m012023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_psp on ibobadm.psp_source_system_transmission_m012023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m012023_from_qbdt on ibobadm.psp_source_system_transmission_m012023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_as400 on ibobadm.psp_source_system_transmission_m022023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_cris on ibobadm.psp_source_system_transmission_m022023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_dflt on ibobadm.psp_source_system_transmission_m022023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_ews on ibobadm.psp_source_system_transmission_m022023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_null on ibobadm.psp_source_system_transmission_m022023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_psp on ibobadm.psp_source_system_transmission_m022023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m022023_from_qbdt on ibobadm.psp_source_system_transmission_m022023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_as400 on ibobadm.psp_source_system_transmission_m032023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_cris on ibobadm.psp_source_system_transmission_m032023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_dflt on ibobadm.psp_source_system_transmission_m032023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_ews on ibobadm.psp_source_system_transmission_m032023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_null on ibobadm.psp_source_system_transmission_m032023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_psp on ibobadm.psp_source_system_transmission_m032023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m032023_from_qbdt on ibobadm.psp_source_system_transmission_m032023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_as400 on ibobadm.psp_source_system_transmission_m042023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_cris on ibobadm.psp_source_system_transmission_m042023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_dflt on ibobadm.psp_source_system_transmission_m042023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_ews on ibobadm.psp_source_system_transmission_m042023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_null on ibobadm.psp_source_system_transmission_m042023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_psp on ibobadm.psp_source_system_transmission_m042023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m042023_from_qbdt on ibobadm.psp_source_system_transmission_m042023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_as400 on ibobadm.psp_source_system_transmission_m052023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_cris on ibobadm.psp_source_system_transmission_m052023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_dflt on ibobadm.psp_source_system_transmission_m052023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_ews on ibobadm.psp_source_system_transmission_m052023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_null on ibobadm.psp_source_system_transmission_m052023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_psp on ibobadm.psp_source_system_transmission_m052023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m052023_from_qbdt on ibobadm.psp_source_system_transmission_m052023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_as400 on ibobadm.psp_source_system_transmission_m062023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_cris on ibobadm.psp_source_system_transmission_m062023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_dflt on ibobadm.psp_source_system_transmission_m062023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_ews on ibobadm.psp_source_system_transmission_m062023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_null on ibobadm.psp_source_system_transmission_m062023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_psp on ibobadm.psp_source_system_transmission_m062023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m062023_from_qbdt on ibobadm.psp_source_system_transmission_m062023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_as400 on ibobadm.psp_source_system_transmission_m072023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_cris on ibobadm.psp_source_system_transmission_m072023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_dflt on ibobadm.psp_source_system_transmission_m072023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_ews on ibobadm.psp_source_system_transmission_m072023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_null on ibobadm.psp_source_system_transmission_m072023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_psp on ibobadm.psp_source_system_transmission_m072023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m072023_from_qbdt on ibobadm.psp_source_system_transmission_m072023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_as400 on ibobadm.psp_source_system_transmission_m082023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_cris on ibobadm.psp_source_system_transmission_m082023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_dflt on ibobadm.psp_source_system_transmission_m082023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_ews on ibobadm.psp_source_system_transmission_m082023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_null on ibobadm.psp_source_system_transmission_m082023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_psp on ibobadm.psp_source_system_transmission_m082023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m082023_from_qbdt on ibobadm.psp_source_system_transmission_m082023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_as400 on ibobadm.psp_source_system_transmission_m092023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_cris on ibobadm.psp_source_system_transmission_m092023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_dflt on ibobadm.psp_source_system_transmission_m092023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_ews on ibobadm.psp_source_system_transmission_m092023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_null on ibobadm.psp_source_system_transmission_m092023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_psp on ibobadm.psp_source_system_transmission_m092023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m092023_from_qbdt on ibobadm.psp_source_system_transmission_m092023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_as400 on ibobadm.psp_source_system_transmission_m102023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_cris on ibobadm.psp_source_system_transmission_m102023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_dflt on ibobadm.psp_source_system_transmission_m102023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_ews on ibobadm.psp_source_system_transmission_m102023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_null on ibobadm.psp_source_system_transmission_m102023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_psp on ibobadm.psp_source_system_transmission_m102023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m102023_from_qbdt on ibobadm.psp_source_system_transmission_m102023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_as400 on ibobadm.psp_source_system_transmission_m112023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_cris on ibobadm.psp_source_system_transmission_m112023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_dflt on ibobadm.psp_source_system_transmission_m112023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_ews on ibobadm.psp_source_system_transmission_m112023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_null on ibobadm.psp_source_system_transmission_m112023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_psp on ibobadm.psp_source_system_transmission_m112023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m112023_from_qbdt on ibobadm.psp_source_system_transmission_m112023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_as400 on ibobadm.psp_source_system_transmission_m122023_from_as400 USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_cris on ibobadm.psp_source_system_transmission_m122023_from_cris USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_dflt on ibobadm.psp_source_system_transmission_m122023_from_dflt USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_ews on ibobadm.psp_source_system_transmission_m122023_from_ews USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_null on ibobadm.psp_source_system_transmission_m122023_from_null USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_psp on ibobadm.psp_source_system_transmission_m122023_from_psp USING BTREE (i_p_address ASC) ;
+CREATE INDEX psp_source_system_transmis_i5_m122023_from_qbdt on ibobadm.psp_source_system_transmission_m122023_from_qbdt USING BTREE (i_p_address ASC) ;
+
+
+
+
+CREATE INDEX psp_src_sys_tran_id_m012023_from_as400 on ibobadm.psp_source_system_transmission_m012023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m012023_from_cris on ibobadm.psp_source_system_transmission_m012023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m012023_from_dflt on ibobadm.psp_source_system_transmission_m012023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m012023_from_ews on ibobadm.psp_source_system_transmission_m012023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m012023_from_null on ibobadm.psp_source_system_transmission_m012023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m012023_from_psp on ibobadm.psp_source_system_transmission_m012023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m012023_from_qbdt on ibobadm.psp_source_system_transmission_m012023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m022023_from_as400 on ibobadm.psp_source_system_transmission_m022023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m022023_from_cris on ibobadm.psp_source_system_transmission_m022023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m022023_from_dflt on ibobadm.psp_source_system_transmission_m022023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m022023_from_ews on ibobadm.psp_source_system_transmission_m022023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m022023_from_null on ibobadm.psp_source_system_transmission_m022023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m022023_from_psp on ibobadm.psp_source_system_transmission_m022023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m022023_from_qbdt on ibobadm.psp_source_system_transmission_m022023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m032023_from_as400 on ibobadm.psp_source_system_transmission_m032023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m032023_from_cris on ibobadm.psp_source_system_transmission_m032023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m032023_from_dflt on ibobadm.psp_source_system_transmission_m032023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m032023_from_ews on ibobadm.psp_source_system_transmission_m032023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m032023_from_null on ibobadm.psp_source_system_transmission_m032023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m032023_from_psp on ibobadm.psp_source_system_transmission_m032023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m032023_from_qbdt on ibobadm.psp_source_system_transmission_m032023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m042023_from_as400 on ibobadm.psp_source_system_transmission_m042023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m042023_from_cris on ibobadm.psp_source_system_transmission_m042023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m042023_from_dflt on ibobadm.psp_source_system_transmission_m042023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m042023_from_ews on ibobadm.psp_source_system_transmission_m042023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m042023_from_null on ibobadm.psp_source_system_transmission_m042023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m042023_from_psp on ibobadm.psp_source_system_transmission_m042023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m042023_from_qbdt on ibobadm.psp_source_system_transmission_m042023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m052023_from_as400 on ibobadm.psp_source_system_transmission_m052023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m052023_from_cris on ibobadm.psp_source_system_transmission_m052023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m052023_from_dflt on ibobadm.psp_source_system_transmission_m052023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m052023_from_ews on ibobadm.psp_source_system_transmission_m052023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m052023_from_null on ibobadm.psp_source_system_transmission_m052023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m052023_from_psp on ibobadm.psp_source_system_transmission_m052023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m052023_from_qbdt on ibobadm.psp_source_system_transmission_m052023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m062023_from_as400 on ibobadm.psp_source_system_transmission_m062023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m062023_from_cris on ibobadm.psp_source_system_transmission_m062023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m062023_from_dflt on ibobadm.psp_source_system_transmission_m062023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m062023_from_ews on ibobadm.psp_source_system_transmission_m062023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m062023_from_null on ibobadm.psp_source_system_transmission_m062023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m062023_from_psp on ibobadm.psp_source_system_transmission_m062023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m062023_from_qbdt on ibobadm.psp_source_system_transmission_m062023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m072023_from_as400 on ibobadm.psp_source_system_transmission_m072023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m072023_from_cris on ibobadm.psp_source_system_transmission_m072023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m072023_from_dflt on ibobadm.psp_source_system_transmission_m072023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m072023_from_ews on ibobadm.psp_source_system_transmission_m072023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m072023_from_null on ibobadm.psp_source_system_transmission_m072023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m072023_from_psp on ibobadm.psp_source_system_transmission_m072023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m072023_from_qbdt on ibobadm.psp_source_system_transmission_m072023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m082023_from_as400 on ibobadm.psp_source_system_transmission_m082023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m082023_from_cris on ibobadm.psp_source_system_transmission_m082023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m082023_from_dflt on ibobadm.psp_source_system_transmission_m082023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m082023_from_ews on ibobadm.psp_source_system_transmission_m082023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m082023_from_null on ibobadm.psp_source_system_transmission_m082023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m082023_from_psp on ibobadm.psp_source_system_transmission_m082023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m082023_from_qbdt on ibobadm.psp_source_system_transmission_m082023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m092023_from_as400 on ibobadm.psp_source_system_transmission_m092023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m092023_from_cris on ibobadm.psp_source_system_transmission_m092023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m092023_from_dflt on ibobadm.psp_source_system_transmission_m092023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m092023_from_ews on ibobadm.psp_source_system_transmission_m092023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m092023_from_null on ibobadm.psp_source_system_transmission_m092023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m092023_from_psp on ibobadm.psp_source_system_transmission_m092023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m092023_from_qbdt on ibobadm.psp_source_system_transmission_m092023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m102023_from_as400 on ibobadm.psp_source_system_transmission_m102023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m102023_from_cris on ibobadm.psp_source_system_transmission_m102023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m102023_from_dflt on ibobadm.psp_source_system_transmission_m102023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m102023_from_ews on ibobadm.psp_source_system_transmission_m102023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m102023_from_null on ibobadm.psp_source_system_transmission_m102023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m102023_from_psp on ibobadm.psp_source_system_transmission_m102023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m102023_from_qbdt on ibobadm.psp_source_system_transmission_m102023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m112023_from_as400 on ibobadm.psp_source_system_transmission_m112023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m112023_from_cris on ibobadm.psp_source_system_transmission_m112023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m112023_from_dflt on ibobadm.psp_source_system_transmission_m112023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m112023_from_ews on ibobadm.psp_source_system_transmission_m112023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m112023_from_null on ibobadm.psp_source_system_transmission_m112023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m112023_from_psp on ibobadm.psp_source_system_transmission_m112023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m112023_from_qbdt on ibobadm.psp_source_system_transmission_m112023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+CREATE INDEX psp_src_sys_tran_id_m122023_from_as400 on ibobadm.psp_source_system_transmission_m122023_from_as400 USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m122023_from_cris on ibobadm.psp_source_system_transmission_m122023_from_cris USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m122023_from_dflt on ibobadm.psp_source_system_transmission_m122023_from_dflt USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m122023_from_ews on ibobadm.psp_source_system_transmission_m122023_from_ews USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m122023_from_null on ibobadm.psp_source_system_transmission_m122023_from_null USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m122023_from_psp on ibobadm.psp_source_system_transmission_m122023_from_psp USING BTREE (transmission_identifier ASC) ;
+CREATE INDEX psp_src_sys_tran_id_m122023_from_qbdt on ibobadm.psp_source_system_transmission_m122023_from_qbdt USING BTREE (transmission_identifier ASC) ;
+
+
+
+
+CREATE INDEX psp_source_system_transmis_i2_m012023 	ON ONLY ibobadm.psp_source_system_transmission_m012023  USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m022023	ON ONLY ibobadm.psp_source_system_transmission_m022023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m032023	ON ONLY ibobadm.psp_source_system_transmission_m032023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m042023	ON ONLY ibobadm.psp_source_system_transmission_m042023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m052023	ON ONLY ibobadm.psp_source_system_transmission_m052023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m062023	ON ONLY ibobadm.psp_source_system_transmission_m062023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m072023	ON ONLY ibobadm.psp_source_system_transmission_m072023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m082023	ON ONLY ibobadm.psp_source_system_transmission_m082023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m092023	ON ONLY ibobadm.psp_source_system_transmission_m092023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m102023	ON ONLY ibobadm.psp_source_system_transmission_m102023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m112023	ON ONLY ibobadm.psp_source_system_transmission_m112023 USING BTREE (created_date ASC);
+CREATE INDEX psp_source_system_transmis_i2_m122023	ON ONLY ibobadm.psp_source_system_transmission_m122023 USING BTREE (created_date ASC);
+
+CREATE INDEX psp_source_system_transmis_i4_m012023 	ON ONLY ibobadm.psp_source_system_transmission_m012023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m022023	ON ONLY ibobadm.psp_source_system_transmission_m022023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m032023	ON ONLY ibobadm.psp_source_system_transmission_m032023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m042023	ON ONLY ibobadm.psp_source_system_transmission_m042023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m052023	ON ONLY ibobadm.psp_source_system_transmission_m052023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m062023	ON ONLY ibobadm.psp_source_system_transmission_m062023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m072023	ON ONLY ibobadm.psp_source_system_transmission_m072023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m082023	ON ONLY ibobadm.psp_source_system_transmission_m082023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m092023	ON ONLY ibobadm.psp_source_system_transmission_m092023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m102023	ON ONLY ibobadm.psp_source_system_transmission_m102023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m112023	ON ONLY ibobadm.psp_source_system_transmission_m112023 USING BTREE (company_id ASC, created_date ASC);
+CREATE INDEX psp_source_system_transmis_i4_m122023	ON ONLY ibobadm.psp_source_system_transmission_m122023 USING BTREE (company_id ASC, created_date ASC);
+
+
+CREATE INDEX psp_source_system_transmis_i5_m012023 	ON ONLY ibobadm.psp_source_system_transmission_m012023  USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m022023	ON ONLY ibobadm.psp_source_system_transmission_m022023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m032023	ON ONLY ibobadm.psp_source_system_transmission_m032023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m042023	ON ONLY ibobadm.psp_source_system_transmission_m042023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m052023	ON ONLY ibobadm.psp_source_system_transmission_m052023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m062023	ON ONLY ibobadm.psp_source_system_transmission_m062023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m072023	ON ONLY ibobadm.psp_source_system_transmission_m072023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m082023	ON ONLY ibobadm.psp_source_system_transmission_m082023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m092023	ON ONLY ibobadm.psp_source_system_transmission_m092023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m102023	ON ONLY ibobadm.psp_source_system_transmission_m102023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m112023	ON ONLY ibobadm.psp_source_system_transmission_m112023 USING BTREE (i_p_address ASC);
+CREATE INDEX psp_source_system_transmis_i5_m122023	ON ONLY ibobadm.psp_source_system_transmission_m122023 USING BTREE (i_p_address ASC);
+
+
+CREATE INDEX psp_src_sys_tran_id_m012023 	ON ONLY ibobadm.psp_source_system_transmission_m012023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m022023	ON ONLY ibobadm.psp_source_system_transmission_m022023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m032023	ON ONLY ibobadm.psp_source_system_transmission_m032023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m042023	ON ONLY ibobadm.psp_source_system_transmission_m042023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m052023	ON ONLY ibobadm.psp_source_system_transmission_m052023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m062023	ON ONLY ibobadm.psp_source_system_transmission_m062023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m072023	ON ONLY ibobadm.psp_source_system_transmission_m072023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m082023	ON ONLY ibobadm.psp_source_system_transmission_m082023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m092023	ON ONLY ibobadm.psp_source_system_transmission_m092023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m102023	ON ONLY ibobadm.psp_source_system_transmission_m102023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m112023	ON ONLY ibobadm.psp_source_system_transmission_m112023 USING BTREE (transmission_identifier ASC);
+CREATE INDEX psp_src_sys_tran_id_m122023	ON ONLY ibobadm.psp_source_system_transmission_m122023 USING BTREE (transmission_identifier ASC);
+
+
+
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_as400;
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_cris;
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_dflt;
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_ews;
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_null;
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_psp;
+ alter index psp_src_sys_tran_id_m012023 attach partition ibobadm.psp_src_sys_tran_id_m012023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_as400;
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_cris;
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_dflt;
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_ews;
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_null;
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_psp;
+ alter index psp_src_sys_tran_id_m022023 attach partition ibobadm.psp_src_sys_tran_id_m022023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_as400;
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_cris;
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_dflt;
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_ews;
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_null;
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_psp;
+ alter index psp_src_sys_tran_id_m032023 attach partition ibobadm.psp_src_sys_tran_id_m032023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_as400;
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_cris;
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_dflt;
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_ews;
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_null;
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_psp;
+ alter index psp_src_sys_tran_id_m042023 attach partition ibobadm.psp_src_sys_tran_id_m042023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_as400;
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_cris;
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_dflt;
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_ews;
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_null;
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_psp;
+ alter index psp_src_sys_tran_id_m052023 attach partition ibobadm.psp_src_sys_tran_id_m052023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_as400;
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_cris;
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_dflt;
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_ews;
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_null;
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_psp;
+ alter index psp_src_sys_tran_id_m062023 attach partition ibobadm.psp_src_sys_tran_id_m062023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_as400;
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_cris;
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_dflt;
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_ews;
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_null;
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_psp;
+ alter index psp_src_sys_tran_id_m072023 attach partition ibobadm.psp_src_sys_tran_id_m072023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_as400;
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_cris;
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_dflt;
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_ews;
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_null;
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_psp;
+ alter index psp_src_sys_tran_id_m082023 attach partition ibobadm.psp_src_sys_tran_id_m082023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_as400;
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_cris;
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_dflt;
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_ews;
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_null;
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_psp;
+ alter index psp_src_sys_tran_id_m092023 attach partition ibobadm.psp_src_sys_tran_id_m092023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_as400;
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_cris;
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_dflt;
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_ews;
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_null;
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_psp;
+ alter index psp_src_sys_tran_id_m102023 attach partition ibobadm.psp_src_sys_tran_id_m102023_from_qbdt;
+ 
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_as400;
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_cris;
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_dflt;
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_ews;
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_null;
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_psp;
+ alter index psp_src_sys_tran_id_m112023 attach partition ibobadm.psp_src_sys_tran_id_m112023_from_qbdt;
+
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_as400;
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_cris;
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_dflt;
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_ews;
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_null;
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_psp;
+ alter index psp_src_sys_tran_id_m122023 attach partition ibobadm.psp_src_sys_tran_id_m122023_from_qbdt;
+
+
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_as400;
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_cris;
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_dflt;
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_ews;
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_null;
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_psp;
+ alter index psp_source_system_transmis_i5_m012023 attach partition ibobadm.psp_source_system_transmis_i5_m012023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_as400;
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_cris;
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_dflt;
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_ews;
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_null;
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_psp;
+ alter index psp_source_system_transmis_i5_m022023 attach partition ibobadm.psp_source_system_transmis_i5_m022023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_as400;
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_cris;
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_dflt;
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_ews;
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_null;
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_psp;
+ alter index psp_source_system_transmis_i5_m032023 attach partition ibobadm.psp_source_system_transmis_i5_m032023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_as400;
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_cris;
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_dflt;
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_ews;
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_null;
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_psp;
+ alter index psp_source_system_transmis_i5_m042023 attach partition ibobadm.psp_source_system_transmis_i5_m042023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_as400;
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_cris;
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_dflt;
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_ews;
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_null;
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_psp;
+ alter index psp_source_system_transmis_i5_m052023 attach partition ibobadm.psp_source_system_transmis_i5_m052023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_as400;
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_cris;
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_dflt;
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_ews;
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_null;
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_psp;
+ alter index psp_source_system_transmis_i5_m062023 attach partition ibobadm.psp_source_system_transmis_i5_m062023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_as400;
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_cris;
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_dflt;
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_ews;
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_null;
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_psp;
+ alter index psp_source_system_transmis_i5_m072023 attach partition ibobadm.psp_source_system_transmis_i5_m072023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_as400;
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_cris;
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_dflt;
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_ews;
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_null;
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_psp;
+ alter index psp_source_system_transmis_i5_m082023 attach partition ibobadm.psp_source_system_transmis_i5_m082023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_as400;
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_cris;
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_dflt;
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_ews;
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_null;
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_psp;
+ alter index psp_source_system_transmis_i5_m092023 attach partition ibobadm.psp_source_system_transmis_i5_m092023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_as400;
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_cris;
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_dflt;
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_ews;
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_null;
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_psp;
+ alter index psp_source_system_transmis_i5_m102023 attach partition ibobadm.psp_source_system_transmis_i5_m102023_from_qbdt;
+ 
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_as400;
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_cris;
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_dflt;
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_ews;
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_null;
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_psp;
+ alter index psp_source_system_transmis_i5_m112023 attach partition ibobadm.psp_source_system_transmis_i5_m112023_from_qbdt;
+
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_as400;
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_cris;
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_dflt;
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_ews;
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_null;
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_psp;
+ alter index psp_source_system_transmis_i5_m122023 attach partition ibobadm.psp_source_system_transmis_i5_m122023_from_qbdt;
+
+
+
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_as400;
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_cris;
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_dflt;
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_ews;
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_null;
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_psp;
+ alter index psp_source_system_transmis_i4_m012023 attach partition ibobadm.psp_source_system_transmis_i4_m012023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_as400;
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_cris;
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_dflt;
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_ews;
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_null;
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_psp;
+ alter index psp_source_system_transmis_i4_m022023 attach partition ibobadm.psp_source_system_transmis_i4_m022023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_as400;
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_cris;
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_dflt;
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_ews;
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_null;
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_psp;
+ alter index psp_source_system_transmis_i4_m032023 attach partition ibobadm.psp_source_system_transmis_i4_m032023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_as400;
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_cris;
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_dflt;
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_ews;
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_null;
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_psp;
+ alter index psp_source_system_transmis_i4_m042023 attach partition ibobadm.psp_source_system_transmis_i4_m042023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_as400;
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_cris;
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_dflt;
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_ews;
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_null;
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_psp;
+ alter index psp_source_system_transmis_i4_m052023 attach partition ibobadm.psp_source_system_transmis_i4_m052023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_as400;
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_cris;
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_dflt;
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_ews;
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_null;
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_psp;
+ alter index psp_source_system_transmis_i4_m062023 attach partition ibobadm.psp_source_system_transmis_i4_m062023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_as400;
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_cris;
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_dflt;
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_ews;
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_null;
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_psp;
+ alter index psp_source_system_transmis_i4_m072023 attach partition ibobadm.psp_source_system_transmis_i4_m072023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_as400;
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_cris;
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_dflt;
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_ews;
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_null;
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_psp;
+ alter index psp_source_system_transmis_i4_m082023 attach partition ibobadm.psp_source_system_transmis_i4_m082023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_as400;
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_cris;
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_dflt;
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_ews;
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_null;
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_psp;
+ alter index psp_source_system_transmis_i4_m092023 attach partition ibobadm.psp_source_system_transmis_i4_m092023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_as400;
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_cris;
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_dflt;
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_ews;
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_null;
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_psp;
+ alter index psp_source_system_transmis_i4_m102023 attach partition ibobadm.psp_source_system_transmis_i4_m102023_from_qbdt;
+ 
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_as400;
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_cris;
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_dflt;
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_ews;
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_null;
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_psp;
+ alter index psp_source_system_transmis_i4_m112023 attach partition ibobadm.psp_source_system_transmis_i4_m112023_from_qbdt;
+
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_as400;
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_cris;
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_dflt;
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_ews;
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_null;
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_psp;
+ alter index psp_source_system_transmis_i4_m122023 attach partition ibobadm.psp_source_system_transmis_i4_m122023_from_qbdt;
+
+
+
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_as400;
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_cris;
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_dflt;
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_ews;
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_null;
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_psp;
+ alter index psp_source_system_transmis_i2_m012023 attach partition ibobadm.psp_source_system_transmis_i2_m012023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_as400;
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_cris;
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_dflt;
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_ews;
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_null;
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_psp;
+ alter index psp_source_system_transmis_i2_m022023 attach partition ibobadm.psp_source_system_transmis_i2_m022023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_as400;
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_cris;
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_dflt;
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_ews;
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_null;
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_psp;
+ alter index psp_source_system_transmis_i2_m032023 attach partition ibobadm.psp_source_system_transmis_i2_m032023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_as400;
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_cris;
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_dflt;
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_ews;
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_null;
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_psp;
+ alter index psp_source_system_transmis_i2_m042023 attach partition ibobadm.psp_source_system_transmis_i2_m042023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_as400;
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_cris;
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_dflt;
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_ews;
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_null;
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_psp;
+ alter index psp_source_system_transmis_i2_m052023 attach partition ibobadm.psp_source_system_transmis_i2_m052023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_as400;
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_cris;
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_dflt;
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_ews;
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_null;
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_psp;
+ alter index psp_source_system_transmis_i2_m062023 attach partition ibobadm.psp_source_system_transmis_i2_m062023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_as400;
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_cris;
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_dflt;
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_ews;
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_null;
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_psp;
+ alter index psp_source_system_transmis_i2_m072023 attach partition ibobadm.psp_source_system_transmis_i2_m072023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_as400;
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_cris;
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_dflt;
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_ews;
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_null;
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_psp;
+ alter index psp_source_system_transmis_i2_m082023 attach partition ibobadm.psp_source_system_transmis_i2_m082023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_as400;
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_cris;
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_dflt;
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_ews;
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_null;
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_psp;
+ alter index psp_source_system_transmis_i2_m092023 attach partition ibobadm.psp_source_system_transmis_i2_m092023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_as400;
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_cris;
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_dflt;
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_ews;
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_null;
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_psp;
+ alter index psp_source_system_transmis_i2_m102023 attach partition ibobadm.psp_source_system_transmis_i2_m102023_from_qbdt;
+ 
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_as400;
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_cris;
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_dflt;
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_ews;
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_null;
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_psp;
+ alter index psp_source_system_transmis_i2_m112023 attach partition ibobadm.psp_source_system_transmis_i2_m112023_from_qbdt;
+
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_as400;
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_cris;
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_dflt;
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_ews;
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_null;
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_psp;
+ alter index psp_source_system_transmis_i2_m122023 attach partition ibobadm.psp_source_system_transmis_i2_m122023_from_qbdt;
+
+
+
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m012023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m022023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m032023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m042023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m052023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m062023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m072023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m082023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m092023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m102023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m112023;
+alter index psp_source_system_transmis_i2 attach partition ibobadm.psp_source_system_transmis_i2_m122023;
+
+
+
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m012023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m022023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m032023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m042023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m052023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m062023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m072023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m082023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m092023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m102023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m112023;
+alter index psp_source_system_transmis_i4 attach partition ibobadm.psp_source_system_transmis_i4_m122023;
+
+
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m012023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m022023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m032023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m042023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m052023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m062023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m072023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m082023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m092023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m102023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m112023;
+alter index psp_source_system_transmis_i5 attach partition ibobadm.psp_source_system_transmis_i5_m122023;
+
+
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m012023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m022023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m032023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m042023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m052023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m062023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m072023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m082023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m092023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m102023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m112023;
+alter index psp_src_sys_tran_id attach partition ibobadm.psp_src_sys_tran_id_m122023;
+
+

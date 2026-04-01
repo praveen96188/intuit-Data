@@ -1,0 +1,108 @@
+{
+  "id": "pspmock",
+  "description": "PSP Mock Client Cluster",
+  "bu": "SBSEG",
+  "dbName": "pspmockapg",
+  "multiAZ": "false",
+  "region": "us-west-2",
+  "readersPerCluster": 0,
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "90",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow":"05:00-05:30",
+  "maintenanceWindow":"Mon:07:00-Mon:07:30",
+  "backupRetention" : "1",
+  "clusterParameterGroupRef": "pspmock:mockclient-pg-14-cluster",
+  "instanceParameterGroupRef": "pspmock:mockclient-pg-14-instance",
+  "subnetGroupRef": "pspmock:mockdbsubnetgrp",
+  "securityGroupRef" : "pspmock:mockdbsecuritygrp",
+  "engineMajorVersion" : "14",
+  "engineMinorVersion" : "3",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBGSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "dev",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-mockclient",      
+      "clusters": [
+        {
+          "id": "mock",
+          "engineMajorVersion" : "14",
+          "engineMinorVersion" : "3",
+          "instanceType": "r6g.4xlarge"
+        }
+      ]
+    }
+  ]
+   }
+  ],
+ "metrics": {
+    "ipsMetrics": [
+      {
+        "metricName": [
+          "num_active_connections",
+          "active_conn_by_wait_event",
+          "long_running_transactions",
+          "locks",
+          "vacuum_efficiency",
+          "global_replication_lag",
+          "uptime"
+        ],
+        "schedule": "*/5 * * * *"
+      },
+      {
+        "metricName": [
+          "buffer_cache_by_database", 
+          "buffer_cache_breakup" 
+        ],
+        "schedule": "0 9 * * *"
+      },
+      {
+        "metricName": [
+          "growth_trends_by_db",
+          "growth_trends_by_schema",
+          "growth_trends_by_object"
+        ],
+        "schedule": "0 6 * * *"
+      }
+    ],
+    "customMetrics": [
+      {
+        "metricName": [
+          "num_active_connections"
+        ],
+        "schedule": "*/5 * * * *"
+      }
+    ],
+    "splunkMetrics": [
+      {
+        "metricName": [
+          "top_sql"
+        ],
+        "schedule": "*/5 * * * *"
+      },
+      {
+        "metricName": [
+          "vacuum_run_history",
+          "list_extentions",
+          "table_bloat",
+          "index_bloat",
+          "list_unused_indexes",
+          "qpm_data"
+        ],
+        "schedule": "0 0 * * *"
+      }
+    ]
+   }
+}

@@ -1,0 +1,132 @@
+{
+  "id": "quickstart-ds",
+  "description": "IPS Aurora QuickStart Data Store",
+  "bu": "CMS || CTO || DP || IFDP || MNT || OIL || PCG || PI || SBSEG || T4I || TAX || TTO",
+  "instanceType": "t3.medium",
+  "dbName": "app",
+  "multiAZ": "true",
+  "region": "us-west-2",
+  "readersPerCluster": 1,
+  "deployMonitoring": "false",
+  "enableEnhancedMonitoring": "true",
+  "tags": {
+    "intuit:billing:component": "",
+    "intuit:billing:appenv": "",
+    "intuit:billing:service_assetid": "",
+    "intuit:billing:bu": "",
+    "intuit:billing:fp": ""
+  },
+  "sharedResources" : {
+    "parameterGroups" : [
+      {
+        "id" : "clusterpg",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "11",
+        "engineMinorVersion" : "9",
+        "parameters" : {
+          "timezone" : "UTC",
+          "rds.force_ssl": "true",
+          "rds.enable_plan_management": "1",
+          "autovacuum_vacuum_cost_delay" : "20"
+        }
+      },
+      {
+        "id" : "instancepg",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "11",
+        "engineMinorVersion" : "9",
+        "parameters" : {
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "log_min_duration_statement" : "200",
+          "log_temp_files": "0",
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true"
+        }
+      }
+    ],
+    "dbSubnetGroups" : [
+      {
+        "id" : "dbsubnetgroup",
+        "subnetType" : "DATA"
+      }
+    ],
+    "securityGroups" : [
+      {
+        "id" : "dbsecuritygroup",
+        "description" : "Allow incoming traffic from within vpc",
+        "inboundRules" : [
+          {
+            "cidr": "10.0.0.0/8",
+            "port" : "5432",
+            "protocol": "tcp"
+          }
+        ]
+      }
+    ]
+  },
+  "clusterParameterGroupRef": "quickstart-ds:clusterpg",
+  "instanceParameterGroupRef": "quickstart-ds:instancepg",
+  "subnetGroupRef": "quickstart-ds:dbsubnetgroup",
+  "securityGroupRef" : "quickstart-ds:dbsecuritygroup",
+  "environments": [
+    {
+      "name": "dev",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary",
+          "clusters": [
+            {
+              "id": "c1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "ipsMetrics": [
+      {
+        "metricName": [
+          "num_active_connections",
+          "buffer_cache_by_database",
+          "buffer_cache_breakup",
+          "active_conn_by_wait_event",
+          "long_running_transactions",
+          "locks",
+          "growth_trends_by_db",
+          "growth_trends_by_schema",
+          "growth_trends_by_object",
+          "vacuum_efficiency",
+          "global_replication_lag",
+          "uptime"
+        ],
+        "schedule": "*/1 * * * *"
+      }
+    ],
+    "customMetrics": [
+      {
+        "metricName": [
+          "num_active_connections"
+        ],
+        "schedule": "*/5 * * * *"
+      }
+    ],
+    "splunkMetrics": [
+      {
+        "metricName": [
+          "vacuum_run_history",
+          "list_extentions",
+          "list_unused_indexes",
+          "qpm_data",
+          "top_sql",
+          "table_bloat",
+          "index_bloat"
+        ],
+        "schedule": "0 * * * *"
+      }
+    ]
+  }
+}

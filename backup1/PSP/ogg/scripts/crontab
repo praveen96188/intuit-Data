@@ -1,0 +1,12 @@
+##  Goldengate monitoring
+*/30 * * * * cd /u01/ogg/scripts; ./monitor_ggserr.sh aws 1>/dev/null 2>&1
+58 23 * * * cd /u01/ogg/scripts; ./rotate_ggserr.sh aws 1>/dev/null 2>&1
+*/5 * * * * cd /u01/ogg/scripts; ./monitor_gg_sync_mon.sh 10 pspsys01 PSPUATUW 1>/dev/null 2>&1
+*/5 * * * * cd /u01/ogg/scripts; ./monitor_gg_sync_ib.sh 10 pspsysib PSPUATIB 1>/dev/null 2>&1
+## collect GG lag data
+*/5 * * * * /u01/ogg/scripts/gg_status.sh > /dev/null 2>&1
+*/3 * * * * cd /u01/ogg/scripts; ./chk_active_connection.sh 1>/dev/null 2>&1
+* * * * * cd /u01/ogg/scripts; ./db_performance.sh 1>/dev/null 2>&1
+
+* * * * * cd /u01/ogg/scripts; ./chk_active_connection.sh pspuatuw 1>/dev/null 2>&1
+* * * * * cd /u01/ogg/scripts; ./chk_active_connection.sh pspuatib 1>/dev/null 2>&1

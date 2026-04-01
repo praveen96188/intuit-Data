@@ -1,0 +1,50 @@
+{
+  "id": "psp",
+  "description": "PSP Archival Aurora DB Cluster",
+  "bu": "SBSEG",
+  "dbName": "prodarcdb",
+  "multiAZ": "false",
+  "region": "us-west-2",
+  "readersPerCluster": 0,
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow":"05:00-05:30",
+  "maintenanceWindow":"Mon:07:00-Mon:07:30",
+  "backupRetention" : "7",
+  "clusterParameterGroupRef": "psp:arc-pg-13-cluster",
+  "instanceParameterGroupRef": "psp:arc-pg-13-instance",
+  "subnetGroupRef": "psp:arcdb-subnet",
+  "securityGroupRef" : "psp:arcdb-sg",
+  "engineMajorVersion" : "13",
+  "engineMinorVersion" : "4",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "prod",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "prod",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "PROD",
+      "groups": [
+        {
+          "name": "primary-arc",      
+      "clusters": [
+        {
+          "id": "arc",
+          "engineMajorVersion" : "13",
+          "engineMinorVersion" : "4",
+          "instanceType": "r6g.xlarge"
+        }
+      ]
+    }
+  ]
+   }
+  ]
+}

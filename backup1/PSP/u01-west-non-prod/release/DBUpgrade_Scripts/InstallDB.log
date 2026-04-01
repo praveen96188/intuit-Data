@@ -1,0 +1,215 @@
+SQL> 
+SQL> @Upgrade.sql
+SQL> SQL>
+SP2-0042: unknown command "SQL>" - rest of line ignored.
+SQL> SQL> alter session set current_schema=pspadm;
+SP2-0734: unknown command beginning "SQL> alter..." - rest of line ignored.
+SQL> 
+SQL> Session altered.
+SP2-0734: unknown command beginning "Session al..." - rest of line ignored.
+SQL> 
+SQL> Elapsed: 00:00:00.00
+SP2-0734: unknown command beginning "Elapsed: 0..." - rest of line ignored.
+SP2-0044: For a list of known commands enter HELP
+and to leave enter EXIT.
+SQL> SQL>
+SP2-0042: unknown command "SQL>" - rest of line ignored.
+SQL> SQL> declare
+SP2-0734: unknown command beginning "SQL> decla..." - rest of line ignored.
+SQL>   2   rec_count number;
+SQL>   3   upgraderec_count number;
+SQL>   4   sql_str   varchar2(100);
+SQL>   5  begin
+SQL>   6  select count(*) into rec_count from PSP_APPLIED_DATABASE_PATCH where DATABASE_PATCH_VERSION = '002.023.002.001' and DATABASE_PATCH_TYPE_CD='DataMigration';
+SQL>   7  select count(*) into upgraderec_count from PSP_APPLIED_DATABASE_PATCH where DATABASE_PATCH_VERSION = '002.023.002.001' and DATABASE_PATCH_TYPE_CD='SchemaUpgrade';
+SQL>   8  select
+SQL>   9  decode(rec_count,0,'@DBUpgrade_002.023.002.001_Before.sql',' ')
+SQL>  10   into sql_str from dual;
+SQL>  11  dbms_output.put_line(sql_str);
+SQL>  12
+ 12* 
+SQL>  13  select
+SQL>  14   decode(upgraderec_count,0,'@DBUpgrade_002.023.002.001.sql',' ')
+SQL>  15   into sql_str from dual;
+SQL>  16  dbms_output.put_line(sql_str);
+SQL>  17
+ 17* 
+SQL>  18  select
+SQL>  19   decode(rec_count,0,'@DBUpgrade_002.023.002.001_After.sql',' ')
+SQL>  20   into sql_str from dual;
+SQL>  21  dbms_output.put_line(sql_str);
+SQL>  22
+ 22* 
+SQL>  23  if(rec_count = 0) then
+SQL>  24  insert into PSP_APPLIED_DATABASE_PATCH (APPLIED_DATABASE_PATCH_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIED_DATE,DATABASE_PATCH_VERSION,DATABASE_PATCH_TYPE_CD)
+SQL>  25  values ('aff8dfda-ef3f-4608-9829-c5201d17f5db',0,'System',SYSTIMESTAMP, SYSTIMESTAMP, '002.023.002.001','DataMigration') ;
+SQL>  26
+ 26* 
+SQL>  27  COMMIT;
+SQL>  28  end if;
+SQL>  29  if(upgraderec_count = 0) then
+SQL>  30  insert into PSP_APPLIED_DATABASE_PATCH (APPLIED_DATABASE_PATCH_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIED_DATE,DATABASE_PATCH_VERSION,DATABASE_PATCH_TYPE_CD)
+SQL>  31  values ('d14ca32d-607c-4d7a-bfea-c41cfca80563',0,'System',SYSTIMESTAMP, SYSTIMESTAMP, '002.023.002.001','SchemaUpgrade') ;
+SQL>  32
+ 32* 
+SQL>  33  COMMIT;
+SQL>  34  end if;
+SQL>  35  end;
+SQL>  36  /
+SQL> @DBUpgrade_002.023.002.001_Before.sql
+SQL> --
+SQL> -- This script will be executed BEFORE the automatically generated
+SQL> -- C:\dt-payroll-svc\app\PSE\domain\src\main\model\DBUpgrade_002.023.002.001.sql
+SQL> --
+SQL> -- Developers can hand code logic here for data migration purposes
+SQL> --
+SQL> @DBUpgrade_002.023.002.001.sql
+SQL> --------------------------------------------------------------------------
+SQL> -- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+SQL> --
+SQL> -- Please review the script before using it to make sure it won't
+SQL> -- cause any unacceptable data loss.
+SQL> --
+SQL> -- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL
+SQL> -- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_COMPANY_EVENT_EMAIL
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.02
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_EVENT_AS400_SYNC
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_FSET_FILING_DETAIL
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_PAYMENT_BATCH_ASSOC
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_EDI_PAYMENT_DETAIL
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.00
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_EFTPS_PAYMENT_DETAIL
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_TAX_PAYMENT_ON_HOLD_REASON
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_TP401K_BATCH_PAYCHECK
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.00
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_TP401K_PAYCHECK
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_VOIDED_CHECK
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_WC_PAYCHECK
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.00
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_TRANSACTION_OFFLOAD_BATCH
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> Prompt Column COMPANY_FK;
+Column COMPANY_FK
+SQL> ALTER TABLE PSP_PAYSTUB
+  2   ADD (COMPANY_FK  VARCHAR2(255 CHAR));
+
+Table altered.
+
+Elapsed: 00:00:00.01
+SQL> 
+SQL> PROMPT finished DBUpgrade_002.023.002.001.sql
+finished DBUpgrade_002.023.002.001.sql
+SQL> @DBUpgrade_002.023.002.001_After.sql
+SQL> --
+SQL> -- This script will be executed AFTER the automatically generated
+SQL> -- C:\dt-payroll-svc\app\PSE\domain\src\main\model\DBUpgrade_002.023.002.001.sql
+SQL> --
+SQL> -- Developers can hand code logic here for data migration purposes
+SQL> --
+SQL> 
+SQL> PL/SQL procedure successfully completed.
+SP2-0734: unknown command beginning "PL/SQL pro..." - rest of line ignored.
+SQL> 
+SQL> Elapsed: 00:00:00.01
+SP2-0734: unknown command beginning "Elapsed: 0..." - rest of line ignored.
+SQL> SQL>
+SP2-0042: unknown command "SQL>" - rest of line ignored.
+SQL> SQL> spool off
+SP2-0734: unknown command beginning "SQL> spool..." - rest of line ignored.
+SP2-0044: For a list of known commands enter HELP
+and to leave enter EXIT.
+SQL> 
+SQL> spool off

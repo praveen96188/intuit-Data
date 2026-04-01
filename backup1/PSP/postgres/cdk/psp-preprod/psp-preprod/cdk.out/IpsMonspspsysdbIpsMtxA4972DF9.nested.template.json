@@ -1,0 +1,1363 @@
+{
+ "Parameters": {
+  "SsmParameterValueipsrelationalparametersspspspspsysdbReaderEnptsC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/spsp/spsp-sys-db/ReaderEnpts"
+  },
+  "SsmParameterValueipsrelationalparametersuswest2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-west-2/ConfigBucket"
+  },
+  "SsmParameterValueipsrelationalparametersuswest2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-west-2/ManagedBucket"
+  },
+  "lambdaLayerParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/custom/ips/aurora/layerArn"
+  },
+  "psycopgLayerParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/custom/ips/aurora/psycopgLayerArn"
+  },
+  "SsmParameterValueipsrelationalparametersuswest2LrRoleC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-west-2/LrRole"
+  }
+ },
+ "Resources": {
+  "softwareamazonawscdkserviceslogsILogGroupJsiiProxy6ea604b4LogRetention96BCA16C": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "spsp-sys-dbwavefront_metricsMetrics",
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/software.amazon.awscdk.services.logs.ILogGroup$Jsii$Proxy@6ea604b4LogRetention/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-west-2",
+     "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+    },
+    "Role": {
+     "Ref": "SsmParameterValueipsrelationalparametersuswest2LrRoleC96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "wavefrontmetrics60F1628D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuswest2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.9.40/wavefront_metrics.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "secret_names": "/ips/relational/secrets/spsp-sys-db/monUser",
+      "cluster_id": "spsp-sys-db",
+      "account_id": "152430470825",
+      "port": "5432",
+      "last_digit": "5",
+      "host": {
+       "Ref": "SsmParameterValueipsrelationalparametersspspspspsysdbReaderEnptsC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "stack_name": {
+       "Ref": "AWS::StackName"
+      }
+     }
+    },
+    "FunctionName": "spsp-sys-db-wavefront_metrics",
+    "Handler": "wavefront_metrics.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     },
+     {
+      "Ref": "psycopgLayerParameter"
+     }
+    ],
+    "LoggingConfig": {
+     "LogGroup": "spsp-sys-dbwavefront_metricsMetrics"
+    },
+    "MemorySize": 128,
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:us-west-2:RDStoOIMRole"
+    },
+    "Runtime": "python3.9",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-02eb1ccd0822b6f9e:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      "subnet-0e2cccb9453d6a04e",
+      "subnet-0f43e2c6d50b8ee59",
+      "subnet-09554bbddfdee945d"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/wavefront_metrics/Resource"
+   }
+  },
+  "softwareamazonawscdkserviceslogsILogGroupJsiiProxy3668920dLogRetention7A218240": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "spsp-sys-dbsplunk_metricsMetrics",
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/software.amazon.awscdk.services.logs.ILogGroup$Jsii$Proxy@3668920dLogRetention/Resource"
+   }
+  },
+  "splunkmetricsDBF004E0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuswest2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.9.40/splunk_metrics.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "secret_names": "/ips/relational/secrets/spsp-sys-db/monUser",
+      "cluster_id": "spsp-sys-db",
+      "account_id": "152430470825",
+      "port": "5432",
+      "last_digit": "5",
+      "host": {
+       "Ref": "SsmParameterValueipsrelationalparametersspspspspsysdbReaderEnptsC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "stack_name": {
+       "Ref": "AWS::StackName"
+      }
+     }
+    },
+    "FunctionName": "spsp-sys-db-splunk_metrics",
+    "Handler": "splunk_metrics.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     },
+     {
+      "Ref": "psycopgLayerParameter"
+     }
+    ],
+    "LoggingConfig": {
+     "LogGroup": "spsp-sys-dbsplunk_metricsMetrics"
+    },
+    "MemorySize": 128,
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:us-west-2:RDStoOIMRole"
+    },
+    "Runtime": "python3.9",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-02eb1ccd0822b6f9e:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      "subnet-0e2cccb9453d6a04e",
+      "subnet-0f43e2c6d50b8ee59",
+      "subnet-09554bbddfdee945d"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/splunk_metrics/Resource"
+   }
+  },
+  "spspsysdbcreateextensionsLogGroupCommonRoleE4BA2625": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "spsp-sys-dbcreate_extensionsMetrics",
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/spsp-sys-dbcreate_extensionsLogGroup-CommonRole/Resource"
+   }
+  },
+  "IpsMonspspsysdbIpsMtxspspsysdbcreateextensionsLogGroupCommonRoleLogRetention60961B33": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Ref": "spspsysdbcreateextensionsLogGroupCommonRoleE4BA2625"
+    },
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMon-spsp-sys-db--IpsMtx---spsp-sys-dbcreate_extensionsLogGroup-CommonRoleLogRetention/Resource"
+   }
+  },
+  "createextensions694928DB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuswest2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.9.40/create_extensions.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "secret_names": {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:spsp-sys-db:SecretName"
+      },
+      "account_id": "152430470825",
+      "port": "5432",
+      "last_digit": "5",
+      "update": "e4fc0c0c-5089-42ce-bed5-c059ca86a878",
+      "stack_name": {
+       "Ref": "AWS::StackName"
+      }
+     }
+    },
+    "FunctionName": "spsp-sys-db-create_extensions",
+    "Handler": "create_extensions.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     },
+     {
+      "Ref": "psycopgLayerParameter"
+     }
+    ],
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "spspsysdbcreateextensionsLogGroupCommonRoleE4BA2625"
+     }
+    },
+    "MemorySize": 128,
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:us-west-2:RDStoOIMRole"
+    },
+    "Runtime": "python3.9",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-02eb1ccd0822b6f9e:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      "subnet-0e2cccb9453d6a04e",
+      "subnet-0f43e2c6d50b8ee59",
+      "subnet-09554bbddfdee945d"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/create_extensions/Resource"
+   }
+  },
+  "spspsysdbcreateuserLogGroupCommonRole2C1DFB94": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "spsp-sys-dbcreate_userMetrics",
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/spsp-sys-dbcreate_userLogGroup-CommonRole/Resource"
+   }
+  },
+  "IpsMonspspsysdbIpsMtxspspsysdbcreateuserLogGroupCommonRoleLogRetention42E444B9": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Ref": "spspsysdbcreateuserLogGroupCommonRole2C1DFB94"
+    },
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMon-spsp-sys-db--IpsMtx---spsp-sys-dbcreate_userLogGroup-CommonRoleLogRetention/Resource"
+   }
+  },
+  "createuserF90D5819": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuswest2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.9.40/create_user.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "secret_names": {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:spsp-sys-db:SecretName"
+      },
+      "monuser_secret_name": "/ips/relational/secrets/spsp-sys-db/monUser",
+      "account_id": "152430470825",
+      "port": "5432",
+      "last_digit": "5",
+      "update": "8a9b6714-d12e-46c6-966a-e20cd80da616",
+      "stack_name": {
+       "Ref": "AWS::StackName"
+      }
+     }
+    },
+    "FunctionName": "spsp-sys-db-create_user",
+    "Handler": "create_user.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     },
+     {
+      "Ref": "psycopgLayerParameter"
+     }
+    ],
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "spspsysdbcreateuserLogGroupCommonRole2C1DFB94"
+     }
+    },
+    "MemorySize": 128,
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:us-west-2:RDStoOIMRole"
+    },
+    "Runtime": "python3.9",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-02eb1ccd0822b6f9e:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      "subnet-0e2cccb9453d6a04e",
+      "subnet-0f43e2c6d50b8ee59",
+      "subnet-09554bbddfdee945d"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/create_user/Resource"
+   }
+  },
+  "IpsMtxcreateExtResourceLogGroupCommonRoleF85677AB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "IpsMtx-createExtResourceMetrics",
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createExtResourceLogGroup-CommonRole/Resource"
+   }
+  },
+  "IpsMonspspsysdbIpsMtxIpsMtxcreateExtResourceLogGroupCommonRoleLogRetention7AA84649": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Ref": "IpsMtxcreateExtResourceLogGroupCommonRoleF85677AB"
+    },
+    "RetentionInDays": 3
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMon-spsp-sys-db--IpsMtx---IpsMtx-createExtResourceLogGroup-CommonRoleLogRetention/Resource"
+   }
+  },
+  "IpsMtxcreateExtResourceframeworkonEventServiceRole7A227345": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createExtResource/framework-onEvent/ServiceRole/Resource"
+   }
+  },
+  "IpsMtxcreateExtResourceframeworkonEventServiceRoleDefaultPolicy0F5F9A55": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "createextensions694928DB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "createextensions694928DB",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IpsMtxcreateExtResourceframeworkonEventServiceRoleDefaultPolicy0F5F9A55",
+    "Roles": [
+     {
+      "Ref": "IpsMtxcreateExtResourceframeworkonEventServiceRole7A227345"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createExtResource/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "IpsMtxcreateExtResourceframeworkonEventE11A85DC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-west-2",
+     "S3Key": "3542be390685e0c8353d92ccb5796d343cd93ca946b6b0de798004206a199adc.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createExtResource)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "createextensions694928DB",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "IpsMtxcreateExtResourceLogGroupCommonRoleF85677AB"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "IpsMtxcreateExtResourceframeworkonEventServiceRole7A227345",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "IpsMtxcreateExtResourceframeworkonEventServiceRoleDefaultPolicy0F5F9A55",
+    "IpsMtxcreateExtResourceframeworkonEventServiceRole7A227345"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createExtResource/framework-onEvent/Resource",
+    "aws:asset:path": "asset.3542be390685e0c8353d92ccb5796d343cd93ca946b6b0de798004206a199adc",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "softwareamazonawscdkserviceslogsILogGroupJsiiProxy16a0c81aLogRetention458C4D11": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": "IpsMtx-createUserResourceMetrics",
+    "RetentionInDays": 3
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/software.amazon.awscdk.services.logs.ILogGroup$Jsii$Proxy@16a0c81aLogRetention/Resource"
+   }
+  },
+  "IpsMtxcreateUserResourceframeworkonEventServiceRole33E47989": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createUserResource/framework-onEvent/ServiceRole/Resource"
+   }
+  },
+  "IpsMtxcreateUserResourceframeworkonEventServiceRoleDefaultPolicy888B9A01": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "createuserF90D5819",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "createuserF90D5819",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IpsMtxcreateUserResourceframeworkonEventServiceRoleDefaultPolicy888B9A01",
+    "Roles": [
+     {
+      "Ref": "IpsMtxcreateUserResourceframeworkonEventServiceRole33E47989"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createUserResource/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "IpsMtxcreateUserResourceframeworkonEvent3EDB9922": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-west-2",
+     "S3Key": "3542be390685e0c8353d92ccb5796d343cd93ca946b6b0de798004206a199adc.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createUserResource)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "createuserF90D5819",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "LogGroup": "IpsMtx-createUserResourceMetrics"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "IpsMtxcreateUserResourceframeworkonEventServiceRole33E47989",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.40"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "spsp-sys-db"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "IpsMtxcreateUserResourceframeworkonEventServiceRoleDefaultPolicy888B9A01",
+    "IpsMtxcreateUserResourceframeworkonEventServiceRole33E47989"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createUserResource/framework-onEvent/Resource",
+    "aws:asset:path": "asset.3542be390685e0c8353d92ccb5796d343cd93ca946b6b0de798004206a199adc",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "IpsMtxcreateExtCustRe": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "IpsMtxcreateExtResourceframeworkonEventE11A85DC",
+      "Arn"
+     ]
+    },
+    "secret_names": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:spsp-sys-db:SecretName"
+    },
+    "account_id": "152430470825",
+    "port": "5432",
+    "last_digit": "5",
+    "update": "e4fc0c0c-5089-42ce-bed5-c059ca86a878",
+    "stack_name": {
+     "Ref": "AWS::StackName"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createExtCustRe/Default"
+   }
+  },
+  "IpsMtxcreateUserCustRe": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "IpsMtxcreateUserResourceframeworkonEvent3EDB9922",
+      "Arn"
+     ]
+    },
+    "secret_names": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:spsp-sys-db:SecretName"
+    },
+    "monuser_secret_name": "/ips/relational/secrets/spsp-sys-db/monUser",
+    "account_id": "152430470825",
+    "port": "5432",
+    "last_digit": "5",
+    "update": "8a9b6714-d12e-46c6-966a-e20cd80da616",
+    "stack_name": {
+     "Ref": "AWS::StackName"
+    }
+   },
+   "DependsOn": [
+    "IpsMtxcreateExtCustRe"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/IpsMtx-createUserCustRe/Default"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zVPQU7DMBB8S++bJaEcuNJKICFUReEB0dZZIjexXXntImT577iGnGZWM7OaecTuqcV2R9/SqGlpVn3GdGIJPH0GUgsMLC56xXD8sj15MhzYQ7GPSfZ4iGrhcCBhWN0smD7cPBSHDdpZKMebd/F6z248g+xHEuEg+HIHWMmcJ8L0Gq2qseLeeAZNBtPg1lqgYu9WrX5qn8pyrtLWsz4t3WdtZ1BRgjOj/xcFe+9ueioLjlXZUhne6UYPXYctds+7i2jd+FhWGMbhD38BzHI0LioBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-spsp-sys-db/IpsMtx-/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "IpsMonspspsysdbIpsMtxsplunkmetrics6AC2DF48Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "splunkmetricsDBF004E0",
+     "Arn"
+    ]
+   }
+  },
+  "IpsMonspspsysdbIpsMtxwavefrontmetrics3395402BArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "wavefrontmetrics60F1628D",
+     "Arn"
+    ]
+   }
+  }
+ }
+}

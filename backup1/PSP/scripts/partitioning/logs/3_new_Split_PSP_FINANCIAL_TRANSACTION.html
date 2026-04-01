@@ -1,0 +1,1226 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Wed Nov 11 21:35:33 2020
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+SQL> Connected.
+SQL> SQL> SQL> SQL> SQL&gt; <br>
+SQL&gt; alter table pspadm.PSP_FINANCIAL_TRANSACTION
+<br>
+  2  split partition FINANCIAL_TXN_9999 at (to_date('03/01/2021', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition FINANCIAL_TXN_MG12021 tablespace PSP_LOB01,
+<br>
+  5   partition FINANCIAL_TXN_9999 tablespace PSP_LOB01
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition FINANCIAL_TXN_9999 at (to_date('03/01/2021', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound
+<br>
+
+
+Elapsed: 00:00:00.01
+SQL&gt; 
+<br>
+SQL&gt; alter table pspadm.PSP_FINANCIAL_TRANSACTION
+<br>
+  2  split partition FINANCIAL_TXN_9999 at (to_date('05/01/2021', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition FINANCIAL_TXN_MG22021 tablespace PSP_LOB01,
+<br>
+  5   partition FINANCIAL_TXN_9999 tablespace PSP_LOB01
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition FINANCIAL_TXN_9999 at (to_date('05/01/2021', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; alter table pspadm.PSP_FINANCIAL_TRANSACTION
+<br>
+  2  split partition FINANCIAL_TXN_9999 at (to_date('07/01/2021', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition FINANCIAL_TXN_MG32021 tablespace PSP_LOB01,
+<br>
+  5   partition FINANCIAL_TXN_9999 tablespace PSP_LOB01
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition FINANCIAL_TXN_9999 at (to_date('07/01/2021', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; alter table pspadm.PSP_FINANCIAL_TRANSACTION
+<br>
+  2  split partition FINANCIAL_TXN_9999 at (to_date('09/01/2021', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition FINANCIAL_TXN_MG42021 tablespace PSP_LOB01,
+<br>
+  5   partition FINANCIAL_TXN_9999 tablespace PSP_LOB01
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition FINANCIAL_TXN_9999 at (to_date('09/01/2021', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; alter table pspadm.PSP_FINANCIAL_TRANSACTION
+<br>
+  2  split partition FINANCIAL_TXN_9999 at (to_date('11/01/2021', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition FINANCIAL_TXN_MG52021,
+<br>
+  5   partition FINANCIAL_TXN_9999
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition FINANCIAL_TXN_9999 at (to_date('11/01/2021', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; alter table pspadm.PSP_FINANCIAL_TRANSACTION
+<br>
+  2  split partition FINANCIAL_TXN_9999 at (to_date('01/01/2022', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition FINANCIAL_TXN_MG62021,
+<br>
+  5   partition FINANCIAL_TXN_9999
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition FINANCIAL_TXN_9999 at (to_date('01/01/2022', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound
+<br>
+
+
+Elapsed: 00:00:00.01
+SQL&gt; 
+<br>
+SQL&gt; select segment_name, segment_type, partition_name, tablespace_name from dba_segments where owner = 'PSPADM' and segment_name = 'PSP_FINANCIAL_TRANSACTION' order by partition_name;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+SEGMENT_NAME
+</th>
+<th scope="col">
+SEGMENT_TYPE
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_9999
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG12009
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG12010
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG22009
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG22010
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG22021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG32009
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG32010
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG32021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG42009
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG42010
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG42021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG52009
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG52010
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG52021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG62008
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG62009
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG62010
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG62021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+19 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.04
+SQL&gt; select table_name, partition_name, high_value, tablespace_name from dba_tab_partitions where table_owner = 'PSPADM' and table_name = 'PSP_FINANCIAL_TRANSACTION' order by partition_position;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+TABLE_NAME
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+HIGH_VALUE
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG62008
+</td>
+<td>
+TIMESTAMP' 2009-01-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG12009
+</td>
+<td>
+TIMESTAMP' 2009-03-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG22009
+</td>
+<td>
+TIMESTAMP' 2009-05-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG32009
+</td>
+<td>
+TIMESTAMP' 2009-07-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG42009
+</td>
+<td>
+TIMESTAMP' 2009-09-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG52009
+</td>
+<td>
+TIMESTAMP' 2009-11-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG62009
+</td>
+<td>
+TIMESTAMP' 2010-01-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG12010
+</td>
+<td>
+TIMESTAMP' 2010-03-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG22010
+</td>
+<td>
+TIMESTAMP' 2010-05-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG32010
+</td>
+<td>
+TIMESTAMP' 2010-07-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG42010
+</td>
+<td>
+TIMESTAMP' 2010-09-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG52010
+</td>
+<td>
+TIMESTAMP' 2010-11-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG62010
+</td>
+<td>
+TIMESTAMP' 2011-01-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG22021
+</td>
+<td>
+TIMESTAMP' 2021-05-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG32021
+</td>
+<td>
+TIMESTAMP' 2021-07-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG42021
+</td>
+<td>
+TIMESTAMP' 2021-09-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG52021
+</td>
+<td>
+TIMESTAMP' 2021-11-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG62021
+</td>
+<td>
+TIMESTAMP' 2022-01-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_9999
+</td>
+<td>
+MAXVALUE
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+19 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.01
+SQL&gt; select index_name, partition_name,  high_value, tablespace_name, status from dba_ind_partitions where index_owner = 'PSPADM' and index_name in (select index_name from dba_indexes where owner = 'PSPADM' and table_name = 'PSP_FINANCIAL_TRANSACTION') order by partition_position, index_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; select segment_name, segment_type, partition_name, tablespace_name from dba_segments where owner = 'PSPADM' and segment_name = 'PSP_FINANCIAL_TRANSACTION' and partition_name like 'FINANCIAL_TXN_MG%2021' order by partition_name;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+SEGMENT_NAME
+</th>
+<th scope="col">
+SEGMENT_TYPE
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG22021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG32021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG42021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG52021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+FINANCIAL_TXN_MG62021
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+5 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.05
+SQL&gt; select table_name, partition_name, high_value, tablespace_name from dba_tab_partitions where table_owner = 'PSPADM' and table_name = 'PSP_FINANCIAL_TRANSACTION' and partition_name like 'FINANCIAL_TXN_MG%2021' order by partition_position;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+TABLE_NAME
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+HIGH_VALUE
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG22021
+</td>
+<td>
+TIMESTAMP' 2021-05-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG32021
+</td>
+<td>
+TIMESTAMP' 2021-07-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG42021
+</td>
+<td>
+TIMESTAMP' 2021-09-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG52021
+</td>
+<td>
+TIMESTAMP' 2021-11-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+<tr>
+<td>
+PSP_FINANCIAL_TRANSACTION
+</td>
+<td>
+FINANCIAL_TXN_MG62021
+</td>
+<td>
+TIMESTAMP' 2022-01-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+5 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; select index_name, partition_name,  high_value, tablespace_name, status from dba_ind_partitions where index_owner = 'PSPADM' and index_name in (select index_name from dba_indexes where owner = 'PSPADM' and table_name = 'PSP_FINANCIAL_TRANSACTION') and partition_name like 'FINANCIAL_TXN_MG%2021' order by partition_position, index_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; select segment_name, segment_type, partition_name, tablespace_name from dba_segments where owner = 'PSPADM' and segment_name = 'PSP_FINANCIAL_TRANSACTION' and partition_name like 'FINANCIAL_TXN_MG%2011' order by partition_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.01
+SQL&gt; select table_name, partition_name, high_value, tablespace_name from dba_tab_partitions where table_owner = 'PSPADM' and table_name = 'PSP_FINANCIAL_TRANSACTION' and partition_name like 'FINANCIAL_TXN_MG%2011' order by partition_position;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.00
+SQL&gt; select index_name, partition_name,  high_value, tablespace_name, status from dba_ind_partitions where index_owner = 'PSPADM' and index_name in (select index_name from dba_indexes where owner = 'PSPADM' and table_name = 'PSP_FINANCIAL_TRANSACTION') and partition_name like 'FINANCIAL_TXN_MG%2011' order by partition_position, index_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; select owner, object_name, object_type, status from dba_objects where object_name not like 'BIN%' and owner like 'PSP%' and status != 'VALID' order by 1,3,2;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+OWNER
+</th>
+<th scope="col">
+OBJECT_NAME
+</th>
+<th scope="col">
+OBJECT_TYPE
+</th>
+<th scope="col">
+STATUS
+</th>
+</tr>
+<tr>
+<td>
+PSPADM
+</td>
+<td>
+GET_OR_PENDING_AGENCY_ID
+</td>
+<td>
+FUNCTION
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPADM
+</td>
+<td>
+EMP_ARRAY
+</td>
+<td>
+TYPE
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+PR_SHIVA_MMT
+</td>
+<td>
+PROCEDURE
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+REBUILD_PSID_SEQS
+</td>
+<td>
+PROCEDURE
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+GET_OR_PENDING_AGENCY_ID
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+PRC_CALCULATE_LEDGER_BALANCE
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+PRC_OFFLOAD_UPDATE_PR_TEST
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+PRC_REMOVE_COMPANY_FAST
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+PSP_TEMP_DEL_ENTITYUPDATE
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+TEMP_PSP_LAW
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+TEMP_PSP_OFFERING_SVCCHG
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+TEMP_PSP_PMT_TEMPLATE_PMTMTD
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+TEMP_PSP_SVCSTAT_SVC_ASSOC
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+TEST
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+TMP_PRC_UPD_COMP_LED_BAL
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+</table>
+<p>
+
+15 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; <br>
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production

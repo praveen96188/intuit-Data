@@ -1,0 +1,7 @@
+--sample DML generation script for table having only sequence as primyar key col
+\copy (select 'delete from pspadm.' || table_name || ' where (' ||pk_cols|| ') in (''' || pk_seq || ''');' from backup_oos.oos_metadata where table_name = 'psp_address' and op_type = 'delete') to 'fix_delete_oos_o2p_psp_address.sql';
+\copy (select 'insert into pspadm.' || table_name || ' select * from imp_psphpp02_pspadm.' || table_name || ' where (' || pk_cols|| ') in ('''||pk_seq||''');' from backup_oos.oos_metadata where table_name ='psp_achenrollment' and op_type='insert' ) to 'fix_insert_oos_o2p_psp_achenrollment.sql';
+
+--sample DML generation script for table having only sequence and company_fk as primyar key cols
+\copy (select 'delete from pspadm.' || table_name || ' where (' ||split_part(pk_cols, ',', 1) || ') in (''' || pk_seq || ''') and (' || split_part(pk_cols, ',', 2) ||') in (''' || company_fk || ''');' from backup_oos.oos_metadata where table_name = 'psp_company_event' and op_type = 'update' and status!='inflight') to 'fix_del_for_update_oos_o2p_psp_company_event.sql';
+\copy (select 'insert into pspadm.' || table_name || ' select * from imp_psphpp02_pspadm.' || table_name || ' where (' ||split_part(pk_cols, ',', 1)|| ') in ('''||pk_seq||''') and ('||split_part(pk_cols, ',', 2)||') in ('''||company_fk||''');' from backup_oos.oos_metadata where table_name ='psp_company_event' and op_type='update' and status!='inflight') to 'fix_ins_for_update_oos_o2p_psp_company_event.sql';

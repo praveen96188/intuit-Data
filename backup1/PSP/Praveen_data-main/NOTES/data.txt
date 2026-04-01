@@ -1,0 +1,170 @@
+PIgRgK7d#(2eX
+
+
+
+
+
+SYS :psql -U postgres -d sysibobdb -h spsp-sys-db.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com
+SYS Postgres password: jQ=Xv=Ga^jW7ijCbA0y-NzJot-hqlH
+
+Postgres PDS : psql -h 127.0.0.1 -U postgres -p 10540 -d pdsibobdb
+
+PDS Postgres: .4xSM0vHYTlP^nftK0tvv1Y.j5kZBg
+
+
+
+end_point:
+spsp-sys-db.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com
+
+
+psql -U user -h host “dbname=db sslmode=require”	Use SSL mode for the connection	-h: used to state the host 
+-U:used to state the database user
+
+
+Basic commands:
+
+\c dbname -->	Switch connection to a new database	 
+\l        -->List available databases	 
+\dt       -->List available tables	 
+\d  table_name -->Describe a table such as a column, type, modifiers of columns, etc.	 
+\dn -->	List all schemes of the currently connected database	 
+\df -->	List available functions in the current database	 
+\dv -->	List available views in the current database	 
+\du -->	List all users and their assign roles	 
+
+SELECT version(); -->	Retrieve the current version of PostgreSQL server	 
+\g -->	Execute the last command again	 
+\s -->	Display command history	 
+\s filename. -->Save the command history to a file	 
+\i filename -->Execute psql commands from a file	 
+\?  -->	Know all available psql commands	 
+\h	Get help	Eg:to get detailed information on ALTER TABLE statement use the \h ALTER TABLE
+\e	Edit command in your own editor	 
+\a	Switch from aligned to non-aligned column output	 
+\H	Switch the output to HTML format	 
+\q	Exit psql shell	 
+
+
+
+--check table description
+=> select column_name, data_type from information_schema.columns where table_name = 'psp_sap_method_call';
+
+
+
+SET search_path TO myschema;
+
+/u01/ogg/scripts/dbsolo5/tempdir/ 2>&1 says to send standard error to the same place as standard output
+
+> /home/john/logs/backup.log indicates that the standard output of the backup.sh script will be redirected to the backup.log file.
+2>&1 indicates that the standard error (2>) is redirected to the same file descriptor that is pointed by standard output (&1).
+So, both standard output and error will be redirected to /home/john/logs/backup.log
+
+0 1 * * * /u01/ogg/scripts/dbsolo5/auto_comp.sh > /u01/ogg/scripts/dbsolo5/tempdir/"`date +\%d\%m\%y_\%H\%M\%S`".log 2>&1
+
+
+
+ssh -A ec2-35-91-37-3.us-west-2.compute.amazonaws.com
+
+scp -i id_rsa -o "proxycommand ssh -W %h:%p -i id_rsa pnarlagalla@ec2-52-38-34-141.us-west-2.compute.amazonaws.com"  pos2ora.zip pnarlagalla@ggppspdbs2.sbg-psp-ppd.a.intuit.com:/tmp/pos2ora.zip
+
+scp -i id_rsa -o "proxycommand ssh -W %h:%p -i id_rsa pnarlagalla@ec2-35-91-37-3.us-west-2.compute.amazonaws.com"  machine-4-ora.tar pnarlagalla@ggpspdbs9p.sbg-psp-prod.a.intuit.com:/tmp/machine-4-ora.tar
+
+scp -i id_rsa -o "proxycommand ssh -W %h:%p -i id_rsa pnarlagalla@ec2-35-91-37-3.us-west-2.compute.amazonaws.com"  machine-4-apg.tar pnarlagalla@ggpspdbs8p.sbg-psp-prod.a.intuit.com:/tmp/machine-4-apg.tar
+
+scp -i id_rsa -o "proxycommand ssh -W %h:%p -i id_rsa pnarlagalla@ec2-35-91-37-3.us-west-2.compute.amazonaws.com" pnarlagalla@ggpspdbs1p.sbg-psp-prod.a.intuit.com:/u01/ogg/scripts/dbsolo5/results/PSP_SOURCE_SYSTEM_TRANSMISSION_.html  PSP_SOURCE_SYSTEM_TRANSMISSION_.html
+
+
+ggpspdbs7p.sbg-psp-prod.a.intuit.com
+ggpspdbs8p.sbg-psp-prod.a.intuit.com
+
+ggpspdbs5p.sbg-psp-prod.a.intuit.com
+ggpspdbs6p.sbg-psp-prod.a.intuit.com
+
+
+scp -i id_rsa -o "proxycommand ssh -W %h:%p -i id_rsa pnarlagalla@ec2-52-38-34-141.us-west-2.compute.amazonaws.com" pnarlagalla@ggppspdbs1.sbg-psp-ppd.a.intuit.com:/u01/ogg/scripts/dbsolo5/results/reverse/ps_source_system_transmission_2022-01-01_2023-01-01/results_psp_source_system_transmission_2022-01-01_2023-01-01.sql results_psp_source_system_transmission_2022-01-01_2023-01-01.sql
+
+
+ssh -o ServerAliveInterval=45 -i ~/.ssh/id_rsa -L 127.0.0.1:10555:spsp-sys-db.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com:5432 pnarlagalla@ec2-52-38-34-141.us-west-2.compute.amazonaws.com
+
+
+
+
+
+
+Check active connection:
+
+SELECT  pid ,datname,usename ,application_name,client_hostname,client_port ,backend_start,query_start,query,state FROM pg_stat_activity WHERE state = 'active';
+
+
+Lock:
+
+alter user ibobadm_owner with NOLOGIN;
+alter user ibob_prod_pspapp with NOLOGIN;
+alter user ibobadm_readonly with NOLOGIN;
+
+
+
+Kill connections:
+SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'database_name' AND pid <> pg_backend_pid();
+
+
+
+Fing long running queries in Postgres:
+
+SELECT
+  pid,
+  now() - pg_stat_activity.query_start AS duration,
+  query,
+  state
+FROM pg_stat_activity
+WHERE (now() - pg_stat_activity.query_start) > interval '5 minutes';
+
+
+In order to cancel these long running queries you should execute:
+
+SELECT pg_cancel_backend(__pid__);
+
+
+If the you find the process is stuck you can kill it by running:
+
+SELECT pg_terminate_backend(__pid__);
+
+
+
+--partition tables
+select *
+  from pg_class
+ where oid in (select partrelid from pg_partitioned_table);
+
+
+
+pg_stat_activity (currently executing queries):
+
+select * from pg_stat_activity where current_query not like '<%';
+pg_user (all database users):
+
+select * from pg_user;
+pg_database (all databases and their sizes):
+
+select datname,
+       pg_size_pretty(pg_database_size(datname))
+  from pg_database
+ order by pg_database_size(datname) desc;
+pg_tables (all tables and their size, with/without indexes):
+
+select tablename,
+       pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) as size,
+       pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size
+  from pg_tables
+ where schemaname = 'MY_SCHEMA_NAME';
+pg_namespace (all schemas):
+
+select * from pg_namespace order by 1;
+
+
+
+
+
+
+
+scp -i id_rsa -o "proxycommand ssh -W %h:%p -i id_rsa pnarlagalla@ec2-35-91-37-3.us-west-2.compute.amazonaws.com"  Prod_mismatches.zip pnarlagalla@ggpspdbs1p.sbg-psp-prod.a.intuit.com:/tmp/Prod_mismatches.zip

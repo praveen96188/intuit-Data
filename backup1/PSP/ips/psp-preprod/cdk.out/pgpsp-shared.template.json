@@ -1,0 +1,601 @@
+{
+  "Resources": {
+    "pspmonpg14clusterDB70E709": {
+      "Type": "AWS::RDS::DBClusterParameterGroup",
+      "Properties": {
+        "Description": "pspmon-pg14-cluster",
+        "Family": "aurora-postgresql14",
+        "Parameters": {
+          "timezone": "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay": "20",
+          "rds.enable_plan_management": "1",
+          "rds.logical_replication": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        },
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "ppd"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.6.14"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmon-pg14-cluster/Resource"
+      }
+    },
+    "ssmparampspmonpg14cluster914F3350": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Ref": "pspmonpg14clusterDB70E709"
+        },
+        "AllowedPattern": ".*",
+        "Description": "Shared parameter group from stack pgpsp-shared",
+        "Name": "/ips/relational/exports/pgpsp/pspmon-pg14-cluster",
+        "Tags": {
+          "intuit:asset_id": "6847740825712235356",
+          "intuit:billing:appenv": "ppd",
+          "intuit:billing:bu": "SBSEG",
+          "intuit:billing:component": "PSP",
+          "intuit:billing:fp": "PSP",
+          "intuit:billing:service_assetid": "6847740825712235356",
+          "ipsauroracdk_ver": "0.6.14",
+          "ipsauroramonitoring_ver": "0.0.1.5",
+          "ipsauroratemplate_ver": "null"
+        },
+        "Tier": "Standard"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/ssmparam-pspmon-pg14-cluster/Resource"
+      }
+    },
+    "pspmonpg14instance51B67B78": {
+      "Type": "AWS::RDS::DBParameterGroup",
+      "Properties": {
+        "Description": "pspmon-pg14-instance",
+        "Family": "aurora-postgresql14",
+        "Parameters": {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages": "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze": "1",
+          "auto_explain.log_buffers": "1",
+          "auto_explain.log_min_duration": "200",
+          "auto_explain.log_timing": "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target": "512",
+          "log_filename": "postgresql.log.%Y-%m-%d",
+          "log_lock_waits": "1",
+          "log_min_duration_statement": "1000",
+          "log_statement": "ddl",
+          "log_temp_files": "65536",
+          "max_parallel_maintenance_workers": "64",
+          "max_parallel_workers": "64",
+          "max_parallel_workers_per_gather": "4",
+          "random_page_cost": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem": "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        },
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "ppd"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.6.14"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmon-pg14-instance/Resource"
+      }
+    },
+    "ssmparampspmonpg14instance759241CD": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Ref": "pspmonpg14instance51B67B78"
+        },
+        "AllowedPattern": ".*",
+        "Description": "Shared parameter group from stack pgpsp-shared",
+        "Name": "/ips/relational/exports/pgpsp/pspmon-pg14-instance",
+        "Tags": {
+          "intuit:asset_id": "6847740825712235356",
+          "intuit:billing:appenv": "ppd",
+          "intuit:billing:bu": "SBSEG",
+          "intuit:billing:component": "PSP",
+          "intuit:billing:fp": "PSP",
+          "intuit:billing:service_assetid": "6847740825712235356",
+          "ipsauroracdk_ver": "0.6.14",
+          "ipsauroramonitoring_ver": "0.0.1.5",
+          "ipsauroratemplate_ver": "null"
+        },
+        "Tier": "Standard"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/ssmparam-pspmon-pg14-instance/Resource"
+      }
+    },
+    "pspmondbsubnetgrp": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "pspmondbsubnetgrp",
+        "SubnetIds": [
+          {
+            "Fn::Select": [
+              0,
+              {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Fn::ImportValue": "vpc-02eb1ccd0822b6f9e:data-subnet:ids"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Fn::ImportValue": "vpc-02eb1ccd0822b6f9e:data-subnet:ids"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              2,
+              {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Fn::ImportValue": "vpc-02eb1ccd0822b6f9e:data-subnet:ids"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "ppd"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.6.14"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsubnetgrp/Default"
+      }
+    },
+    "ssmparampspmondbsubnetgrp5063C3BA": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Ref": "pspmondbsubnetgrp"
+        },
+        "AllowedPattern": ".*",
+        "Description": "Shared Db Subnet group from stack pgpsp-shared",
+        "Name": "/ips/relational/exports/pgpsp/pspmondbsubnetgrp",
+        "Tags": {
+          "intuit:asset_id": "6847740825712235356",
+          "intuit:billing:appenv": "ppd",
+          "intuit:billing:bu": "SBSEG",
+          "intuit:billing:component": "PSP",
+          "intuit:billing:fp": "PSP",
+          "intuit:billing:service_assetid": "6847740825712235356",
+          "ipsauroracdk_ver": "0.6.14",
+          "ipsauroramonitoring_ver": "0.0.1.5",
+          "ipsauroratemplate_ver": "null"
+        },
+        "Tier": "Standard"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/ssmparam-pspmondbsubnetgrp/Resource"
+      }
+    },
+    "pspmondbsecuritygrp0338867A": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Database cluster security group",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "10.94.22.162/32",
+            "Description": "Allow 5432 from 10.94.22.162/32",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "10.27.80.0/20",
+            "Description": "Allow 5432 from 10.27.80.0/20",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "10.27.64.0/20",
+            "Description": "Allow 5432 from 10.27.64.0/20",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "10.27.116.0/23",
+            "Description": "Allow 5432 from 10.27.116.0/23",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "10.27.96.0/20",
+            "Description": "Allow 5432 from 10.27.96.0/20",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "10.27.112.0/23",
+            "Description": "Allow 5432 from 10.27.112.0/23",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "10.27.114.0/23",
+            "Description": "Allow 5432 from 10.27.114.0/23",
+            "FromPort": 5432,
+            "IpProtocol": "tcp",
+            "ToPort": 5432
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "ppd"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.6.14"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          }
+        ],
+        "VpcId": "vpc-02eb1ccd0822b6f9e"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/Resource"
+      }
+    },
+    "pspmondbsecuritygrpfrompgpspsharedpspmondbsecuritygrprule0FF6E315F54322A3FFC17": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-0c555141d8a3362ac",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-0c555141d8a3362ac",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/from pgpspsharedpspmondbsecuritygrprule0FF6E315F:5432"
+      }
+    },
+    "pspmondbsecuritygrpfrompgpspsharedpspmondbsecuritygrprule16B6D7DB85432C281CD8C": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-0c99d8be1b890a232",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-0c99d8be1b890a232",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/from pgpspsharedpspmondbsecuritygrprule16B6D7DB8:5432"
+      }
+    },
+    "pspmondbsecuritygrpfrompgpspsharedpspmondbsecuritygrprule2F5270691543234F091FF": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-0bb5713266f6928f4",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-0bb5713266f6928f4",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/from pgpspsharedpspmondbsecuritygrprule2F5270691:5432"
+      }
+    },
+    "pspmondbsecuritygrpfrompgpspsharedpspmondbsecuritygrprule35A2DCE5E5432DEBC28DA": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-0bc36d60bebd11f70",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-0bc36d60bebd11f70",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/from pgpspsharedpspmondbsecuritygrprule35A2DCE5E:5432"
+      }
+    },
+    "pspmondbsecuritygrpfrompgpspsharedpspmondbsecuritygrprule443060E805432964B3E32": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-045042de0113b7e5c",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-045042de0113b7e5c",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/from pgpspsharedpspmondbsecuritygrprule443060E80:5432"
+      }
+    },
+    "pspmondbsecuritygrpfrompgpspsharedpspmondbsecuritygrprule5859F343E5432E0BC430D": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-00a9a7b1647500d8e",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-00a9a7b1647500d8e",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/pspmondbsecuritygrp/from pgpspsharedpspmondbsecuritygrprule5859F343E:5432"
+      }
+    },
+    "ssmparampspmondbsecuritygrp20081A1B": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Fn::GetAtt": [
+            "pspmondbsecuritygrp0338867A",
+            "GroupId"
+          ]
+        },
+        "AllowedPattern": ".*",
+        "Description": "Shared security group from stack pgpsp-shared",
+        "Name": "/ips/relational/exports/pgpsp/pspmondbsecuritygrp",
+        "Tags": {
+          "intuit:asset_id": "6847740825712235356",
+          "intuit:billing:appenv": "ppd",
+          "intuit:billing:bu": "SBSEG",
+          "intuit:billing:component": "PSP",
+          "intuit:billing:fp": "PSP",
+          "intuit:billing:service_assetid": "6847740825712235356",
+          "ipsauroracdk_ver": "0.6.14",
+          "ipsauroramonitoring_ver": "0.0.1.5",
+          "ipsauroratemplate_ver": "null"
+        },
+        "Tier": "Standard"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/ssmparam-pspmondbsecuritygrp/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/32PwQqCQBCGn8X7OqkdomsGYafQB4h1nWRT15jZLUL23VMikYhOw3zfPzNMAvEWokA+OFRVE7a6hKGwUjUiR+4dKRSjOw9UMQwnSbJDi3Sg3t1EejH7Xdo6Hskv9cUKVxq0C78AXjB302XSpp7nptjceIEqGSOoHGn7nPf8B5mpCZm9n8znJS+O8i5X8QYiWAdX1jokZ6zuEPJ3fQGbIKZGFwEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgpsp-shared/CDKMetadata/Default"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

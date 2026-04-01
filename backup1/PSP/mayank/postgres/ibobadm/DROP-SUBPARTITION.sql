@@ -1,0 +1,730 @@
+-- ------------ Write DROP-SUBPARTITION-stage scripts -----------
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_2008_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_9999_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m012010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m022010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m032010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m042010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m052010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m062010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m072010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m082010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m092010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m102010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m112010_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122009_from_qbdt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_as400;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_cris;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_dflt;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_ews;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_null;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_psp;
+
+
+
+DROP TABLE IF EXISTS ibobadm.psp_source_system_transmission_srcsystrns_m122010_from_qbdt;
+
+
+

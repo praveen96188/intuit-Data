@@ -1,0 +1,110 @@
+[default]
+host = $decideOnStartup
+
+#
+# KAOS monitors
+#
+[monitor:///var/log/]
+blacklist=agent.log*|env.log|profiler.log|\.\d$
+recursive=true
+
+[monitor:///var/porticor/logs]
+blacklist=agent.log|env.log|profiler.log|\.\d$
+recursive=true
+
+#
+# IHP monitors
+#
+<% if node['splunk']['forwarder']['inputs']['monitor'].length > 0 -%>
+  <% node['splunk']['forwarder']['inputs']['monitor'].each do |path, attribute| -%>
+    <% if path.start_with?('/') -%>
+[monitor://<%= path %>]
+      <% if attribute.has_key?('host') -%>
+        <% unless attribute['host'].empty? -%>
+host = <%= attribute['host'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('idx') -%>
+        <% unless attribute['idx'].empty? -%>
+index = <%= attribute['idx'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('sourcetype') -%>
+        <% unless attribute['sourcetype'].empty? -%>
+sourcetype = <%= attribute['sourcetype'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('queue') -%>
+        <% unless attribute['queue'].empty? -%>
+queue = <%= attribute['queue'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('_tcp_routing') -%>
+        <% unless attribute['_tcp_routing'].empty? -%>
+_TCP_ROUTING = <%= attribute['_tcp_routing'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('host_regex') -%>
+        <% unless attribute['host_regex'].empty? -%>
+host_regex = <%= attribute['host_regex'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('host_segment') -%>
+        <% unless attribute['host_segment'].empty? -%>
+host_segment = <%= attribute['host_segment'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('source') -%>
+        <% unless attribute['source'].empty? -%>
+source = <%= attribute['source'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('crcsalt') -%>
+        <% unless attribute['crcsalt'].empty? -%>
+crcSalt = <%= attribute['crcsalt'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('ignoreolderthan') -%>
+        <% unless attribute['ignoreolderthan'].empty? -%>
+ignoreOlderThan = <%= attribute['ignoreolderthan'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('followtail') -%>
+        <% unless attribute['followtail'].empty? -%>
+followTail = <%= attribute['followtail'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('whitelist') -%>
+        <% unless attribute['whitelist'].empty? -%>
+whitelist = <%= attribute['whitelist'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('blacklist') -%>
+        <% unless attribute['blacklist'].empty? -%>
+blacklist = <%= attribute['blacklist'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('alwaysopenfile') -%>
+        <% unless attribute['alwaysopenfile'].empty? -%>
+alwaysOpenFile = <%= attribute['alwaysopenfile'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('recursive') -%>
+        <% unless attribute['recursive'].empty? -%>
+recursive = <%= attribute['recursive'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('time_before_close') -%>
+        <% unless attribute['time_before_close'].empty? -%>
+time_before_close = <%= attribute['time_before_close'] %>
+        <% end -%>
+      <% end -%>
+      <% if attribute.has_key?('followsymlink') -%>
+        <% unless attribute['followsymlink'].empty? -%>
+followSymlink = <%= attribute['followsymlink'] %>
+        <% end -%>
+      <% end -%>
+
+    <% end -%>
+  <% end -%>
+<% end -%>

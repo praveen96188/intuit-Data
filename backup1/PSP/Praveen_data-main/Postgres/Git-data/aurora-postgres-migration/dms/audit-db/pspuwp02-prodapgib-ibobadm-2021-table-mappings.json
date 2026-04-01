@@ -1,0 +1,90 @@
+{
+    "rules": [
+        {
+            "rule-type": "transformation",
+            "rule-id": "1",
+            "rule-name": "1",
+            "rule-target": "table",
+            "object-locator": {
+                "schema-name": "IBOBADM",
+                "table-name": "%"
+            },
+            "rule-action": "convert-lowercase",
+            "value": null,
+            "old-value": null
+        },
+        {
+            "rule-type": "transformation",
+            "rule-id": "2",
+            "rule-name": "2",
+            "rule-target": "schema",
+            "object-locator": {
+                "schema-name": "IBOBADM"
+            },
+            "rule-action": "convert-lowercase",
+            "value": null,
+            "old-value": null
+        },
+        {
+            "rule-type": "selection",
+            "rule-id": "3",
+            "rule-name": "3",
+            "object-locator": {
+                "schema-name": "IBOBADM",
+                "table-name": "PSP_SOURCE_SYSTEM_TRANSMISSION"
+            },
+            "rule-action": "include",
+            "filters": [
+                {
+                    "filter-type": "source",
+                    "column-name": "created_date",
+                    "filter-conditions": [
+                        {
+                            "filter-operator": "between",
+                            "start-value": "2021-01-01 00:00:00",
+                            "end-value": "2021-12-31 23:59:59"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "rule-type": "transformation",
+            "rule-id": "5",
+            "rule-name": "5",
+            "rule-target": "table",
+            "object-locator": {
+                "schema-name": "IBOBADM",
+                "table-name": "PSP_SOURCE_SYSTEM_TRANSMISSION"
+            },
+            "rule-action": "rename",
+            "value": "psp_source_system_transmission_2021"
+        },
+        {
+            "rule-type": "table-settings",
+            "rule-id": "6",
+            "rule-name": "6",
+            "object-locator": {
+                "schema-name": "IBOBADM",
+                "table-name": "PSP_SOURCE_SYSTEM_TRANSMISSION"
+            },
+            "parallel-load": {
+                "type": "partitions-list",
+                "partitions": [
+                    "SRCSYSTRNS_M012021",
+                    "SRCSYSTRNS_M022021",
+                    "SRCSYSTRNS_M032021",
+                    "SRCSYSTRNS_M042021",
+                    "SRCSYSTRNS_M052021",
+                    "SRCSYSTRNS_M062021",
+                    "SRCSYSTRNS_M072021",
+                    "SRCSYSTRNS_M082021",
+                    "SRCSYSTRNS_M092021",
+                    "SRCSYSTRNS_M102021",
+                    "SRCSYSTRNS_M112021",
+                    "SRCSYSTRNS_M122021"
+                ]
+            }
+        }
+    ]
+}

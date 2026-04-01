@@ -1,0 +1,2233 @@
+{
+  "Parameters": {
+    "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/ips/relational/parameters/us-east-2/ManagedBucket"
+    },
+    "lambdaLayerParameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/custom/ips/aurora/layerArn"
+    },
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Resources": {
+    "pdsdbsubnetgrp": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "pdsdbsubnetgrp",
+        "SubnetIds": [
+          {
+            "Fn::Select": [
+              0,
+              {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Fn::ImportValue": "vpc-03af2ef666f86d6d2:data-subnet:ids"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Fn::ImportValue": "vpc-03af2ef666f86d6d2:data-subnet:ids"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Select": [
+              2,
+              {
+                "Fn::Split": [
+                  ",",
+                  {
+                    "Fn::ImportValue": "vpc-03af2ef666f86d6d2:data-subnet:ids"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/pdsdbsubnetgrp/Default"
+      }
+    },
+    "ssmparampdsdbsubnetgrp2C5CAC0F": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Ref": "pdsdbsubnetgrp"
+        },
+        "AllowedPattern": ".*",
+        "Description": "Shared Db Subnet group from stack IpsRds-vpc-03af2ef666f86d6d2",
+        "Name": "/ips/relational/exports/vpc-03af2ef666f86d6d2/ppsp/pdsdbsubnetgrp",
+        "Tags": {
+          "intuit:asset_id": "6847740825712235356",
+          "intuit:billing:appenv": "pds",
+          "intuit:billing:bu": "SBSEG",
+          "intuit:billing:component": "PSP",
+          "intuit:billing:fp": "PSP",
+          "intuit:billing:service_assetid": "6847740825712235356",
+          "ipsauroracdk_ver": "0.8.4",
+          "ipsauroramonitoring_ver": "0.0.1.5",
+          "ipsauroratemplate_ver": "null",
+          "vpc_exception": "true"
+        },
+        "Tier": "Standard"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/ssmparam-pdsdbsubnetgrp/Resource"
+      }
+    },
+    "pdsdbsecuritygrpBD1316B7": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Database cluster security group",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "VpcId": "vpc-03af2ef666f86d6d2"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/pdsdbsecuritygrp/Resource"
+      }
+    },
+    "pdsdbsecuritygrpfromIpsRdsvpc03af2ef666f86d6d2pdsdbsecuritygrprule0F47B18B85432E5ADB6CE": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-06fbd439f7cf6245f",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pdsdbsecuritygrpBD1316B7",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-06fbd439f7cf6245f",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/pdsdbsecuritygrp/from IpsRdsvpc03af2ef666f86d6d2pdsdbsecuritygrprule0F47B18B8:5432"
+      }
+    },
+    "pdsdbsecuritygrpfromIpsRdsvpc03af2ef666f86d6d2pdsdbsecuritygrprule15A62C10D5432369D5ABF": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-00912dcc46ffc8024",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pdsdbsecuritygrpBD1316B7",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-00912dcc46ffc8024",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/pdsdbsecuritygrp/from IpsRdsvpc03af2ef666f86d6d2pdsdbsecuritygrprule15A62C10D:5432"
+      }
+    },
+    "pdsdbsecuritygrpfromIpsRdsvpc03af2ef666f86d6d2pdsdbsecuritygrprule207FDF009543249A694D6": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow 5432 from sg-04d9bd57832302cae",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "pdsdbsecuritygrpBD1316B7",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": "sg-04d9bd57832302cae",
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/pdsdbsecuritygrp/from IpsRdsvpc03af2ef666f86d6d2pdsdbsecuritygrprule207FDF009:5432"
+      }
+    },
+    "ssmparampdsdbsecuritygrp118E9168": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": {
+          "Fn::GetAtt": [
+            "pdsdbsecuritygrpBD1316B7",
+            "GroupId"
+          ]
+        },
+        "AllowedPattern": ".*",
+        "Description": "Shared security group from stack IpsRds-vpc-03af2ef666f86d6d2",
+        "Name": "/ips/relational/exports/vpc-03af2ef666f86d6d2/ppsp/pdsdbsecuritygrp",
+        "Tags": {
+          "intuit:asset_id": "6847740825712235356",
+          "intuit:billing:appenv": "pds",
+          "intuit:billing:bu": "SBSEG",
+          "intuit:billing:component": "PSP",
+          "intuit:billing:fp": "PSP",
+          "intuit:billing:service_assetid": "6847740825712235356",
+          "ipsauroracdk_ver": "0.8.4",
+          "ipsauroramonitoring_ver": "0.0.1.5",
+          "ipsauroratemplate_ver": "null",
+          "vpc_exception": "true"
+        },
+        "Tier": "Standard"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/ssmparam-pdsdbsecuritygrp/Resource"
+      }
+    },
+    "exportRdsIngressSgRefvpc03af2ef666f86d6d2C757BE1F": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "IpsRds-vpc-03af2ef666f86d6d2/exportRdsIngressSgRef-vpc-03af2ef666f86d6d2",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "VpcId": "vpc-03af2ef666f86d6d2"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/exportRdsIngressSgRef-vpc-03af2ef666f86d6d2/Resource"
+      }
+    },
+    "exportAllowRdsIngressSgvpc03af2ef666f86d6d27F05E34F": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "IpsRds-vpc-03af2ef666f86d6d2/exportAllowRdsIngressSg-vpc-03af2ef666f86d6d2",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "VpcId": "vpc-03af2ef666f86d6d2"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/exportAllowRdsIngressSg-vpc-03af2ef666f86d6d2/Resource"
+      }
+    },
+    "exportAllowRdsIngressSgvpc03af2ef666f86d6d2fromIpsRdsvpc03af2ef666f86d6d2exportRdsIngressSgRefvpc03af2ef666f86d6d2CD11F6AA543232CE6838": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Allow inbound from resources with ",
+              {
+                "Fn::GetAtt": [
+                  "exportRdsIngressSgRefvpc03af2ef666f86d6d2C757BE1F",
+                  "GroupId"
+                ]
+              }
+            ]
+          ]
+        },
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "exportAllowRdsIngressSgvpc03af2ef666f86d6d27F05E34F",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "exportRdsIngressSgRefvpc03af2ef666f86d6d2C757BE1F",
+            "GroupId"
+          ]
+        },
+        "ToPort": 5432
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/exportAllowRdsIngressSg-vpc-03af2ef666f86d6d2/from IpsRdsvpc03af2ef666f86d6d2exportRdsIngressSgRefvpc03af2ef666f86d6d2CD11F6AA:5432"
+      }
+    },
+    "exportDefaultSgvpc03af2ef666f86d6d21DD1E7DE": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "IpsRds-vpc-03af2ef666f86d6d2/exportDefaultSg-vpc-03af2ef666f86d6d2",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "VpcId": "vpc-03af2ef666f86d6d2"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/exportDefaultSg-vpc-03af2ef666f86d6d2/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2terraformRolePolicyAA1F6AF7": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+                      },
+                      "/artifacts/0.8.4/apg_terraform.zip"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:ecr:us-west-2:234368464184:repository/terraform-aws"
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "ec2:CreateNetworkInterfacePermission",
+              "Condition": {
+                "StringEquals": {
+                  "ec2:Subnet": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":subnet/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::Split": [
+                                  ",",
+                                  {
+                                    "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":subnet/",
+                          {
+                            "Fn::Select": [
+                              1,
+                              {
+                                "Fn::Split": [
+                                  ",",
+                                  {
+                                    "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ec2:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":subnet/",
+                          {
+                            "Fn::Select": [
+                              2,
+                              {
+                                "Fn::Split": [
+                                  ",",
+                                  {
+                                    "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ],
+                  "ec2:AuthorizedService": "codebuild.amazonaws.com"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ec2:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":network-interface/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:us-east-2:152430470825:log-group:/aws/codebuild/",
+                      {
+                        "Ref": "IpsRdsvpc03af2ef666f86d6d2codebuildC6111655"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":logs:us-east-2:152430470825:log-group:/aws/codebuild/",
+                      {
+                        "Ref": "IpsRdsvpc03af2ef666f86d6d2codebuildC6111655"
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "codebuild:CreateReportGroup",
+                "codebuild:CreateReport",
+                "codebuild:UpdateReport",
+                "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":codebuild:us-east-2:152430470825:report-group/",
+                    {
+                      "Ref": "IpsRdsvpc03af2ef666f86d6d2codebuildC6111655"
+                    },
+                    "-*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "IpsRdsvpc03af2ef666f86d6d2terraformRolePolicyAA1F6AF7",
+        "Roles": [
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::ImportValue": "ips:relational:exports:IpsRds:us-east-2:terraformRole"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2terraformRole/Policy/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2codebuildC6111655": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": {
+            "Fn::Join": [
+              "",
+              [
+                "234368464184.dkr.ecr.us-west-2.",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/terraform-aws:latest"
+              ]
+            ]
+          },
+          "ImagePullCredentialsType": "SERVICE_ROLE",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::ImportValue": "ips:relational:exports:IpsRds:us-east-2:terraformRole"
+        },
+        "Source": {
+          "Location": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+                },
+                "/artifacts/0.8.4/apg_terraform.zip"
+              ]
+            ]
+          },
+          "Type": "S3"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
+        "EncryptionKey": "alias/aws/s3",
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "TimeoutInMinutes": 10,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "exportDefaultSgvpc03af2ef666f86d6d21DD1E7DE",
+                "GroupId"
+              ]
+            }
+          ],
+          "Subnets": [
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                2,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "VpcId": "vpc-03af2ef666f86d6d2"
+        }
+      },
+      "DependsOn": [
+        "IpsRdsvpc03af2ef666f86d6d2codebuildPolicyDocumentF60ABC64"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2codebuild/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2codebuildPolicyDocumentF60ABC64": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeDhcpOptions",
+                "ec2:DescribeVpcs"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "IpsRdsvpc03af2ef666f86d6d2codebuildPolicyDocumentF60ABC64",
+        "Roles": [
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Fn::Split": [
+                  "/",
+                  {
+                    "Fn::Select": [
+                      5,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::ImportValue": "ips:relational:exports:IpsRds:us-east-2:terraformRole"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2codebuild/PolicyDocument/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildLambdaServiceRoleF54AFAF4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AWSCodeBuildDeveloperAccess"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/CloudWatchLogsFullAccess"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonS3FullAccess"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildLambda/ServiceRole/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildLambda31F1E432": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
+          "S3Key": "artifacts/0.8.4/codebuild_lambda.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IpsRdsvpc03af2ef666f86d6d2CodebuildLambdaServiceRoleF54AFAF4",
+            "Arn"
+          ]
+        },
+        "Handler": "codebuild_lambda.handler",
+        "Runtime": "python3.8",
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "Timeout": 240,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "exportDefaultSgvpc03af2ef666f86d6d21DD1E7DE",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                2,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "IpsRdsvpc03af2ef666f86d6d2CodebuildLambdaServiceRoleF54AFAF4"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildLambda/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildLambdaLogRetention361A9C89": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "IpsRdsvpc03af2ef666f86d6d2CodebuildLambda31F1E432"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 90
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildLambda/LogRetention/Resource"
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x",
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-east-2",
+          "S3Key": "558dc75fbdc793c8e2f64f85d2d7ed2cb820c727ec7e9b08666ad1af0103992e.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ]
+      },
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+        "aws:asset:path": "asset.558dc75fbdc793c8e2f64f85d2d7ed2cb820c727ec7e9b08666ad1af0103992e",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2TfPolicyE91967BF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "secretsmanager:GetRandomPassword",
+                "ecr:GetAuthorizationToken",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AttachNetworkInterface",
+                "ec2:DescribeInstances"
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "IpsRdsvpc03af2ef666f86d6d2tfPerms"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "IpsRds-vpc-03af2ef666f86d6d2TfPolicy",
+        "Roles": [
+          {
+            "Ref": "IpsRdsvpc03af2ef666f86d6d2CodebuildLambdaServiceRoleF54AFAF4"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2TfPolicy/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRole924B9A15": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildCustomResource/framework-onEvent/ServiceRole/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRoleDefaultPolicy6C23B41A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "IpsRdsvpc03af2ef666f86d6d2CodebuildLambda31F1E432",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "IpsRdsvpc03af2ef666f86d6d2CodebuildLambda31F1E432",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRoleDefaultPolicy6C23B41A",
+        "Roles": [
+          {
+            "Ref": "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRole924B9A15"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildCustomResource/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEvent0A360BFD": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-east-2",
+          "S3Key": "885e74c18034f7d2833ec7129bb76a442e75d84f9c21ce7990bbb3aea67ab779.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRole924B9A15",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildCustomResource)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "IpsRdsvpc03af2ef666f86d6d2CodebuildLambda31F1E432",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRoleDefaultPolicy6C23B41A",
+        "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventServiceRole924B9A15"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildCustomResource/framework-onEvent/Resource",
+        "aws:asset:path": "asset.885e74c18034f7d2833ec7129bb76a442e75d84f9c21ce7990bbb3aea67ab779",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEventLogRetention6ED19035": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEvent0A360BFD"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 3
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2CodebuildCustomResource/framework-onEvent/LogRetention/Resource"
+      }
+    },
+    "customEndpointsFuncSecurityGroup4B5458CA": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatic security group for Lambda Function IpsRdsvpc03af2ef666f86d6d2customEndpointsFunc025663C7",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "VpcId": "vpc-03af2ef666f86d6d2"
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/customEndpointsFunc/SecurityGroup/Resource"
+      }
+    },
+    "customEndpointsFuncA3D92AAB": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
+          "S3Key": "artifacts/0.8.4/custom_endpoints.zip"
+        },
+        "Role": {
+          "Fn::ImportValue": "ips:relational:exports:IpsRds:us-east-2:UpdatedCustomEndpointRole"
+        },
+        "Handler": "custom_endpoints.lambda_handler",
+        "Layers": [
+          {
+            "Ref": "lambdaLayerParameter"
+          }
+        ],
+        "Runtime": "python3.8",
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "Timeout": 120,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "customEndpointsFuncSecurityGroup4B5458CA",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                2,
+                {
+                  "Fn::Split": [
+                    ",",
+                    {
+                      "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/customEndpointsFunc/Resource"
+      }
+    },
+    "customEndpointsFuncLogRetention6504A2C7": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "customEndpointsFuncA3D92AAB"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 90
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/customEndpointsFunc/LogRetention/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRole944F78AC": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2customEndpointsProvider/framework-onEvent/ServiceRole/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRoleDefaultPolicyBFBF24CA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "customEndpointsFuncA3D92AAB",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "customEndpointsFuncA3D92AAB",
+                          "Arn"
+                        ]
+                      },
+                      ":*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRoleDefaultPolicyBFBF24CA",
+        "Roles": [
+          {
+            "Ref": "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRole944F78AC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2customEndpointsProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEvent87700429": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-east-2",
+          "S3Key": "885e74c18034f7d2833ec7129bb76a442e75d84f9c21ce7990bbb3aea67ab779.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRole944F78AC",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2customEndpointsProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "customEndpointsFuncA3D92AAB",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Tags": [
+          {
+            "Key": "intuit:asset_id",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "intuit:billing:appenv",
+            "Value": "pds"
+          },
+          {
+            "Key": "intuit:billing:bu",
+            "Value": "SBSEG"
+          },
+          {
+            "Key": "intuit:billing:component",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:fp",
+            "Value": "PSP"
+          },
+          {
+            "Key": "intuit:billing:service_assetid",
+            "Value": "6847740825712235356"
+          },
+          {
+            "Key": "ipsauroracdk_ver",
+            "Value": "0.8.4"
+          },
+          {
+            "Key": "ipsauroramonitoring_ver",
+            "Value": "0.0.1.5"
+          },
+          {
+            "Key": "ipsauroratemplate_ver",
+            "Value": "null"
+          },
+          {
+            "Key": "vpc_exception",
+            "Value": "true"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRoleDefaultPolicyBFBF24CA",
+        "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventServiceRole944F78AC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2customEndpointsProvider/framework-onEvent/Resource",
+        "aws:asset:path": "asset.885e74c18034f7d2833ec7129bb76a442e75d84f9c21ce7990bbb3aea67ab779",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEventLogRetentionCF373184": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEvent87700429"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 3
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/IpsRds-vpc-03af2ef666f86d6d2customEndpointsProvider/framework-onEvent/LogRetention/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/32RwU7DMAyGn2X3LKzbiSMFMYGQmMoDVGliqqxtUtnJUFX13XFSGDtxspXf/2frz14W93K3UV+01abb9raR80dQuhMVkI+oQTx+upNCNUAAFDxYz3SQZdQdhFIRCDTEntg4CEf0cUyGp/LmYRFEQ8Kide0f6pa7CNB7HgEd0Ybpyvn/4cW1CESLsIr5J99bPWXs2lW+z9enmhagrGD0ZIPHKV+uvYEm2t6wGf0ZdMjutV1Er4bGKDk/R6eD9S6Jvz2rviX55tuK73dZpkOtiCCQfEhlSfPvMYwxY695ZpEzbjkNoSMFP9T4I5Lk7RdrUiKv6qLuikLu+Is2Z7J2i5EXDSCrtX4D7pWANbwBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "IpsRds-vpc-03af2ef666f86d6d2/CDKMetadata/Default"
+      }
+    }
+  },
+  "Outputs": {
+    "exportRDSIngressSg": {
+      "Description": "Shared parameter group from sourceStack IpsRds-vpc-03af2ef666f86d6d2",
+      "Value": {
+        "Fn::GetAtt": [
+          "exportAllowRdsIngressSgvpc03af2ef666f86d6d27F05E34F",
+          "GroupId"
+        ]
+      },
+      "Export": {
+        "Name": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RDSIngressSg"
+      }
+    },
+    "exportRdsIngressSgRef": {
+      "Description": "Shared parameter group from sourceStack IpsRds-vpc-03af2ef666f86d6d2",
+      "Value": {
+        "Fn::GetAtt": [
+          "exportRdsIngressSgRefvpc03af2ef666f86d6d2C757BE1F",
+          "GroupId"
+        ]
+      },
+      "Export": {
+        "Name": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RdsIngressSgRef"
+      }
+    },
+    "exportDefaultSg": {
+      "Description": "Shared parameter group from sourceStack IpsRds-vpc-03af2ef666f86d6d2",
+      "Value": {
+        "Fn::GetAtt": [
+          "exportDefaultSgvpc03af2ef666f86d6d21DD1E7DE",
+          "GroupId"
+        ]
+      },
+      "Export": {
+        "Name": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:DefaultSg"
+      }
+    },
+    "exportIpsRdsvpc03af2ef666f86d6d2CodebuildLambdaServiceToken": {
+      "Description": "Shared parameter group from sourceStack IpsRds-vpc-03af2ef666f86d6d2",
+      "Value": {
+        "Fn::GetAtt": [
+          "IpsRdsvpc03af2ef666f86d6d2CodebuildCustomResourceframeworkonEvent0A360BFD",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:IpsRds-vpc-03af2ef666f86d6d2CodebuildLambdaServiceToken"
+      }
+    },
+    "exportIpsRdsvpc03af2ef666f86d6d2CodebuildName": {
+      "Description": "Shared parameter group from sourceStack IpsRds-vpc-03af2ef666f86d6d2",
+      "Value": {
+        "Ref": "IpsRdsvpc03af2ef666f86d6d2codebuildC6111655"
+      },
+      "Export": {
+        "Name": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:IpsRds-vpc-03af2ef666f86d6d2CodebuildName"
+      }
+    },
+    "exportIpsRdsvpc03af2ef666f86d6d2customEndpointProvider": {
+      "Description": "Shared parameter group from sourceStack IpsRds-vpc-03af2ef666f86d6d2",
+      "Value": {
+        "Fn::GetAtt": [
+          "IpsRdsvpc03af2ef666f86d6d2customEndpointsProviderframeworkonEvent87700429",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:IpsRds-vpc-03af2ef666f86d6d2customEndpointProvider"
+      }
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+ROOT=$(git rev-parse --show-toplevel)
+
+# normalize service name
+SERVICE=""
+case "$1" in
+  relational|rds|aurora|postgres|sql)
+    SERVICE="relational"
+    ;;
+  graph|tigergraph)
+    SERVICE="graph"
+    ;;
+  search|elasticsearch)
+    SERVICE="search"
+    ;;
+  nosql|cassandra)
+    SERVICE="nosql"
+    ;;
+  *)
+    SERVICE="$1"
+    ;;
+esac
+ACTION="$2"
+shift
+shift
+
+if [[ -z "${SERVICE}" ]] || [[ -z "${ACTION}" ]]; then
+  echo "This script requires at least 2 arguments:"
+  echo "  ipscli <service> <action>"
+  echo "For example:"
+  echo "  ipscli relational manage-snapshots"
+  exit 1
+fi
+
+if [[ "${SERVICE}" != "relational" ]]; then
+  echo "Service '$SERVICE' not supported."
+  exit 1
+fi
+
+if [[ "${ACTION}" == "manage-snapshots" ]]; then
+  # run manage-snapshots.sh script, passing in all remaining args
+  ${ROOT}/manage/snapshots/manage-snapshots.sh $*
+elif [[ "${ACTION}" == "manage-password" ]]; then
+  # run manage-password.sh script, passing in all remaining args
+  ${ROOT}/manage/password/manage-password.sh $*
+else
+  echo "Action '$ACTION' not supported."
+  exit 1
+fi

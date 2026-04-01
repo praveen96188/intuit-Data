@@ -1,0 +1,135 @@
+{
+  "id": "ppsp",
+  "description": "PSP PDS IBOB Cluster",
+  "bu": "SBSEG",
+  "dbName": "pdsibobdb",
+  "multiAZ": "false",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow": "05:00-05:30",
+  "maintenanceWindow": "Mon:07:00-Mon:07:30",
+  "backupRetention": "3",
+  "clusterParameterGroupRef": "ppsp:pdsibob-pg14-cluster",
+  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+  "subnetGroupRef": "ppsp:pdsdbsubnetgrp",
+  "securityGroupRef": "ppsp:pdsdbsecuritygrp",
+  "engineMajorVersion": "14",
+  "engineMinorVersion": "5",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "pds",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "pds",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-pds",
+          "clusters": [
+            {
+              "id": "db",
+              "globalDatabase": "ppsp-pds-db-global",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "5",
+              "instanceType": "r6g.2xlarge",
+              "readers": [
+                {
+                  "instanceType": "r6g.xlarge",
+                  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-west-2c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dr-pds",
+          "clusters": [
+            {
+              "id": "dbDR",
+              "globalDatabase": "ppsp-pds-db-global",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "5",
+              "instanceType": "r6g.2xlarge",
+              "readers": [
+                {
+                  "instanceType": "r6g.xlarge",
+                  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-east-2c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "ipsMetrics": [
+      {
+        "metricName": [
+          "num_active_connections",
+          "active_conn_by_wait_event",
+          "long_running_transactions",
+          "locks",
+          "vacuum_efficiency",
+          "global_replication_lag",
+          "uptime"
+        ],
+        "schedule": "*/5 * * * *"
+      },
+      {
+        "metricName": [
+          "buffer_cache_by_database",
+          "buffer_cache_breakup"
+        ],
+        "schedule": "0 9 * * *"
+      },
+      {
+        "metricName": [
+          "growth_trends_by_db",
+          "growth_trends_by_schema",
+          "growth_trends_by_object"
+        ],
+        "schedule": "0 6 * * *"
+      }
+    ],
+    "customMetrics": [
+      {
+        "metricName": [
+          "num_active_connections"
+        ],
+        "schedule": "*/5 * * * *"
+      }
+    ],
+    "splunkMetrics": [
+      {
+        "metricName": [
+          "top_sql"
+        ],
+        "schedule": "*/5 * * * *"
+      },
+      {
+        "metricName": [
+          "vacuum_run_history",
+          "list_extentions",
+          "table_bloat",
+          "index_bloat",
+          "list_unused_indexes",
+          "qpm_data"
+        ],
+        "schedule": "0 0 * * *"
+      }
+    ]
+  }
+}

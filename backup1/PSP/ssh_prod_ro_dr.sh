@@ -1,0 +1,7 @@
+ssh-add -D  
+ssh-add ~/.ssh/id_rsa
+eiamCli aws_ssh -a 893547637742 -p id_rsa.pub -d ~/.ssh/  
+ssh -o ServerAliveInterval=45 -i ~/.ssh/id_rsa  -L 127.0.0.1:18910:psp-prod-ue02-rpt.cluster-custom-cerpnqmbpq9a.us-east-2.rds.amazonaws.com:5432 pnarlagalla1_ro@ec2-3-130-125-83.us-east-2.compute.amazonaws.com
+
+
+

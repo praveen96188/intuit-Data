@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - Schema Scripting Tool</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+  <body>
+    <p>
+      <center> <img src="images/logo.jpg" alt="DB Solo" /> </center>
+      <a href="DBSolo.html"> Back to Index </a>
+    </p>
+    <hr align="left" />
+
+
+
+
+
+   <h2 class="pHeading1">Schema Scripting Tool</h2>
+   
+   <p>
+The Schema Scripting Tool allows you to script <b>CREATE</b> and/or <b>DROP</b> SQL statements for selected or all objects in a schema or database.
+The generated DDL scripts can then be archived or applied in a different environment to re-create the schema or database. In the latter case, you can use the Table Data Compare tool to perform a comparison between
+the source database and the (empty) destination database, which will create all the INSERT statements to populate the destination database. This way you can effectively copy your entire database, including structure and content, 
+from one environment to another.
+The Schema Scripting Tool is currently supported for Oracle, DB2, Cassandra, Vertica, Sybase, SQL Server, HSQLDB, PostgreSQL and MySQL. It is available, like all DB Solo features, on all supported OS platforms including Windows, Linux and Mac OSX.
+</p>
+
+<p>
+Currently the following object types are supported in the Schema Scripting Tool:
+<ul>
+  <li><b>PostgreSQL</b> - Tables, Views, Functions, Sequences
+  <li><b>Vertica</b> - Tables, Views, Functions, Sequences
+  <li><b>MySQL</b> - Tables, Views, Functions, Stored Procedures
+  <li><b>DB2</b> - Tables, Views, Stored Procedures, Sequences, Synonyms, User Defined Data Types
+  <li><b>Oracle</b> - Tables, Views, Functions, Stored Procedures, Sequences, Synonyms, Collection Types, Object Types, Packages
+  <li><b>Sybase</b> - Tables, Views, Stored Procedures, Rules, User Defined Data Types, Defaults
+  <li><b>SQL Server 2000</b> - Tables, Views, Functions, Stored Procedures, Rules, User Defined Data Types, Defaults
+  <li><b>SQL Server 2005 and later</b> - Tables, Views, Functions, Stored Procedures, Rules, Synonyms, User Defined Data Types, Defaults
+  <li><b>HSQLDB</b> - Tables, Views, Functions, Stored Procedures, Sequences
+  <li><b>Cassandra</b> - Tables
+</ul>
+</p>
+
+<p>
+You can invoke the SQL scripting tool from the Tools-menu or by clicking the appropriate button in the toolbar.
+</p>
+
+<h3 class="pHeading2">Selecting Objects To Script</h3>
+<p>
+The first page of the Schema Scripting Tool lets you select the objects to be included in the script. First you need to select the schema or database from the tree control on the
+left side of the screen. After clicking on a schema/database on the left side, you will see several tabs on the right side of the screen, one for each supported object type. In each tab you can
+select individual objects to be selected, by default all objects are selected. The 'Select All' and 'Deselect All' buttons allow you to quickly include all or none of the objects in the corresponding tab.
+After selecting the objects, click on the Next-button to move to the script settings screen.
+</p>
+
+		<h2 class="pHeading1"><img src="images/schema_scripting_select_objects.png" alt="" height="580" width="939" border="0"/></h2>
+
+
+
+
+<h3 class="pHeading2">Settings</h3>
+<p>
+The second screen of the Schema Scripting Tool allows you to configure the output format/content. The screen is divided into two tabs, one contains seneral settings and the other one contains object type-level settings.
+</p>
+
+<p><b>General Settings</b></p>
+<p>The Output Destination section of this screen lets you select if the generated DDL statements will be written to a single file or if one file per processed object will be generated. 
+If you selecte the Single File-option, you must enter the name of the output file.
+If you select the 'File per object' option, you must enter the directory where the script files will be saved. In either case, you can also select how existing files will be handled, wherther the Script Generator will simply write over them or if they should be backed up first.</p>
+<p>The Output Format-section lets you select formatting details for the generated scripts. The following options can be configured:</p>
+<ul>
+  <li><b>Keywords</b> - Are the keywords in upper or lower case. This does not apply to the source code of procedures, functions, views, etc</li>
+  <li><b>Statement Separator</b> - How are statements separated from one another</li>
+  <li><b>Show Identifiers</b> - Are identifiers wrapped in quotes or brackets or neither</li>
+  <li><b>Header Section</b> - Is there a header section for each object preceeding the CREATE/DROP statements</li>
+  <li><b>Dependency Sorting</b> - If this option is selected, the CREATE/DROP scripts will be output in the correct dependency order, so that objects that depend on an object will appear after the object they depend on. 
+  This option is only available if the Single File-option is selected and if this feature is supported for the DBMS in question</li>
+  <li><b>Statement Types</b> - You can select if DROP or CREATE statements, or both, are generated.</li>
+</ul>
+		<h2 class="pHeading1"><img src="images/schema_scripting_general_settings.png" alt="" height="579" width="940" border="0"/></h2>
+
+
+
+<p><b>Object Level Settings</b></p>
+<p>This screen contains a tab for each supported object type. Here you can configure settings that apply to the particular object type. All object types have the following settings:</p>
+<ul>
+  <li><b>Script Object</b> - Are objects of this type included in the generated script at all </li>
+  <li><b>Include Object Privileges</b> - Are the GRANT statements included  in the generated CREATE script </li>
+  <li><b>Output File</b> - Name of the output file for this object type. This setting is not used if you selected the 'Single File' option under the General Settings tab. The name can contain tokens that will be replaced
+  with actual values when the script is generated. The following tokens are supported: 
+  <p>&nbsp;</p>
+<table>
+          <tr bgcolor="#ccccff">
+            <th align="left">Token</th>
+            <th align="left">Meaning</th>
+          </tr>
+          <tr valign="top">
+            <td>#name#</td>
+            <td>Name of the object (lowercase)</td>
+          </tr>
+          <tr bgcolor="#eeeeff" valign="top">
+            <td>#NAME#</td>
+            <td>Name of the object (uppercase)</td>
+          </tr>
+          <tr valign="top">
+            <td>#schema#</td>
+            <td>Name of the schema/owner of the object (lowercase)</td>
+          </tr>
+          <tr bgcolor="#eeeeff" valign="top">
+            <td>#SCHEMA#</td>
+            <td>Name of the schema/owner of the object (uppercase)</td>
+          </tr>
+          <tr valign="top">
+            <td>#dd#</td>
+            <td>Current day of the month (1-31)</td>
+          </tr>
+          <tr bgcolor="#eeeeff" valign="top">
+            <td>#mm#</td>
+            <td>Current month of the year (1-12)</td>
+          </tr>
+          <tr valign="top">
+            <td>#yyyy#</td>
+            <td>Current year</td>
+          </tr>
+</table>
+
+  </li>
+  </ul>
+
+
+<p>
+Once you have configured all the settings, click on the Next-button to start the schema scripting process. While the schema scripting tool is generating the script for you, you can monitor the status in the progress dialog.
+</p>
+
+
+		<h2 class="pHeading1"><img src="images/schema_scripting_table_settings.png" alt="Object Level Settings" height="660" width="1148" border="0"/></h2>
+
+
+<h3 class="pHeading2">Results</h3>
+<p>
+In the last screen of the schema scripting tool you can view the resulting script(s). The upper part of the screen contains a list of files that were generated. If you selected the 'Single File' option on the settings
+screen, the upper panel will only contain one file, otherwise it will contain several files (if you selected more than one object to be scripted). Both the file name and its size in bytes is shown in the grid. 
+</p>
+<p>
+By clicking on the files in the results grid, you can bring up their contents in the lower part of the screen. The file contents panel allows you to save the SQL script to a different file, print the script or copy the
+script to the system clipboard. Once you are satisfied with the generated script, click on the Close-button to exit the Schema Scripting Tool and go back to the main application.
+</p>
+
+
+		<h2 class="pHeading1"><img src="images/schema_scripting_results.png" alt="Schema Scripting Results" height="661" width="1149" border="0"/></h2>
+		<hr/>
+
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td align="left">
+           <a href="DBSolo.html"> Back to Index </a>
+        </td>
+        <td align="right">
+          <span style="font-size: 16px ; font-weight: bold">
+            DB Solo<br />
+          </span>
+          <span style="font-size: 10px">
+            <a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+            <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+          </span>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

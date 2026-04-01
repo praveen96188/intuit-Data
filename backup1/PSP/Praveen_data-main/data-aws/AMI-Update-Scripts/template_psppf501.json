@@ -1,0 +1,317 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Create Golden Gate stack",
+    "Parameters": {
+        "AppName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AppEnv": {
+            "Type": "String",
+            "Default": ""
+        },
+        "VpcEnv": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AmiId": {
+            "Type": "String",
+            "Default": ""
+        },
+        "Locale": {
+            "Type": "String",
+            "Default": ""
+        },
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Default": ""
+        },
+        "GoldenGateVolumeId": {
+            "Type": "String",
+            "Default": ""
+        },
+        "GoldenGateSubnetIds": {
+            "Type": "CommaDelimitedList",
+            "Default": ""
+        },
+        "GoldenGateSecGrpIds": {
+            "Type": "CommaDelimitedList",
+            "Default": ""
+        },
+        "Hostname": {
+            "Type": "String",
+            "Default": ""
+        },
+        "HostedZoneId": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ChefRole": {
+            "Type": "String",
+            "Default": ""
+        },
+        "GoldenGateIamInstanceProfile": {
+            "Type": "String",
+            "Default": ""
+        },
+        "NotificationServiceArn": {
+            "Type": "String",
+            "Default": ""
+        },
+        "HA": {
+            "Type": "String",
+            "Default": "no"
+        },
+        "IdpsEndpoint": {
+            "Type": "String",
+            "Default": "none"
+        },
+        "IdpsPolicyId": {
+            "Type": "String",
+            "Default": "none"
+        },
+        "RdsInstanceName": {
+            "Type": "String",
+            "Default": ""
+        }
+    },
+    "Resources": {
+        "GoldenGateASG": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Metadata": {
+                "Comments": "Golden Gate server for this cluster",
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "commands": {
+                            "run_chef": {
+                                "cwd": {
+                                    "Fn::FindInMap": [
+                                        "CfnInit",
+                                        "GoldenGate",
+                                        "Cwd"
+                                    ]
+                                },
+                                "env": {
+                                    "GOLDENGATE_ROLE": "goldengate_hub",
+                                    "PATH": {
+                                        "Fn::FindInMap": [
+                                            "CfnInit",
+                                            "GoldenGate",
+                                            "Path"
+                                        ]
+                                    }
+                                },
+                                "command": {
+                                    "Fn::FindInMap": [
+                                        "CfnInit",
+                                        "GoldenGate",
+                                        "Command"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "VPCZoneIdentifier": {
+                    "Ref": "GoldenGateSubnetIds"
+                },
+                "LaunchConfigurationName": {
+                    "Ref": "GoldenGateLaunchConfig"
+                },
+                "HealthCheckGracePeriod": 600,
+                "HealthCheckType": "EC2",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Role",
+                        "Value": {
+                            "Ref": "ChefRole"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "app-name",
+                        "Value": {
+                            "Ref": "AppName"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "app-env",
+                        "Value": {
+                            "Ref": "AppEnv"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "vpc-env",
+                        "Value": {
+                            "Ref": "VpcEnv"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "goldengate-volume-id",
+                        "Value": {
+                            "Ref": "GoldenGateVolumeId"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "hostname",
+                        "Value": {
+                            "Ref": "Hostname"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "hosted-zone-id",
+                        "Value": {
+                            "Ref": "HostedZoneId"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "notification-service-arn",
+                        "Value": {
+                            "Ref": "NotificationServiceArn"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "ha",
+                        "Value": {
+                            "Ref": "HA"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "idps-endpoint",
+                        "Value": {
+                            "Ref": "IdpsEndpoint"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "idps-policy-id",
+                        "Value": {
+                            "Ref": "IdpsPolicyId"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "rds-instance-name",
+                        "Value": {
+                            "Ref": "RdsInstanceName"
+                        },
+                        "PropagateAtLaunch": "true"
+                    }
+                ],
+                "MinSize": "1",
+                "DesiredCapacity": "1",
+                "MaxSize": "1"
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Count": "1",
+                    "Timeout": "PT45M"
+                }
+            }
+        },
+        "GoldenGateLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "AssociatePublicIpAddress": "false",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "/dev/sda1",
+                        "Ebs": {
+                            "VolumeSize": "40",
+                            "VolumeType": "gp2"
+                        }
+                    }
+                ],
+                "EbsOptimized": "true",
+                "SecurityGroups": {
+                    "Ref": "GoldenGateSecGrpIds"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "GoldenGateIamInstanceProfile"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "ImageId": {
+                    "Ref": "AmiId"
+                },
+                "InstanceType": {
+                    "Fn::FindInMap": [
+                        "InstanceTypes",
+                        "GoldenGate",
+                        {
+                            "Ref": "AppEnv"
+                        }
+                    ]
+                },
+                "PlacementTenancy": "default",
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -ex\n",
+                                "export PATH=$PATH:/usr/local/bin:/ops/bin\n",
+                                "#!/bin/sh\n",
+                                "echo \"SSH_IDENTIFIER=fg_ssh\" >> /etc/environment\n",
+                                "# Remove these SSH keys\n",
+                                "echo \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCd0gYVaN0Q9NgJPi+JkJuI9vXCGrFOqYMvVhPzO65IOTyqOzb0yr3oOer8bZLWVgyh1P9659rdmppqMU70IXINcHd1VbWT8w03uGdIv6ZndMoeRfv8X1+wNu8l5B3ayHdCVpPD20weWXikN7mxVrZZ1a64JngRa+OId2VYxMbx/IjBf37hW4TWO4e8fYz0eayZBC/alHKCOpmZ0n42F0f1dW7A7+NjzxdnKJYSrNR84V9LLrRvbSZrV3nT9nvkN6qw8yB8UsurZvq7yHlCxpT93AKkdEJQAAIc/IZmeMJwL8JjhPgi8F4zJBRhoY1SMDNynhylObidsETriv8wHsMj mchoubey@INTUL1748e09cd\" >> /home/ec2-user/.ssh/authorized_keys\n",
+                                "\n",
+                                "export METADATA=http://169.254.169.254/latest/meta-data\n",
+                                "export AWS_REGION=`curl --noproxy \"*\" -s \"${METADATA}/placement/availability-zone\" | awk '{print substr($0, 0, length($0) - 1)}'`\n",
+                                "\n",
+                                "aws --region ${AWS_REGION} s3 cp s3://bits-sbg-",
+                                {
+                                    "Ref": "AppName"
+                                },
+                                "-",
+                                {
+                                    "Ref": "VpcEnv"
+                                },
+                                "-${AWS_REGION}/binaries/goldengate/scripts/goldengate_hub_userdata.sh /tmp/goldengate_hub_userdata.sh\n",
+                                "chmod +x /tmp/goldengate_hub_userdata.sh; /tmp/goldengate_hub_userdata.sh\n",
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Mappings": {
+        "InstanceTypes": {
+            "GoldenGate": {
+                "qa": "m4.large",
+                "e2e": "m4.large",
+                "prf": "m4.4xlarge",
+                "stg": "m4.large",
+                "sbx": "m4.large",
+                "prod": "m4.10xlarge"
+            }
+        },
+        "CfnInit": {
+            "GoldenGate": {
+                "Cwd": "/var/chef",
+                "Command": "if [ -e \"/u01/DO-NOT-DELETE.lck\" ]; then chef-solo -l debug -c /var/chef/chef-repo/config/chef/solo.rb -o recipe[goldengate_hub]; else chef-solo -l debug -c /var/chef/chef-repo/config/chef/solo.rb -o recipe[goldengate_hub::default_ha]; fi; \n",
+                "Path": "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/aws/bin:/root/bin:/ops/bin"
+            }
+        }
+    }
+}

@@ -1,0 +1,317 @@
+Update on DMS Replication:
+B->C3
+All Tasks: Below 10 sec lag
+
+C3->D3:
+
+All Tasks:  0sec lag
+
+
+
+We have resumed all Tasks B-C3 Tasks around 4th Aug 3:30 PM IST.
+
+Update on DMS Replication:
+B->C3
+
+Task 1: Sunday 1AM Reached to 0.
+Task 7: Sunday 6PM Reached to 0.
+Reamaing all Tasks: friday(4th Aug) almost 7PM IST all tasks Reached to 0
+
+6th 1AM
+4th 18PM
+4th  20
+4th 18
+4th 16
+4th 20
+6th 18
+4th 18
+
+
+Task2,3,4,5,6: Friday(4th Aug) between 6PM-10PM IST all tasks Reached to 0
+Task 8: Saturday 12AM IST Reached to 0.
+Task 1: Sunday 1AM IST Reached to 0.
+Task 7: Sunday 6PM IST  Reached to 0.
+
+
+
+we have resumed all tasks C3->D3 around 4th Aug 3:15 PM IST.
+
+
+Task 1c,7b:Friday 20PM reached to 0.
+Task 2,3,4,5,6: Saturday between 9AM-12PM reached to 0.
+Task1a,b:Saturday 21PM reached to 0.
+Task 7c,8: Sunday 17PM reached to 0.
+Task 7a:Monday 1AM reached to 0.
+Task 7d:Monday  5AM reached to 0.
+
+
+
+Task 1a,1b:Aug 5th 21PM
+Task8: 06th Aug 17PM
+
+
+Task 1c:Aug 4th 20PM
+
+2: 5th 10AM
+3:5th 11AM
+4:5th 12PM
+5:5th 9AM
+6:5th 9AM
+Task 7a:7th Aug 1AM
+Task 7b: 4th aug 20PM
+TAsk 7c: 6th 18PM
+
+8: 06th Aug 17PM
+
+
+
+
+Last 12hrs Max lag
+B-C3
+All Tasks below 30sec lag
+Task7:90 sec lag
+
+1:50sec
+2:40sec
+3:40sec
+4:40sec
+5:40sec
+6:40sec
+7;100 sec
+8:40sec
+
+
+1:10sec, 30 sec,5sec lag
+2:5sec
+3:5sec
+4:40sec
+5;5 sec
+6;10 sec
+7; 5 sec,10sec,15 sec,80 sec
+8:65sec
+
+
+
+Task1a,1b,2,3,5,6,7a,7b,7c: Below 15 sec lag
+Task1c,4,8:Below 50sec lag 
+Task7d:Below 80 sec lag
+
+
+
+1.Stop replication A->B and B->C.
+2.Take backup DMS Replications Tasks A->B and B->C
+3.Delete replications tasks.
+
+
+
+
+
+
+
+
+
+
+Update on DMS Replication Max Lag last 12hrs.
+
+B-C3:
+Task7:7:90sec lag
+All tasks : Below 30 sec lag
+
+
+
+1:30 sec
+2:20sec
+3:30sec
+4:30sec
+5:20sec
+6:20sec
+8:20sec
+
+Task7:7:100sec
+
+
+
+1: 1sec,2sec,2sec
+2:7sec
+3:5 sec
+4:5sec
+5:2 sec
+6:2 sec
+Task 7a:2sec,3 sec,8sec,
+
+
+C3-D3:
+Task 7d, 8: 80 sec
+All Tasks: Below 10 sec lag
+
+
+
+
+
+
+
+Yesterday around 12pm-3pm IST
+Task1:2k lag
+task7:2k lag
+
+
+Yesterday around 12pm-3pm IST
+Task1a,b: 3k latency
+Task 7a,d: 2k latency
+
+
+$ aws cloudwatch list-metrics --namespace AWS/DMS --dimensions "Name=ReplicationInstanceIdentifier,Value=$replication_instance_identifier " "Name=ReplicationTaskIdentifier,Value=$replication_task_identifier " --region=$region
+
+
+
+
+$aws cloudwatch put-metric-alarm --alarm-name ${team_tag_value}-${task_name}-cdcthroughputrowssource --alarm-description "Outgoing task changes for the target is more than 1000 rows per second" --metric-name CDCThroughputRowsSource --namespace "AWS/DMS" --statistic Average --period 60 --threshold 1000 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --dimensions "Name=ReplicationInstanceIdentifier,Value=$replication_instance_identifier" "Name=ReplicationTaskIdentifier,Value=$replication_task_identifier" --region=$region
+
+
+
+
+
+CREATE TABLE pspadm.psp_entitlement_message_2024
+        PARTITION OF pspadm.psp_entitlement_message
+        FOR VALUES FROM ('2024-01-01 00:00:00') TO (MAXVALUE);
+
+ALTER TABLE pspadm.psp_entitlement_message_2024 ADD CONSTRAINT psp_entitlement_message_2024_pk PRIMARY KEY (entitlement_message_seq, realm_id);
+
+
+CREATE TABLE pspadm.psp_paycheck_usage_2024
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2024-01-01 00:00:00') TO (MAXVALUE);
+
+ALTER TABLE pspadm.psp_paycheck_usage_2024 ADD CONSTRAINT psp_paycheck_usage_2024_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+
+
+
+
+aws cloudwatch put-metric-alarm --alarm-name ${team_tag_value}-${task_name}-cdcthroughputrowssource --alarm-description "Outgoing task changes for the target is more than 1000 rows per second" --metric-name CDCThroughputRowsSource --namespace "AWS/DMS" --statistic Average --period 60 --threshold 1000 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --dimensions "Name=ReplicationInstanceIdentifier,Value=$replication_instance_identifier" "Name=ReplicationTaskIdentifier,Value=$replication_task_identifier" --region=$region
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+aws cloudwatch put-metric-alarm \
+--alarm-name 'dms-replication-instance-sys-CDCLatencyTarget-ppsppdsdb-pspibob1-ibobadm-pds' \
+--alarm-description 'CDC target latency greater than 5 mins' \
+--actions-enabled \
+--metric-name 'CDCLatencyTarget' \
+--namespace 'AWS/DMS' \
+--statistic 'Average' \
+--dimensions '[{"Name":"ReplicationInstanceIdentifier","Value":"dms-replication-instance-sys"},{"Name":"ReplicationTaskIdentifier","Value":"F3ZHAJTVWVWXR5POVU5O4PU2IPMMRKXAGQQRCUQ"}]' \
+--period 60 \
+--evaluation-periods 1 \
+--datapoints-to-alarm 1 \
+--threshold 300 \
+--comparison-operator 'GreaterThanOrEqualToThreshold' \
+--treat-missing-data 'notBreaching'
+
+
+filter @logStream = 'dms-task-RPZAW7KXULQG6UYPX42WWXC6SCYRV6345NB73FI'
+ | fields @timestamp as timestamp, @message as message
+ | filter @message like /]E:|]W:|exceeded|lmit|paused|resumed|Error|recoverable error|sequence|archived Redo log|Reload for table|load|Unload|ORA-01406|Error_State|ORA-|Task is running/ 
+ | filter @message not like /Page validate|Will try to reattach|data handler|Start processing online Redo log sequence|Start processing archived Redo log sequence|Next table to load|During startup error state is set to '1' and expiration time is already set./
+ | filter @message not like /Start loading table|Start loading segment|Unload finished for table|Unload finished for segment|Query status='Success'|Calculated batch used for UNLOAD size|Total load time|End load handler time|Reading from source is paused|Reading from source is resumed/
+ | sort @timestamp desc
+ | limit 20
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+filter @logStream = 'dms-task-LTGQPKZZEJUP5COOPUMYSDSP4VRXZRAK2BOIHOQ'
+| fields @timestamp as timestamp, @message as message
+| filter @message like /]E:|]W:Error|recoverable error|archived Redo log|ORA-01406|Error_State|Failed|ORA-|constraint|error|buffer|Task is running|Error/ 
+| filter @message not like /Page validate|Will try to reattach|data handler|Start processing online Redo log sequence|Start processing archived Redo log sequence|Next table to load|During startup error state is set to '1' and expiration time is already set./
+| filter @message not like /Start loading table|Start loading segment|Unload finished for table|Unload finished for segment|Query status='Success'|Calculated batch used for UNLOAD size|Total load time|End load handler time|Reading from source is paused|Reading from source is resumed/
+
+
+
+
+
+
+
+LTGQPKZZEJUP5COOPUMYSDSP4VRXZRAK2BOIHOQ
+IHYTT7WYXYF4JDBZWZ4LCUHIJZOXTB4DLYWJSGA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Last one week DMS Replication Max Lag :
+
+B-->C3:
+Task1:11th Aug--> 1:30AM IST --> 15K Latency
+                  11:30AM IST--> 1236 Latency
+
+      15th Aug--> 11:30AM IST --> 1465 Latency 
+      
+      16th Aug--> 2:30 PM IST --> 1640 Latency
+                  6:30 PM IST --> 3373 Latency
+
+
+Task 7: 10th Aug--> 10:30 PM IST --> 1885 Latency
+        11th Aug--> 10:30 AM IST --> 1063 Latency
+
+Remaining all Tasks Below:30 sec  lag.
+
+C3-->D3:
+Task-1a:  11th Aug  --> 12:30AM IST --> 10K Latency
+     11th Aug  --> 04:30 AM IST --> 1168 Latency
+     15th Aug  --> 11:30 AM IST --> 1346 Latency
+
+Task-1b: 10th Aug --> 11:30PM IST --> 4333 Latency
+    11th Aug --> 2:30 AM IST --> 7333 Latency
+                6:30 AM IST --> 7033 Latency
+    12th AUg --> 7:30 AM IST --> 1340 Latency
+
+    15th AUg--> 12:30 PM IST--> 1389  Latency
+    16th Aug --> 1:30 PM IST --> 1905 Latency
+
+Task7a:10th Aug -->  11:30 PM IST--->3k Latency
+
+
+Remaining all Tasks Below:10 sec lag.
+
+--Justify Text
+--Line spacing 1.5
+--Principal Name (Sanjay Dubay).
+--Abstract style
+--complete Times New Roman -- 12
+--page 16
+--code same as Text
+--references 
+

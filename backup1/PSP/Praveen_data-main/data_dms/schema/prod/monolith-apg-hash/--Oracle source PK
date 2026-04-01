@@ -1,0 +1,344 @@
+--Oracle source PK
+ALTER TABLE PSPADM.PSP_ENTITLEMENT_MESSAGE ADD CONSTRAINT PSP_ENTITLEMENT_MESSAGE_PK PRIMARY KEY (ENTITLEMENT_MESSAGE_SEQ) USING INDEX  TABLESPACE PSP_IDX02 ENABLE;
+
+ALTER TABLE PSPADM.PSP_PAYCHECK_USAGE ADD CONSTRAINT PSP_PAYCHECK_USAGE_PK PRIMARY KEY (PAYCHECK_USAGE_SEQ) USING INDEX  TABLESPACE PSP_IDX03 ENABLE;
+
+--no FK source and target
+
+--Create Indexes on Oracle SOurce  PSP_ENTITLEMENT_MESSAGE and PSP_PAYCHECK_USAGE tables
+
+CREATE INDEX "PSPADM"."PSP_PAYCHECK_USAGE_FK1" ON "PSPADM"."PSP_PAYCHECK_USAGE" ("COMPANY_FK") ;
+CREATE INDEX "PSPADM"."PSP_PAYCHECK_USAGE_NU1" ON "PSPADM"."PSP_PAYCHECK_USAGE" ("SOURCE_PAYCHECK_ID") ;
+CREATE INDEX "PSPADM"."PSP_PAYCHECKUSAGE_FK1" ON "PSPADM"."PSP_PAYCHECK_USAGE" ("BILL_FK") ;
+CREATE UNIQUE INDEX "PSPADM"."PSP_PAYCHECK_USAGE_U1" ON "PSPADM"."PSP_PAYCHECK_USAGE" ("EMPLOYEE_USAGE_FK", "SOURCE_PAYCHECK_ID") ;
+CREATE INDEX "PSPADM"."PSP_PAYCHECKUSAGE_FK2" ON "PSPADM"."PSP_PAYCHECK_USAGE" ("EMPLOYEE_USAGE_FK") ;
+CREATE INDEX "PSPADM"."IDX_PCHK_USG_MOD_DATE" ON "PSPADM"."PSP_PAYCHECK_USAGE" ("MODIFIED_DATE") ;
+
+CREATE INDEX "PSPADM"."PSP_ENTITLEMENT_MESSAGE_U1" ON "PSPADM"."PSP_ENTITLEMENT_MESSAGE" ("TOKEN") ;
+CREATE INDEX "PSPADM"."PSP_ENTITLEMENT_MSG_LCNO_EOFCD" ON "PSPADM"."PSP_ENTITLEMENT_MESSAGE" ("LICENSE_NUMBER", "ENTITLEMENT_OFFERING_CODE") ;
+CREATE INDEX "PSPADM"."PSP_ENTITLEMENT_MSG_MSGTS_ER" ON "PSPADM"."PSP_ENTITLEMENT_MESSAGE" ("MESSAGE_TIMESTAMP", "EVENT_REASON") ;
+CREATE INDEX "PSPADM"."PSP_ENTITLEMENT_MSG_ORNO_LCNO" ON "PSPADM"."PSP_ENTITLEMENT_MESSAGE" ("ORDER_NUMBER", "LICENSE_NUMBER") ;
+CREATE INDEX "PSPADM"."IDX_ENT_MSG_MOD_DATE" ON "PSPADM"."PSP_ENTITLEMENT_MESSAGE" ("MODIFIED_DATE") ;
+
+
+
+--Create Index on postgres HAsh psp_paycheck_usage
+
+create index concurrently psp_paycheck_usage_fk1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (company_fk );
+create index concurrently psp_paycheck_usage_fk1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (company_fk );
+
+create index concurrently psp_paycheck_usage_nu1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (source_paycheck_id );
+create index concurrently psp_paycheck_usage_nu1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (source_paycheck_id );
+
+create index concurrently psp_paycheck_usage_u1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index concurrently psp_paycheck_usage_u1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (employee_usage_fk ,source_paycheck_id );
+
+create index concurrently psp_paycheckusage_fk1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (bill_fk );
+create index concurrently psp_paycheckusage_fk1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (bill_fk );
+
+create index concurrently psp_paycheckusage_fk2_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (employee_usage_fk );
+create index concurrently psp_paycheckusage_fk2_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (employee_usage_fk );
+
+create index concurrently  idx_pchk_usg_mod_date_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (modified_date);
+create index concurrently  idx_pchk_usg_mod_date_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (modified_date);
+
+--psp_paycheck_usage
+create index  psp_paycheckusage_fk1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (bill_fk );
+create index  psp_paycheckusage_fk2 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (employee_usage_fk );
+create index  psp_paycheck_usage_fk1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (company_fk );
+create index  psp_paycheck_usage_nu1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (source_paycheck_id );
+create index  psp_paycheck_usage_u1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (employee_usage_fk ,source_paycheck_id );
+create index  idx_pchk_usg_mod_date ON ONLY  pspadm.psp_paycheck_usage USING BTREE (modified_date);
+
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2012 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2013 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2014 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2015 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2016 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2017 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2018 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2019 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2020 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2021 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2022 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2023 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2024 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2025 ;
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2026 ;
+
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2012 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2013 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2014 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2015 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2016 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2017 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2018 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2019 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2020 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2021 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2022 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2023 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2024 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2025 ;
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2026 ;
+
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2012 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2013 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2014 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2015 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2016 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2017 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2018 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2019 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2020 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2021 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2022 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2023 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2024 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2025 ;
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2026 ;
+
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2012 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2013 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2014 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2015 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2016 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2017 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2018 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2019 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2020 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2021 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2022 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2023 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2024 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2025 ;
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2026 ;
+
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2012 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2013 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2014 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2015 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2016 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2017 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2018 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2019 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2020 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2021 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2022 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2023 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2024 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2025 ;
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2026 ;
+
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2012 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2013 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2014 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2015 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2016 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2017 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2018 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2019 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2020 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2021 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2022 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2023 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2024 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2025 ;
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2026 ;
+
+
+--psp_entitlement_message_u1
+
+create index concurrently psp_entitlement_message_u1_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (token );
+create index concurrently psp_entitlement_message_u1_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (token );
+
+create index concurrently psp_entitlement_msg_lcno_eofcd_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (license_number ,entitlement_offering_code );
+create index concurrently psp_entitlement_msg_lcno_eofcd_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (license_number ,entitlement_offering_code );
+
+create index concurrently psp_entitlement_msg_msgts_er_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (message_timestamp ,event_reason );
+create index concurrently psp_entitlement_msg_msgts_er_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (message_timestamp ,event_reason );
+
+create index concurrently psp_entitlement_msg_orno_lcno_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (order_number ,license_number );
+create index concurrently psp_entitlement_msg_orno_lcno_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (order_number ,license_number );
+
+create index concurrently idx_ent_msg_mod_date_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (modified_date);
+create index concurrently idx_ent_msg_mod_date_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (modified_date);
+
+--psp_entitlement_message
+create index  psp_entitlement_message_u1 ON ONLY  pspadm.psp_entitlement_message USING BTREE (token );
+create index  psp_entitlement_msg_lcno_eofcd ON ONLY  pspadm.psp_entitlement_message USING BTREE (license_number ,entitlement_offering_code );
+create index  psp_entitlement_msg_msgts_er ON ONLY  pspadm.psp_entitlement_message USING BTREE (message_timestamp ,event_reason  );
+create index  psp_entitlement_msg_orno_lcno ON ONLY  pspadm.psp_entitlement_message USING BTREE (order_number ,license_number );
+create index  idx_ent_msg_mod_date ON ONLY  pspadm.psp_entitlement_message USING BTREE (modified_date);
+
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p0 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p1 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p2 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p3 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p4 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p5 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p6 ;
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p7 ;
+
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p0 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p1 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p2 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p3 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p4 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p5 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p6 ;
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p7 ;
+
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p0 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p1 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p2 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p3 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p4 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p5 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p6 ;
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p7 ;
+
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p0 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p1 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p2 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p3 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p4 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p5 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p6 ;
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p7 ;
+
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p0 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p1 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p2 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p3 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p4 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p5 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p6 ;
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p7 ;
+
+
+---sample data
+--PSP_ENTITLEMENT_MESSAGE
+
+Insert into pspadm.PSP_ENTITLEMENT_MESSAGE (ENTITLEMENT_MESSAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,ENTITLEMENT_OFFERING_CODE,ORDER_NUMBER,MESSAGE_BKP,LICENSE_NUMBER,STATUS,TOKEN,EVENT_REASON,FAILURE_COUNT,LAST_FAILURE_MESSAGE,MESSAGE_TIMESTAMP,EXPIRATION_TIMESTAMP,MESSAGE_ENC) values ('27b74d0f-4960-4405-a60d-3072af75216',23,'AMOBatch',to_timestamp('13-11-19 4:55:14.565000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'AMOBatchJob',to_timestamp('13-11-19 5:16:08.681000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,'813282','2000051393099', EMPTY_CLOB(),'533731571390732','SkippedEntitlementNotFound',11925278,'ENTITLEMENT_DISABLEMENT',0,null,to_timestamp('12-03-20 8:46:51.000000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),to_timestamp('13-11-19 5:15:14.565000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'), EMPTY_CLOB());
+Insert into pspadm.PSP_ENTITLEMENT_MESSAGE (ENTITLEMENT_MESSAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,ENTITLEMENT_OFFERING_CODE,ORDER_NUMBER,MESSAGE_BKP,LICENSE_NUMBER,STATUS,TOKEN,EVENT_REASON,FAILURE_COUNT,LAST_FAILURE_MESSAGE,MESSAGE_TIMESTAMP,EXPIRATION_TIMESTAMP,MESSAGE_ENC) values ('70b88512-5c18-4510-8f22-b7ac6e21cae',20,'AMOBatc',to_timestamp('09-04-20 7:11:15.849000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'AMOBatchJob',to_timestamp('09-04-20 7:44:38.932000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,'092101',null, EMPTY_CLOB(),'881222152836891','SkippedEntitlementNotFound',11948233,'SUBSCRIPTION_CHARGE_DATE_NOTICE',0,null,to_timestamp('09-04-20 12:00:00.000000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),to_timestamp('09-04-20 7:31:15.849000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'), EMPTY_CLOB());
+Insert into pspadm.PSP_ENTITLEMENT_MESSAGE (ENTITLEMENT_MESSAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,ENTITLEMENT_OFFERING_CODE,ORDER_NUMBER,MESSAGE_BKP,LICENSE_NUMBER,STATUS,TOKEN,EVENT_REASON,FAILURE_COUNT,LAST_FAILURE_MESSAGE,MESSAGE_TIMESTAMP,EXPIRATION_TIMESTAMP,MESSAGE_ENC) values ('769eb5d7-a31d-41b5-b056-f3e95680859',23,'AMOBatch',to_timestamp('29-04-20 11:36:16.920000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'AMOBatchJob',to_timestamp('29-04-20 11:57:11.416000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,'701422',null, EMPTY_CLOB(),'600342960840656','SkippedEntitlementNotFound',11975179,'PAYMENT_FAILURE_NOTICE',0,null,to_timestamp('29-04-20 4:35:24.000000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),to_timestamp('29-04-20 11:56:16.920000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'), EMPTY_CLOB());
+Insert into pspadm.PSP_ENTITLEMENT_MESSAGE (ENTITLEMENT_MESSAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,ENTITLEMENT_OFFERING_CODE,ORDER_NUMBER,MESSAGE_BKP,LICENSE_NUMBER,STATUS,TOKEN,EVENT_REASON,FAILURE_COUNT,LAST_FAILURE_MESSAGE,MESSAGE_TIMESTAMP,EXPIRATION_TIMESTAMP,MESSAGE_ENC) values ('cca2af2b-9b54-4337-9b95-04e0fa94f66',20,'AMOBatchJ',to_timestamp('09-04-20 3:50:09.726000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'AMOBatchJob',to_timestamp('09-04-20 4:21:37.288000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,'813282','2000051451616', EMPTY_CLOB(),'261886263658964','SkippedEntitlementNotFound',11948046,'ENTITLEMENT_DISABLEMENT',0,null,to_timestamp('08-04-20 8:49:27.000000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),to_timestamp('09-04-20 4:10:09.726000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'), EMPTY_CLOB());
+Insert into pspadm.PSP_ENTITLEMENT_MESSAGE (ENTITLEMENT_MESSAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,ENTITLEMENT_OFFERING_CODE,ORDER_NUMBER,MESSAGE_BKP,LICENSE_NUMBER,STATUS,TOKEN,EVENT_REASON,FAILURE_COUNT,LAST_FAILURE_MESSAGE,MESSAGE_TIMESTAMP,EXPIRATION_TIMESTAMP,MESSAGE_ENC) values ('dbff67ec-32b2-4e9e-a704-a97aab2e35c',23,'AMOBatch',to_timestamp('29-04-20 8:22:21.728000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'AMOBatchJob',to_timestamp('29-04-20 8:43:13.000000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,'937989',null, EMPTY_CLOB(),'130486393859538','SkippedEntitlementNotFound',11974985,'PAYMENT_FAILURE_NOTICE',0,null,to_timestamp('29-04-20 1:21:14.000000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),to_timestamp('29-04-20 8:42:21.728000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'), EMPTY_CLOB());
+
+--psp_paycheck_usage
+
+Insert into pspadm.psp_paycheck_usage (PAYCHECK_USAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,PAYCHECK_DATE,CHECK_NUMBER,SOURCE_PAYCHECK_ID,TRANSACTION_ID,PAYCHECK_STATUS_CODE,BILL_FK,EMPLOYEE_USAGE_FK,REASON_FOR_FREE_CHARGE,COMPANY_FK) values ('73f09b20-7b63-413c-a72b-4ab4235abb',0,'PSPToEMSBS',to_timestamp('10-12-12 8:18:29.068000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'PSPToEMSBSDataSync',to_timestamp('10-12-12 8:18:29.068000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,to_timestamp('10-12-12 8:00:00.000000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'16315','129',null,'Active','32a6b8ce-89f6-4edc-81d2-7cd1a1690','5cdee8d7-7a62-4d8b-9a9d-d8d1aab7504a','None',null);
+Insert into pspadm.psp_paycheck_usage (PAYCHECK_USAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,PAYCHECK_DATE,CHECK_NUMBER,SOURCE_PAYCHECK_ID,TRANSACTION_ID,PAYCHECK_STATUS_CODE,BILL_FK,EMPLOYEE_USAGE_FK,REASON_FOR_FREE_CHARGE,COMPANY_FK) values ('9ae84406-55d5-4828-bc8b-5779d14a',0,'PSPToEMSBSD',to_timestamp('10-12-12 8:18:29.054000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'PSPToEMSBSDataSync',to_timestamp('10-12-12 8:18:29.054000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,to_timestamp('10-12-12 8:00:00.000000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'16308','122',null,'Active','32a6b8ce-89f6-4edc-81d2-7cd1a1690','88461a85-b540-413b-984a-074bec0fc953','None',null);
+Insert into pspadm.psp_paycheck_usage (PAYCHECK_USAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,PAYCHECK_DATE,CHECK_NUMBER,SOURCE_PAYCHECK_ID,TRANSACTION_ID,PAYCHECK_STATUS_CODE,BILL_FK,EMPLOYEE_USAGE_FK,REASON_FOR_FREE_CHARGE,COMPANY_FK) values ('b25f1b3e-2ff3-4448-8d3d-d78a8b75',0,'PSPToEMSBSDac',to_timestamp('10-12-12 8:18:29.058000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'PSPToEMSBSDataSync',to_timestamp('10-12-12 8:18:29.058000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,to_timestamp('10-12-12 8:00:00.000000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'16309','123',null,'Active','32a6b8ce-89f6-4edc-81d2-7cd1a10d54','81d66a83-acf8-4297-956c-c01481067941','None',null);
+Insert into pspadm.psp_paycheck_usage (PAYCHECK_USAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,PAYCHECK_DATE,CHECK_NUMBER,SOURCE_PAYCHECK_ID,TRANSACTION_ID,PAYCHECK_STATUS_CODE,BILL_FK,EMPLOYEE_USAGE_FK,REASON_FOR_FREE_CHARGE,COMPANY_FK) values ('d716f24f-9429-4326-8ed6-462bbfca',0,'PSPToEtaSync',to_timestamp('10-12-12 8:18:29.062000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'PSPToEMSBSDataSync',to_timestamp('10-12-12 8:18:29.062000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,to_timestamp('10-12-12 8:00:00.000000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'16310','124',null,'Active','32a6b8ce-89f6-4edc-81d2-7cd1a16d54','7f96007b-aa26-4b8e-8d2d-5e3f14c80aba','None',null);
+Insert into pspadm.psp_paycheck_usage (PAYCHECK_USAGE_SEQ,VERSION,CREATOR_ID,CREATED_DATE,MODIFIER_ID,MODIFIED_DATE,REALM_ID,PAYCHECK_DATE,CHECK_NUMBER,SOURCE_PAYCHECK_ID,TRANSACTION_ID,PAYCHECK_STATUS_CODE,BILL_FK,EMPLOYEE_USAGE_FK,REASON_FOR_FREE_CHARGE,COMPANY_FK) values ('ebe392f2-5bb7-4fb3-9230-588d13a5',0,'PSPToEMtaSync',to_timestamp('10-12-12 8:18:29.075000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'PSPToEMSBSDataSync',to_timestamp('10-12-12 8:18:29.075000000 PM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),-1,to_timestamp('10-12-12 8:00:00.000000000 AM','DD-MM-RR fmHH12:fmMI:SSXFF AM'),'16306','120',null,'Active','32a6b8ce-89f6-4edc-81d2-7cd1a1d54','cbdc5d40-761a-464b-adbc-52957b577044','None',null);
+

@@ -1,0 +1,13 @@
+set search_path to pspadm;
+
+\i Function/fn_date_add.sql
+\i Function/fn_gems_accounts_receivable_calc_reveivables.sql
+\i Function/fn_gems_accounts_receivable_main.sql
+\i Function/fn_get_edr_count.sql
+\i Function/fn_get_env.sql
+\i Function/fn_get_last_day_of_quarter.sql
+\i Function/fn_get_ledger_balance.sql
+\i Function/fn_get_mmt_count.sql
+\i Function/fn_get_psid.sql
+\i Function/fn_get_psp_timestamp.sql
+

@@ -1,0 +1,218 @@
+✅ ✅ ✅ DB REFRESH STARTED FOR: Audit Database ✅ ✅ ✅ 
+✏️ STAGING DATABASE CONFIGURATION FOR: paragib
+✏️ OLD PASSWORDFILE PATH: /u01/scripts/staging_refresh/.auop
+✏️ NEW PASSWORDFILEPATH: /u01/scripts/staging_refresh/.aunp
+✏️ APPUSERS PASSWORD FILE PATH: /u01/scripts/staging_refresh/.auap
+✏️ SQL SCRIPTS-1: /u01/scripts/staging_refresh/au_postgres_postgres.sql
+✏️ SQL SCRIPTS-2: /u01/scripts/staging_refresh/au_paragib_postgres.sql
+✏️ SQL SCRIPTS-3: /u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql
+✏️ DEFAULT DBNAME: postgres
+✏️ MASTER USER: postgres
+✏️ SCHEMA OWNER: ibobadm_owner
+
+🟢=== STEP 1: Creating staging cluster from snapshot ===
+Latest snapshot: rds:ppsp-pds-db-2025-08-01-05-11
+Fetched cluster parameter group: ipsrds-us-west-2-sysibobpg14cluster50a11747-xlutxcqqxhrf
+Fetched instance parameter group: ipsrds-us-west-2-sysibobpg14instanceb2303a1c-vunb0l7pfjle
+Creating new staging DB cluster from snapshot: rds:ppsp-pds-db-2025-08-01-05-11
+Using DBInstanceClass: db.r6g.2xlarge
+Waiting for DB instance spsp-sys-db-new-1 to become available...⏳⏳⏳
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: configuring-enhanced-monitoring. Waiting...
+Current status: configuring-enhanced-monitoring. Waiting...
+DB instance spsp-sys-db-new-1 is available!🚀🚀🚀
+spsp-sys-db-new
+
+🟢=== STEP 2: Master User and Schema_owner Password Reseting===
+Password for user postgres reset successfully.
+
+🟢=== STEP 3: Drop Rep slots and kill connections ===
+Terminated 0 active session(s).
+
+🟢=== STEP 4: Renaming Database===
+Renamed database from pdsibobdb to paragib.
+
+🟢=== STEP 5:Managing app users and reseting app users passwords===
+Creating user ibobadm_owner...
+Granted CONNECT on database paragib to ibobadm_owner.
+Password for user ibobadm_owner reset successfully.
+Creating user psp_prl_app...
+Granted CONNECT on database paragib to psp_prl_app.
+Password for user psp_prl_app reset successfully.
+Creating user psp_prl_read...
+Granted CONNECT on database paragib to psp_prl_read.
+Password for user psp_prl_read reset successfully.
+Creating user psprjf...
+Granted CONNECT on database paragib to psprjf.
+Password for user psprjf reset successfully.
+Creating user pspbatch_rw_user...
+Granted CONNECT on database paragib to pspbatch_rw_user.
+Password for user pspbatch_rw_user reset successfully.
+Creating user pspbatch_ro_user...
+Granted CONNECT on database paragib to pspbatch_ro_user.
+Password for user pspbatch_ro_user reset successfully.
+Creating user data_capture_role...
+Granted CONNECT on database paragib to data_capture_role.
+Password for user data_capture_role reset successfully.
+Creating user perf_test...
+Granted CONNECT on database paragib to perf_test.
+Password for user perf_test reset successfully.
+
+🟢=== STEP 6: Executing Scripts cnnecting to master-user and postgres Database===
+You are connected to database "postgres" as user "postgres" on host "spsp-sys-db-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (address "10.94.22.123") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+ current_user 
+--------------
+ postgres
+(1 row)
+
+ current_database 
+------------------
+ postgres
+(1 row)
+
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:5: ERROR:  relation "cron.job" does not exist
+LINE 1: UPDATE cron.job SET database = 'pitparmo' WHERE jobid in (se...
+               ^
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:6: ERROR:  role "drcadm_owner" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:7: ERROR:  role "pspadm_readonly_role" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:8: ERROR:  role "pspadm_readwrite_role" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:9: ERROR:  role "pspapp" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:10: ERROR:  role "pspread" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:11: ERROR:  role "sys_drc_app" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:12: ERROR:  role "testusr" does not exist
+psql:/u01/scripts/staging_refresh/au_postgres_postgres.sql:13: ERROR:  role "pspadm_owner" does not exist
+Executed SQL file: /u01/scripts/staging_refresh/au_postgres_postgres.sql
+
+🟢=== STEP 7: Executing Scripts cnnecting to masterUser and Database===
+You are connected to database "paragib" as user "postgres" on host "spsp-sys-db-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (address "10.94.22.123") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+ current_user 
+--------------
+ postgres
+(1 row)
+
+ current_database 
+------------------
+ paragib
+(1 row)
+
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:4: ERROR:  role "psp_prl_app" already exists
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:6: ERROR:  role "pspadm_readwrite_role" does not exist
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:12: ERROR:  role "perf_test" already exists
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:15: ERROR:  role "pspadm_readwrite_role" does not exist
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:16: ERROR:  schema "pspadm" does not exist
+ALTER ROLE
+GRANT
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:21: ERROR:  role "psp_prl_read" already exists
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:24: ERROR:  role "pspadm_readonly_role" does not exist
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:32: ERROR:  role "psprjf" already exists
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:34: ERROR:  role "pspadm_readonly_role" does not exist
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:42: ERROR:  role "pspbatch_rw_user" already exists
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:45: ERROR:  role "pspadm_readwrite_role" does not exist
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:53: ERROR:  role "pspbatch_ro_user" already exists
+psql:/u01/scripts/staging_refresh/au_paragib_postgres.sql:56: ERROR:  role "pspadm_readonly_role" does not exist
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+Executed SQL file: /u01/scripts/staging_refresh/au_paragib_postgres.sql
+
+🟢=== STEP 8: Executing Scripts cnnecting to masterUser and Database===
+You are connected to database "paragib" as user "ibobadm_owner" on host "spsp-sys-db-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (address "10.94.22.123") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+ current_user  
+---------------
+ ibobadm_owner
+(1 row)
+
+ current_database 
+------------------
+ paragib
+(1 row)
+
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:4: ERROR:  database "pitparmo" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:5: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:6: ERROR:  database "pitparmo" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:7: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:8: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:9: ERROR:  role "pspadm_readonly_role" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:10: ERROR:  role "pspadm_readonly_role" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:11: ERROR:  database "pitparmo" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:12: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:13: ERROR:  role "pspadm_readwrite_role" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:15: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:16: ERROR:  role "pspadm_readonly_role" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:18: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:20: ERROR:  role "pspadm_readwrite_role" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:22: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:24: ERROR:  role "pspadm_readwrite_role" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:26: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:27: ERROR:  schema "pspadm" does not exist
+psql:/u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql:29: ERROR:  role "pspadm_readwrite_role" does not exist
+Executed SQL file: /u01/scripts/staging_refresh/ar_ibobadmowner_paragib.sql
+
+🟢=== STEP 9: Adding AWS backup tag===
+✅ Tag 'org_awsbackup_local_0700UTC=7continuous' applied successfully.
+
+🟢Port number Updating from 5432 to 6543 - auditDB 
+
+🟢 vaccum not required for audit and monolith
+
+✅ ✅ ✅ === DATABASE REFRESH COMPLETED SUCCESSFULLY ✅ ✅ ✅ ===

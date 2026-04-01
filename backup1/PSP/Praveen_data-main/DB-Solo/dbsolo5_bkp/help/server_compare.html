@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - Server Comparison Tool</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+  <body>
+    <p>
+      <center> <img src="images/logo.jpg" alt="DB Solo" /> </center>
+      <a href="DBSolo.html"> Back to Index </a>
+    </p>
+    <hr align="left" />
+
+
+
+
+
+<a name="wp1005198"> </a><h2 class="pHeading1">
+Server Comparison Tool
+</h2>
+		<p class="pBody">Server Comparison Tool allows you to compare server-level objects - for example databases, tablespaces, roles and users - between two separate database servers. It will report any discrepancies between the servers such as missing or mismatching users, roles, tablespaces and databases. 
+		Both servers must be running the same DBMS product, such as Oracle. Currently the server comparison is supported for Oracle, Postgres, DB2 LUW, Sybase ASE and SQL Server 2005 and later.</p>
+		<p class="pBody">You can invoke the Server Comparison Tool from the 'Tools' menu in the main toolbar of DB Solo.</p>
+
+
+		<h3 class="pHeading2">Object Selection</h3>
+		<p class="pBody">The first screen of the comparison tool allows you to select the servers to compare as well as individual objects within the selected server.
+		The tree control on the left hand side allows you to select 'source' of the comparison and the right side lets you pick the 'destination' server. 
+		<br>
+		After selecting the source server you can select individual objects to compare within that server. 
+		By default all of these objects will be compared in the selected servers. The tabbed window at the bottom of the first screen allows you to manually pick the objects to compare.
+		To do so, uncheck the 'Compare All' checkbox and check/uncheck the items you wish to compare. 
+		</p>
+		
+		<h3 class="pHeading2"><img src="images/servercomp_selection.jpg" alt=""   border="0"/></h3>
+		<p class="pBody">Figure - Select Server Screen</p>
+		<br>
+		<p class="pBody"> After selecting the servers and the associated objects to compare, click on 'Next' to move to the settings panel.</p>
+
+		<h3 class="pHeading2">Settings</h3>
+		<p class="pBody">
+		The various tabs in the settings screen allow you to fine-tune the comparison process. All settings will get persisted when you close DB Solo, so you don't have
+		to re-enter the same settings next time you want to run the comparison. There is a separate tab for each group of objects to compare. </p>
+		<h3 class="pHeading2"><img src="images/servercomp_settings_triggers.jpg" alt=""  border="0"/></h3>
+		<p class="pBody">Figure - Trigger Comparison Settings</p>
+		<br>
+		<p class="pBody">After applying all the settings you wish to change, click on 'Next' to start the comparison process. Notice that if the number of objects to compare is large
+		, the comparison can potentially take several minutes or more to complete. </p>
+
+
+		<h3 class="pHeading2">Results</h3>
+		<p class="pBody">After DB Solo has completed the comparison process, you will see the results presented as two tree contorls. Again, the left side is the 'source'
+		server and the right one is the 'destination' server. 
+		
+		The trees will contain all objects that were compared, unless the 'Only show objects present on both sides' checkbox is checked. In that case, the trees will only
+		contain objects that were found in both servers. 
+		<br>
+		When you select an object in either tree control, the 'Explain' panel at the bottom of the screen will give more details regarding the comparison results for the 
+		selected object. In the figure below, the source code of the selected trigger does match in the source and destination servers, as indicated in the detail panel.
+		
+		<p class="pBody">Each node in the tree controls is colored using the following coloring scheme.</p>
+		<ul class="pBody">
+		 <li><b>Green</b> - Object is present on both sides and the object's attributes on both sides match.</li>
+		 <li><b>Red</b> - Object is missing from the side where the red item is shown, but present on the other side.</li>
+		 <li><b>Blue</b> - Object is present on the side where the blue item is shown, but missing from the other side.</li>
+		 <li><b>Yellow</b> - Object is present on both sides, but the object's attributes do not match.</li>
+		</ul>
+		</p>
+		<h3 class="pHeading2"><img src="images/servercomp_results.jpg" alt=""   border="0"/></h3>
+		<p class="pBody">Figure - Results Panel</p>
+		<p class="pBody">Below each tree control are buttons that allow you to: </p>
+		<ul class="pBody">
+		 <li><b>Generate DDL Sync script</b> - Generate a synchronization DDL script.</li>
+		 <li><b>Expland All Items </b> - Expand all items and their child items in the corresponding tree control.</li>
+		 <li><b>Collapse All Items </b> - Collapse all items in the corresponding tree control.</li>
+		</ul>
+		
+		
+
+
+		<h3 class="pHeading2">Synchronization DDL Script Generator</h3>
+							<p>The server comparison tool has a Synchronization Script creator which allows you to create a DDL script that contains all required SQL statements to synchronize the servers you compared. If you generate the script for the source side, 
+it will contain SQL statements that will make the source server identical with the destination server. By the same token, generating the script on the destination side will modify destination server to make it identical with the source server.</p>
+							<p>By clicking the Create Synchronize Script button on either side, you can invoke the Server Synchronization Wizard Dialog.</p>
+							<p><img src="images/compare_schema_sync_button.jpg" alt="" height="37" width="225" border="0"></p>
+							<p>The first screen of the dialog allows you to change the script generation settings. The settings screen will let you change the case of the SQL statements, the statement separator type and whether identifiers are shown in brackets, quotes or neither.  Notice that these settings will not affect the source code of triggers as they are not parsed by the tool.</p>
+							<p>You can also select if you wish to have comments or warnings in the output DDL script. </p>
+							<p><img src="images/servercomp_sync_settings.jpg" alt=""  border="0"></p>
+							<p>The last page of the Synchronization Script  Wizard will show the DDL script based on the comparison results and your settings. The buttons on this screen let you save the script to a file or copy it to the system clipboard.</p>
+							<p><img src="images/servercomp_sync_results.jpg" alt=""  border="0"></p>
+							<p></p>
+
+
+		<h3 class="pHeading2">Loading &amp; Saving Your Server Compare Tool Project Files</h3>
+							
+							<p>The 'Load Project' button on the first page of the comparison tool allows you to open projects you have saved earlier. The project files contain information about the source / destination servers you have selected, objects you selected for comparison as well as all the comparison settings from the second page of the tool.</p>
+							<p>After completing a server comparison, you can save your settings on the last page of the comparison tool. Clicking on the 'Save Project' button will bring up the 'Save Server Comparison Project' dialog where you can select  a file name for your project file as well as define the names of the comparison results' output files.</p>
+							<p>The first section of the page titled 'Project File' lets you select the name of the project file.</p>
+							<p>The second section contains fields for selecting the names of the synchronization DDL script files.</p>
+							<p>Notice that you must specify at least one output file for the command line comparison tool.</p>
+							<p><img src="images/servercomp_save_settings.jpg" alt="" border="0"></p>
+
+
+		<h3 class="pHeading2">Server Comparison Command-Line Tool</h3>
+		
+		<p>Server comparison can be run from a command shell using settings from a saved project file. This allows you to run server comparisons regularly using cron or a similar mechanism. The following shell command will run a server comparison from settings in 'myproject.xml':</p>
+							<p><b>commandLine -serverCompare myproject.xml</b></p>
+							<p>where 'myproject.xml' is a project file. You can use project files on different machines as long as the configured server connection names match. The project files are xml text files that can be edited manually outside DB Solo.</p>
+							<p>The command line tool will output errors and other messages in <b>compare.log </b>file.</p>
+	<hr/>
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td align="left">
+           <a href="DBSolo.html"> Back to Index </a>
+        </td>
+        <td align="right">
+          <span style="font-size: 16px ; font-weight: bold">
+            DB Solo<br />
+          </span>
+          <span style="font-size: 10px">
+            <a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+            <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+          </span>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

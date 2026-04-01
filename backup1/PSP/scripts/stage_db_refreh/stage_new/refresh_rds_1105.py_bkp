@@ -1,0 +1,188 @@
+import boto3
+import subprocess
+import psycopg2
+import time
+import os
+import shlex
+import pexpect
+
+# --- Password Readers ---
+
+def read_passwords_from_file(password_file_path):
+    user_passwords = {}
+    try:
+        with open(password_file_path, 'r') as f:
+            for line in f:
+                if ':' in line:
+                    user, pwd = line.strip().split(':', 1)
+                    user_passwords[user.strip()] = pwd.strip()
+    except Exception as e:
+        print(f"Error reading password file: {e}")
+    return user_passwords
+
+# --- AWS Snapshot / Cluster Handling ---
+
+def fetch_latest_snapshot(rds, cluster_id):
+    snapshots = rds.describe_db_cluster_snapshots(DBClusterIdentifier=cluster_id)['DBClusterSnapshots']
+    snapshots.sort(key=lambda x: x['SnapshotCreateTime'], reverse=True)
+    return snapshots[0]['DBClusterSnapshotIdentifier']
+
+def fetch_cluster_info(rds, cluster_id):
+    cluster = rds.describe_db_clusters(DBClusterIdentifier=cluster_id)['DBClusters'][0]
+    instance_id = [m['DBInstanceIdentifier'] for m in cluster['DBClusterMembers'] if m['IsClusterWriter']][0]
+    instance_info = rds.describe_db_instances(DBInstanceIdentifier=instance_id)['DBInstances'][0]
+    cluster['InstanceClass'] = instance_info['DBInstanceClass']
+    cluster['InstanceParameterGroup'] = instance_info['DBParameterGroups'][0]['DBParameterGroupName']
+    return cluster
+
+def wait_for_instance_available(rds, instance_id):
+    while True:
+        status = rds.describe_db_instances(DBInstanceIdentifier=instance_id)['DBInstances'][0]['DBInstanceStatus']
+        print(f"Status: {status}")
+        if status == 'available':
+            break
+        time.sleep(30)
+
+def create_cluster_from_snapshot(rds, snapshot_id, new_cluster_id, cluster_info):
+    instance_class = cluster_info['InstanceClass']
+    print(f"Restoring cluster {new_cluster_id} from snapshot {snapshot_id}")
+    rds.restore_db_cluster_from_snapshot(
+        DBClusterIdentifier=new_cluster_id,
+        SnapshotIdentifier=snapshot_id,
+        Engine=cluster_info['Engine'],
+        EngineVersion=cluster_info['EngineVersion'],
+        Port=cluster_info['Port'],
+        DBSubnetGroupName=cluster_info['DBSubnetGroup'],
+        VpcSecurityGroupIds=[sg['VpcSecurityGroupId'] for sg in cluster_info['VpcSecurityGroups']],
+        EnableIAMDatabaseAuthentication=cluster_info['IAMDatabaseAuthenticationEnabled'],
+        DBClusterParameterGroupName=cluster_info['DBClusterParameterGroup'],
+        EngineMode=cluster_info['EngineMode'],
+        KmsKeyId=cluster_info['KmsKeyId']
+    )
+
+    writer_instance_id = f"{new_cluster_id}-1"
+    rds.create_db_instance(
+        DBInstanceIdentifier=writer_instance_id,
+        DBClusterIdentifier=new_cluster_id,
+        DBInstanceClass=instance_class,
+        Engine=cluster_info['Engine'],
+        PubliclyAccessible=False,
+        DBParameterGroupName=cluster_info['InstanceParameterGroup']
+    )
+
+    wait_for_instance_available(rds, writer_instance_id)
+    while rds.describe_db_clusters(DBClusterIdentifier=new_cluster_id)['DBClusters'][0]['Status'] != 'available':
+        print(f"Waiting for cluster {new_cluster_id} to be available...")
+        time.sleep(60)
+
+    return writer_instance_id
+
+# --- PostgreSQL Tasks ---
+
+def kill_active_connections(host, db, user, pwd):
+    try:
+        with psycopg2.connect(host=host, database=db, user=user, password=pwd) as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT pg_terminate_backend(pid)
+                    FROM pg_stat_activity
+                    WHERE usename NOT IN ('rdsadmin', 'postgres') AND pid <> pg_backend_pid();
+                """)
+                print(f"Terminated sessions: {cur.rowcount}")
+    except Exception as e:
+        print(f"Error killing connections: {e}")
+
+def reset_password_with_psql(host, db, login_user, login_pwd, target_user, new_pwd):
+    print(f"Resetting password for {target_user} using \\password...")
+    child = pexpect.spawn(f"/usr/bin/psql -h {host} -U {login_user} -d {db}", encoding='utf-8', timeout=30)
+    child.expect('Password for user')
+    child.sendline(login_pwd)
+    child.expect(rf"{db}[=#>-]")  # database prompt
+    child.sendline(f"\\password {target_user}")
+    child.expect("Enter new password:")
+    child.sendline(new_pwd)
+    child.expect("Enter it again:")
+    child.sendline(new_pwd)
+    child.expect(rf"{db}[=#>-]")
+    child.sendline("\\q")
+    print(f"Password reset complete for {target_user}.")
+
+def drop_replication_slots(host, db, user, pwd):
+    try:
+        with psycopg2.connect(host=host, database=db, user=user, password=pwd) as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT slot_name FROM pg_replication_slots WHERE slot_type='logical';")
+                slots = cur.fetchall()
+                for (slot,) in slots:
+                    print(f"Dropping slot: {slot}")
+                    cur.execute(f"SELECT pg_drop_replication_slot('{slot}')")
+    except Exception as e:
+        print(f"Error dropping slots: {e}")
+
+def rename_database(host, user, pwd, old_db, new_db):
+    kill_active_connections(host, old_db, user, pwd)
+    try:
+        with psycopg2.connect(host=host, database='postgres', user=user, password=pwd) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"ALTER DATABASE {old_db} RENAME TO {new_db}")
+                print(f"Renamed {old_db} to {new_db}")
+    except Exception as e:
+        print(f"Error renaming DB: {e}")
+
+def execute_sql_file(host, db, user, pwd, file_path):
+    cmd = ['psql', '-h', host, '-U', user, '-d', db, '-f', file_path]
+    env = os.environ.copy()
+    env['PGPASSWORD'] = pwd
+    result = subprocess.run(cmd, env=env)
+    if result.returncode != 0:
+        print(f"SQL execution failed with return code {result.returncode}")
+
+def ensure_user_exists_and_set_password(host, db, login_user, login_pwd, target_user, target_pwd):
+    try:
+        with psycopg2.connect(host=host, database=db, user=login_user, password=login_pwd) as conn:
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT 1 FROM pg_roles WHERE rolname = '{target_user}'")
+                if cur.fetchone() is None:
+                    cur.execute(f"CREATE USER {target_user} WITH LOGIN")
+                    print(f"Created user {target_user}")
+    except Exception as e:
+        print(f"Error checking/creating user: {e}")
+    reset_password_with_psql(host, db, login_user, login_pwd, target_user, target_pwd)
+
+# --- Main Orchestration ---
+
+def main():
+    region = 'us-west-2'
+    rds = boto3.client('rds', region_name=region)
+
+    prod_cluster = 'ppsp-ppd-arc'
+    stage_cluster = 'ppsp-ppd-arc'
+    new_cluster = f"{stage_cluster}-new"
+
+    db_name = 'psppdarc'
+    new_db_name = 'psppdarc1'
+    sql_script = '/u01/scripts/stage_db_refreh/stage_new/postgres_postgres.sql'
+    pw_file = '/u01/scripts/stage_db_refreh/stage_new/db_password.txt'
+    new_pw_file = '/u01/scripts/stage_db_refreh/stage_new/intuadmin_new_password.txt'
+
+    user_passwords = read_passwords_from_file(pw_file)
+    new_passwords = read_passwords_from_file(new_pw_file)
+
+    snapshot = fetch_latest_snapshot(rds, prod_cluster)
+    cluster_info = fetch_cluster_info(rds, stage_cluster)
+    create_cluster_from_snapshot(rds, snapshot, new_cluster, cluster_info)
+
+    endpoint = rds.describe_db_clusters(DBClusterIdentifier=new_cluster)['DBClusters'][0]['Endpoint']
+    login_user = 'intuadmin'
+    login_pwd = user_passwords.get(login_user)
+    new_pwd = new_passwords.get(login_user)
+
+    kill_active_connections(endpoint, db_name, login_user, login_pwd)
+    reset_password_with_psql(endpoint, db_name, login_user, login_pwd, login_user, new_pwd)
+    drop_replication_slots(endpoint, db_name, login_user, new_pwd)
+    rename_database(endpoint, login_user, new_pwd, db_name, new_db_name)
+    execute_sql_file(endpoint, new_db_name, login_user, new_pwd, sql_script)
+    ensure_user_exists_and_set_password(endpoint, new_db_name, login_user, new_pwd, 'pspadm_owner', new_passwords.get('pspadm_owner'))
+
+if __name__ == "__main__":
+    main()

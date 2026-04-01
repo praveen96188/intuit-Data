@@ -1,0 +1,1253 @@
+{
+ "Parameters": {
+  "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/ConfigBucket"
+  },
+  "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/ManagedBucket"
+  },
+  "lambdaLayerParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/custom/ips/aurora/layerArn"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.us-east-2.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/cdk-hnb659fds-assets-152430470825-us-east-2/995661f131429d1a47b085fef1ded865d64bc5384faecdeecdd3dbaaede20029.json"
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-.NestedStack/IpsMtx-.NestedStackResource",
+    "aws:asset:path": "IpsMonppsptempdbDRIpsMtxDF3146CF.nested.template.json",
+    "aws:asset:property": "TemplateURL"
+   }
+  },
+  "IpsWfNestedStackIpsWfNestedStackResource318F4C74": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.us-east-2.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/cdk-hnb659fds-assets-152430470825-us-east-2/783690db7ee8bcf4aea8f19b201e8fc7ad041a5b70afac8b2253bead83e0d769.json"
+      ]
+     ]
+    },
+    "Parameters": {
+     "referencetoIpsMonppsptempdbDRSsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter533B9123Ref": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     }
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "wavefront"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsWf-.NestedStack/IpsWf-.NestedStackResource",
+    "aws:asset:path": "IpsMonppsptempdbDRIpsWf4A724C9E.nested.template.json",
+    "aws:asset:property": "TemplateURL"
+   }
+  },
+  "IpsMonPolicyEABA0007": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:logs:us-east-2:152430470825:log-group:/aws/rds/cluster/ppsp-temp-dbDR/postgresql:*",
+        "arn:aws:logs:us-east-2:152430470825:log-group:/aws/rds/cluster/ppsp-temp-dbDR/processed/postgresql:*"
+       ],
+       "Sid": "IpsMonlogAlertingPermissionsLambda"
+      },
+      {
+       "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::intu-oim*",
+       "Sid": "IpsMonOIMPutStatement"
+      },
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::pice-yum-repo*",
+       "Sid": "IpsMonOIMGetStatement"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:GetLogEvents",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "IpsMonlogAlertingPermissionsCWLogs"
+      },
+      {
+       "Action": [
+        "secretsmanager:*",
+        "cloudwatch:PutMetricData",
+        "rds:DescribeDBInstances",
+        "ec2:DescribeInstanceTypes",
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DeleteNetworkInterface",
+        "ec2:AttachNetworkInterface",
+        "ec2:DescribeInstances",
+        "lambda:GetLayerVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "IpsMonMorePermissions"
+      },
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+         ]
+        ]
+       },
+       "Sid": "IpsMonlogAlertingPermissionsS3"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "IpsMonlogAlertingPermissionS3Obj"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IpsMon-LoggingPolicyDocument",
+    "Roles": [
+     {
+      "Ref": "logforwardingServiceRoleE083E394"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMon-Policy/Resource"
+   }
+  },
+  "logforwardingServiceRoleE083E394": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/log_forwarding/ServiceRole/Resource"
+   }
+  },
+  "logforwarding8B59307A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.8.9/log_forwarding.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "logforwardingServiceRoleE083E394",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "account_id": "152430470825",
+      "last_digit": "5",
+      "script_bucket": {
+       "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "stack_name": "IpsMon-ppsp-temp-dbDR"
+     }
+    },
+    "FunctionName": "ppsp-temp-dbDR-log_forwarding",
+    "Handler": "log_forwarding.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     }
+    ],
+    "Runtime": "python3.8",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        1,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        2,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "logforwardingServiceRoleE083E394"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/log_forwarding/Resource"
+   }
+  },
+  "logforwardingLogRetentionC6704D66": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "logforwarding8B59307A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/log_forwarding/LogRetention/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-east-2",
+     "S3Key": "5fa1330271b8967d9254ba2d4a07144f8acefe8b77e6d6bba38261373a50d5f8.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.5fa1330271b8967d9254ba2d4a07144f8acefe8b77e6d6bba38261373a50d5f8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "IpsMonLogsSub0FilterCanInvokeLambda6756893C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "logforwarding8B59307A",
+      "Arn"
+     ]
+    },
+    "Principal": "logs.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:us-east-2:152430470825:log-group:/aws/rds/cluster/ppsp-temp-dbDR/postgresql:*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMon-LogsSub0Filter/CanInvokeLambda"
+   }
+  },
+  "IpsMonLogsSub0FilterAA261501": {
+   "Type": "AWS::Logs::SubscriptionFilter",
+   "Properties": {
+    "DestinationArn": {
+     "Fn::GetAtt": [
+      "logforwarding8B59307A",
+      "Arn"
+     ]
+    },
+    "FilterPattern": "",
+    "LogGroupName": "/aws/rds/cluster/ppsp-temp-dbDR/postgresql"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMon-LogsSub0Filter/Resource"
+   }
+  },
+  "schedulerServiceRole3FA46E21": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "DependsOn": [
+    "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/scheduler/ServiceRole/Resource"
+   }
+  },
+  "schedulerEDBED1F9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.8.9/scheduler.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "schedulerServiceRole3FA46E21",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "configKey": "metrics/ppsp-temp-dbDR/defaultMetricSetRef/ppsp-temp-dbDR-metrics.json",
+      "configBucket": {
+       "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "splunk": {
+       "Fn::GetAtt": [
+        "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+        "Outputs.IpsMonppsptempdbDRIpsMtxsplunkmetricsDD9D853EArn"
+       ]
+      },
+      "wavefront": {
+       "Fn::GetAtt": [
+        "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+        "Outputs.IpsMonppsptempdbDRIpsMtxwavefrontmetricsBB6BE11AArn"
+       ]
+      }
+     }
+    },
+    "FunctionName": "ppsp-temp-dbDR-scheduler",
+    "Handler": "scheduler.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     }
+    ],
+    "Runtime": "python3.8",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        1,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        2,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+    "schedulerServiceRole3FA46E21"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/scheduler/Resource"
+   }
+  },
+  "schedulerLogRetention0B92D0DE": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "schedulerEDBED1F9"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 90
+   },
+   "DependsOn": [
+    "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/scheduler/LogRetention/Resource"
+   }
+  },
+  "ppsptempdbDRscheduleRule694AFCA4": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "schedulerEDBED1F9",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/ppsp-temp-dbDRscheduleRule/Resource"
+   }
+  },
+  "ppsptempdbDRscheduleRuleAllowEventRuleIpsMonppsptempdbDRscheduler3FAE40F0CEE77F2D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "schedulerEDBED1F9",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "ppsptempdbDRscheduleRule694AFCA4",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/ppsp-temp-dbDRscheduleRule/AllowEventRuleIpsMonppsptempdbDRscheduler3FAE40F0"
+   }
+  },
+  "ppsptempdbDRschedulerPolicyA9A70399": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+          "Outputs.IpsMonppsptempdbDRIpsMtxsplunkmetricsDD9D853EArn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+          "Outputs.IpsMonppsptempdbDRIpsMtxwavefrontmetricsBB6BE11AArn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+         ]
+        ]
+       },
+       "Sid": "ppsptempdbDRlogAlertingPermissionsS3"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "ppsptempdbDRlogAlertingPermissionS3Obj"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ppsptempdbDRschedulerPolicyA9A70399",
+    "Roles": [
+     {
+      "Ref": "schedulerServiceRole3FA46E21"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/ppsp-temp-dbDRschedulerPolicy/Resource"
+   }
+  },
+  "ppsptempdbDRsplunkSetup": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": "arn:aws:lambda:us-east-2:152430470825:function:chaplette-deployer-trigger-prd",
+    "ProvisioningParameters": [
+     {
+      "Value": "SBSEG",
+      "Key": "SplunkBusinessUnit"
+     },
+     {
+      "Value": "E2E",
+      "Key": "SplunkEnvironment"
+     },
+     {
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::GetAtt": [
+           "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+           "Outputs.IpsMonppsptempdbDRIpsMtxsplunkmetricsLogRetentionD551D3BELogGroupName"
+          ]
+         },
+         ",",
+         {
+          "Fn::GetAtt": [
+           "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+           "Outputs.IpsMonppsptempdbDRIpsMtxwavefrontmetricsLogRetentionBABC3EC4LogGroupName"
+          ]
+         },
+         ",/aws/rds/cluster/ppsp-temp-dbDR/processed/postgresql"
+        ]
+       ]
+      },
+      "Key": "LogGroupNames"
+     },
+     {
+      "Value": "lambda_logs",
+      "Key": "Index"
+     }
+    ],
+    "ProductName": "chp-oil-cw-logs",
+    "ProvisioningArtifactName": "0.5.0"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/ppsp-temp-dbDR-splunkSetup/Default"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2VQy07EMAz8lr2nhrIHxJEt2gPiUGU/YOWmoQrNA8XJIlTl33GyrITEaezxeDT2Azz2cL/DL+rUvHbWTLCdEqpVSE0hR6XF8O5HjOh00lGw8LzRHg5ZrTodkLSIM8ELJpy4GWwmljXeoINtDNao7+ZxrWSwzbJiERbdNCNsx+xVMsHXyd961NEZIu5YGxaC7S0skpP4pjjliVQ0n7U5GlsD8tJ/tgjan5FIJ4LnCkJf2ILtZP6Nw1hK227XV+r2gLbB9GL8IgY+MLjbrIhXvOBdzz+E/mn3QcZ0MXM4p0Fe8QfDPqmcYgEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/CDKMetadata/Default"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

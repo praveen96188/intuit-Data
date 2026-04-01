@@ -1,0 +1,11 @@
+--Workflow :  - com.intuit.sbd.payroll.psp.adapters.sap.adapter.TaxAdapter.findTaxTransactions
+--query name :  - 
+--line number : - 81
+--git link : -  https://github.intuit.com/payroll-dtpayroll/dt-payroll-svc/blob/master/app/Adapters/sap-adapter/src/main/java/com/intuit/sbd/payroll/psp/adapters/sap/adapter/TaxLedger.java#L81
+--Time taken without baseline tp99 : 17452[17 sec]
+--sqlhash -b63d0fjubqyx2
+
+/* select pr.Id, tax.Law.LawId, sum(tax.TaxLiabilityAmount), sum(tax.TaxableWagesAmount)  from com.intuit.sbd.payroll.psp.domain.PayrollRun pr  join pr.PaycheckSet pc  join pc.TaxSet tax where pr.Company = :company and pr.PaycheckDate between :checkDateStart and :checkDateEnd and pr.PayrollRunStatus not in (:payrollRunExcludeStatusList) and pc.SourcePaycheckId not like ?and (pc.Status <> ? or pc.CompanyAdjustmentSubmission is not null) and tax.Law.LawId  in (:lawIds) and not ( tax.Law.PaymentTemplate.ProcessingStartDate is not null and pr.PaycheckDate < tax.Law.PaymentTemplate.ProcessingStartDate and tax.CreatedDate  < :backdateStart) group by pr.Id, tax.Law.LawId  */ select payrollrun0_.PAYROLL_RUN_SEQ as col_0_0_, taxset2_.LAW_FK as col_1_0_, sum(taxset2_.TAX_LIABILITY_AMOUNT) as col_2_0_, sum(taxset2_.TAXABLE_WAGES_AMOUNT) as col_3_0_ from PSP_PAYROLL_RUN payrollrun0_ inner join PSP_PAYCHECK paycheckse1_ on payrollrun0_.PAYROLL_RUN_SEQ=paycheckse1_.PAYROLL_RUN_FK and  paycheckse1_.COMPANY_FK=? inner join PSP_TAX taxset2_ on paycheckse1_.PAYCHECK_SEQ=taxset2_.PAYCHECK_FK and  taxset2_.COMPANY_FK=? cross join PSP_LAW law3_ cross join PSP_PAYMENT_TEMPLATE paymenttem4_ where taxset2_.LAW_FK=law3_.LAW_ID and law3_.PAYMENT_TEMPLATE_FK=paymenttem4_.PAYMENT_TEMPLATE_CD and payrollrun0_.COMPANY_FK=? and (payrollrun0_.PAYCHECK_DATE between ? and ?) and (payrollrun0_.PAYROLL_RUN_STATUS not in  (? , ?)) and (paycheckse1_.SOURCE_PAYCHECK_ID not like ?) and (paycheckse1_.STATUS<>? or paycheckse1_.COMP_ADJUST_SUBMISSION_FK is not null) and (taxset2_.LAW_FK in (?)) and (paymenttem4_.PROCESSING_START_DATE is null or payrollrun0_.PAYCHECK_DATE>=paymenttem4_.PROCESSING_START_DATE or taxset2_.CREATED_DATE>=?) group by payrollrun0_.PAYROLL_RUN_SEQ , taxset2_.LAW_FK
+
+--Time taken after baseline : - 6 sec
+--Plan after baseline - @Mayank to update

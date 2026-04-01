@@ -1,0 +1,14 @@
+SELECT
+    s.application_name,
+    s.state,
+    s.sync_state,
+    s.replay_lag,
+    rs.slot_name,
+    rs.active,
+    rs.restart_lsn AS current_wal_lsn
+FROM
+    pg_stat_replication s
+LEFT JOIN
+    pg_replication_slots rs ON rs.slot_name = s.application_name
+ORDER BY
+    s.state;

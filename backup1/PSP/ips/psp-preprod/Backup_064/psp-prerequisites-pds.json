@@ -1,0 +1,1068 @@
+{
+  "id": "ppsp",
+  "description": "PSP pds Aurora Data Store",
+  "bu": "SBSEG",
+  "region": "us-west-2",
+  "multiAZ": "false",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "pds",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "sharedResources": {
+    "parameterGroups": [
+      {
+        "id": "pdsmon-pg14-cluster",
+        "type": "CLUSTER",
+        "engineMajorVersion": "14",
+        "engineMinorVersion": "3",
+        "parameters": {
+          "timezone": "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay": "20",
+          "rds.enable_plan_management": "1",
+          "rds.logical_replication": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsibob-pg14-cluster",
+        "type": "CLUSTER",
+        "engineMajorVersion": "14",
+        "engineMinorVersion": "5",
+        "parameters": {
+          "timezone": "US/Pacific",
+          "rds.force_ssl": "true",
+          "autovacuum_vacuum_cost_delay": "20",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "rds.enable_plan_management": "1",
+          "rds.logical_replication": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsmon-pg14-instance",
+        "type": "INSTANCE",
+        "engineMajorVersion": "14",
+        "engineMinorVersion": "3",
+        "parameters": {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages": "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze": "1",
+          "auto_explain.log_buffers": "1",
+          "auto_explain.log_min_duration": "1000",
+          "auto_explain.log_timing": "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target": "512",
+          "log_filename": "postgresql.log.%Y-%m-%d",
+          "log_lock_waits": "1",
+          "log_min_duration_statement": "1000",
+          "log_statement": "ddl",
+          "log_temp_files": "65536",
+          "max_parallel_maintenance_workers": "64",
+          "max_parallel_workers": "64",
+          "max_parallel_workers_per_gather": "4",
+          "random_page_cost": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem": "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsmon-pg14-reader",
+        "type": "INSTANCE",
+        "engineMajorVersion": "14",
+        "engineMinorVersion": "3",
+        "parameters": {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages": "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze": "1",
+          "auto_explain.log_buffers": "1",
+          "auto_explain.log_min_duration": "1000",
+          "auto_explain.log_timing": "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target": "512",
+          "log_filename": "postgresql.log.%Y-%m-%d",
+          "log_lock_waits": "1",
+          "log_min_duration_statement": "1000",
+          "log_statement": "ddl",
+          "log_temp_files": "65536",
+          "max_parallel_maintenance_workers": "64",
+          "max_parallel_workers": "64",
+          "max_parallel_workers_per_gather": "4",
+          "random_page_cost": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem": "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsibob-pg14-instance",
+        "type": "INSTANCE",
+        "engineMajorVersion": "14",
+        "engineMinorVersion": "5",
+        "parameters": {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages": "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze": "1",
+          "auto_explain.log_buffers": "1",
+          "auto_explain.log_min_duration": "1000",
+          "auto_explain.log_timing": "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target": "512",
+          "log_filename": "postgresql.log.%Y-%m-%d",
+          "log_lock_waits": "1",
+          "log_min_duration_statement": "1000",
+          "log_statement": "ddl",
+          "log_temp_files": "65536",
+          "max_parallel_maintenance_workers": "64",
+          "max_parallel_workers": "64",
+          "max_parallel_workers_per_gather": "4",
+          "random_page_cost": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem": "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsmon-pg13-cluster",
+        "type": "CLUSTER",
+        "engineMajorVersion": "13",
+        "engineMinorVersion": "4",
+        "parameters": {
+          "timezone": "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay": "20",
+          "rds.enable_plan_management": "1",
+          "rds.logical_replication": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsibob-pg13-cluster",
+        "type": "CLUSTER",
+        "engineMajorVersion": "13",
+        "engineMinorVersion": "4",
+        "parameters": {
+          "timezone": "US/Pacific",
+          "rds.force_ssl": "true",
+          "autovacuum_vacuum_cost_delay": "20",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "rds.enable_plan_management": "1",
+          "rds.logical_replication": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsmon-pg13-instance",
+        "type": "INSTANCE",
+        "engineMajorVersion": "13",
+        "engineMinorVersion": "4",
+        "parameters": {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages": "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze": "1",
+          "auto_explain.log_buffers": "1",
+          "auto_explain.log_min_duration": "200",
+          "auto_explain.log_timing": "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target": "512",
+          "log_filename": "postgresql.log.%Y-%m-%d",
+          "log_lock_waits": "1",
+          "log_min_duration_statement": "1000",
+          "log_statement": "ddl",
+          "log_temp_files": "65536",
+          "max_parallel_maintenance_workers": "64",
+          "max_parallel_workers": "64",
+          "max_parallel_workers_per_gather": "4",
+          "random_page_cost": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem": "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id": "pdsibob-pg13-instance",
+        "type": "INSTANCE",
+        "engineMajorVersion": "13",
+        "engineMinorVersion": "4",
+        "parameters": {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages": "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze": "1",
+          "auto_explain.log_buffers": "1",
+          "auto_explain.log_min_duration": "1000",
+          "auto_explain.log_timing": "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target": "512",
+          "log_filename": "postgresql.log.%Y-%m-%d",
+          "log_lock_waits": "1",
+          "log_min_duration_statement": "1000",
+          "log_statement": "ddl",
+          "log_temp_files": "65536",
+          "max_parallel_maintenance_workers": "64",
+          "max_parallel_workers": "64",
+          "max_parallel_workers_per_gather": "4",
+          "random_page_cost": "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem": "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "mon-pg14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "rds.logical_replication": "1",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "mon-pg14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysmon-pg14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "rds.logical_replication" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysibob-pg14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "5",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "rds.enable_plan_management" : "1",
+          "rds.logical_replication" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysmon-pg14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "200",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysibob-pg14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "5",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysibob-pg14-reader",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "5",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "pg_stat_statements,auto_explain,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysmon-pg13-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "13",
+        "engineMinorVersion" : "4",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "rds.logical_replication" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysibob-pg13-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "13",
+        "engineMinorVersion" : "4",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "rds.enable_plan_management" : "1",
+          "rds.logical_replication" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysmon-pg13-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "13",
+        "engineMinorVersion" : "4",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "200",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "sysibob-pg13-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "13",
+        "engineMinorVersion" : "4",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "shared-pg14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "autovacuum": "on",
+          "rds.logical_replication": "1",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "shared-pg14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan,pglogical,pg_cron",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"
+        }
+      },
+      {
+        "id" : "mockclient-pg-13-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "13",
+        "engineMinorVersion" : "6",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",          
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      },
+      {
+        "id" : "mockclient-pg-13-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "13",
+        "engineMinorVersion" : "6",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",          
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "200",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",          
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d-%H",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "pg_stat_statements,auto_explain,pg_hint_plan",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      },
+      {
+        "id" : "mockclient-pg-14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",          
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan",
+          "autovacuum": "on",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      },
+      {
+        "id" : "mockclient-pg-14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "automatic",
+          "apg_plan_mgmt.use_plan_baselines": "true",          
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "200",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",          
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d-%H",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "pg_stat_statements,auto_explain,pg_hint_plan",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      }
+    ],
+    "dbSubnetGroups": [
+      {
+        "id": "pdsdbsubnetgrp",
+        "subnetType": "DATA"
+      },
+      {
+        "id" : "pspmondbsubnetgrp",
+        "subnetType" : "DATA"
+      },
+      {
+        "id" : "sysdbsubnetgrp",
+        "subnetType" : "DATA"
+      },
+      {
+        "id" : "mockdbsubnetgrp",
+        "subnetType" : "DATA"
+      },
+      {
+        "id" : "pspshareddbsubnetgrp",
+        "subnetType" : "DATA"
+      }
+    ],
+    "securityGroups": [
+      {
+        "id": "pdsdbsecuritygrp",
+        "description": "Allow incoming traffic from app servers",
+        "inboundRules": [
+          {
+            "sourceSecurityGroupId": "sg-0c555141d8a3362ac",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0c99d8be1b890a232",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bb5713266f6928f4",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bc36d60bebd11f70",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-045042de0113b7e5c",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-00a9a7b1647500d8e",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.162/32",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.80.0/20",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.64.0/20",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.116.0/23",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.96.0/20",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.112.0/23",
+            "port": "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.114.0/23",
+            "port": "5432",
+            "protocol": "tcp"
+          }
+        ]
+      },
+      {
+        "id" : "pspmondbsecuritygrp",
+        "description" : "Allow incoming traffic from app servers",
+        "inboundRules" : [
+          {
+            "sourceSecurityGroupId": "sg-0c555141d8a3362ac",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0c99d8be1b890a232",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bb5713266f6928f4",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bc36d60bebd11f70",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-045042de0113b7e5c",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-00a9a7b1647500d8e",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.162/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.235/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.135/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.20.137/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.80.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.64.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.116.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.96.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.112.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.114.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          }
+        ]
+      },
+      {
+        "id" : "sysdbsecuritygrp",
+        "description" : "Allow incoming traffic from app servers",
+        "inboundRules" : [
+          {
+            "sourceSecurityGroupId": "sg-0c555141d8a3362ac",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bb5713266f6928f4",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bc36d60bebd11f70",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-045042de0113b7e5c",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-00a9a7b1647500d8e",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.135/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.162/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.80.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.64.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.116.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.96.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.112.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.114.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          }
+        ]
+      },
+      {
+        "id" : "mockdbsecuritygrp",
+        "description" : "Allow incoming traffic from app servers",
+        "inboundRules" : [
+          {
+            "sourceSecurityGroupId": "sg-0c555141d8a3362ac",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bb5713266f6928f4",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bc36d60bebd11f70",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-00a9a7b1647500d8e",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {  
+            "cidr": "10.94.22.162/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          }
+        ]
+      },                                        
+      {
+        "id" : "pspshareddbsecuritygrp",
+        "description" : "Allow incoming traffic from app servers",
+        "inboundRules" : [
+          {
+            "sourceSecurityGroupId": "sg-0c555141d8a3362ac",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0c99d8be1b890a232",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bb5713266f6928f4",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0bc36d60bebd11f70",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-045042de0113b7e5c",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-00a9a7b1647500d8e",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-0dcaf88b785f070cb",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.162/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.235/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.22.135/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.94.20.137/32",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.80.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.64.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.116.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.96.0/20",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.112.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "cidr": "10.27.114.0/23",
+            "port" : "5432",
+            "protocol": "tcp"
+          }
+        ]
+      }
+    ]
+  }
+}

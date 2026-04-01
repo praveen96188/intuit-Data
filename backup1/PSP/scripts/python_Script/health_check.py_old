@@ -1,0 +1,155 @@
+import psycopg2
+from psycopg2 import OperationalError
+import sys
+import argparse
+
+# Function to connect to the database
+def connect_to_db(host, dbname, user, password):
+    try:
+        connection = psycopg2.connect(
+            host=host,
+            database=dbname,
+            user=user,
+            password=password,
+            port=5432  # default PostgreSQL port
+        )
+        print("Successfully connected to the database.")
+        return connection
+    except OperationalError as e:
+        print("Error: Unable to connect to the database: {}".format(e))
+        sys.exit(1)
+
+# Function to read SQL query from a file
+# Function to read SQL query from a file
+def read_sql_from_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            sql_query = file.read()
+        return sql_query
+    except Exception as e:
+        print(f"Error reading SQL from file: {}".format(e))
+        sys.exit(1)
+
+# Function to execute a query
+def execute_query(connection, sql_query):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(sql_query)
+        return cursor.fetchall()  # This will return the result as a list of tuples
+    except Exception as e:
+        print(f"Error executing query: {}".format(e))
+        cursor.close()
+        sys.exit(1)
+
+# Function to check active connections
+def check_active_connections(connection):
+    sql_query = read_sql_from_file("check_active_connections.sql")  # SQL file for active connections
+    result = execute_query(connection, sql_query)
+
+    # Initialize counters for each state
+    total_connections = 0
+    active_connections = 0
+    idle_connections = 0
+
+    # Loop through the result and count based on state
+    for state, count in result:
+        total_connections += count
+        if state == 'active':
+            active_connections = count
+        elif state == 'idle':
+            idle_connections = count
+
+    print(f"Total Connections: {total_connections}")
+    print(f"Active Connections: {active_connections}")
+    print(f"Idle Connections: {idle_connections}")
+
+
+# Function to check long-running queries
+def check_long_running_queries(connection):
+    sql_query = read_sql_from_file("check_long_running_queries.sql")  # SQL file for long-running queries
+    long_queries = execute_query(connection, sql_query)
+    if long_queries:
+        print("Long-running queries:")
+        for query in long_queries:
+            print(f"PID: {query[0]}, Duration: {query[1]}, Query: {query[2]}")
+    else:
+        print("No long-running queries found.")
+
+# Function to check database size
+def check_database_size(connection):
+    sql_query = read_sql_from_file("check_database_size.sql")  # SQL file for database size
+    db_size = execute_query(connection, sql_query)
+    print(f"Database Size: {db_size[0][0]}")
+
+# Function to check table bloat
+def check_table_bloat(connection):
+    sql_query = read_sql_from_file("check_table_bloat.sql")  # SQL file for table bloat
+    bloat_tables = execute_query(connection, sql_query)
+    if bloat_tables:
+        print("Top 5 largest tables:")
+        for table in bloat_tables:
+            print(f"Table: {table[0]}, Size: {table[1]}")
+
+# Function to check for replication (if applicable)
+def check_replication_status(connection):
+    sql_query = read_sql_from_file("check_replication_status.sql")  # SQL file for replication status
+    replication_status = execute_query(connection, sql_query)
+    if replication_status:
+        print("Replication Status:")
+        for status in replication_status:
+            print(f"Application Name: {status[0]}, State: {status[1]}, Sync State: {status[2]}, Replay Lag: {status[3]}")
+    else:
+        print("No replication found.")
+        
+# Function to check table and index bloat
+def check_table_index_bloat(connection):
+    sql_query = read_sql_from_file("table_index_bloat.sql")  # SQL file for table and index bloat
+    bloat_info = execute_query(connection, sql_query)
+    if bloat_info:
+        print("Table and Index Bloat Information:")
+        for row in bloat_info:
+            print(f"Table: {row[0]}, Data Size: {row[1]}, Index Size: {row[2]}, Total Size: {row[3]}, Table Bloat: {row[4]}, Index: {row[5]}, Index Size: {row[6]}, Index Bloat: {row[7]}")
+    else:
+        print("No table or index bloat found.")
+
+
+# Function to perform the health check
+def health_check(host, dbname, user, password):
+    connection = connect_to_db(host, dbname, user, password)
+    
+    # Perform various health checks
+    check_active_connections(connection)
+    check_long_running_queries(connection)
+    check_database_size(connection)
+    check_table_bloat(connection)
+    check_replication_status(connection)
+    check_table_index_bloat(connection)  # Add this line to check table and index bloat
+    
+    # Close the connection
+    connection.close()
+    print("Health check completed.")
+
+# Function to parse command-line arguments
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="PostgreSQL Health Check for AWS RDS")
+    parser.add_argument('--host', required=True, help='The PostgreSQL endpoint (RDS endpoint)')
+    parser.add_argument('--dbname', required=True, help='The name of the database')
+    parser.add_argument('--user', required=True, help='The PostgreSQL username')
+    parser.add_argument('--password-file', required=True, help='Path to the file containing the PostgreSQL password')
+
+    return parser.parse_args()
+
+# Function to read password from file
+def read_password_from_file(password_file):
+    try:
+        with open(password_file, 'r') as f:
+            password = f.read().strip()  # Remove any leading/trailing whitespaces or newlines
+            return password
+    except Exception as e:
+        print(f"Error reading password from file: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    password = read_password_from_file(args.password_file)
+    health_check(args.host, args.dbname, args.user, password)

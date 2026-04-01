@@ -1,0 +1,79 @@
+{
+  "id": "ppsp",
+  "description": "PSP PDS IBOB Cluster",
+  "bu": "SBSEG",
+  "dbName": "pdsibobdb",
+  "multiAZ": "false",
+  "readersPerCluster": 1,
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow": "05:00-05:30",
+  "maintenanceWindow": "Mon:07:00-Mon:07:30",
+  "backupRetention": "3",
+  "clusterParameterGroupRef": "ppsp:pdsibob-pg14-cluster",
+  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+  "subnetGroupRef": "ppsp:pdsdbsubnetgrp",
+  "securityGroupRef": "ppsp:pdsdbsecuritygrp",
+  "engineMajorVersion": "14",
+  "engineMinorVersion": "5",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "pds",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-pds",
+          "clusters": [
+            {
+              "id": "db",
+              "globalDatabase": "ppsp-pds-db-global",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "5",
+              "instanceType": "r6g.2xlarge",
+              "readers": [
+                {
+                  "instanceType": "r6g.xlarge",
+                  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-west-2c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dr-pds",
+          "clusters": [
+            {
+              "id": "dbDR",
+              "globalDatabase": "ppsp-pds-db-global",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "5",
+              "instanceType": "r6g.2xlarge",
+              "readers": [
+                {
+                  "instanceType": "r6g.xlarge",
+                  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-east-2c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  
+}

@@ -1,0 +1,201 @@
+\timing
+set search_path=pspval;
+SELECT CURRENT_TIMESTAMP;
+
+
+---postgres_hash_cdc_event
+--idx_postgres_hash_cdc_event_entity_id
+create index idx_postgres_hash_cdc_event_entity_id_p0 on pspval.postgres_hash_cdc_event_p0 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p1 on pspval.postgres_hash_cdc_event_p1 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p2 on pspval.postgres_hash_cdc_event_p2 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p3 on pspval.postgres_hash_cdc_event_p3 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p4 on pspval.postgres_hash_cdc_event_p4 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p5 on pspval.postgres_hash_cdc_event_p5 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p6 on pspval.postgres_hash_cdc_event_p6 USING BTREE (entity_id);
+create index idx_postgres_hash_cdc_event_entity_id_p7 on pspval.postgres_hash_cdc_event_p7 USING BTREE (entity_id);
+
+create index idx_postgres_hash_cdc_event_entity_id ON ONLY postgres_hash_cdc_event(entity_id);
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p0 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p1 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p2 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p3 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p4 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p5 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p6 ;
+alter index idx_postgres_hash_cdc_event_entity_id attach partition pspval.idx_postgres_hash_cdc_event_entity_id_p7 ;
+
+
+--postgres_hash_cdc_event
+create index idx_postgres_hash_cdc_event_entity_id_status_p0 on pspval.postgres_hash_cdc_event_p0 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p1 on pspval.postgres_hash_cdc_event_p1 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p2 on pspval.postgres_hash_cdc_event_p2 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p3 on pspval.postgres_hash_cdc_event_p3 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p4 on pspval.postgres_hash_cdc_event_p4 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p5 on pspval.postgres_hash_cdc_event_p5 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p6 on pspval.postgres_hash_cdc_event_p6 USING BTREE (entity_id, status);
+create index idx_postgres_hash_cdc_event_entity_id_status_p7 on pspval.postgres_hash_cdc_event_p7 USING BTREE (entity_id, status);
+
+create index idx_postgres_hash_cdc_event_entity_id_status ON ONLY postgres_hash_cdc_event(entity_id, status);
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p0 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p1 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p2 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p3 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p4 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p5 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p6 ;
+alter index idx_postgres_hash_cdc_event_entity_id_status attach partition pspval.idx_postgres_hash_cdc_event_entity_id_status_p7 ;
+
+--postgres_hash_cdc_event
+create index idx_postgres_hash_cdc_event_transaction_id_status_p0 on pspval.postgres_hash_cdc_event_p0 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p1 on pspval.postgres_hash_cdc_event_p1 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p2 on pspval.postgres_hash_cdc_event_p2 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p3 on pspval.postgres_hash_cdc_event_p3 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p4 on pspval.postgres_hash_cdc_event_p4 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p5 on pspval.postgres_hash_cdc_event_p5 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p6 on pspval.postgres_hash_cdc_event_p6 USING BTREE (transaction_id, status);
+create index idx_postgres_hash_cdc_event_transaction_id_status_p7 on pspval.postgres_hash_cdc_event_p7 USING BTREE (transaction_id, status);
+
+create index idx_postgres_hash_cdc_event_transaction_id_status ON ONLY postgres_hash_cdc_event(transaction_id, status); 
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p0 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p1 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p2 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p3 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p4 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p5 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p6 ;
+alter index idx_postgres_hash_cdc_event_transaction_id_status attach partition pspval.idx_postgres_hash_cdc_event_transaction_id_status_p7 ;
+
+
+
+--oracle_range_cdc_event
+--idx_oracle_range_cdc_event_entity_id
+create index idx_oracle_range_cdc_event_entity_id_p0 on pspval.oracle_range_cdc_event_p0 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p1 on pspval.oracle_range_cdc_event_p1 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p2 on pspval.oracle_range_cdc_event_p2 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p3 on pspval.oracle_range_cdc_event_p3 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p4 on pspval.oracle_range_cdc_event_p4 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p5 on pspval.oracle_range_cdc_event_p5 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p6 on pspval.oracle_range_cdc_event_p6 USING BTREE (entity_id);
+create index idx_oracle_range_cdc_event_entity_id_p7 on pspval.oracle_range_cdc_event_p7 USING BTREE (entity_id);
+
+create index idx_oracle_range_cdc_event_entity_id ON ONLY oracle_range_cdc_event(entity_id);
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p0 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p1 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p2 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p3 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p4 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p5 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p6 ;
+alter index idx_oracle_range_cdc_event_entity_id attach partition pspval.idx_oracle_range_cdc_event_entity_id_p7 ;
+
+
+--oracle_range_cdc_event
+create index idx_oracle_range_cdc_event_entity_id_status_p0 on pspval.oracle_range_cdc_event_p0 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p1 on pspval.oracle_range_cdc_event_p1 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p2 on pspval.oracle_range_cdc_event_p2 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p3 on pspval.oracle_range_cdc_event_p3 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p4 on pspval.oracle_range_cdc_event_p4 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p5 on pspval.oracle_range_cdc_event_p5 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p6 on pspval.oracle_range_cdc_event_p6 USING BTREE (entity_id, status);
+create index idx_oracle_range_cdc_event_entity_id_status_p7 on pspval.oracle_range_cdc_event_p7 USING BTREE (entity_id, status);
+
+create index idx_oracle_range_cdc_event_entity_id_status ON ONLY oracle_range_cdc_event(entity_id, status);
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p0 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p1 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p2 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p3 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p4 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p5 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p6 ;
+alter index idx_oracle_range_cdc_event_entity_id_status attach partition pspval.idx_oracle_range_cdc_event_entity_id_status_p7 ;
+
+
+--oracle_range_cdc_event
+create index idx_oracle_range_cdc_event_transaction_id_status_p0 on pspval.oracle_range_cdc_event_p0 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p1 on pspval.oracle_range_cdc_event_p1 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p2 on pspval.oracle_range_cdc_event_p2 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p3 on pspval.oracle_range_cdc_event_p3 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p4 on pspval.oracle_range_cdc_event_p4 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p5 on pspval.oracle_range_cdc_event_p5 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p6 on pspval.oracle_range_cdc_event_p6 USING BTREE (transaction_id, status);
+create index idx_oracle_range_cdc_event_transaction_id_status_p7 on pspval.oracle_range_cdc_event_p7 USING BTREE (transaction_id, status);
+
+create index idx_oracle_range_cdc_event_transaction_id_status ON ONLY oracle_range_cdc_event(transaction_id, status); 
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p0 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p1 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p2 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p3 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p4 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p5 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p6 ;
+alter index idx_oracle_range_cdc_event_transaction_id_status attach partition pspval.idx_oracle_range_cdc_event_transaction_id_status_p7 ;
+
+
+
+
+--oracle_hash_cdc_event
+--idx_oracle_hash_cdc_event_entity_id
+create index idx_oracle_hash_cdc_event_entity_id_p0 on pspval.oracle_hash_cdc_event_p0 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p1 on pspval.oracle_hash_cdc_event_p1 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p2 on pspval.oracle_hash_cdc_event_p2 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p3 on pspval.oracle_hash_cdc_event_p3 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p4 on pspval.oracle_hash_cdc_event_p4 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p5 on pspval.oracle_hash_cdc_event_p5 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p6 on pspval.oracle_hash_cdc_event_p6 USING BTREE (entity_id);
+create index idx_oracle_hash_cdc_event_entity_id_p7 on pspval.oracle_hash_cdc_event_p7 USING BTREE (entity_id);
+
+create index idx_oracle_hash_cdc_event_entity_id ON ONLY oracle_hash_cdc_event(entity_id);
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p0 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p1 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p2 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p3 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p4 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p5 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p6 ;
+alter index idx_oracle_hash_cdc_event_entity_id attach partition pspval.idx_oracle_hash_cdc_event_entity_id_p7 ;
+
+
+--oracle_hash_cdc_event
+create index idx_oracle_hash_cdc_event_entity_id_status_p0 on pspval.oracle_hash_cdc_event_p0 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p1 on pspval.oracle_hash_cdc_event_p1 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p2 on pspval.oracle_hash_cdc_event_p2 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p3 on pspval.oracle_hash_cdc_event_p3 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p4 on pspval.oracle_hash_cdc_event_p4 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p5 on pspval.oracle_hash_cdc_event_p5 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p6 on pspval.oracle_hash_cdc_event_p6 USING BTREE (entity_id, status);
+create index idx_oracle_hash_cdc_event_entity_id_status_p7 on pspval.oracle_hash_cdc_event_p7 USING BTREE (entity_id, status);
+
+create index idx_oracle_hash_cdc_event_entity_id_status ON ONLY oracle_hash_cdc_event(entity_id, status);
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p0 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p1 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p2 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p3 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p4 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p5 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p6 ;
+alter index idx_oracle_hash_cdc_event_entity_id_status attach partition pspval.idx_oracle_hash_cdc_event_entity_id_status_p7 ;
+
+--oracle_hash_cdc_event
+create index idx_oracle_hash_cdc_event_transaction_id_status_p0 on pspval.oracle_hash_cdc_event_p0 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p1 on pspval.oracle_hash_cdc_event_p1 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p2 on pspval.oracle_hash_cdc_event_p2 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p3 on pspval.oracle_hash_cdc_event_p3 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p4 on pspval.oracle_hash_cdc_event_p4 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p5 on pspval.oracle_hash_cdc_event_p5 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p6 on pspval.oracle_hash_cdc_event_p6 USING BTREE (transaction_id, status);
+create index idx_oracle_hash_cdc_event_transaction_id_status_p7 on pspval.oracle_hash_cdc_event_p7 USING BTREE (transaction_id, status);
+
+create index idx_oracle_hash_cdc_event_transaction_id_status ON ONLY oracle_hash_cdc_event(transaction_id, status); 
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p0 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p1 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p2 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p3 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p4 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p5 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p6 ;
+alter index idx_oracle_hash_cdc_event_transaction_id_status attach partition pspval.idx_oracle_hash_cdc_event_transaction_id_status_p7 ;
+
+--compare_info_cdc_event
+create index status_initial_ix on pspval.compare_info_cdc_event (status) where status='initial';
+	
+SELECT CURRENT_TIMESTAMP;

@@ -1,0 +1,583 @@
+{
+ "Parameters": {
+  "SsmParameterValueipsrelationalparametersppspppsptempdbDRReaderEnptsC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/ppsp/ppsp-temp-dbDR/ReaderEnpts"
+  },
+  "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/ConfigBucket"
+  },
+  "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/ManagedBucket"
+  },
+  "lambdaLayerParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/custom/ips/aurora/layerArn"
+  }
+ },
+ "Resources": {
+  "wavefrontmetrics60F1628D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.8.9/wavefront_metrics.zip"
+    },
+    "Role": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:us-east-2:RDStoOIMRole"
+    },
+    "Environment": {
+     "Variables": {
+      "secret_names": "/ips/relational/secrets/ppsp-temp-db-global/monUser",
+      "cluster_id": "ppsp-temp-dbDR",
+      "account_id": "152430470825",
+      "port": "5432",
+      "last_digit": "5",
+      "host": {
+       "Ref": "SsmParameterValueipsrelationalparametersppspppsptempdbDRReaderEnptsC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "stack_name": {
+       "Ref": "AWS::StackName"
+      }
+     }
+    },
+    "FunctionName": "ppsp-temp-dbDR-wavefront_metrics",
+    "Handler": "wavefront_metrics.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     }
+    ],
+    "Runtime": "python3.8",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        1,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        2,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/wavefront_metrics/Resource"
+   }
+  },
+  "wavefrontmetricsLogRetentionE48B6B8E": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "wavefrontmetrics60F1628D"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/wavefront_metrics/LogRetention/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:PutRetentionPolicy",
+        "logs:DeleteRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x",
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-east-2",
+     "S3Key": "5fa1330271b8967d9254ba2d4a07144f8acefe8b77e6d6bba38261373a50d5f8.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.5fa1330271b8967d9254ba2d4a07144f8acefe8b77e6d6bba38261373a50d5f8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "splunkmetricsDBF004E0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.8.9/splunk_metrics.zip"
+    },
+    "Role": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:us-east-2:RDStoOIMRole"
+    },
+    "Environment": {
+     "Variables": {
+      "secret_names": "/ips/relational/secrets/ppsp-temp-db-global/monUser",
+      "cluster_id": "ppsp-temp-dbDR",
+      "account_id": "152430470825",
+      "port": "5432",
+      "last_digit": "5",
+      "host": {
+       "Ref": "SsmParameterValueipsrelationalparametersppspppsptempdbDRReaderEnptsC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "stack_name": {
+       "Ref": "AWS::StackName"
+      }
+     }
+    },
+    "FunctionName": "ppsp-temp-dbDR-splunk_metrics",
+    "Handler": "splunk_metrics.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     }
+    ],
+    "Runtime": "python3.8",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "pds"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.8.9"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-temp-dbDR"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        1,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "Fn::Select": [
+        2,
+        {
+         "Fn::Split": [
+          ",",
+          {
+           "Fn::ImportValue": "vpc-03af2ef666f86d6d2:private-subnet:ids"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/splunk_metrics/Resource"
+   }
+  },
+  "splunkmetricsLogRetention0681FE23": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "splunkmetricsDBF004E0"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/splunk_metrics/LogRetention/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zWPwQrCMBBEv6X3dLX2IB6t4EFESv2Ask3XEJsm0E0VKfl304inNzA7zOwO9gVsM3xzLvshN7qD5Ubsqb97lINoiN08SRKnh61xwpE8TSKetwuXUM1yIF8hkzA4dj3Ccp6t9NrZNfDXQRinGK5ONTFuk81li8zkGY4rhMYRlsaZ1JRYO6PlJxUnFUKy/oNSLI5U2qogLvjCTRFfgeKQPVnrfJpj0UjQ/PgF9MP6aukAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-temp-dbDR/IpsMtx-/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "IpsMonppsptempdbDRIpsMtxsplunkmetricsDD9D853EArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "splunkmetricsDBF004E0",
+     "Arn"
+    ]
+   }
+  },
+  "IpsMonppsptempdbDRIpsMtxwavefrontmetricsBB6BE11AArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "wavefrontmetrics60F1628D",
+     "Arn"
+    ]
+   }
+  },
+  "IpsMonppsptempdbDRIpsMtxsplunkmetricsLogRetentionD551D3BELogGroupName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "splunkmetricsLogRetention0681FE23",
+     "LogGroupName"
+    ]
+   }
+  },
+  "IpsMonppsptempdbDRIpsMtxwavefrontmetricsLogRetentionBABC3EC4LogGroupName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "wavefrontmetricsLogRetentionE48B6B8E",
+     "LogGroupName"
+    ]
+   }
+  }
+ }
+}

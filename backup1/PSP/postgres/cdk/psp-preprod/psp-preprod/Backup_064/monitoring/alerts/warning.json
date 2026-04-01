@@ -1,0 +1,79 @@
+{
+  "wavefrontAlerts": [
+    {
+      "name" : "WARN: High CPU",
+      "severity" : "WARN",
+      "condition" : "avg(ts(aws.rds.cpuutilization, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")) > 85",
+      "display_expression" : "avg(ts(aws.rds.cpuutilization, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\"))",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "WARN: Large Amount of Active Connections",
+      "severity" : "WARN",
+      "condition" : "ts(custom.ips.aurora.active_connections, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") > 100",
+      "display_expression" : "ts(custom.ips.aurora.active_connections, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "WARN: Low Free Local Storage",
+      "severity" : "WARN",
+      "condition" : "100 - ts(custom.ips.aurora.em.instance_info.local_storage_used_perc, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") < 40",
+      "display_expression" : "100 - ts(custom.ips.aurora.em.instance_info.local_storage_used_perc, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "WARN: Low Freeable Memory",
+      "severity" : "WARN",
+      "condition" : "avg(ts(aws.rds.freeablememory, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")) / avg(ts(custom.ips.aurora.em.instance_info.total_memory, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") * 1000) * 100 < 15 ",
+      "display_expression" : "100 - ts(custom.ips.aurora.em.instance_info.local_storage_used_perc, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "WARN: Old Max Transaction Id Age",
+      "severity" : "WARN",
+      "condition" : "max(ts(aws.rds.maximumusedtransactionids, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\"), dbinstanceidentifier) / 200000000 > 80",
+      "display_expression" : "max(ts(aws.rds.maximumusedtransactionids, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\"), dbinstanceidentifier) / 200000000",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    }
+  ]
+}

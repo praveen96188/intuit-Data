@@ -1,0 +1,782 @@
+HOST_NAME: ip-172-19-0-97
+INSTANCE_NAME: PSPSYS02
+USER is "INTUADMIN"
+
+Palisade DB collection script version 1.4.10
+
+Pluggable Database (only in 12c)
+CON_NAME: PSPSYS02
+CDB_NAME:
+
+=== Check privileges
+Each table used in queries is checked to see if proper access is granted to current user
+It is acceptable to see errors related to missing table (script is not locked to DB version) - check for further errors on each Option/Pack
+ERROR WHEN CHECKING TABLE 'APPS.FND_NODES' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'APPS.FND_PRODUCT_GROUPS' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'CMPINSTALLATION_V' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'DMSYS.DM$MODEL' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'DMSYS.DM$OBJECT' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'DMSYS.DM$P_MODEL' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'DVSYS.DBA_DV_REALM' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'GV$IM_SEGMENT' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'LBACSYS.LBAC$POLT' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'MDSYS.SDO_GEOM_METADATA_TABLE' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'ODM.ODM_MINING_MODEL' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'ODM_DOCUMENT' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'ODM_RECORD' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'OLAPSYS.DBA$OLAP_CUBES' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_ADMIN_LICENSES' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_FU_REGISTRATIONS' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_FU_STATISTICS' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_LICENSE_CONFIRMATION' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_LICENSE_DEFINITIONS' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_LICENSED_TARGETS' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_LICENSES' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_TARGET_TYPES' : ORA-00942: table or view does not exist
+ERROR WHEN CHECKING TABLE 'SYSMAN.MGMT_TARGETS' : ORA-00942: table or view does not exist
+
+=== Databases, Instances, Users (ref: V$DATABASE, GV$INSTANCE, DBA_USERS)
+==Databases
+
+      DBID NAME      CREATED    OPEN_MODE            DATABASE_ROLE    DATAGUAR PLATFORM_NAME                  DB_UNIQUE_NAME       FS_FAILOVER_STATUS     CONTROLFIL LOG_MODE     SWITCHOVER_STATUS    SUPPLEME FORCE_LOGGING
+---------- --------- ---------- -------------------- ---------------- -------- ------------------------------ -------------------- ---------------------- ---------- ------------ -------------------- -------- ---------------------------------------
+2819269746 PSPSYS02  2023_09_23 READ WRITE           PRIMARY          DISABLED Linux x86 64-bit               PSPSYS02_A           DISABLED               2023_09_23 ARCHIVELOG   NOT ALLOWED          NO       NO
+
+==Instances
+
+   INST_ID INSTANCE_NAME    HOST_NAME                                          VERSION           STARTUP_TIME    STATUS       PAR DATABASE_STATUS   INSTANCE_ROLE
+---------- ---------------- -------------------------------------------------- ----------------- --------------- ------------ --- ----------------- ------------------
+         1 PSPSYS02         ip-172-19-0-97                                     19.0.0.0.0        2023_09_23      OPEN         NO  ACTIVE            PRIMARY_INSTANCE
+
+==Containers 12c
+**,DATABASES,CONTAINERS12c,0,PSPSYS02,2819269746,READ WRITE,2023_09_23,
+
+==PDBs 12c
+
+==Dataguard Config
+
+==Patches
+**,DATABASES,Patches,,BOOTSTRAP,DATAPATCH,19,RDBMS_19.7.0.0.0DBRU_LINUX.X64_200403,
+**,DATABASES,Patches,2020_04_29,RU_APPLY,SERVER,19.0.0.0.0,Patch applied on 19.7.0.0.0: Release_Update - 200404035018,
+
+==Patches12c
+**,DATABASES,Patches12c,2020_04_29,APPLY,29213893,SUCCESS,DBMS_STATS FAILING WITH ERROR ORA-01422 WHEN GATHERING STATS FOR USER$ TABLE,
+**,DATABASES,Patches12c,2020_04_29,APPLY,30528704,SUCCESS,19C RMAN RECOVER DATABASE USE REDO LOG INSTEAD OF ARCHIVELOG AFTER APPLYING OCT DATABASE RU,
+**,DATABASES,Patches12c,2020_04_29,APPLY,30805684,SUCCESS,OJVM RELEASE UPDATE: 19.7.0.0.200414 (30805684),
+**,DATABASES,Patches12c,2020_04_29,APPLY,30869156,SUCCESS,Database Release Update : 19.7.0.0.200414 (30869156),
+
+==DBA Registry
+
+MODIFIED                      COMP_NAME                                SCHEMA                                   VERSION                        STATUS
+----------------------------- ---------------------------------------- ---------------------------------------- ------------------------------ --------------------------------------------
+29-APR-2020 05:29:05          Oracle Real Application Clusters         SYS                                      19.0.0.0.0                     OPTION OFF
+23-SEP-2023 14:04:59          Oracle Database Packages and Types       SYS                                      19.0.0.0.0                     VALID
+23-SEP-2023 14:04:59          Oracle Text                              CTXSYS                                   19.0.0.0.0                     VALID
+23-SEP-2023 14:04:59          Oracle XML Database                      XDB                                      19.0.0.0.0                     VALID
+23-SEP-2023 14:04:59          Oracle Database Catalog Views            SYS                                      19.0.0.0.0                     VALID
+
+==Users
+
+USERNAME                       CREATED    EXPIRY_DAT STATUS
+------------------------------ ---------- ---------- --------------------------------
+INTUADMIN                      2023_09_23            OPEN
+INTU_LICENSING                 2023_12_11            OPEN
+PSPADM                         2023_09_24            OPEN
+PSPAPP                         2023_09_24            OPEN
+PSP_PRL_APP                    2023_09_28            OPEN
+PSP_PRL_READ                   2023_09_28            OPEN
+RDSADMIN                       2020_04_29            OPEN
+SYS                            2020_04_29            OPEN
+SYSTEM                         2020_04_29            OPEN
+
+
+**,GV$INSTANCE,1,PSPSYS02,ip-172-19-0-97,19.0.0.0.0,2023-09-23_07:19:26,OPEN,NO,ACTIVE,PRIMARY_INSTANCE,
+
+**,V$DATABASE,PSPSYS02,PSPSYS02_A,READ WRITE,"PRIMARY","ENABLED","DISABLED","NONE","2023_09_23,2023_09_23,
+
+=== Version, Parameters, DBA_FEATURE_USAGE_STATISTICS, Options (filtered) (ref: V$VERSION, V$PARAMETER, GV$PARAMETER, DBA_FEATURE_USAGE_STATISTICS, V$OPTION)
+
+**,V$VERSION,"19c Enterprise Edition 19.0.0.0.0",
+==========================================================
+
+**,V$PARAMETER,cdb_cluster,FALSE,DEFAULT,
+**,V$PARAMETER,cdb_cluster_name,,DEFAULT,
+**,V$PARAMETER,cluster_database,FALSE,DEFAULT,
+**,V$PARAMETER,cluster_database_instances,1,DEFAULT,
+**,V$PARAMETER,cluster_interconnects,,DEFAULT,
+**,V$PARAMETER,compatible,19.0.0,NOT DEFAULT,
+**,V$PARAMETER,control_management_pack_access,DIAGNOSTIC+TUNING,DEFAULT,
+**,V$PARAMETER,db_unique_name,PSPSYS02_A,NOT DEFAULT,
+**,V$PARAMETER,ddl_lock_timeout,60,NOT DEFAULT,
+**,V$PARAMETER,enable_ddl_logging,FALSE,DEFAULT,
+**,V$PARAMETER,enable_goldengate_replication,TRUE,NOT DEFAULT,
+**,V$PARAMETER,enable_pluggable_database,FALSE,NOT DEFAULT,
+**,V$PARAMETER,enabled_PDBs_on_standby,*,DEFAULT,
+**,V$PARAMETER,fal_client,,DEFAULT,
+**,V$PARAMETER,fal_server,,DEFAULT,
+**,V$PARAMETER,heat_map,OFF,NOT DEFAULT,
+**,V$PARAMETER,inmemory_adg_enabled,TRUE,DEFAULT,
+**,V$PARAMETER,inmemory_automatic_level,OFF,DEFAULT,
+**,V$PARAMETER,inmemory_clause_default,,DEFAULT,
+**,V$PARAMETER,inmemory_expressions_usage,ENABLE,DEFAULT,
+**,V$PARAMETER,inmemory_force,DEFAULT,DEFAULT,
+**,V$PARAMETER,inmemory_max_populate_servers,0,DEFAULT,
+**,V$PARAMETER,inmemory_optimized_arithmetic,DISABLE,DEFAULT,
+**,V$PARAMETER,inmemory_prefer_xmem_memcompress,,DEFAULT,
+**,V$PARAMETER,inmemory_prefer_xmem_priority,,DEFAULT,
+**,V$PARAMETER,inmemory_query,ENABLE,DEFAULT,
+**,V$PARAMETER,inmemory_size,0,DEFAULT,
+**,V$PARAMETER,inmemory_trickle_repopulate_servers_percent,1,DEFAULT,
+**,V$PARAMETER,inmemory_virtual_columns,MANUAL,DEFAULT,
+**,V$PARAMETER,inmemory_xmem_size,0,DEFAULT,
+**,V$PARAMETER,log_archive_config,,DEFAULT,
+**,V$PARAMETER,log_archive_dest,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_1,location="/rdsdbdata/db/PSPSYS02_A/arch/redolog", valid_for=(ALL_LOGFILES,ALL_ROLES),NOT DEFAULT,
+**,V$PARAMETER,log_archive_dest_10,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_11,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_12,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_13,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_14,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_15,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_16,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_17,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_18,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_19,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_2,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_20,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_21,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_22,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_23,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_24,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_25,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_26,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_27,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_28,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_29,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_3,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_30,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_31,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_4,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_5,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_6,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_7,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_8,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_9,,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_1,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_10,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_11,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_12,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_13,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_14,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_15,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_16,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_17,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_18,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_19,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_2,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_20,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_21,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_22,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_23,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_24,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_25,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_26,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_27,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_28,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_29,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_3,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_30,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_31,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_4,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_5,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_6,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_7,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_8,enable,DEFAULT,
+**,V$PARAMETER,log_archive_dest_state_9,enable,DEFAULT,
+**,V$PARAMETER,log_archive_duplex_dest,,DEFAULT,
+**,V$PARAMETER,log_archive_format,-%s-%t-%r.arc,NOT DEFAULT,
+**,V$PARAMETER,log_archive_max_processes,4,DEFAULT,
+**,V$PARAMETER,log_archive_min_succeed_dest,1,DEFAULT,
+**,V$PARAMETER,log_archive_start,FALSE,DEFAULT,
+**,V$PARAMETER,log_archive_trace,0,DEFAULT,
+**,V$PARAMETER,noncdb_compatible,FALSE,DEFAULT,
+**,V$PARAMETER,optimizer_inmemory_aware,TRUE,DEFAULT,
+**,V$PARAMETER,resource_manage_goldengate,FALSE,DEFAULT,
+**,V$PARAMETER,standby_db_preserve_states,NONE,DEFAULT,
+**,V$PARAMETER,standby_file_management,AUTO,NOT DEFAULT,
+**,V$PARAMETER,standby_pdb_source_file_dblink,,DEFAULT,
+**,V$PARAMETER,standby_pdb_source_file_directory,,DEFAULT,
+==========================================================
+
+**,GV$PARAMETER,1,cdb_cluster,FALSE,DEFAULT,
+**,GV$PARAMETER,1,cdb_cluster_name,,DEFAULT,
+**,GV$PARAMETER,1,cluster_database,FALSE,DEFAULT,
+**,GV$PARAMETER,1,cluster_database_instances,1,DEFAULT,
+**,GV$PARAMETER,1,cluster_interconnects,,DEFAULT,
+**,GV$PARAMETER,1,compatible,19.0.0,NOT DEFAULT,
+**,GV$PARAMETER,1,control_management_pack_access,DIAGNOSTIC+TUNING,DEFAULT,
+**,GV$PARAMETER,1,db_unique_name,PSPSYS02_A,NOT DEFAULT,
+**,GV$PARAMETER,1,ddl_lock_timeout,60,NOT DEFAULT,
+**,GV$PARAMETER,1,enable_ddl_logging,FALSE,DEFAULT,
+**,GV$PARAMETER,1,enable_goldengate_replication,TRUE,NOT DEFAULT,
+**,GV$PARAMETER,1,enable_pluggable_database,FALSE,NOT DEFAULT,
+**,GV$PARAMETER,1,enabled_PDBs_on_standby,*,DEFAULT,
+**,GV$PARAMETER,1,fal_client,,DEFAULT,
+**,GV$PARAMETER,1,fal_server,,DEFAULT,
+**,GV$PARAMETER,1,heat_map,OFF,NOT DEFAULT,
+**,GV$PARAMETER,1,inmemory_adg_enabled,TRUE,DEFAULT,
+**,GV$PARAMETER,1,inmemory_automatic_level,OFF,DEFAULT,
+**,GV$PARAMETER,1,inmemory_clause_default,,DEFAULT,
+**,GV$PARAMETER,1,inmemory_expressions_usage,ENABLE,DEFAULT,
+**,GV$PARAMETER,1,inmemory_force,DEFAULT,DEFAULT,
+**,GV$PARAMETER,1,inmemory_max_populate_servers,0,DEFAULT,
+**,GV$PARAMETER,1,inmemory_optimized_arithmetic,DISABLE,DEFAULT,
+**,GV$PARAMETER,1,inmemory_prefer_xmem_memcompress,,DEFAULT,
+**,GV$PARAMETER,1,inmemory_prefer_xmem_priority,,DEFAULT,
+**,GV$PARAMETER,1,inmemory_query,ENABLE,DEFAULT,
+**,GV$PARAMETER,1,inmemory_size,0,DEFAULT,
+**,GV$PARAMETER,1,inmemory_trickle_repopulate_servers_percent,1,DEFAULT,
+**,GV$PARAMETER,1,inmemory_virtual_columns,MANUAL,DEFAULT,
+**,GV$PARAMETER,1,inmemory_xmem_size,0,DEFAULT,
+**,GV$PARAMETER,1,log_archive_config,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_1,location="/rdsdbdata/db/PSPSYS02_A/arch/redolog", valid_for=(ALL_LOGFILES,ALL_ROLES),NOT DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_10,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_11,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_12,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_13,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_14,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_15,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_16,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_17,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_18,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_19,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_2,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_20,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_21,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_22,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_23,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_24,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_25,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_26,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_27,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_28,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_29,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_3,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_30,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_31,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_4,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_5,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_6,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_7,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_8,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_9,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_1,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_10,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_11,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_12,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_13,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_14,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_15,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_16,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_17,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_18,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_19,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_2,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_20,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_21,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_22,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_23,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_24,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_25,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_26,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_27,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_28,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_29,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_3,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_30,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_31,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_4,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_5,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_6,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_7,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_8,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_dest_state_9,enable,DEFAULT,
+**,GV$PARAMETER,1,log_archive_duplex_dest,,DEFAULT,
+**,GV$PARAMETER,1,log_archive_format,-%s-%t-%r.arc,NOT DEFAULT,
+**,GV$PARAMETER,1,log_archive_max_processes,4,DEFAULT,
+**,GV$PARAMETER,1,log_archive_min_succeed_dest,1,DEFAULT,
+**,GV$PARAMETER,1,log_archive_start,FALSE,DEFAULT,
+**,GV$PARAMETER,1,log_archive_trace,0,DEFAULT,
+**,GV$PARAMETER,1,noncdb_compatible,FALSE,DEFAULT,
+**,GV$PARAMETER,1,optimizer_inmemory_aware,TRUE,DEFAULT,
+**,GV$PARAMETER,1,resource_manage_goldengate,FALSE,DEFAULT,
+**,GV$PARAMETER,1,standby_db_preserve_states,NONE,DEFAULT,
+**,GV$PARAMETER,1,standby_file_management,AUTO,NOT DEFAULT,
+**,GV$PARAMETER,1,standby_pdb_source_file_dblink,,DEFAULT,
+**,GV$PARAMETER,1,standby_pdb_source_file_directory,,DEFAULT,
+==========================================================
+
+**,DBA_FEATURE_USAGE_STATISTICS,"Adaptive Plans","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Maintenance - Optimizer Statistics Gathering","'","TRUE",27,2024_03_23,2023_09_23,2819269746,14,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Maintenance - SQL Tuning Advisor","'","TRUE",27,2024_03_23,2023_09_23,2819269746,7,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Maintenance - Space Advisor","'","TRUE",27,2024_03_23,2023_09_23,2819269746,14,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Reoptimization","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic SGA Tuning","'","TRUE",27,2024_03_23,2023_09_23,2819269746,0,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic SQL Execution Memory","'","TRUE",27,2024_03_23,2023_09_23,2819269746,0,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic SQL Tuning Advisor","'","TRUE",26,2024_03_23,2023_09_30,2819269746,7,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Segment Space Management (system)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,7,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Segment Space Management (user)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Undo Management","'","TRUE",27,2024_03_23,2023_09_23,2819269746,1,
+**,DBA_FEATURE_USAGE_STATISTICS,"Bigfile Tablespace","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Character Set","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Client Identifier","'","FALSE",11,2024_03_16,2023_09_30,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Deferred Segment Creation","'","TRUE",27,2024_03_23,2023_09_23,2819269746,347,
+**,DBA_FEATURE_USAGE_STATISTICS,"Extensibility","'","TRUE",27,2024_03_23,2023_09_23,2819269746,0,
+**,DBA_FEATURE_USAGE_STATISTICS,"LOB","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Locally Managed Tablespaces (system)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,9,
+**,DBA_FEATURE_USAGE_STATISTICS,"Locally Managed Tablespaces (user)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Object","'","TRUE",27,2024_03_23,2023_09_23,2819269746,0,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Call Interface (OCI)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Managed Files","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Utility Datapump (Import)","'","FALSE",1,2023_09_30,2023_09_30,2819269746,8,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Utility External Table (ORACLE_LOADER)","'","FALSE",2,2023_09_30,2023_09_23,2819269746,18,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Utility Metadata API","'","FALSE",1,2023_09_30,2023_09_30,2819269746,1367,
+**,DBA_FEATURE_USAGE_STATISTICS,"Parallel SQL DML Execution","'","TRUE",26,2024_03_23,2023_09_30,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Parallel SQL Query Execution","'","TRUE",26,2024_03_23,2023_09_30,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Partitioning (system)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,82.46,
+**,DBA_FEATURE_USAGE_STATISTICS,"RMAN - Disk Backup","'","FALSE",1,2023_09_30,2023_09_30,2819269746,1,
+**,DBA_FEATURE_USAGE_STATISTICS,"Real-Time SQL Monitoring","'","TRUE",27,2024_03_23,2023_09_23,2819269746,14638,
+**,DBA_FEATURE_USAGE_STATISTICS,"Recovery Manager (RMAN)","'","FALSE",1,2023_09_30,2023_09_30,2819269746,1,
+**,DBA_FEATURE_USAGE_STATISTICS,"Result Cache","'","TRUE",27,2024_03_23,2023_09_23,2819269746,36992,
+**,DBA_FEATURE_USAGE_STATISTICS,"SQL Plan Directive","'","TRUE",27,2024_03_23,2023_09_23,2819269746,622,
+**,DBA_FEATURE_USAGE_STATISTICS,"SQL Tuning Set (system)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,0,
+**,DBA_FEATURE_USAGE_STATISTICS,"SQL*Plus","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"SecureFile Compression (user)","'","TRUE",26,2024_03_23,2023_09_30,2819269746,6,
+**,DBA_FEATURE_USAGE_STATISTICS,"SecureFiles (system)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,435,
+**,DBA_FEATURE_USAGE_STATISTICS,"SecureFiles (user)","'","TRUE",27,2024_03_23,2023_09_23,2819269746,68,
+**,DBA_FEATURE_USAGE_STATISTICS,"Server Parameter File","'","TRUE",27,2024_03_23,2023_09_23,2819269746,,
+**,DBA_FEATURE_USAGE_STATISTICS,"Services","'","TRUE",27,2024_03_23,2023_09_23,2819269746,1,
+**,DBA_FEATURE_USAGE_STATISTICS,"Statistics Advisor","'","TRUE",27,2024_03_23,2023_09_23,2819269746,182,
+**,DBA_FEATURE_USAGE_STATISTICS,"Unified Audit","'","TRUE",27,2024_03_23,2023_09_23,2819269746,0,
+==========================================================
+
+**,DBA_FEATURE_USAGE_STATISTICS,"Adaptive Plans","Total number of queries: 9280 Number of queries with an adaptive plan: 1144 Percentage of queries with an adaptive plan: 12.32758620689655172413793103448275862069 Are the queries running in reporting mode ? : No ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Reoptimization","Total number of queries: 9282 Number of reoptimizable queries: 80 Percentage of reoptimizable queries: .8618832148243912949795302736479207067442 ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic SGA Tuning",":sga_target:49928994816:sga_max_size:49928994816:comp:shared pool:cur:5502926848:min:5368709120:max:5502926848:usr:0:comp:large pool:cur:268435456:min:268435456:max:268435456:usr:0:comp:streams pool:cur:268435456:min:0:max:268435456:usr:0:comp:SGA Target:cur:49928994816:min:49928994816:max:49928994816:usr:49928994816:comp:DEFAULT buffer cache:cur:43620761600:min:43620761600:max:44023414784:usr:0:comp:Shared IO Pool:cur:134217728:min:0:max:134217728:usr:0:comp:PGA Target:cur:3355443200:min:3355443200:max:3355443200:usr:3355443200:event:SGA: MMAN sleep:waits:7:time:0:event:SGA: allocation:waits:3:time:8:event:XDB SGA initial:waits:1:time:1","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic SQL Tuning Advisor","Execution count so far: 31, Executions with auto-implement: 0, SQL profiles recommended so far: 27, Projected DB Time Saved Automatically (s): 0","TRUE",26,2024_03_23,2023_09_30,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Segment Space Management (system)","(Segment Space Management: MANUAL, TS Count: 2, Size MB: 410200) (Segment Space Management: AUTO, TS Count: 7, Size MB: 442302.4375) ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Automatic Undo Management","(Retention: NOGUARANTEE, TS Count: 1, Size MB: 409600) (Undo Blocks: 164612, Max Concurrency: 15) (Snapshot Old Info - Begin Time: 2024-03-19 13:09:25, End Time: 2024-03-23 13:06:06, SSOLD Error Count: 0) ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Character Set","AL32UTF8","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Deferred Segment Creation","Deferred Segment Creation  Parameter:1 Total Deferred Segments:347 Total Created Segments:8273 Table Segments:165 Index Segments:125 Lob Segments:16 Table Partition Segments:5 Index Partition Segments:27 Lob Partition Segments:9 Table SubPartition Segments:0 Index SubPartition Segments:0 Lob SubPartition Segments:0","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Extensibility","num of user-defined operators: 0,num of user-defined aggregates: 0,num of table functions: 4,num of index types: 0,num of domain indexes: 0","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Locally Managed Tablespaces (system)","(Extent Management: LOCAL, TS Count: 9, Size MB: 852502.4375) ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Object","num of object types: 1,num of object tables: 0,num of adt and ref columns: 0,num of object views: 0,num of anydata cols: 0,num of nested table cols: 0,num of varray cols: 0,num of octs: 0","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Call Interface (OCI)","Driver Versions=(21.3.0.0.0),Client Lib Versions=(12.1.0.2.0,21.3.0.0.0),(Client Bitmap 512)","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Utility Datapump (Import)","Oracle Utility Datapump (Import) invoked: 8 times, parallel used: 8 times, full transportable used: 0 times","FALSE",1,2023_09_30,2023_09_30,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Oracle Utility External Table (ORACLE_LOADER)","Oracle Utility External Table (ORACLE_LOADER) invoked 18 times","FALSE",2,2023_09_30,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Partitioning (system)","1:T:I::1048575:0:1:::::9::0:ON-0::N:N::0::0::::N|1:I:I::1048575:0:1::LP:N:NU:9::0:F-0::N:N::0::0::::N|1:I:I::1048575:0:1::L:N:NU:9::0:F-0::N:N::0::0::::N|2:T:I::1048575:0:1:::::9::0:ON-0::N:N::0::0::::N|2:I:I::1048575:0:1::L:N:NU:9::0:F-0::N:N::0::0::::N|2:I:I::1048575:0:1::LP:N:U:9::0:F-0::N:N::0::0::::N|2:I:I::1048575:0:1::L:L:U:9::0:F-0::N:N::0::0::::N|3:T:I::1048575:0:1:::::9::0:ON-0::N:N::0::0::::N|4:T:H::100:0:2:::::100::0:ON-0::N:N::0::0::::N|4:I:::::4::GNP:N:U::::F:NO::::::::::|5:T:L::1:0:1:::::1::0:ON-0::N:N::0::0::::N|5:I:L::1:0:1::LP:N:NU:1::0:F-0::N:N::0::0::::N|6:T:R::1:0:1:::::1::0:ON-0::N:N::0::0::::N|7:T:R::1:0:1:::::1::0:ON-0::N:N::0::0::::N|7:I:R::1:0:1::LP:N:NU:1::0:F-0::N:N::0::0::::N|7:I:R::1:0:1::LP:N:NU:1::0:F-0::N:N::0::0::::N|7:I:R::1:0:1::LP:N:U:1::0:F-0::N:N::0::0::::N|8:T:R::1:0:1:::::1::0:ON-0::N:N::0::0::::N|8:I:R::1:0:1::LP:N:NU:1::0:F-0::N:N::0::0::::N|8:I:R::1:0:1::LP:N:U:1::0:F-0::N:N::0::0::::N|
+9:T:R::1:0:1:::::1::0:ON-0::N:N::0::0::::N|9:I:R::1:0:1::","TRUE",27,2024_03_23,2023_09_23,2819269746,
+
+**,DBA_FEATURE_USAGE_STATISTICS,"Real-Time SQL Monitoring","<sqlmon_usage>   <num_em_reports>0</num_em_reports>   <first_db_report_time>29-apr-2020 05:25:21</first_db_report_time>   <last_db_report_time>22-mar-2024 15:01:58</last_db_report_time>   <first_em_report_time/>   <last_em_report_time/> </sqlmon_usage> ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"SQL Plan Directive","Number of directives with type, DYNAMIC_SAMPLING: 622 Number of Directives with reason, SINGLE TABLE CARDINALITY MISESTIMATE: 295 Number of Directives with reason, GROUP BY CARDINALITY MISESTIMATE: 40 Number of Directives with reason, JOIN CARDINALITY MISESTIMATE: 287 Number of Directives with state, USABLE: 622 Number of Directive objects: 2143, subobjects: 734 spd_retention_weeks: 53 _sql_plan_directive_mgmt_control: 67 _optimizer_dsdir_usage_control: 0 ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"SQL*Plus","Client Lib Versions=(19.7.0.0.0),Charsets=(US7ASCII)","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Services"," num_clb_long: 1 num_clb_short: 0 num_goal_service_time: 0 num_goal_throughput: 0 num_goal_none: 1 num_aq_notifications: 0 num_active_services: 0 avg_active_cardinality: 0","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Statistics Advisor","<advisor_usage>   <reports>     <first_report_time/>     <last_report_time/>     <num_db_reports>0</num_db_reports>   </reports> </advisor_usage> ","TRUE",27,2024_03_23,2023_09_23,2819269746,
+**,DBA_FEATURE_USAGE_STATISTICS,"Unified Audit","Number of Unified Audit policies=7; Number of Enabled Unified Audit policies=2; Number of Unified Audit policies with condition=0; Number of Unified Audit policies on DV=0; Number of Unified Audit policies on OLS=0; Number of Unified Audit policies on XS=2; Number of Unified Audit policies on DATAPUMP=0; Number of Unified Audit policies on PROTOCOL=0; Number of Enabled Unified Audit Contexts=0","TRUE",27,2024_03_23,2023_09_23,2819269746,
+==========================================================
+
+**,V$OPTION,,,,,,,,,"ASM Proxy Instance","FALSE",
+**,V$OPTION,,,,,,,,,"Active Data Guard","TRUE",
+**,V$OPTION,,,,,,,,,"Adaptive Execution Plans","TRUE",
+**,V$OPTION,,,,,,,,,"Advanced Analytics","TRUE",
+**,V$OPTION,,,,,,,,,"Advanced Compression","TRUE",
+**,V$OPTION,,,,,,,,,"Advanced Index Compression","TRUE",
+**,V$OPTION,,,,,,,,,"Advanced replication","TRUE",
+**,V$OPTION,,,,,,,,,"Application Role","TRUE",
+**,V$OPTION,,,,,,,,,"Automatic Data Optimization","TRUE",
+**,V$OPTION,,,,,,,,,"Automatic Storage Management","FALSE",
+**,V$OPTION,,,,,,,,,"Backup Encryption","TRUE",
+**,V$OPTION,,,,,,,,,"Basic Compression","TRUE",
+**,V$OPTION,,,,,,,,,"Bit-mapped indexes","TRUE",
+**,V$OPTION,,,,,,,,,"Block Change Tracking","TRUE",
+**,V$OPTION,,,,,,,,,"Block Media Recovery","TRUE",
+**,V$OPTION,,,,,,,,,"Cache Fusion Lock Accelerator","TRUE",
+**,V$OPTION,,,,,,,,,"Centrally Managed User","TRUE",
+**,V$OPTION,,,,,,,,,"Change Data Capture","TRUE",
+**,V$OPTION,,,,,,,,,"Coalesce Index","TRUE",
+**,V$OPTION,,,,,,,,,"Connection multiplexing","TRUE",
+**,V$OPTION,,,,,,,,,"Connection pooling","TRUE",
+**,V$OPTION,,,,,,,,,"Cross Transportable Backups","TRUE",
+**,V$OPTION,,,,,,,,,"DICOM","TRUE",
+**,V$OPTION,,,,,,,,,"Data Mining","TRUE",
+**,V$OPTION,,,,,,,,,"Data Redaction","TRUE",
+**,V$OPTION,,,,,,,,,"Database queuing","TRUE",
+**,V$OPTION,,,,,,,,,"Database resource manager","TRUE",
+**,V$OPTION,,,,,,,,,"Deferred Segment Creation","TRUE",
+**,V$OPTION,,,,,,,,,"Duplexed backups","TRUE",
+**,V$OPTION,,,,,,,,,"Enterprise User Security","TRUE",
+**,V$OPTION,,,,,,,,,"Exadata Discovery","TRUE",
+**,V$OPTION,,,,,,,,,"Export transportable tablespaces","TRUE",
+**,V$OPTION,,,,,,,,,"Fast-Start Fault Recovery","TRUE",
+**,V$OPTION,,,,,,,,,"File Mapping","TRUE",
+**,V$OPTION,,,,,,,,,"Fine-grained Auditing","TRUE",
+**,V$OPTION,,,,,,,,,"Fine-grained access control","TRUE",
+**,V$OPTION,,,,,,,,,"Flashback Data Archive","TRUE",
+**,V$OPTION,,,,,,,,,"Flashback Database","TRUE",
+**,V$OPTION,,,,,,,,,"Flashback Table","TRUE",
+**,V$OPTION,,,,,,,,,"Global Data Services","TRUE",
+**,V$OPTION,,,,,,,,,"Heat Map","TRUE",
+**,V$OPTION,,,,,,,,,"I/O Server","FALSE",
+**,V$OPTION,,,,,,,,,"In-Memory Aggregation","TRUE",
+**,V$OPTION,,,,,,,,,"In-Memory Column Store","TRUE",
+**,V$OPTION,,,,,,,,,"Incremental backup and recovery","TRUE",
+**,V$OPTION,,,,,,,,,"Instead-of triggers","TRUE",
+**,V$OPTION,,,,,,,,,"Java","TRUE",
+**,V$OPTION,,,,,,,,,"Join index","TRUE",
+**,V$OPTION,,,,,,,,,"Managed Standby","TRUE",
+**,V$OPTION,,,,,,,,,"Management Database","FALSE",
+**,V$OPTION,,,,,,,,,"Materialized view rewrite","TRUE",
+**,V$OPTION,,,,,,,,,"OLAP Window Functions","TRUE",
+**,V$OPTION,,,,,,,,,"OLAP","TRUE",
+**,V$OPTION,,,,,,,,,"Objects","TRUE",
+**,V$OPTION,,,,,,,,,"Online Index Build","TRUE",
+**,V$OPTION,,,,,,,,,"Online Redefinition","TRUE",
+**,V$OPTION,,,,,,,,,"Oracle Data Guard","TRUE",
+**,V$OPTION,,,,,,,,,"Oracle Database Vault","FALSE",
+**,V$OPTION,,,,,,,,,"Oracle Label Security","FALSE",
+**,V$OPTION,,,,,,,,,"Parallel backup and recovery","TRUE",
+**,V$OPTION,,,,,,,,,"Parallel execution","TRUE",
+**,V$OPTION,,,,,,,,,"Parallel load","TRUE",
+**,V$OPTION,,,,,,,,,"Partitioning","TRUE",
+**,V$OPTION,,,,,,,,,"Plan Stability","TRUE",
+**,V$OPTION,,,,,,,,,"Point-in-time tablespace recovery","TRUE",
+**,V$OPTION,,,,,,,,,"Privilege Analysis","TRUE",
+**,V$OPTION,,,,,,,,,"Proxy authentication/authorization","TRUE",
+**,V$OPTION,,,,,,,,,"Real Application Clusters","FALSE",
+**,V$OPTION,,,,,,,,,"Real Application Security","TRUE",
+**,V$OPTION,,,,,,,,,"Real Application Testing","TRUE",
+**,V$OPTION,,,,,,,,,"Result Cache","TRUE",
+**,V$OPTION,,,,,,,,,"SQL Plan Management","TRUE",
+**,V$OPTION,,,,,,,,,"Sample Scan","TRUE",
+**,V$OPTION,,,,,,,,,"SecureFiles Encryption","TRUE",
+**,V$OPTION,,,,,,,,,"Server Flash Cache","TRUE",
+**,V$OPTION,,,,,,,,,"Snapshot time recovery","TRUE",
+**,V$OPTION,,,,,,,,,"Spatial","TRUE",
+**,V$OPTION,,,,,,,,,"Streams Capture","TRUE",
+**,V$OPTION,,,,,,,,,"Table Clustering","TRUE",
+**,V$OPTION,,,,,,,,,"Transparent Application Failover","TRUE",
+**,V$OPTION,,,,,,,,,"Transparent Data Encryption","TRUE",
+**,V$OPTION,,,,,,,,,"Transparent Sensitive Data Protection","TRUE",
+**,V$OPTION,,,,,,,,,"Trial Recovery","TRUE",
+**,V$OPTION,,,,,,,,,"Unified Auditing","FALSE",
+**,V$OPTION,,,,,,,,,"Unused Block Compression","TRUE",
+**,V$OPTION,,,,,,,,,"XStream","TRUE",
+**,V$OPTION,,,,,,,,,"Zone Maps","TRUE",
+
+=== Option Partitioning (ref: DBA_OBJECTS)
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,INDEX PARTITION,SYS_IL0000018575C00030$$,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,INDEX PARTITION,SYS_IL0000018575C00031$$,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,INDEX PARTITION,SYS_IL0000018575C00097$$,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,LOB PARTITION,SYS_LOB0000018575C00030$$,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,LOB PARTITION,SYS_LOB0000018575C00031$$,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,LOB PARTITION,SYS_LOB0000018575C00097$$,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,AUDSYS,TABLE PARTITION,AUD$UNIFIED,2020_04_29,2020_04_29,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,FN_STATE_EFF_DATE,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,IDX_ENTITYUPDATE_CRDATE,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,IDX_FT_SETLLEMENT_DATE,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,IDX_PAYCHECK_SPLIT_CR_DATE,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_DETAIL_FK1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_DETAIL_FK2,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_DETAIL_I2,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_DETAIL_PK,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_EMAIL_PARAM_PK,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_EMAIL_PA_FK1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_EMAIL_PA_FK2,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_FK1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_I1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_I2,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_I3,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPANY_EVENT_PK,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPENSATION_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPENSATION_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPENSATION_FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_COMPENSATION_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DEDUCTION_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DEDUCTION_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DEDUCTION_FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DEDUCTION_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DISBURSE_ADVICE_TAX_LIAB_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DISBURSE_ADVICE_TAX_LI_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DISBURSE_ADVICE_TAX_LI_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_DISBURSE_ADVICE_TAX_LI_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTITLEMENT_MESSAGE_U1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTITLEMENT_MSG_LCNO_EOFCD,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTITLEMENT_MSG_MSGTS_ER,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTITLEMENT_MSG_ORNO_LCNO,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_I1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_I2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_ENTRY_DETAIL_RECORD_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIALTRANSACTIONST_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIALTRANSACTIONST_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIALTRANSACTION_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIALTRANSACTION_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIALTRANSACTION_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK10,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK11,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK13,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK14,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK16,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK5,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK6,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_FK9,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_I3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_I4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_I5,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION__FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION__FK5,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION__FK6,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANSACTION__FK7,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_FINANCIAL_TRANS_STATE_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_LEDGERBALANCE_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_LEDGERBALANCE_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_LEDGER_BALANCE_I1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_LEDGER_BALANCE_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_LEDGER_BALANCE_U1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_LEDGER_BALANCE_U2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I10,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I5,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MM_TRANSACTION_I9,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MONEYMOVEMENTTRANSACTI_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MONEY_MOVEMENT_TRANSACTION_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MONEY_MOVEMENT_TRANSAC_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MONEY_MOVEMENT_TRANSAC_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_MONEY_MOVEMENT_TRANSAC_FK6,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECKUSAGE_FK1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECKUSAGE_FK2,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_I1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_I2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_SPLIT_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_SPLIT_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_SPLIT_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_SPLIT_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_SPLIT_U1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_U1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_USAGE_FK1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_USAGE_NU1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYCHECK_USAGE_U1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYSTUB_FK1,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYSTUB_FK2,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYSTUB_FK3,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PAYSTUB_PK,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PROPERTYAUDIT_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PROPERTY_AUDIT_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_EMPLOYEE_INFO_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_EMPLOYEE_INFO_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_EMPLOYEE_INFO_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_PAID_TIMEOFF_ITEM_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_PAID_TIMEOFF_ITE_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_PAY_ITEM_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_PAY_ITEM_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_PSTUB_PAY_ITEM_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDTTRANSACTIONINFO_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYCHECK_INFO_COM_LST,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYCHECK_INFO_CYVT_B1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYCHECK_INFO_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYCHECK_INFO_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYCHECK_INFO_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYLINE_INFO_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYLINE_INFO_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYLINE_INFO_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYLINE_INFO_FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_PAYLINE_INFO_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK4,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK5,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK6,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK7,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK8,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_FK9,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_QBDT_TRANSACTION_INFO_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_TAX_FK1,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_TAX_FK2,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_TAX_FK3,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_TAX_FK5,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,PSP_TAX_PK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,SYS_IL0000026964C00010$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,SYS_IL0000026964C00019$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,SYS_IL0000026964C00020$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,INDEX PARTITION,SYS_IL0000026992C00010$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,LOB PARTITION,MESSAGE_CLOB,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,LOB PARTITION,SYS_LOB0000026964C00010$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,LOB PARTITION,SYS_LOB0000026964C00020$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,LOB PARTITION,SYS_LOB0000026992C00010$$,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_COMPANY_EVENT,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_COMPANY_EVENT_DETAIL,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_COMPANY_EVENT_EMAIL_PARAM,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_COMPENSATION,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_DEDUCTION,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_DISBURSE_ADVICE_TAX_LIAB,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_ENTITLEMENT_MESSAGE,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_ENTITY_UPDATE,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_ENTRY_DETAIL_RECORD,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_FINANCIAL_TRANSACTION,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_FINANCIAL_TRANS_STATE,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_LEDGER_BALANCE,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_MONEY_MOVEMENT_TRANSACTION,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PAYCHECK,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PAYCHECK_SPLIT,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PAYCHECK_USAGE,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PAYSTUB,2023_09_24,2023_09_24,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PROPERTY_AUDIT,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PSTUB_EMPLOYEE_INFO,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PSTUB_PAID_TIMEOFF_ITEM,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_PSTUB_PAY_ITEM,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_QBDT_PAYCHECK_INFO,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_QBDT_PAYLINE_INFO,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_QBDT_TRANSACTION_INFO,2023_09_24,2023_09_25,
+**,PARTITIONING,PARTITIONED_SEGMENTS,PSPADM,TABLE PARTITION,PSP_TAX,2023_09_24,2023_09_25,
+
+=== Option Multitenant (ref: V$CONTAINERS, V$DATABASE)
+
+=== Option Active Data Guard (ref: V$ARCHIVE_DEST_STATUS)
+
+=== Option Active Data Guard (ref: V$BLOCK_CHANGE_TRACKING, V$DATABASE)
+
+=== Option OLAP (ref: OLAPSYS.DBA$OLAP_CUBES)
+
+=== Option OLAP (ref: DBA_CUBES)
+
+=== Option OLAP (ref: DBA_AWS)
+
+=== Option Data Mining (ref: DMSYS.DM$OBJECT)
+
+=== Option Data Mining (ref: DMSYS.DM$MODEL)
+
+=== Option Data Mining (ref: DMSYS.DM$P_MODEL)
+
+=== Option Data Mining (ref: SYS.MODEL$)
+**,DATA_MINING,11g.SYS.MODEL$,0,
+
+=== Option Data Mining (ref: SYS.DBA_MINING_MODELS)
+
+=== Option Label Security (ref: LBACSYS.LBAC$POLT)
+
+=== Option Advanced Security (ref: DBA_TABLESPACES)
+
+=== Option Advanced Security (ref: DBA_LOBS)
+
+=== Option Advanced Security (ref: DBA_LOB_PARTITIONS)
+
+=== Option Advanced Security (ref: DBA_LOB_SUBPARTITIONS)
+
+=== Option Advanced Security (ref: DBA_ENCRYPTED_COLUMNS)
+
+=== Option Advanced Compression (ref: DBA_TABLES)
+
+=== Option Advanced Compression (ref: DBA_TAB_PARTITIONS)
+
+=== Option Advanced Compression (ref: DBA_TAB_SUBPARTITIONS)
+
+=== Option Advanced Compression (ref: DBA_LOBS)
+**,ADVANCED_COMPRESSION,SECUREFILES_COMPRESSION,PSPADM,PSP_ENTITLEMENT_MESSAGE,MESSAGE,
+
+=== Option Advanced Compression (ref: DBA_LOB_PARTITIONS)
+**,ADVANCED_COMPRESSION,SECUREFILES_COMPRESSION,PSPADM,PSP_ENTITLEMENT_MESSAGE,MESSAGE,
+
+=== Option Advanced Compression (ref: DBA_LOB_SUBPARTITIONS)
+
+=== Option Advanced Compression (ref: DBA_FLASHBACK_ARCHIVE, DBA_FLASHBACK_ARCHIVE_TS)
+
+=== Option Advanced Compression (ref: DBA_FLASHBACK_ARCHIVE_TABLES)
+
+=== Options Database Vault, Audit Vault (ref: DVSYS.DBA_DV_REALM)
+
+=== Options Database Vault, Audit Vault (ref: DVSYS.DBA_DV_REALM_AUTH)
+
+=== Options Database Vault (ref: DBA_USERS)
+
+=== Options Audit Vault (ref: DBA_USERS)
+
+=== Option In-Memory Database (ref: GV$IM_SEGMENTS)
+
+=== Option In-Memory Database (ref: DBA_TABLES)
+
+=== Option In-Memory Database (ref: DBA_TAB_PARTITIONS)
+
+=== Option In-Memory Database (ref: DBA_OBJECT_TABLES)
+
+=== Option Content and Records Database (ref: DBA_USERS, ODM_DOCUMENT, ODM_RECORD)
+
+=== OEM License Confirmation (ref: DBA_TABLES, SYSMAN.MGMT_LICENSE_CONFIRMATION, SYSMAN.MGMT_TARGETS)
+
+=== OEM Packs Access (ref: DBA_TABLES, SYSMAN.MGMT_LICENSE_DEFINITIONS, SYSMAN.MGMT_ADMIN_LICENSES, SYSMAN.MGMT_LICENSES)
+
+=== OEM Target Databases (ref: SYSMAN.MGMT_TARGETS)
+
+=== OEM Grid - Packs Agreed 11g+ (ref: DBA_TABLES, SYSMAN.MGMT_TARGETS, SYSMAN.MGMT_TARGET_TYPES, SYSMAN.MGMT_LICENSE_DEFINITIONS, SYSMAN.MGMT_LICENSED_TARGETS, SYSMAN.MGMT_LICENSE_CONFIRMATION)
+
+=== OEM Cloud Control - Packs Agreed 13c (ref: DBA_TABLES, SYSMAN.MGMT_TARGETS, SYSMAN.MGMT_TARGET_TYPES, SYSMAN.MGMT_LICENSE_DEFINITIONS, SYSMAN.MGMT_LICENSED_TARGETS, SYSMAN.MGMT_LICENSE_CONFIRMATION)
+
+=== OEM Cloud Control - Packs Usage Detais 13c (ref: SYSMAN.MGMT_TARGETS, SYSMAN.MGMT_TARGET_TYPES, SYSMAN.MGMT_LICENSE_DEFINITIONS, SYSMAN.MGMT_LICENSE_USAGE_LOG, SYSMAN.MGMT_LICENSE_USAGE_HISTORY)
+
+=== OEM Cloud Control - Packs Usage 13c (ref: DBA_TABLES, SYSMAN.MGMT_FU_REGISTRATIONS, SYSMAN.MGMT_FU_STATISTICS, SYSMAN.MGMT_FU_LICENSE_MAP, SYSMAN.MGMT_LICENSE_DEFINITIONS, SYSMAN.MGMT$TARGET)
+
+=== OEM Cloud Control - Target Status 13c (ref: SYSMAN.MGMT_TARGETS, SYSMAN.MGMT$AVAILABILITY_HISTORY)
+
+=== OEM Cloud Control - Plugins 13c (ref: SYSMAN.EM_PLUGIN_VERSION, SYSMAN.MGMT$CURR_DEPLOYED_PLUGIN_AGT, SYSMAN.MGMT_PLUGIN_COMP_INFO)
+
+=== OEM Packs Usage 12c (ref: DBA_TABLES, SYSMAN.MGMT_FU_REGISTRATIONS, SYSMAN.MGMT_FU_STATISTICS, SYSMAN.MGMT_TARGETS)
+
+=== OEM Packs Feature Usage 12c (ref: DBA_TABLES, SYSMAN.MGMT_FU_REGISTRATIONS, SYSMAN.MGMT_FU_STATISTICS, SYSMAN.MGMT_TARGETS)
+
+=== OEM Packs Change Management Usage 12c (ref: SYSMAN.MGMT_CM_COMPARISON_VERSIONS, SYSMAN.MGMT_CM_COMPARISONS)
+
+=== OEM Packs Blackout Usage 12c (ref: SYSMAN.MGMT_BLACKOUT_HISTORY)
+
+=== OEM Packs Configuration Management Usage 12c (ref: SYSMAN.MGMT$TARGET_POLICIES, SYSMAN.MGMT$TARGET_POLICY_EVAL_SUMM)
+
+=== OEM Packs Data Masking Usage 12c (ref: SYSMAN.MGMT_DM_SS_COLUMNS, SYSMAN.MGMT_DM_JOB_EXECUTIONS)
+
+=== OEM Packs Data Masking Usage 13c (ref: SYSMAN.MGMT_DM_SS_COLUMNS, SYSMAN.MGMT_DM_JOB_EXECUTIONS)
+
+=== OEM Packs Real Application Testing Usage 12c (ref: SYSMAN.MGMT_JOB, SYSMAN.MGMT_JOB_TARGET, SYSMAN.MGMT_WORKLOAD_CAPTURES, SYSMAN.MGMT_WORKLOAD_REPLAYS)
+
+=== Tuning Pack (SQL Profiles) (ref: DBA_SQL_PROFILES)
+
+=== Tuning Pack (Advisor Tasks) (ref: DBA_ADVISOR_TASKS)
+
+=== Tuning Pack (SQL Set) (ref: DBA_SQLSET)
+**,OEM,DBA_SQLSET,"SYS_AUTO_STS","SYS",2020_04_29,2020_04_29","System auto SQL Tuning Set","0,
+
+=== Real Application Testing (Workload Captures) (ref: DBA_WORKLOAD_CAPTURES)
+
+=== E-Business Suite Release Version (ref: DBA_OBJECTS, DBA_USERS, APPS.FND_PRODUCT_GROUPS)
+
+=== E-Business Suite Nodes (ref: DBA_TABLES, APPS.FND_NODES)
+
+=== Oracle Warehouse Builder Repositories (ref: DBA_TABLES, CMPINSTALLATION_V)
+
+PALDB_SCRIPT_START_TIMESTAMP:20240326233332
+
+PALDB_SCRIPT_END_TIMESTAMP:20240326233337
+
+EOF

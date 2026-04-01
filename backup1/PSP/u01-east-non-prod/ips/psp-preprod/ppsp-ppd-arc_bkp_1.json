@@ -1,0 +1,64 @@
+{
+    "id": "ppsp",
+    "description": "PSP shared psppdarc  Cluster",
+    "bu": "SBSEG",
+    "dbName": "psppdarc",
+    "multiAZ": "false",
+    "region": "us-west-2",
+    "deployMonitoring": "true",
+    "enableEnhancedMonitoring": "true",
+    "enableAutoMinorVersionUpgrade": "false",
+    "cloudwatchLogsRetention": "180",
+    "metricSetId": "defaultMetricSetRef",
+    "backupWindow": "05:00-05:30",
+    "maintenanceWindow": "Mon:07:00-Mon:07:30",
+    "backupRetention": "3",
+    "clusterParameterGroupRef": "ppsp:monolith-uw02-15-cluster",
+    "instanceParameterGroupRef": "ppsp:monolith-uw02-15-instance",
+    "subnetGroupRef": "ppsp:pspuw02dbsubnetgrp",
+    "securityGroupRef": "ppsp:pspuw02dbsecuritygrp",
+    "masterUserName": "intuadmin",
+    "engineMajorVersion": "15",
+    "engineMinorVersion": "10",
+    "tags": {
+        "intuit:billing:component": "PSP",
+        "intuit:billing:appenv": "ppd",
+        "intuit:billing:service_assetid": "6847740825712235356",
+        "intuit:billing:bu": "SBSEG",
+        "intuit:billing:fp": "PSP"
+    },
+    "environments": [
+        {
+            "name": "ppd",
+            "splunkIndex": "lambda_logs",
+            "splunkEnv": "E2E",
+            "groups": [
+                {
+                    "name": "primary-ppd-arc",
+                    "clusters": [
+                        {
+                            "id": "arc",
+                            "globalDatabase": "ppsp-ppd-arc-global",
+                            "engineMajorVersion": "15",
+                            "engineMinorVersion": "10",
+                            "instanceType": "r6g.2xlarge",
+                            "rdsPort": "5432"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "dr-ppd-arc",
+            "clusters": [
+                {
+                    "id": "arcdr",
+                    "globalDatabase": "ppsp-ppd-arc-global",
+                    "engineMajorVersion": "15",
+                    "engineMinorVersion": "10",
+                    "instanceType": "r6g.2xlarge"
+                }
+            ]
+        }
+    ]
+}

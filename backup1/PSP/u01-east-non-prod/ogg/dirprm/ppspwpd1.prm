@@ -1,0 +1,19 @@
+EXTRACT ppspwpd1
+
+RMTHOST ggpsppf501.sbg-psp-ppd.a.intuit.com, mgrport 15000, ENCRYPT AES128, TIMEOUT 120, PARAMS -UL
+
+RMTTRAIL ./dirdat/pspepd1/tr
+PASSTHRU
+
+discardfile ./dirrpt/ppspwpd1.dsc, megabytes 100, append
+discardrollover at 00:01
+
+STATOPTIONS RESETREPORTSTATS
+Report at 23:55
+ReportRollover at 00:01 on sunday
+
+--REPORTCOUNT EVERY 5 MINTUES RATE
+
+TABLE PSPADM.*;
+SEQUENCE PSPADM.*;
+

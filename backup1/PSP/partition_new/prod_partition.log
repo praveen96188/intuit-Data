@@ -1,0 +1,1036 @@
+pspapg02=> \i c_info.sql
+You are connected to database "pspapg02" as user "postgres" on host "psp-prod-uw02.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com" (address "10.95.110.22") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+       current_timestamp       
+-------------------------------
+ 2025-11-29 22:03:47.005657-08
+(1 row)
+
+pspapg02=> \d+ pspadm.psp_entitlement_message;
+                                                   Partitioned table "pspadm.psp_entitlement_message"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_ent_msg_mod_date" btree (modified_date)
+    "psp_entitlement_message_u1" btree (token)
+    "psp_entitlement_msg_lcno_eofcd" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[])) NOT VALID
+Partitions: pspadm.psp_entitlement_message_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> set search_path to pspadm;
+SET
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message DETACH PARTITION pspadm.psp_entitlement_message_2026;
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message ATTACH PARTITION pspadm.psp_entitlement_message_2026
+pspapg02-> FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00');
+ALTER TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entitlement_message_2027
+pspapg02->         PARTITION OF pspadm.psp_entitlement_message
+pspapg02->         FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entitlement_message_2028
+pspapg02->         PARTITION OF pspadm.psp_entitlement_message
+pspapg02->         FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message_2027 ADD CONSTRAINT psp_entitlement_message_2027_pk PRIMARY KEY (entitlement_message_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message_2028 ADD CONSTRAINT psp_entitlement_message_2028_pk PRIMARY KEY (entitlement_message_seq, realm_id);
+ALTER TABLE
+
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_modified_date_idx RENAME TO idx_ent_msg_mod_date_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_license_number_entitlement_off_idx RENAME TO psp_entitlement_msg_lcno_eofcd_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_message_timestamp_event_reason_idx RENAME TO psp_entitlement_msg_msgts_er_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_order_number_license_number_idx RENAME TO psp_entitlement_msg_orno_lcno_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_token_idx RENAME TO psp_entitlement_message_u1_2027;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_modified_date_idx RENAME TO idx_ent_msg_mod_date_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_license_number_entitlement_off_idx RENAME TO psp_entitlement_msg_lcno_eofcd_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_message_timestamp_event_reason_idx RENAME TO psp_entitlement_msg_msgts_er_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_order_number_license_number_idx RENAME TO psp_entitlement_msg_orno_lcno_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_token_idx RENAME TO psp_entitlement_message_u1_2028;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> alter index pspadm.idx_ent_msg_mod_date attach partition pspadm.idx_ent_msg_mod_date_2027;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> alter index pspadm.idx_ent_msg_mod_date attach partition pspadm.idx_ent_msg_mod_date_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_2027 ;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_msgts_er attach partition pspadm.psp_entitlement_msg_msgts_er_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_lcno_eofcd attach partition pspadm.psp_entitlement_msg_lcno_eofcd_2027 ;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_message_u1 attach partition pspadm.psp_entitlement_message_u1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_msg_mod_date attach partition pspadm.idx_ent_msg_mod_date_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_msgts_er attach partition pspadm.psp_entitlement_msg_msgts_er_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_lcno_eofcd attach partition pspadm.psp_entitlement_msg_lcno_eofcd_2028 ;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_message_u1 attach partition pspadm.psp_entitlement_message_u1_2028;
+ALTER INDEX
+pspapg02=> \d+ pspadm.psp_entitlement_message;
+                                                   Partitioned table "pspadm.psp_entitlement_message"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_ent_msg_mod_date" btree (modified_date)
+    "psp_entitlement_message_u1" btree (token)
+    "psp_entitlement_msg_lcno_eofcd" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[])) NOT VALID
+Partitions: psp_entitlement_message_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            psp_entitlement_message_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            psp_entitlement_message_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            psp_entitlement_message_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            psp_entitlement_message_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            psp_entitlement_message_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            psp_entitlement_message_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            psp_entitlement_message_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            psp_entitlement_message_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            psp_entitlement_message_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            psp_entitlement_message_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_entitlement_message_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_entitlement_message_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_entitlement_message_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_entitlement_message_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00'),
+            psp_entitlement_message_2027 FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00'),
+            psp_entitlement_message_2028 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> \d+ pspadm.psp_entitlement_message_2026;
+                                                       Table "pspadm.psp_entitlement_message_2026"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition of: psp_entitlement_message FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2026-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entitlement_message_2026_pk" PRIMARY KEY, btree (entitlement_message_seq, realm_id)
+    "idx_ent_msg_mod_date_2026" btree (modified_date)
+    "psp_entitlement_message_u1_2026" btree (token)
+    "psp_entitlement_msg_lcno_eofcd_2026" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er_2026" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno_2026" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[])) NOT VALID
+Publications:
+    "dbz_publication"
+Replica Identity: FULL
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entitlement_message_2027;
+                                                       Table "pspadm.psp_entitlement_message_2027"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition of: psp_entitlement_message FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entitlement_message_2027_pk" PRIMARY KEY, btree (entitlement_message_seq, realm_id)
+    "idx_ent_msg_mod_date_2027" btree (modified_date)
+    "psp_entitlement_message_u1_2027" btree (token)
+    "psp_entitlement_msg_lcno_eofcd_2027" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er_2027" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno_2027" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entitlement_message_2028;
+                                                       Table "pspadm.psp_entitlement_message_2028"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition of: psp_entitlement_message FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entitlement_message_2028_pk" PRIMARY KEY, btree (entitlement_message_seq, realm_id)
+    "idx_ent_msg_mod_date_2028" btree (modified_date)
+    "psp_entitlement_message_u1_2028" btree (token)
+    "psp_entitlement_msg_lcno_eofcd_2028" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er_2028" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno_2028" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)
+
+pspapg02=> \i c_info.sql
+You are connected to database "pspapg02" as user "postgres" on host "psp-prod-uw02.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com" (address "10.95.110.22") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+       current_timestamp       
+-------------------------------
+ 2025-11-29 22:22:26.259426-08
+(1 row)
+
+pspapg02=> set search_path to pspadm;
+SET
+pspapg02=> \d+ pspadm.psp_paycheck_usage;
+                                                    Partitioned table "pspadm.psp_paycheck_usage"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_pchk_usg_mod_date" btree (modified_date)
+    "psp_paycheck_usage_fk1" btree (company_fk)
+    "psp_paycheck_usage_nu1" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1" btree (bill_fk)
+    "psp_paycheckusage_fk2" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[])) NOT VALID
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[])) NOT VALID
+Foreign-key constraints:
+    "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Partitions: psp_paycheck_usage_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            psp_paycheck_usage_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            psp_paycheck_usage_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            psp_paycheck_usage_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            psp_paycheck_usage_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            psp_paycheck_usage_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            psp_paycheck_usage_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            psp_paycheck_usage_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            psp_paycheck_usage_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            psp_paycheck_usage_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            psp_paycheck_usage_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_paycheck_usage_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_paycheck_usage_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_paycheck_usage_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_paycheck_usage_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage DETACH PARTITION pspadm.psp_paycheck_usage_2026;
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage ATTACH PARTITION pspadm.psp_paycheck_usage_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00');
+ALTER TABLE
+pspapg02=> CREATE TABLE pspadm.psp_paycheck_usage_2027 PARTITION OF pspadm.psp_paycheck_usage FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_paycheck_usage_2028 PARTITION OF pspadm.psp_paycheck_usage FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage_2027 ADD CONSTRAINT psp_paycheck_usage_2027_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage_2028 ADD CONSTRAINT psp_paycheck_usage_2028_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_bill_fk_idx RENAME TO psp_paycheckusage_fk1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_company_fk_idx RENAME TO psp_paycheck_usage_fk1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_employee_usage_fk_idx RENAME TO psp_paycheckusage_fk2_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_employee_usage_fk_source_paycheck_i_idx RENAME TO psp_paycheck_usage_u1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_source_paycheck_id_idx RENAME TO psp_paycheck_usage_nu1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_modified_date_idx RENAME TO idx_pchk_usg_mod_date_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_bill_fk_idx RENAME TO psp_paycheckusage_fk1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_company_fk_idx RENAME TO psp_paycheck_usage_fk1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_employee_usage_fk_idx RENAME TO psp_paycheckusage_fk2_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_employee_usage_fk_source_paycheck_i_idx RENAME TO psp_paycheck_usage_u1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_source_paycheck_id_idx RENAME TO psp_paycheck_usage_nu1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_modified_date_idx RENAME TO idx_pchk_usg_mod_date_2028;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> alter index pspadm.psp_paycheckusage_fk1 attach partition pspadm.psp_paycheckusage_fk1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_fk1 attach partition pspadm.psp_paycheck_usage_fk1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheckusage_fk2 attach partition pspadm.psp_paycheckusage_fk2_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_u1 attach partition pspadm.psp_paycheck_usage_u1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_nu1 attach partition pspadm.psp_paycheck_usage_nu1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.idx_pchk_usg_mod_date attach  partition pspadm.idx_pchk_usg_mod_date_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheckusage_fk1 attach partition pspadm.psp_paycheckusage_fk1_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_fk1 attach partition pspadm.psp_paycheck_usage_fk1_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheckusage_fk2 attach partition pspadm.psp_paycheckusage_fk2_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_u1 attach partition pspadm.psp_paycheck_usage_u1_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_nu1 attach partition pspadm.psp_paycheck_usage_nu1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.idx_pchk_usg_mod_date attach  partition pspadm.idx_pchk_usg_mod_date_2028;
+ALTER INDEX
+pspapg02=> \d+ pspadm.psp_paycheck_usage;
+                                                    Partitioned table "pspadm.psp_paycheck_usage"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_pchk_usg_mod_date" btree (modified_date)
+    "psp_paycheck_usage_fk1" btree (company_fk)
+    "psp_paycheck_usage_nu1" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1" btree (bill_fk)
+    "psp_paycheckusage_fk2" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[])) NOT VALID
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[])) NOT VALID
+Foreign-key constraints:
+    "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Partitions: psp_paycheck_usage_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            psp_paycheck_usage_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            psp_paycheck_usage_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            psp_paycheck_usage_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            psp_paycheck_usage_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            psp_paycheck_usage_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            psp_paycheck_usage_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            psp_paycheck_usage_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            psp_paycheck_usage_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            psp_paycheck_usage_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            psp_paycheck_usage_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_paycheck_usage_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_paycheck_usage_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_paycheck_usage_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_paycheck_usage_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00'),
+            psp_paycheck_usage_2027 FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00'),
+            psp_paycheck_usage_2028 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> \d+ pspadm.psp_paycheck_usage_2026;
+                                                        Table "pspadm.psp_paycheck_usage_2026"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_paycheck_usage FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2026-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_paycheck_usage_2026_pk" PRIMARY KEY, btree (paycheck_usage_seq, realm_id)
+    "idx_pchk_usg_mod_date_2026" btree (modified_date)
+    "psp_paycheck_usage_fk1_2026" btree (company_fk)
+    "psp_paycheck_usage_nu1_2026" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1_2026" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1_2026" btree (bill_fk)
+    "psp_paycheckusage_fk2_2026" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[])) NOT VALID
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[])) NOT VALID
+Foreign-key constraints:
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Publications:
+    "dbz_publication"
+Triggers:
+    "RI_ConstraintTrigger_c_91687570" AFTER INSERT ON psp_paycheck_usage_2026 FROM psp_company NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_ins"()
+    "RI_ConstraintTrigger_c_91687571" AFTER UPDATE ON psp_paycheck_usage_2026 FROM psp_company NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_upd"()
+    "RI_ConstraintTrigger_c_91687573" AFTER INSERT ON psp_paycheck_usage_2026 FROM psp_bill NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_ins"()
+    "RI_ConstraintTrigger_c_91687574" AFTER UPDATE ON psp_paycheck_usage_2026 FROM psp_bill NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_upd"()
+    "RI_ConstraintTrigger_c_91687576" AFTER INSERT ON psp_paycheck_usage_2026 FROM psp_employee_usage NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_ins"()
+    "RI_ConstraintTrigger_c_91687577" AFTER UPDATE ON psp_paycheck_usage_2026 FROM psp_employee_usage NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_upd"()
+Replica Identity: FULL
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_paycheck_usage_2027;
+                                                        Table "pspadm.psp_paycheck_usage_2027"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_paycheck_usage FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_paycheck_usage_2027_pk" PRIMARY KEY, btree (paycheck_usage_seq, realm_id)
+    "idx_pchk_usg_mod_date_2027" btree (modified_date)
+    "psp_paycheck_usage_fk1_2027" btree (company_fk)
+    "psp_paycheck_usage_nu1_2027" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1_2027" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1_2027" btree (bill_fk)
+    "psp_paycheckusage_fk2_2027" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[]))
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[]))
+Foreign-key constraints:
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_paycheck_usage_2028;
+                                                        Table "pspadm.psp_paycheck_usage_2028"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_paycheck_usage FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_paycheck_usage_2028_pk" PRIMARY KEY, btree (paycheck_usage_seq, realm_id)
+    "idx_pchk_usg_mod_date_2028" btree (modified_date)
+    "psp_paycheck_usage_fk1_2028" btree (company_fk)
+    "psp_paycheck_usage_nu1_2028" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1_2028" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1_2028" btree (bill_fk)
+    "psp_paycheckusage_fk2_2028" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[]))
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[]))
+Foreign-key constraints:
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Access method: heap
+
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)
+
+
+pspapg02=> \i c_info.sql 
+You are connected to database "pspapg02" as user "postgres" on host "psp-prod-uw02.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com" (address "10.95.110.22") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+       current_timestamp       
+-------------------------------
+ 2025-11-29 22:29:09.101918-08
+(1 row)
+
+pspapg02=> set search_path to pspadm;
+SET
+pspapg02=> ALTER TABLE pspadm.psp_entity_update DETACH PARTITION pspadm.psp_entity_update_m122026;
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update ATTACH PARTITION pspadm.psp_entity_update_m122026
+pspapg02-> FOR VALUES FROM ('2026-12-01 00:00:00') TO ('2027-01-01 00:00:00');
+ALTER TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m012027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2027-02-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m022027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-02-01 00:00:00') TO ('2027-03-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m032027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-03-01 00:00:00') TO ('2027-04-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m4-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m042027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-04-01 00:00:00') TO ('2027-05-01 00:00:00');
+CREATE TABLE
+pspapg02=>  CREATE TABLE pspadm.psp_entity_update_m052027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-05-01 00:00:00') TO ('2027-06-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m6-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m062027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-06-01 00:00:00') TO ('2027-07-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m7-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m072027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-07-01 00:00:00') TO ('2027-08-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m8-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m082027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-08-01 00:00:00') TO ('2027-09-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m092027 
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-09-01 00:00:00') TO ('2027-10-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m10-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m102027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-10-01 00:00:00') TO ('2027-11-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m11-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m112027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-11-01 00:00:00') TO ('2027-12-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m12-2027
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m122027
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2027-12-01 00:00:00') TO ('2028-01-01 00:00:00');
+CREATE TABLE
+pspapg02=>  
+pspapg02=> --m1-2028
+pspapg02=> CREATE TABLE pspadm.psp_entity_update_m012028
+pspapg02->         PARTITION OF pspadm.psp_entity_update
+pspapg02->         FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m012027 ADD CONSTRAINT psp_entity_update_m012027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m022027 ADD CONSTRAINT psp_entity_update_m022027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m032027 ADD CONSTRAINT psp_entity_update_m032027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m042027 ADD CONSTRAINT psp_entity_update_m042027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m052027 ADD CONSTRAINT psp_entity_update_m052027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m062027 ADD CONSTRAINT psp_entity_update_m062027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m072027 ADD CONSTRAINT psp_entity_update_m072027_pk PRIMARY KEY (entity_update_seq, realm_id);
+EY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m092027 ADD CONSTRAINT psp_entity_update_m092027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m102027 ADD CONSTRAINT psp_entity_update_m102027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m112027 ADD CONSTRAINT psp_entity_update_m112027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE pspadm.psp_entity_update_m122027 ADD CONSTRAINT psp_entity_update_m122027_pk PRIMARY KEY (entity_update_seq, realm_id);ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m082027 ADD CONSTRAINT psp_entity_update_m082027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m092027 ADD CONSTRAINT psp_entity_update_m092027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m102027 ADD CONSTRAINT psp_entity_update_m102027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m112027 ADD CONSTRAINT psp_entity_update_m112027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m122027 ADD CONSTRAINT psp_entity_update_m122027_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> ALTER TABLE pspadm.psp_entity_update_m012028 ADD CONSTRAINT psp_entity_update_m012028_pk PRIMARY KEY (entity_update_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012027_created_date_idx RENAME TO idx_entityupdate_crdate_m012027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m022027_created_date_idx RENAME TO idx_entityupdate_crdate_m022027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m032027_created_date_idx RENAME TO idx_entityupdate_crdate_m032027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m042027_created_date_idx RENAME TO idx_entityupdate_crdate_m042027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m052027_created_date_idx RENAME TO idx_entityupdate_crdate_m052027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m062027_created_date_idx RENAME TO idx_entityupdate_crdate_m062027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m072027_created_date_idx RENAME TO idx_entityupdate_crdate_m072027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m082027_created_date_idx RENAME TO idx_entityupdate_crdate_m082027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m092027_created_date_idx RENAME TO idx_entityupdate_crdate_m092027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m102027_created_date_idx RENAME TO idx_entityupdate_crdate_m102027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m112027_created_date_idx RENAME TO idx_entityupdate_crdate_m112027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m122027_created_date_idx RENAME TO idx_entityupdate_crdate_m122027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m012027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m022027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m022027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m032027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m032027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m042027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m042027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m052027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m052027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m062027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m062027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m072027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m072027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m082027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m082027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m092027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m092027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m102027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m102027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m112027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m112027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m122027_modified_date_idx RENAME TO idx_ent_upd_mod_date_m122027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012028_created_date_idx RENAME TO idx_entityupdate_crdate_m012028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entity_update_m012028_modified_date_idx RENAME TO idx_ent_upd_mod_date_m012028;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m012027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m022027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m032027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m042027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m052027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m062027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m072027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m082027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m092027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m102027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m112027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m122027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_entityupdate_crdate attach partition pspadm.idx_entityupdate_crdate_m012028;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m012027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m022027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m032027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m042027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m052027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m062027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m072027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m082027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m092027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m102027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m112027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m122027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_upd_mod_date attach partition pspadm.idx_ent_upd_mod_date_m012028;
+ALTER INDEX
+pspapg02=> \d+ pspadm.psp_entity_update;
+                                                   Partitioned table "pspadm.psp_entity_update"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_ent_upd_mod_date" btree (modified_date)
+    "idx_entityupdate_crdate" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[])) NOT VALID
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character var
+ying]::text[])) NOT VALID
+Partitions: psp_entity_update_m012023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2023-02-01 00:00:00'),
+            psp_entity_update_m012024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2024-02-01 00:00:00'),
+            psp_entity_update_m012025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2025-02-01 00:00:00'),
+            psp_entity_update_m012026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2026-02-01 00:00:00'),
+            psp_entity_update_m012027 FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2027-02-01 00:00:00'),
+            psp_entity_update_m012028 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE),
+            psp_entity_update_m022023 FOR VALUES FROM ('2023-02-01 00:00:00') TO ('2023-03-01 00:00:00'),
+            psp_entity_update_m022024 FOR VALUES FROM ('2024-02-01 00:00:00') TO ('2024-03-01 00:00:00'),
+            psp_entity_update_m022025 FOR VALUES FROM ('2025-02-01 00:00:00') TO ('2025-03-01 00:00:00'),
+            psp_entity_update_m022026 FOR VALUES FROM ('2026-02-01 00:00:00') TO ('2026-03-01 00:00:00'),
+            psp_entity_update_m022027 FOR VALUES FROM ('2027-02-01 00:00:00') TO ('2027-03-01 00:00:00'),
+            psp_entity_update_m032023 FOR VALUES FROM ('2023-03-01 00:00:00') TO ('2023-04-01 00:00:00'),
+            psp_entity_update_m032024 FOR VALUES FROM ('2024-03-01 00:00:00') TO ('2024-04-01 00:00:00'),
+            psp_entity_update_m032025 FOR VALUES FROM ('2025-03-01 00:00:00') TO ('2025-04-01 00:00:00'),
+            psp_entity_update_m032026 FOR VALUES FROM ('2026-03-01 00:00:00') TO ('2026-04-01 00:00:00'),
+            psp_entity_update_m032027 FOR VALUES FROM ('2027-03-01 00:00:00') TO ('2027-04-01 00:00:00'),
+            psp_entity_update_m042023 FOR VALUES FROM ('2023-04-01 00:00:00') TO ('2023-05-01 00:00:00'),
+            psp_entity_update_m042024 FOR VALUES FROM ('2024-04-01 00:00:00') TO ('2024-05-01 00:00:00'),
+            psp_entity_update_m042025 FOR VALUES FROM ('2025-04-01 00:00:00') TO ('2025-05-01 00:00:00'),
+            psp_entity_update_m042026 FOR VALUES FROM ('2026-04-01 00:00:00') TO ('2026-05-01 00:00:00'),
+            psp_entity_update_m042027 FOR VALUES FROM ('2027-04-01 00:00:00') TO ('2027-05-01 00:00:00'),
+            psp_entity_update_m052023 FOR VALUES FROM ('2023-05-01 00:00:00') TO ('2023-06-01 00:00:00'),
+            psp_entity_update_m052024 FOR VALUES FROM ('2024-05-01 00:00:00') TO ('2024-06-01 00:00:00'),
+            psp_entity_update_m052025 FOR VALUES FROM ('2025-05-01 00:00:00') TO ('2025-06-01 00:00:00'),
+            psp_entity_update_m052026 FOR VALUES FROM ('2026-05-01 00:00:00') TO ('2026-06-01 00:00:00'),
+            psp_entity_update_m052027 FOR VALUES FROM ('2027-05-01 00:00:00') TO ('2027-06-01 00:00:00'),
+            psp_entity_update_m062023 FOR VALUES FROM ('2023-06-01 00:00:00') TO ('2023-07-01 00:00:00'),
+            psp_entity_update_m062024 FOR VALUES FROM ('2024-06-01 00:00:00') TO ('2024-07-01 00:00:00'),
+            psp_entity_update_m062025 FOR VALUES FROM ('2025-06-01 00:00:00') TO ('2025-07-01 00:00:00'),
+            psp_entity_update_m062026 FOR VALUES FROM ('2026-06-01 00:00:00') TO ('2026-07-01 00:00:00'),
+            psp_entity_update_m062027 FOR VALUES FROM ('2027-06-01 00:00:00') TO ('2027-07-01 00:00:00'),
+            psp_entity_update_m072023 FOR VALUES FROM ('2023-07-01 00:00:00') TO ('2023-08-01 00:00:00'),
+            psp_entity_update_m072024 FOR VALUES FROM ('2024-07-01 00:00:00') TO ('2024-08-01 00:00:00'),
+            psp_entity_update_m072025 FOR VALUES FROM ('2025-07-01 00:00:00') TO ('2025-08-01 00:00:00'),
+            psp_entity_update_m072026 FOR VALUES FROM ('2026-07-01 00:00:00') TO ('2026-08-01 00:00:00'),
+            psp_entity_update_m072027 FOR VALUES FROM ('2027-07-01 00:00:00') TO ('2027-08-01 00:00:00'),
+            psp_entity_update_m082023 FOR VALUES FROM ('2023-08-01 00:00:00') TO ('2023-09-01 00:00:00'),
+            psp_entity_update_m082024 FOR VALUES FROM ('2024-08-01 00:00:00') TO ('2024-09-01 00:00:00'),
+            psp_entity_update_m082025 FOR VALUES FROM ('2025-08-01 00:00:00') TO ('2025-09-01 00:00:00'),
+            psp_entity_update_m082026 FOR VALUES FROM ('2026-08-01 00:00:00') TO ('2026-09-01 00:00:00'),
+            psp_entity_update_m082027 FOR VALUES FROM ('2027-08-01 00:00:00') TO ('2027-09-01 00:00:00'),
+            psp_entity_update_m092023 FOR VALUES FROM ('2023-09-01 00:00:00') TO ('2023-10-01 00:00:00'),
+            psp_entity_update_m092024 FOR VALUES FROM ('2024-09-01 00:00:00') TO ('2024-10-01 00:00:00'),
+            psp_entity_update_m092025 FOR VALUES FROM ('2025-09-01 00:00:00') TO ('2025-10-01 00:00:00'),
+            psp_entity_update_m092026 FOR VALUES FROM ('2026-09-01 00:00:00') TO ('2026-10-01 00:00:00'),
+            psp_entity_update_m092027 FOR VALUES FROM ('2027-09-01 00:00:00') TO ('2027-10-01 00:00:00'),
+            psp_entity_update_m102023 FOR VALUES FROM ('2023-10-01 00:00:00') TO ('2023-11-01 00:00:00'),
+            psp_entity_update_m102024 FOR VALUES FROM ('2024-10-01 00:00:00') TO ('2024-11-01 00:00:00'),
+            psp_entity_update_m102025 FOR VALUES FROM ('2025-10-01 00:00:00') TO ('2025-11-01 00:00:00'),
+            psp_entity_update_m102026 FOR VALUES FROM ('2026-10-01 00:00:00') TO ('2026-11-01 00:00:00'),
+            psp_entity_update_m102027 FOR VALUES FROM ('2027-10-01 00:00:00') TO ('2027-11-01 00:00:00'),
+            psp_entity_update_m112022 FOR VALUES FROM (MINVALUE) TO ('2022-12-01 00:00:00'),
+            psp_entity_update_m112023 FOR VALUES FROM ('2023-11-01 00:00:00') TO ('2023-12-01 00:00:00'),
+            psp_entity_update_m112024 FOR VALUES FROM ('2024-11-01 00:00:00') TO ('2024-12-01 00:00:00'),
+            psp_entity_update_m112025 FOR VALUES FROM ('2025-11-01 00:00:00') TO ('2025-12-01 00:00:00'),
+            psp_entity_update_m112026 FOR VALUES FROM ('2026-11-01 00:00:00') TO ('2026-12-01 00:00:00'),
+            psp_entity_update_m112027 FOR VALUES FROM ('2027-11-01 00:00:00') TO ('2027-12-01 00:00:00'),
+            psp_entity_update_m122022 FOR VALUES FROM ('2022-12-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_entity_update_m122023 FOR VALUES FROM ('2023-12-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_entity_update_m122024 FOR VALUES FROM ('2024-12-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_entity_update_m122025 FOR VALUES FROM ('2025-12-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_entity_update_m122026 FOR VALUES FROM ('2026-12-01 00:00:00') TO ('2027-01-01 00:00:00'),
+            psp_entity_update_m122027 FOR VALUES FROM ('2027-12-01 00:00:00') TO ('2028-01-01 00:00:00')
+
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> 
+pspapg02=> \d+ pspadm.psp_entity_update_m012027;
+                                                     Table "pspadm.psp_entity_update_m012027"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_entity_update FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2027-02-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-02-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entity_update_m012027_pk" PRIMARY KEY, btree (entity_update_seq, realm_id)
+    "idx_ent_upd_mod_date_m012027" btree (modified_date)
+    "idx_entityupdate_crdate_m012027" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[]))
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entity_update_m012028;
+                                                     Table "pspadm.psp_entity_update_m012028"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_entity_update FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entity_update_m012028_pk" PRIMARY KEY, btree (entity_update_seq, realm_id)
+    "idx_ent_upd_mod_date_m012028" btree (modified_date)
+    "idx_entityupdate_crdate_m012028" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[]))
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entity_update_m062027;
+                                                     Table "pspadm.psp_entity_update_m062027"
+       Column       |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+--------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entity_update_seq  | character varying(255)         |           | not null |               | extended |             |              | 
+ version            | integer                        |           | not null |               | plain    |             |              | 
+ creator_id         | character varying(30)          |           |          |               | extended |             |              | 
+ created_date       | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id        | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date      | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id           | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entity_name        | character varying(4000)        |           |          |               | extended |             |              | 
+ retry_count        | integer                        |           |          |               | plain    |             |              | 
+ changed_attributes | text                           |           |          |               | extended |             |              | 
+ status             | character varying(255)         |           |          |               | extended |             |              | 
+ transaction_id     | character varying(4000)        |           |          |               | extended |             |              | 
+ event_type         | character varying(255)         |           |          |               | extended |             |              | 
+ entity_id          | character varying(4000)        |           |          |               | extended |             |              | 
+ company_fk         | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_entity_update FOR VALUES FROM ('2027-06-01 00:00:00') TO ('2027-07-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-06-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-07-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entity_update_m062027_pk" PRIMARY KEY, btree (entity_update_seq, realm_id)
+    "idx_ent_upd_mod_date_m062027" btree (modified_date)
+    "idx_entityupdate_crdate_m062027" btree (created_date)
+Check constraints:
+    "c_entity_event_type" CHECK (event_type::text = ANY (ARRAY['EntityCreate'::character varying, 'EntityUpdate'::character varying, 'EntityDelete'::character varying]::text[]))
+    "c_entity_update_status" CHECK (status::text = ANY (ARRAY['Created'::character varying, 'Published'::character varying, 'Failed'::character varying, 'IQFailed'::character varying, 'IQPublished'::character varying, 'InProgress'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)
+
+
+

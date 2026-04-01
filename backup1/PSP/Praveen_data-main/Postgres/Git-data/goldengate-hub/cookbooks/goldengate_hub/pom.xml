@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+o-o
+|
+o CONFIDENTIAL - Copyright 2007 Intuit Inc. This material contains certain
+| trade secrets and confidential and proprietary information of Intuit Inc.
+o Use, reproduction, disclosure and distribution by any means are prohibited,
+| except pursuant to a written license from Intuit Inc. Use of copyright
+o notice is precautionary and does not imply publication or disclosure.
+|
+o-o
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.intuit.sb.goldengate_hub</groupId>
+  <artifactId>goldengate_hub</artifactId>
+  <version>1.0.0-develop-SNAPSHOT</version>
+  <packaging>pom</packaging> 
+  <description>GoldenGate Hub ZIP file</description>
+  <properties>
+    <parent.basedir>${basedir}</parent.basedir>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+          <finalName>goldengate_hub</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>./assembly.xml</descriptor>
+          </descriptors>
+          </configuration>
+          <executions>
+            <execution>
+              <id>create-package</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+              <configuration>
+                <descriptors>
+                  <descriptor>./assembly.xml</descriptor>
+                </descriptors>
+              </configuration>
+            </execution>
+          </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.groupon.maven.plugin.json</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>1.2.0</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <validations>
+            <validation>
+              <directory>${basedir}</directory>
+              <includes>
+                <include>environments/*.json</include>
+                <include>roles/*.json</include>
+              </includes>
+            </validation>
+          </validations>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>exec-berks-vendor</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <environmentVariables>
+                <SBG_CHEF_REPO_URL>${env.SBG_CHEF_REPO_URL}</SBG_CHEF_REPO_URL>
+              </environmentVariables>
+              <executable>berks</executable>
+              <arguments>
+                <argument>vendor</argument>
+                <argument>./vendor/cookbooks</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>exec-four</id>
+            <phase>clean</phase>
+            <configuration>
+              <executable>rm</executable>
+              <arguments>
+                <argument>-rf</argument>
+                <argument>./vendor</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>exec-five</id>
+            <phase>clean</phase>
+            <configuration>
+              <executable>rm</executable>
+              <arguments>
+                <argument>-f</argument>
+                <argument>./Berksfile.lock</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,4 @@
+create table SKUMAR71.TEMP_PSP_VOIDED_CHECK as
+select VOIDED_CHECK_SEQ
+from PSPADM.PSP_VOIDED_CHECK
+where COMPANY_FK is null;

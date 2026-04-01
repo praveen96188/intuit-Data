@@ -1,0 +1,294 @@
+pspapg02=> \i c_info.sql
+You are connected to database "pspapg02" as user "postgres" on host "psp-prod-uw02.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com" (address "10.95.110.22") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+       current_timestamp       
+-------------------------------
+ 2025-11-29 22:03:47.005657-08
+(1 row)
+
+pspapg02=> \d+ pspadm.psp_entitlement_message;
+                                                   Partitioned table "pspadm.psp_entitlement_message"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_ent_msg_mod_date" btree (modified_date)
+    "psp_entitlement_message_u1" btree (token)
+    "psp_entitlement_msg_lcno_eofcd" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[])) NOT VALID
+Partitions: pspadm.psp_entitlement_message_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            pspadm.psp_entitlement_message_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> set search_path to pspadm;
+SET
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message DETACH PARTITION pspadm.psp_entitlement_message_2026;
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message ATTACH PARTITION pspadm.psp_entitlement_message_2026
+pspapg02-> FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00');
+ALTER TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entitlement_message_2027
+pspapg02->         PARTITION OF pspadm.psp_entitlement_message
+pspapg02->         FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_entitlement_message_2028
+pspapg02->         PARTITION OF pspadm.psp_entitlement_message
+pspapg02->         FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message_2027 ADD CONSTRAINT psp_entitlement_message_2027_pk PRIMARY KEY (entitlement_message_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_entitlement_message_2028 ADD CONSTRAINT psp_entitlement_message_2028_pk PRIMARY KEY (entitlement_message_seq, realm_id);
+ALTER TABLE
+
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_modified_date_idx RENAME TO idx_ent_msg_mod_date_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_license_number_entitlement_off_idx RENAME TO psp_entitlement_msg_lcno_eofcd_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_message_timestamp_event_reason_idx RENAME TO psp_entitlement_msg_msgts_er_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_order_number_license_number_idx RENAME TO psp_entitlement_msg_orno_lcno_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2027_token_idx RENAME TO psp_entitlement_message_u1_2027;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_modified_date_idx RENAME TO idx_ent_msg_mod_date_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_license_number_entitlement_off_idx RENAME TO psp_entitlement_msg_lcno_eofcd_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_message_timestamp_event_reason_idx RENAME TO psp_entitlement_msg_msgts_er_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_order_number_license_number_idx RENAME TO psp_entitlement_msg_orno_lcno_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_entitlement_message_2028_token_idx RENAME TO psp_entitlement_message_u1_2028;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> alter index pspadm.idx_ent_msg_mod_date attach partition pspadm.idx_ent_msg_mod_date_2027;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> alter index pspadm.idx_ent_msg_mod_date attach partition pspadm.idx_ent_msg_mod_date_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_2027 ;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_msgts_er attach partition pspadm.psp_entitlement_msg_msgts_er_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_lcno_eofcd attach partition pspadm.psp_entitlement_msg_lcno_eofcd_2027 ;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_message_u1 attach partition pspadm.psp_entitlement_message_u1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.idx_ent_msg_mod_date attach partition pspadm.idx_ent_msg_mod_date_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_msgts_er attach partition pspadm.psp_entitlement_msg_msgts_er_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_msg_lcno_eofcd attach partition pspadm.psp_entitlement_msg_lcno_eofcd_2028 ;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_entitlement_message_u1 attach partition pspadm.psp_entitlement_message_u1_2028;
+ALTER INDEX
+pspapg02=> \d+ pspadm.psp_entitlement_message;
+                                                   Partitioned table "pspadm.psp_entitlement_message"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_ent_msg_mod_date" btree (modified_date)
+    "psp_entitlement_message_u1" btree (token)
+    "psp_entitlement_msg_lcno_eofcd" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[])) NOT VALID
+Partitions: psp_entitlement_message_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            psp_entitlement_message_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            psp_entitlement_message_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            psp_entitlement_message_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            psp_entitlement_message_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            psp_entitlement_message_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            psp_entitlement_message_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            psp_entitlement_message_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            psp_entitlement_message_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            psp_entitlement_message_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            psp_entitlement_message_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_entitlement_message_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_entitlement_message_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_entitlement_message_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_entitlement_message_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00'),
+            psp_entitlement_message_2027 FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00'),
+            psp_entitlement_message_2028 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> \d+ pspadm.psp_entitlement_message_2026;
+                                                       Table "pspadm.psp_entitlement_message_2026"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition of: psp_entitlement_message FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2026-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entitlement_message_2026_pk" PRIMARY KEY, btree (entitlement_message_seq, realm_id)
+    "idx_ent_msg_mod_date_2026" btree (modified_date)
+    "psp_entitlement_message_u1_2026" btree (token)
+    "psp_entitlement_msg_lcno_eofcd_2026" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er_2026" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno_2026" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[])) NOT VALID
+Publications:
+    "dbz_publication"
+Replica Identity: FULL
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entitlement_message_2027;
+                                                       Table "pspadm.psp_entitlement_message_2027"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition of: psp_entitlement_message FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entitlement_message_2027_pk" PRIMARY KEY, btree (entitlement_message_seq, realm_id)
+    "idx_ent_msg_mod_date_2027" btree (modified_date)
+    "psp_entitlement_message_u1_2027" btree (token)
+    "psp_entitlement_msg_lcno_eofcd_2027" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er_2027" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno_2027" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_entitlement_message_2028;
+                                                       Table "pspadm.psp_entitlement_message_2028"
+          Column           |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+---------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ entitlement_message_seq   | character varying(255)         |           | not null |               | extended |             |              | 
+ version                   | integer                        |           | not null |               | plain    |             |              | 
+ creator_id                | character varying(30)          |           |          |               | extended |             |              | 
+ created_date              | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ modifier_id               | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date             | timestamp(6) without time zone |           | not null |               | plain    |             |              | 
+ realm_id                  | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ entitlement_offering_code | character varying(20)          |           |          |               | extended |             |              | 
+ order_number              | character varying(20)          |           |          |               | extended |             |              | 
+ message_bkp               | text                           |           |          |               | extended |             |              | 
+ license_number            | character varying(20)          |           |          |               | extended |             |              | 
+ status                    | character varying(255)         |           |          |               | extended |             |              | 
+ token                     | numeric(19,0)                  |           |          |               | main     |             |              | 
+ event_reason              | character varying(50)          |           |          |               | extended |             |              | 
+ failure_count             | integer                        |           |          |               | plain    |             |              | 
+ last_failure_message      | character varying(1000)        |           |          |               | extended |             |              | 
+ message_timestamp         | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ expiration_timestamp      | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ message                   | text                           |           |          |               | extended |             |              | 
+ message_enc               | text                           |           |          |               | extended |             |              | 
+Partition of: psp_entitlement_message FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_entitlement_message_2028_pk" PRIMARY KEY, btree (entitlement_message_seq, realm_id)
+    "idx_ent_msg_mod_date_2028" btree (modified_date)
+    "psp_entitlement_message_u1_2028" btree (token)
+    "psp_entitlement_msg_lcno_eofcd_2028" btree (license_number, entitlement_offering_code)
+    "psp_entitlement_msg_msgts_er_2028" btree (message_timestamp, event_reason)
+    "psp_entitlement_msg_orno_lcno_2028" btree (order_number, license_number)
+Check constraints:
+    "c_psp_entitlement_message0" CHECK (status::text = ANY (ARRAY['SkippedEntitlementNotFound'::character varying, 'SkippedOldTimestamp'::character varying, 'New'::character varying, 'Processed'::character varying, 'Error'::character varying]::text[]))
+Access method: heap
+
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)

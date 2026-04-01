@@ -1,0 +1,226 @@
+✅ ✅ ✅ DB REFRESH STARTED FOR: Monolith Database✅ ✅ ✅ 
+✏️ STAGING DATABASE CONFIGURATION FOR: pitparmo
+✏️ OLD PASSWORDFILE PATH: /u01/scripts/staging_refresh/.mop
+✏️ NEW PASSWORDFILEPATH: /u01/scripts/staging_refresh/.mnp
+✏️ APPUSERS PASSWORD FILE PATH: /u01/scripts/staging_refresh/.map
+✏️ SQL SCRIPTS-1: /u01/scripts/staging_refresh/mon_postgres_postgres.sql
+✏️ SQL SCRIPTS-2: /u01/scripts/staging_refresh/mon_pitparmo_postgres.sql
+✏️ SQL SCRIPTS-3: /u01/scripts/staging_refresh/mon_psparcowner_psparcdb.sql
+✏️ DEFAULT DBNAME: postgres
+✏️ MASTER USER: postgres
+✏️ SCHEMA OWNER: pspadm_owner
+
+🟢=== STEP 1: Creating staging cluster from snapshot ===
+Latest snapshot: rds:ppsp-pds-uw02-2025-07-31-05-13
+Fetched cluster parameter group: ipsrds-us-west-2-monolithuw0115cluster4af8a2bf-iqogj9lsdjnw
+Fetched instance parameter group: ipsrds-us-west-2-monolithuw0115instance9c5d2915-l6nbsr4vxguk
+Creating new staging DB cluster from snapshot: rds:ppsp-pds-uw02-2025-07-31-05-13
+Using DBInstanceClass: db.r6g.4xlarge
+Waiting for DB instance ppsp-ppd-sqo-new-1 to become available...⏳⏳⏳
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: creating. Waiting...
+Current status: configuring-enhanced-monitoring. Waiting...
+Current status: configuring-enhanced-monitoring. Waiting...
+DB instance ppsp-ppd-sqo-new-1 is available!🚀🚀🚀
+ppsp-ppd-sqo-new
+
+🟢=== STEP 2: Master User and Schema_owner Password Reseting===
+Password for user postgres reset successfully.
+Error resetting password for pspadm_owner: End Of File (EOF). Exception style platform.
+<pexpect.pty_spawn.spawn object at 0x7faa06356790>
+command: /usr/bin/psql
+args: ['/usr/bin/psql', '-h', 'ppsp-ppd-sqo-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com', '-U', 'postgres', '-d', 'ppdspg02']
+buffer (last 100 chars): b''
+before (last 100 chars): b' no pg_hba.conf entry for host "10.94.18.184", user "postgres", database "ppdspg02", no encryption\r\n'
+after: <class 'pexpect.exceptions.EOF'>
+match: None
+match_index: None
+exitstatus: None
+flag_eof: True
+pid: 29198
+child_fd: 7
+closed: False
+timeout: 15
+delimiter: <class 'pexpect.exceptions.EOF'>
+logfile: None
+logfile_read: None
+logfile_send: None
+maxread: 2000
+ignorecase: False
+searchwindowsize: None
+delaybeforesend: 0.05
+delayafterclose: 0.1
+delayafterterminate: 0.1
+searcher: searcher_string:
+    0: b'ppdspg02=#'
+    1: b'ppdspg02=>'
+
+🟢=== STEP 3: Drop Rep slots and kill connections ===
+Dropping replication slot: data_capture_outbox_slot_e2e
+Dropping replication slot: pspapg_s1_ingestion
+Terminated 0 active session(s).
+
+🟢=== STEP 4: Renaming Database===
+Renamed database from ppdspg02 to pitparmo.
+
+🟢=== STEP 5:Managing app users and reseting app users passwords===
+Creating user psp_prl_app...
+Granted CONNECT on database pitparmo to psp_prl_app.
+Password for user psp_prl_app reset successfully.
+Creating user psp_prl_read...
+Granted CONNECT on database pitparmo to psp_prl_read.
+Password for user psp_prl_read reset successfully.
+User psprjf already exists.
+Password for user psprjf reset successfully.
+User pspbatch_rw_user already exists.
+Password for user pspbatch_rw_user reset successfully.
+User pspbatch_ro_user already exists.
+Password for user pspbatch_ro_user reset successfully.
+User data_capture_role already exists.
+Password for user data_capture_role reset successfully.
+Creating user perf_test...
+Granted CONNECT on database pitparmo to perf_test.
+Password for user perf_test reset successfully.
+
+🟢=== STEP 6: Executing Scripts cnnecting to master-user and postgres Database===
+You are connected to database "postgres" as user "postgres" on host "ppsp-ppd-sqo-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (address "10.94.22.31") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+ current_user 
+--------------
+ postgres
+(1 row)
+
+ current_database 
+------------------
+ postgres
+(1 row)
+
+psql:/u01/scripts/staging_refresh/mon_postgres_postgres.sql:5: ERROR:  pg_cron can only be loaded via shared_preload_libraries
+HINT:  Add pg_cron to the shared_preload_libraries configuration variable in postgresql.conf.
+psql:/u01/scripts/staging_refresh/mon_postgres_postgres.sql:6: ERROR:  role "drcadm_owner" does not exist
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/mon_postgres_postgres.sql:11: ERROR:  role "sys_drc_app" does not exist
+psql:/u01/scripts/staging_refresh/mon_postgres_postgres.sql:12: ERROR:  role "testusr" does not exist
+ALTER ROLE
+Executed SQL file: /u01/scripts/staging_refresh/mon_postgres_postgres.sql
+
+🟢=== STEP 7: Executing Scripts cnnecting to masterUser and Database===
+You are connected to database "pitparmo" as user "postgres" on host "ppsp-ppd-sqo-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (address "10.94.22.31") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+ current_user 
+--------------
+ postgres
+(1 row)
+
+ current_database 
+------------------
+ pitparmo
+(1 row)
+
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:4: ERROR:  role "psp_prl_app" already exists
+GRANT ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:12: ERROR:  role "perf_test" already exists
+ALTER ROLE
+GRANT ROLE
+GRANT
+ALTER ROLE
+GRANT
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:21: ERROR:  role "psp_prl_read" already exists
+GRANT ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:32: ERROR:  role "psprjf" already exists
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:34: NOTICE:  role "psprjf" is already a member of role "pspadm_readonly_role"
+GRANT ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:42: ERROR:  role "pspbatch_rw_user" already exists
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:45: NOTICE:  role "pspbatch_rw_user" is already a member of role "pspadm_readwrite_role"
+GRANT ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:53: ERROR:  role "pspbatch_ro_user" already exists
+psql:/u01/scripts/staging_refresh/mon_pitparmo_postgres.sql:56: NOTICE:  role "pspbatch_ro_user" is already a member of role "pspadm_readonly_role"
+GRANT ROLE
+ALTER ROLE
+ALTER ROLE
+ALTER ROLE
+Executed SQL file: /u01/scripts/staging_refresh/mon_pitparmo_postgres.sql
+
+🟢=== STEP 8: Executing Scripts cnnecting to masterUser and Database===
+Error checking database existence: connection to server at "ppsp-ppd-sqo-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (10.94.22.31), port 5432 failed: FATAL:  password authentication failed for user "pspadm_owner"
+connection to server at "ppsp-ppd-sqo-new.cluster-ccqjgvvo0rwy.us-west-2.rds.amazonaws.com" (10.94.22.31), port 5432 failed: FATAL:  no pg_hba.conf entry for host "10.94.18.184", user "pspadm_owner", database "postgres", no encryption
+
+Connection failed for user '{schema_owner}'. Skipping SQL execution.
+
+🟢=== STEP 9: Adding AWS backup tag===
+✅ Tag 'org_awsbackup_local_0700UTC=7continuous' applied successfully.
+
+ Port number Update not required for monolith and archival  
+
+🟢=== STEP 10: Running VACUUM script===
+🧹 Running VACUUM script for all tables...
+✅ VACUUM completed successfully. Log saved to /u01/scripts/staging_refresh/vacuum/vacuum_20250731.log
+
+✅ ✅ ✅ === DATABASE REFRESH COMPLETED SUCCESSFULLY ✅ ✅ ✅ ===

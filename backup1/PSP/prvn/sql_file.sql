@@ -1,0 +1,13 @@
+GRANT CONNECT ON DATABASE psppdarc1 TO testusr;
+GRANT USAGE ON SCHEMA psparc TO testusr;
+GRANT ALL ON ALL TABLES IN SCHEMA psparc TO testusr;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA psparc TO testusr;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA psparc TO testusr;
+ALTER DEFAULT PRIVILEGES IN SCHEMA psparc GRANT ALL ON TABLES TO testusr;
+ALTER DEFAULT PRIVILEGES IN SCHEMA psparc GRANT ALL ON SEQUENCES TO testusr;
+ALTER DEFAULT PRIVILEGES IN SCHEMA psparc GRANT ALL ON FUNCTIONS TO testusr;
+ALTER USER testusr SET search_path TO psparc;
+alter user apg_plan_mgmt with nologin;
+alter user psparcapp with nologin;
+UPDATE cron.job SET database = '$new_db_name' WHERE jobid = 1;
+UPDATE cron.job SET database = '$new_db_name' WHERE jobid = 34;

@@ -1,0 +1,80 @@
+{
+  "id": "ppsp",
+  "description": "PSP shared psyspg01  Cluster",
+  "bu": "SBSEG",
+  "dbName": "ppdspg02",
+  "multiAZ": "false",
+  "region": "us-west-2",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow": "05:00-05:30",
+  "maintenanceWindow": "Mon:07:00-Mon:07:30",
+  "backupRetention": "3",
+  "clusterParameterGroupRef": "ppsp:monolith-uw02-15-cluster",
+  "instanceParameterGroupRef": "ppsp:monolith-uw02-15-instance",
+  "subnetGroupRef": "ppsp:pspuw02dbsubnetgrp",
+  "securityGroupRef" : "ppsp:pspuw02dbsecuritygrp",
+  "engineMajorVersion" : "15",
+  "engineMinorVersion" : "3",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "pds",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-pds-uw02",
+          "clusters": [
+            {
+              "id": "uw02",
+              "globalDatabase": "ppsp-pds-uw02-global",
+              "engineMajorVersion": "15",
+              "engineMinorVersion": "3",
+              "instanceType": "r6g.4xlarge",
+              "rdsPort":"5432",
+              "readers": [
+                {
+                  "instanceType": "r6g.4xlarge",
+                  "instanceParameterGroupRef": "ppsp:monolith-uw02-15-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-west-2c"
+                 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dr-pds-uw02",
+          "clusters": [
+            {
+              "id": "uw02dr",
+              "globalDatabase": "ppsp-pds-uw02-global",
+              "engineMajorVersion": "15",
+              "engineMinorVersion": "3",
+              "instanceType": "r6g.4xlarge",
+              "rdsPort":"5432",
+              "readers": [
+                {
+                  "instanceType": "r6g.4xlarge",
+                  "instanceParameterGroupRef": "ppsp:monolith-uw02-15-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-east-2c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

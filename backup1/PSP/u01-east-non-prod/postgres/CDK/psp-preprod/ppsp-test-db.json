@@ -1,0 +1,71 @@
+{
+  "id": "ppsp",
+  "description": "PSP test  Cluster",
+  "bu": "SBSEG",
+  "dbName": "testdb",
+  "multiAZ": "false",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow": "05:00-05:30",
+  "maintenanceWindow": "Mon:07:00-Mon:07:30",
+  "backupRetention": "3",
+  "clusterParameterGroupRef": "ppsp:test-pg14-cluster",
+  "instanceParameterGroupRef": "ppsp:test-pg14-instance",
+  "subnetGroupRef": "ppsp:testdbsubnetgrp",
+  "securityGroupRef": "ppsp:testdbsecuritygrp",
+  "masterUserName" : "intuadmin",
+  "engineMajorVersion": "14",
+  "engineMinorVersion": "12",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "test",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-test",
+          "clusters": [
+            {
+              "id": "db",
+              "globalDatabase": "ppsp-test-db-global",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "12",
+              "instanceType": "r6g.large",
+              "readers": [
+                {
+                  "instanceType": "r6g.large",
+                  "instanceParameterGroupRef": "ppsp:test-pg14-instance",
+                  "failoverPriority": 1,
+                  "availabilityZone": "us-west-2c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "dr-test",
+          "clusters": [
+            {
+              "id": "testdr",
+              "globalDatabase": "ppsp-test-db-global",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "12",
+              "instanceType": "r6g.large"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  
+}

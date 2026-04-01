@@ -1,0 +1,15 @@
+ALTER TABLE PSP_SOURCE_SYSTEM_TRANSMISSION ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK(FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO'));
+ALTER TABLE PSP_SOURCE_SYSTEM_TRANSMISSION ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK(TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService'));
+ALTER TABLE PSP_SOURCE_SYSTEM_TRANSMISSION ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK(TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO'));
+ALTER TABLE PSP_HCM401K_COMPANY_QBDT_PITEM ADD CONSTRAINT C_PSP_HCM401K_COMPANY_QBDT0 CHECK(HCM401K_CONTRIBUTOR IN('Employer', 'Employee'));
+ALTER TABLE PSP_HCM401K_EMPLOYEE_DEDUCTION ADD CONSTRAINT C_PSP_HCM401K_EMPLOYEE_DED0 CHECK(HCM401K_AMOUNT_TYPE IN('Dollar', 'Percentage'));
+ALTER TABLE PSP_HCM401K_EMPLOYEE_DEDUCTION ADD CONSTRAINT C_PSP_HCM401K_EMPLOYEE_DED1 CHECK(HCM401K_DEDUCTION_CONTRIBUTOR IN('Employer', 'Employee'));
+ALTER TABLE PSP_HCM401K_POLICY ADD CONSTRAINT C_PSP_HCM401K_POLICY0 CHECK(DEDUCTION_ITEM_POLICY IN('TppoCus401K', 'TppoCusRoth401K', 'TppoCus401KCatchup', 'TdepCusLoanRepayment'));
+ALTER TABLE PSP_HCM401K_POLICY ADD CONSTRAINT C_PSP_HCM401K_POLICY1 CHECK(DEDUCTION_ITEM_PROVIDER IN('Guideline'));
+ALTER TABLE PSP_HCM401K_POLICY ADD PRIMARY KEY (HCM401K_POLICY_SEQ, REALM_ID);
+ALTER TABLE PSP_HCM401K_COMPANY_POLICY ADD PRIMARY KEY (HCM401K_COMPANY_POLICY_SEQ, REALM_ID);
+ALTER TABLE psp_hcm401k_company_policy ADD CONSTRAINT psp_hcm401k_company_policy_fk1 FOREIGN KEY (hcm401k_policy_fk, realm_id) REFERENCES psp_hcm401k_policy (hcm401k_policy_seq,realm_id);
+ALTER TABLE PSP_HCM401K_COMPANY_QBDT_PITEM ADD PRIMARY KEY (HCM401K_COMPANY_QBDT_PITEM_SEQ, REALM_ID);
+ALTER TABLE psp_hcm401k_company_qbdt_pitem ADD CONSTRAINT psp_hcm401k_company_qbdt_p_fk1 FOREIGN KEY (hcm401k_company_policy_fk, realm_id) REFERENCES psp_hcm401k_company_policy (hcm401k_company_policy_seq,realm_id);
+ALTER TABLE PSP_HCM401K_EMPLOYEE_DEDUCTION ADD PRIMARY KEY (HCM401K_EMPLOYEE_DEDUCTION_SEQ, REALM_ID);
+ALTER TABLE psp_hcm401k_employee_deduction ADD CONSTRAINT psp_hcm401k_employee_deduc_fk1 FOREIGN KEY (hcm401k_company_policy_fk, realm_id) REFERENCES psp_hcm401k_company_policy (hcm401k_company_policy_seq,realm_id);

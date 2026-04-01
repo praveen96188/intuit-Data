@@ -1,0 +1,51 @@
+{
+  "id": "ppsp",
+  "description": "PSP shared psyspg01  Cluster",
+  "bu": "SBSEG",
+  "dbName": "pdsibobue",
+  "multiAZ": "false",
+  "region": "us-east-2",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow": "05:00-05:30",
+  "maintenanceWindow": "Mon:07:00-Mon:07:30",
+  "backupRetention": "3",
+  "clusterParameterGroupRef": "ppsp:pdsibob-pg14-cluster",
+  "instanceParameterGroupRef": "ppsp:pdsibob-pg14-instance",
+  "subnetGroupRef": "ppsp:pdsdbsubnetgrp",
+  "securityGroupRef" : "ppsp:pdsdbsecuritygrp",
+  "masterUserName" : "intuadmin",
+  "engineMajorVersion" : "14",
+  "engineMinorVersion" : "12",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "pds",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "dr-pds-east",
+          "clusters": [
+            {
+              "id": "dbue",
+              "engineMajorVersion": "14",
+              "engineMinorVersion": "12",
+              "instanceType": "r6g.2xlarge",
+              "rdsPort":"5432"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

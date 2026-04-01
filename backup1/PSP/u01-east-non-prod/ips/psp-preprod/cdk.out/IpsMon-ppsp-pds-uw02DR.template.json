@@ -1,0 +1,3279 @@
+{
+ "Parameters": {
+  "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/ConfigBucket"
+  },
+  "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/ManagedBucket"
+  },
+  "lambdaLayerParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/custom/ips/aurora/layerArn"
+  },
+  "psycopgLayerParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/custom/ips/aurora/psycopgLayerArn"
+  },
+  "SsmParameterValueipsrelationalparametersuseast2CloudwatchKinesisRoleC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/CloudwatchKinesisRole"
+  },
+  "SsmParameterValueipsrelationalparametersuseast2LrRoleC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/ips/relational/parameters/us-east-2/LrRole"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "IpsMonLogsSub0Filter": {
+   "Type": "AWS::Logs::SubscriptionFilter",
+   "Properties": {
+    "DestinationArn": {
+     "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:IpsRds-vpc-03af2ef666f86d6d2LogMetricStream"
+    },
+    "FilterPattern": "?FATAL ?PANIC ?temporary",
+    "LogGroupName": "/aws/rds/cluster/ppsp-pds-uw02dr/postgresql",
+    "RoleArn": {
+     "Ref": "SsmParameterValueipsrelationalparametersuseast2CloudwatchKinesisRoleC96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-LogsSub0Filter"
+   }
+  },
+  "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "metrics"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.us-east-2.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/cdk-hnb659fds-assets-152430470825-us-east-2/39db78e607eb374df2ae63caee8b70e739358420e7258d5af8b8df144fd66174.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMtx-.NestedStack/IpsMtx-.NestedStackResource",
+    "aws:asset:path": "IpsMonppsppdsuw02drIpsMtx8678F988.nested.template.json",
+    "aws:asset:property": "TemplateURL"
+   }
+  },
+  "ppsppdsuw02drschedulerLogGroupCommonRoleCE56DC31": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "ppsp-pds-uw02drschedulerMetrics",
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/ppsp-pds-uw02drschedulerLogGroup-CommonRole/Resource"
+   }
+  },
+  "ppsppdsuw02drschedulerLogRetention6F9F437F": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Ref": "ppsppdsuw02drschedulerLogGroupCommonRoleCE56DC31"
+    },
+    "RetentionInDays": 90
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/ppsp-pds-uw02drschedulerLogRetention/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs20.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-152430470825-us-east-2",
+     "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+    },
+    "Role": {
+     "Ref": "SsmParameterValueipsrelationalparametersuseast2LrRoleC96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "schedulerServiceRole3FA46E21": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ]
+   },
+   "DependsOn": [
+    "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/scheduler/ServiceRole/Resource"
+   }
+  },
+  "schedulerEDBED1F9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ManagedBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "S3Key": "artifacts/0.9.46/scheduler.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "configKey": "metrics/ppsp-pds-uw02dr/defaultMetricSetRef/ppsp-pds-uw02dr-metrics.json",
+      "configBucket": {
+       "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+      },
+      "splunk": {
+       "Fn::GetAtt": [
+        "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+        "Outputs.IpsMonppsppdsuw02drIpsMtxsplunkmetricsB73248F8Arn"
+       ]
+      },
+      "wavefront": {
+       "Fn::GetAtt": [
+        "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+        "Outputs.IpsMonppsppdsuw02drIpsMtxwavefrontmetricsE23CDC67Arn"
+       ]
+      }
+     }
+    },
+    "FunctionName": "ppsp-pds-uw02dr-scheduler",
+    "Handler": "scheduler.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "lambdaLayerParameter"
+     },
+     {
+      "Ref": "psycopgLayerParameter"
+     }
+    ],
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "ppsppdsuw02drschedulerLogGroupCommonRoleCE56DC31"
+     }
+    },
+    "MemorySize": 128,
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::GetAtt": [
+      "schedulerServiceRole3FA46E21",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Timeout": 240,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "ips:relational:exports:IpsRds:vpc-03af2ef666f86d6d2:RdsIngressSgRef"
+      }
+     ],
+     "SubnetIds": [
+      "subnet-070cb54bf1a84262c",
+      "subnet-0bc1b566488a4ecac",
+      "subnet-083be522113721c21"
+     ]
+    }
+   },
+   "DependsOn": [
+    "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+    "schedulerServiceRole3FA46E21"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/scheduler/Resource"
+   }
+  },
+  "ppsppdsuw02drscheduleRuleCFAF9D83": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "schedulerEDBED1F9",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/ppsp-pds-uw02drscheduleRule/Resource"
+   }
+  },
+  "ppsppdsuw02drscheduleRuleAllowEventRuleIpsMonppsppdsuw02drscheduler4097089514004D1F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "schedulerEDBED1F9",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "ppsppdsuw02drscheduleRuleCFAF9D83",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/ppsp-pds-uw02drscheduleRule/AllowEventRuleIpsMonppsppdsuw02drscheduler40970895"
+   }
+  },
+  "ppsppdsuw02drschedulerPolicyD8033F1E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+          "Outputs.IpsMonppsppdsuw02drIpsMtxsplunkmetricsB73248F8Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+          "Outputs.IpsMonppsppdsuw02drIpsMtxwavefrontmetricsE23CDC67Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:AbortMultipartUpload",
+        "s3:ListBucketMultipartUploads"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+         ]
+        ]
+       },
+       "Sid": "ppsppdsuw02drlogAlertingPermissionsS3"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "s3:AbortMultipartUpload",
+        "s3:ListBucketMultipartUploads"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "ppsppdsuw02drlogAlertingPermissionS3Obj"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ppsppdsuw02drschedulerPolicyD8033F1E",
+    "Roles": [
+     {
+      "Ref": "schedulerServiceRole3FA46E21"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/ppsp-pds-uw02drschedulerPolicy/Resource"
+   }
+  },
+  "IpsMonCPUUtilizationCriticalppsppdsuw02dr113760B42": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "CPUUtilization-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 70,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-CPUUtilization-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonCPUUtilizationCriticalppsppdsuw02dr26E04CCB9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "CPUUtilization-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 70,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-CPUUtilization-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonMaximumUsedTransactionIDsCriticalppsppdsuw02dr12B2ED44A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db MaximumUsedTransactionIDs exceed this threshold",
+    "AlarmName": "MaximumUsedTransactionIDs-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "MaximumUsedTransactionIDs",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 180000000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-MaximumUsedTransactionIDs-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonMaximumUsedTransactionIDsCriticalppsppdsuw02dr286B60B9C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db MaximumUsedTransactionIDs exceed this threshold",
+    "AlarmName": "MaximumUsedTransactionIDs-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "MaximumUsedTransactionIDs",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 180000000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-MaximumUsedTransactionIDs-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonReplicationSlotDiskUsageCriticalppsppdsuw02dr1A8968858": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db replication slots exceed this threshold",
+    "AlarmName": "ReplicationSlotDiskUsage-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReplicationSlotDiskUsage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 107374182400,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReplicationSlotDiskUsage-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonReplicationSlotDiskUsageCriticalppsppdsuw02dr2507BF49D": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db replication slots exceed this threshold",
+    "AlarmName": "ReplicationSlotDiskUsage-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReplicationSlotDiskUsage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 107374182400,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReplicationSlotDiskUsage-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonDatabaseConnectionsWarningppsppdsuw02dr1B5237161": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "DatabaseConnections-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "DatabaseConnections",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 2500,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-DatabaseConnections-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonDatabaseConnectionsWarningppsppdsuw02dr297A5C87C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "DatabaseConnections-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "DatabaseConnections",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 2500,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-DatabaseConnections-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonFreeableMemoryWarningppsppdsuw02dr1F51403A8": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db FreeableMemory exceed this threshold",
+    "AlarmName": "FreeableMemory-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeableMemory",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 6442450944,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeableMemory-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonFreeableMemoryWarningppsppdsuw02dr2C297CE73": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db FreeableMemory exceed this threshold",
+    "AlarmName": "FreeableMemory-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeableMemory",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 6442450944,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeableMemory-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonFreeableMemoryCriticalppsppdsuw02dr1CFEFC07B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db Freeable Memory exceed this threshold",
+    "AlarmName": "FreeableMemory-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeableMemory",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 3221225472,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeableMemory-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonFreeableMemoryCriticalppsppdsuw02dr24756A701": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db Freeable Memory exceed this threshold",
+    "AlarmName": "FreeableMemory-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeableMemory",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 3221225472,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeableMemory-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonWriteIOPSCriticalppsppdsuw02dr166D78055": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db WriteIOPS exceed this threshold",
+    "AlarmName": "WriteIOPS-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "WriteIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 35000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-WriteIOPS-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonWriteIOPSCriticalppsppdsuw02dr23A017299": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db WriteIOPS exceed this threshold",
+    "AlarmName": "WriteIOPS-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "WriteIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 35000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-WriteIOPS-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonFreeLocalStorageWarningppsppdsuw02dr10B00F137": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db FreeLocalStorage exceed this threshold",
+    "AlarmName": "FreeLocalStorage-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeLocalStorage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 10737418240,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeLocalStorage-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonFreeLocalStorageWarningppsppdsuw02dr2AFE0B5F0": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db FreeLocalStorage exceed this threshold",
+    "AlarmName": "FreeLocalStorage-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeLocalStorage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 10737418240,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeLocalStorage-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonDatabaseConnectionsCriticalppsppdsuw02dr103904F47": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db Connections exceed this threshold",
+    "AlarmName": "DatabaseConnections-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "DatabaseConnections",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 3000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-DatabaseConnections-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonDatabaseConnectionsCriticalppsppdsuw02dr210181D86": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db Connections exceed this threshold",
+    "AlarmName": "DatabaseConnections-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "DatabaseConnections",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 3000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-DatabaseConnections-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonReadIOPSCriticalppsppdsuw02dr195E5CCF8": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db ReadIOPS exceed this threshold",
+    "AlarmName": "ReadIOPS-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReadIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 100000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReadIOPS-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonReadIOPSCriticalppsppdsuw02dr268888DC1": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db ReadIOPS exceed this threshold",
+    "AlarmName": "ReadIOPS-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReadIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 100000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReadIOPS-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonReadIOPSWarningppsppdsuw02dr1FC15FDB2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db ReadIOPS exceed this threshold",
+    "AlarmName": "ReadIOPS-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReadIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 100000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReadIOPS-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonReadIOPSWarningppsppdsuw02dr212527CED": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db ReadIOPS exceed this threshold",
+    "AlarmName": "ReadIOPS-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReadIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 100000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReadIOPS-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonWriteIOPSWarningppsppdsuw02dr156DBF98A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db WriteIOPS exceed this threshold",
+    "AlarmName": "WriteIOPS-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "WriteIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 30000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-WriteIOPS-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonWriteIOPSWarningppsppdsuw02dr2C63E217C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db WriteIOPS exceed this threshold",
+    "AlarmName": "WriteIOPS-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "WriteIOPS",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 30000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-WriteIOPS-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonReplicationSlotDiskUsageWarningppsppdsuw02dr1EB5DF559": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "ReplicationSlotDiskUsage-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReplicationSlotDiskUsage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 107374182400,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReplicationSlotDiskUsage-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonReplicationSlotDiskUsageWarningppsppdsuw02dr2A6E0A34D": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "ReplicationSlotDiskUsage-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ReplicationSlotDiskUsage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 107374182400,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-ReplicationSlotDiskUsage-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonCPUUtilizationWarningppsppdsuw02dr11BFFBC28": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "CPUUtilization-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 60,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-CPUUtilization-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonCPUUtilizationWarningppsppdsuw02dr230A15595": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db CPU utilization exceed this threshold",
+    "AlarmName": "CPUUtilization-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 60,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-CPUUtilization-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonFreeLocalStorageCriticalppsppdsuw02dr1293B90FB": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db FreeLocalStorage exceed this threshold",
+    "AlarmName": "FreeLocalStorage-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeLocalStorage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 10737418240,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeLocalStorage-Critical-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonFreeLocalStorageCriticalppsppdsuw02dr22D4A83D5": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-critical-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db FreeLocalStorage exceed this threshold",
+    "AlarmName": "FreeLocalStorage-Critical - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "FreeLocalStorage",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 10737418240,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-FreeLocalStorage-Critical-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "IpsMonMaximumUsedTransactionIDsWarningppsppdsuw02dr152998CD3": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db MaximumUsedTransactionIDs exceed this threshold",
+    "AlarmName": "MaximumUsedTransactionIDs-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr1",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr1"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "MaximumUsedTransactionIDs",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 120000000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-MaximumUsedTransactionIDs-Warning-ppsp-pds-uw02dr1/Resource"
+   }
+  },
+  "IpsMonMaximumUsedTransactionIDsWarningppsppdsuw02dr2911B40AD": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "AlarmDescription": "Alarm/page when # of db MaximumUsedTransactionIDs exceed this threshold",
+    "AlarmName": "MaximumUsedTransactionIDs-Warning - ppsp-pds-uw02dr - ppsp-pds-uw02dr2",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "DatapointsToAlarm": 1,
+    "Dimensions": [
+     {
+      "Name": "DBInstanceIdentifier",
+      "Value": "ppsp-pds-uw02dr2"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "MaximumUsedTransactionIDs",
+    "Namespace": "AWS/RDS",
+    "OKActions": [
+     "arn:aws:sns:us-east-2:152430470825:DB-sbg-psp-warning-ppd-a-intuit-com"
+    ],
+    "Period": 300,
+    "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "Threshold": 120000000,
+    "TreatMissingData": "missing"
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsMon-MaximumUsedTransactionIDs-Warning-ppsp-pds-uw02dr2/Resource"
+   }
+  },
+  "ppsppdsuw02drsplunkSetup": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": "arn:aws:lambda:us-east-2:152430470825:function:chaplette-deployer-trigger-prd",
+    "ProvisioningParameters": [
+     {
+      "Value": "SBSEG",
+      "Key": "SplunkBusinessUnit"
+     },
+     {
+      "Value": "E2E",
+      "Key": "SplunkEnvironment"
+     },
+     {
+      "Value": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::GetAtt": [
+           "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+           "Outputs.IpsMonppsppdsuw02drIpsMtxppsppdsuw02drsplunkmetricsLogGroupCommonRole3AFF8190Ref"
+          ]
+         },
+         ",",
+         {
+          "Fn::GetAtt": [
+           "IpsMtxNestedStackIpsMtxNestedStackResource6177C1FC",
+           "Outputs.IpsMonppsppdsuw02drIpsMtxppsppdsuw02drwavefrontmetricsLogGroupCommonRoleB96ED47DRef"
+          ]
+         },
+         ",/aws/rds/cluster/ppsp-pds-uw02dr/postgresql,/aws/rds/cluster/ppsp-pds-uw02dr/processed/postgresql"
+        ]
+       ]
+      },
+      "Key": "LogGroupNames"
+     },
+     {
+      "Value": "lambda_logs",
+      "Key": "Index"
+     }
+    ],
+    "ProductName": "chp-oil-cw-logs",
+    "ProvisioningArtifactName": "0.8.0"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/ppsp-pds-uw02dr-splunkSetup/Default"
+   }
+  },
+  "IpsWfNestedStackIpsWfNestedStackResource318F4C74": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "Parameters": {
+     "referencetoIpsMonppsppdsuw02drSsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter9657C029Ref": {
+      "Ref": "SsmParameterValueipsrelationalparametersuseast2ConfigBucketC96584B6F00A464EAD1953AFF4B05118Parameter"
+     }
+    },
+    "Tags": [
+     {
+      "Key": "intuit:asset_id",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "intuit:billing:appenv",
+      "Value": "ppd"
+     },
+     {
+      "Key": "intuit:billing:bu",
+      "Value": "SBSEG"
+     },
+     {
+      "Key": "intuit:billing:component",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:fp",
+      "Value": "PSP"
+     },
+     {
+      "Key": "intuit:billing:service_assetid",
+      "Value": "6847740825712235356"
+     },
+     {
+      "Key": "ipsauroracdk_ver",
+      "Value": "0.9.46"
+     },
+     {
+      "Key": "ipsauroramonitoring_ver",
+      "Value": "0.0.1.5"
+     },
+     {
+      "Key": "ipsauroratemplate_ver",
+      "Value": "null"
+     },
+     {
+      "Key": "nestedStack",
+      "Value": "wavefront"
+     },
+     {
+      "Key": "rdsClusterId",
+      "Value": "ppsp-pds-uw02dr"
+     },
+     {
+      "Key": "scope",
+      "Value": "monitoring"
+     }
+    ],
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.us-east-2.",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/cdk-hnb659fds-assets-152430470825-us-east-2/21e4a96a955211e09e5d84d34191a08eed525ab8dbf5768301e2bbb23c77573c.json"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/IpsWf-.NestedStack/IpsWf-.NestedStackResource",
+    "aws:asset:path": "IpsMonppsppdsuw02drIpsWfA8F8FC3F.nested.template.json",
+    "aws:asset:property": "TemplateURL"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/01QXU/DMAz8LXvPDNvED9iKhoR4qDreJzcNJWs+qjjZhKL+d5zAEE93sc927rawedrB4wpvtJbDtDa6h3yKKCfBpXMOA8EzRuyRVGMSRRUOTAXt4JDkpGJ9GT8S5ObDnVJPMug5au+O2rBavPnxJfg0C27/cSadisoV3cLLzkikIsG+gDBo+wEhH5OTRVFG//NWBauJ6qxGC7nzRpVGxdYbLb+qrrJFqCtf4g926VfGyFcdwbuftawWpPFpuGGUn5D3BoMtwkqWRXSKfAqyDrcY0KrirPitSZWVd0V1wOVRu1E0HJi3994iXvGKD1vOGzarC2m9DokjsAq6H/wG1HwfP44BAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "IpsMon-ppsp-pds-uw02dr/CDKMetadata/Default"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

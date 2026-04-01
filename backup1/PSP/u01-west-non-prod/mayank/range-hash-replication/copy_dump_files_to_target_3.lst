@@ -1,0 +1,23 @@
+06:13:06 SQL> set echo on
+06:13:06 SQL> set feed on
+06:13:06 SQL> set time on
+06:13:06 SQL> set timi on
+06:13:06 SQL> 
+06:13:06 SQL> BEGIN
+06:13:06   2  	FOR i IN 11..15 LOOP
+06:13:06   3  	  DBMS_FILE_TRANSFER.PUT_FILE(
+06:13:06   4  	    source_directory_object	  => 'DATA_PUMP_DIR',
+06:13:06   5  	    source_file_name		  => 'exp_pspadm_data_' || lpad(to_char(i), 2, '0') || '.dmp',
+06:13:06   6  	    destination_directory_object  => 'DATA_PUMP_DIR',
+06:13:06   7  	    destination_file_name	  => 'exp_pspadm_data_' || lpad(to_char(i), 2, '0') || '.dmp',
+06:13:06   8  	    destination_database	  => 'to_target'
+06:13:06   9  	  );
+06:13:06  10  	END LOOP;
+06:13:06  11  END;
+06:13:06  12  /
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:39:13.27
+06:52:19 SQL> 
+06:52:19 SQL> exit

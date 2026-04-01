@@ -1,0 +1,309 @@
+pspapg02=> \i c_info.sql
+You are connected to database "pspapg02" as user "postgres" on host "psp-prod-uw02.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com" (address "10.95.110.22") at port "5432".
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+       current_timestamp       
+-------------------------------
+ 2025-11-29 22:22:26.259426-08
+(1 row)
+
+pspapg02=> set search_path to pspadm;
+SET
+pspapg02=> \d+ pspadm.psp_paycheck_usage;
+                                                    Partitioned table "pspadm.psp_paycheck_usage"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_pchk_usg_mod_date" btree (modified_date)
+    "psp_paycheck_usage_fk1" btree (company_fk)
+    "psp_paycheck_usage_nu1" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1" btree (bill_fk)
+    "psp_paycheckusage_fk2" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[])) NOT VALID
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[])) NOT VALID
+Foreign-key constraints:
+    "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Partitions: psp_paycheck_usage_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            psp_paycheck_usage_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            psp_paycheck_usage_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            psp_paycheck_usage_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            psp_paycheck_usage_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            psp_paycheck_usage_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            psp_paycheck_usage_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            psp_paycheck_usage_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            psp_paycheck_usage_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            psp_paycheck_usage_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            psp_paycheck_usage_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_paycheck_usage_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_paycheck_usage_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_paycheck_usage_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_paycheck_usage_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage DETACH PARTITION pspadm.psp_paycheck_usage_2026;
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage ATTACH PARTITION pspadm.psp_paycheck_usage_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00');
+ALTER TABLE
+pspapg02=> CREATE TABLE pspadm.psp_paycheck_usage_2027 PARTITION OF pspadm.psp_paycheck_usage FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00');
+CREATE TABLE
+pspapg02=> CREATE TABLE pspadm.psp_paycheck_usage_2028 PARTITION OF pspadm.psp_paycheck_usage FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage_2027 ADD CONSTRAINT psp_paycheck_usage_2027_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER TABLE pspadm.psp_paycheck_usage_2028 ADD CONSTRAINT psp_paycheck_usage_2028_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_bill_fk_idx RENAME TO psp_paycheckusage_fk1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_company_fk_idx RENAME TO psp_paycheck_usage_fk1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_employee_usage_fk_idx RENAME TO psp_paycheckusage_fk2_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_employee_usage_fk_source_paycheck_i_idx RENAME TO psp_paycheck_usage_u1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_source_paycheck_id_idx RENAME TO psp_paycheck_usage_nu1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2027_modified_date_idx RENAME TO idx_pchk_usg_mod_date_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_bill_fk_idx RENAME TO psp_paycheckusage_fk1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_company_fk_idx RENAME TO psp_paycheck_usage_fk1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_employee_usage_fk_idx RENAME TO psp_paycheckusage_fk2_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_employee_usage_fk_source_paycheck_i_idx RENAME TO psp_paycheck_usage_u1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_source_paycheck_id_idx RENAME TO psp_paycheck_usage_nu1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.psp_paycheck_usage_2028_modified_date_idx RENAME TO idx_pchk_usg_mod_date_2028;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> alter index pspadm.psp_paycheckusage_fk1 attach partition pspadm.psp_paycheckusage_fk1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_fk1 attach partition pspadm.psp_paycheck_usage_fk1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheckusage_fk2 attach partition pspadm.psp_paycheckusage_fk2_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_u1 attach partition pspadm.psp_paycheck_usage_u1_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_nu1 attach partition pspadm.psp_paycheck_usage_nu1_2027;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.idx_pchk_usg_mod_date attach  partition pspadm.idx_pchk_usg_mod_date_2027;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheckusage_fk1 attach partition pspadm.psp_paycheckusage_fk1_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_fk1 attach partition pspadm.psp_paycheck_usage_fk1_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheckusage_fk2 attach partition pspadm.psp_paycheckusage_fk2_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_u1 attach partition pspadm.psp_paycheck_usage_u1_2028;
+ALTER INDEX
+pspapg02=> alter index pspadm.psp_paycheck_usage_nu1 attach partition pspadm.psp_paycheck_usage_nu1_2028;
+ALTER INDEX
+pspapg02=> ALTER INDEX pspadm.idx_pchk_usg_mod_date attach  partition pspadm.idx_pchk_usg_mod_date_2028;
+ALTER INDEX
+pspapg02=> \d+ pspadm.psp_paycheck_usage;
+                                                    Partitioned table "pspadm.psp_paycheck_usage"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition key: RANGE (created_date)
+Indexes:
+    "idx_pchk_usg_mod_date" btree (modified_date)
+    "psp_paycheck_usage_fk1" btree (company_fk)
+    "psp_paycheck_usage_nu1" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1" btree (bill_fk)
+    "psp_paycheckusage_fk2" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[])) NOT VALID
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[])) NOT VALID
+Foreign-key constraints:
+    "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Partitions: psp_paycheck_usage_2012 FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00'),
+            psp_paycheck_usage_2013 FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00'),
+            psp_paycheck_usage_2014 FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00'),
+            psp_paycheck_usage_2015 FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00'),
+            psp_paycheck_usage_2016 FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00'),
+            psp_paycheck_usage_2017 FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00'),
+            psp_paycheck_usage_2018 FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00'),
+            psp_paycheck_usage_2019 FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00'),
+            psp_paycheck_usage_2020 FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00'),
+            psp_paycheck_usage_2021 FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            psp_paycheck_usage_2022 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00'),
+            psp_paycheck_usage_2023 FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00'),
+            psp_paycheck_usage_2024 FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00'),
+            psp_paycheck_usage_2025 FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00'),
+            psp_paycheck_usage_2026 FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00'),
+            psp_paycheck_usage_2027 FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00'),
+            psp_paycheck_usage_2028 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+
+pspapg02=> \d+ pspadm.psp_paycheck_usage_2026;
+                                                        Table "pspadm.psp_paycheck_usage_2026"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_paycheck_usage FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2027-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2026-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2027-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_paycheck_usage_2026_pk" PRIMARY KEY, btree (paycheck_usage_seq, realm_id)
+    "idx_pchk_usg_mod_date_2026" btree (modified_date)
+    "psp_paycheck_usage_fk1_2026" btree (company_fk)
+    "psp_paycheck_usage_nu1_2026" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1_2026" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1_2026" btree (bill_fk)
+    "psp_paycheckusage_fk2_2026" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[])) NOT VALID
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[])) NOT VALID
+Foreign-key constraints:
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Publications:
+    "dbz_publication"
+Triggers:
+    "RI_ConstraintTrigger_c_91687570" AFTER INSERT ON psp_paycheck_usage_2026 FROM psp_company NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_ins"()
+    "RI_ConstraintTrigger_c_91687571" AFTER UPDATE ON psp_paycheck_usage_2026 FROM psp_company NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_upd"()
+    "RI_ConstraintTrigger_c_91687573" AFTER INSERT ON psp_paycheck_usage_2026 FROM psp_bill NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_ins"()
+    "RI_ConstraintTrigger_c_91687574" AFTER UPDATE ON psp_paycheck_usage_2026 FROM psp_bill NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_upd"()
+    "RI_ConstraintTrigger_c_91687576" AFTER INSERT ON psp_paycheck_usage_2026 FROM psp_employee_usage NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_ins"()
+    "RI_ConstraintTrigger_c_91687577" AFTER UPDATE ON psp_paycheck_usage_2026 FROM psp_employee_usage NOT DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION "RI_FKey_check_upd"()
+Replica Identity: FULL
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_paycheck_usage_2027;
+                                                        Table "pspadm.psp_paycheck_usage_2027"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_paycheck_usage FOR VALUES FROM ('2027-01-01 00:00:00') TO ('2028-01-01 00:00:00')
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2027-01-01 00:00:00'::timestamp(6) without time zone) AND (created_date < '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_paycheck_usage_2027_pk" PRIMARY KEY, btree (paycheck_usage_seq, realm_id)
+    "idx_pchk_usg_mod_date_2027" btree (modified_date)
+    "psp_paycheck_usage_fk1_2027" btree (company_fk)
+    "psp_paycheck_usage_nu1_2027" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1_2027" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1_2027" btree (bill_fk)
+    "psp_paycheckusage_fk2_2027" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[]))
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[]))
+Foreign-key constraints:
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Access method: heap
+
+pspapg02=> \d+ pspadm.psp_paycheck_usage_2028;
+                                                        Table "pspadm.psp_paycheck_usage_2028"
+         Column         |              Type              | Collation | Nullable |    Default    | Storage  | Compression | Stats target | Description 
+------------------------+--------------------------------+-----------+----------+---------------+----------+-------------+--------------+-------------
+ paycheck_usage_seq     | character varying(255)         |           | not null |               | extended |             |              | 
+ version                | integer                        |           |          |               | plain    |             |              | 
+ creator_id             | character varying(30)          |           |          |               | extended |             |              | 
+ created_date           | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ modifier_id            | character varying(30)          |           |          |               | extended |             |              | 
+ modified_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ realm_id               | smallint                       |           | not null | '-1'::integer | plain    |             |              | 
+ paycheck_date          | timestamp(6) without time zone |           |          |               | plain    |             |              | 
+ check_number           | character varying(11)          |           |          |               | extended |             |              | 
+ source_paycheck_id     | character varying(50)          |           |          |               | extended |             |              | 
+ transaction_id         | character varying(50)          |           |          |               | extended |             |              | 
+ paycheck_status_code   | character varying(255)         |           |          |               | extended |             |              | 
+ bill_fk                | character varying(255)         |           |          |               | extended |             |              | 
+ employee_usage_fk      | character varying(255)         |           |          |               | extended |             |              | 
+ reason_for_free_charge | character varying(255)         |           |          |               | extended |             |              | 
+ company_fk             | character varying(255)         |           |          |               | extended |             |              | 
+Partition of: psp_paycheck_usage FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE)
+Partition constraint: ((created_date IS NOT NULL) AND (created_date >= '2028-01-01 00:00:00'::timestamp(6) without time zone))
+Indexes:
+    "psp_paycheck_usage_2028_pk" PRIMARY KEY, btree (paycheck_usage_seq, realm_id)
+    "idx_pchk_usg_mod_date_2028" btree (modified_date)
+    "psp_paycheck_usage_fk1_2028" btree (company_fk)
+    "psp_paycheck_usage_nu1_2028" btree (source_paycheck_id)
+    "psp_paycheck_usage_u1_2028" btree (employee_usage_fk, source_paycheck_id)
+    "psp_paycheckusage_fk1_2028" btree (bill_fk)
+    "psp_paycheckusage_fk2_2028" btree (employee_usage_fk)
+Check constraints:
+    "c_psp_paycheck_usage0" CHECK (paycheck_status_code::text = ANY (ARRAY['Active'::character varying, 'Cancelled'::character varying, 'CancelledAfterBillClose'::character varying]::text[]))
+    "c_psp_paycheck_usage1" CHECK (reason_for_free_charge::text = ANY (ARRAY['NotPartOfUsageBilling'::character varying, 'AlreadyBilled'::character varying, 'UsageTransfer'::character varying, 'TrialUpgrade'::character varying, 'None'::character varying, 'Trial'::character varying, 'Upgrade'::character varying]::text[]))
+Foreign-key constraints:
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheck_usage_fk1" FOREIGN KEY (company_fk) REFERENCES psp_company(company_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk1" FOREIGN KEY (bill_fk) REFERENCES psp_bill(bill_seq)
+    TABLE "psp_paycheck_usage" CONSTRAINT "psp_paycheckusage_fk2" FOREIGN KEY (employee_usage_fk) REFERENCES psp_employee_usage(employee_usage_seq)
+Access method: heap
+
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)

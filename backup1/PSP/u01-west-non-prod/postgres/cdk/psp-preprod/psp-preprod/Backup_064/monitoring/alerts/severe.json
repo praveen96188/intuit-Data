@@ -1,0 +1,78 @@
+{
+  "wavefrontAlerts": [
+    {
+      "name" : "SEVERE: High CPU",
+      "severity" : "SEVERE",
+      "condition" : "ts(aws.rds.cpuutilization, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") > 85",
+      "display_expression" : "ts(aws.rds.cpuutilization, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##"
+      ]
+    },
+    {
+      "name" : "SEVERE: Large Amount of Active Connections",
+      "severity" : "SEVERE",
+      "condition" : "ts(custom.ips.aurora.active_connections, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") > 100",
+      "display_expression" : "ts(custom.ips.aurora.active_connections, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "SEVERE: Low Free Local Storage",
+      "severity" : "SEVERE",
+      "condition" : "100 - ts(custom.ips.aurora.em.instance_info.local_storage_used_perc, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") < 25",
+      "display_expression" : "100 - ts(custom.ips.aurora.em.instance_info.local_storage_used_perc, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "SEVERE: Low Freeable Memory",
+      "severity" : "SEVERE",
+      "condition" : "avg(ts(aws.rds.freeablememory, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")) / avg(ts(custom.ips.aurora.em.instance_info.total_memory, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\") * 1000) * 100 < 10 ",
+      "display_expression" : "100 - ts(custom.ips.aurora.em.instance_info.local_storage_used_perc, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "5",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    },
+    {
+      "name" : "SEVERE: FATAL or PANIC error triggered",
+      "severity" : "SEVERE",
+      "condition" : "mcount(1m, ts(custom.ips.aurora.log.errors, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\")) != 0",
+      "display_expression" : "mcount(1m, ts(custom.ips.aurora.log.errors, accountid=\"##ACCOUNT_ID##\" and dbclusteridentifier=\"##DB_CLUSTER_IDENTIFIER##\", dbinstanceidentifier))",
+      "target_id": "cdrFnTeIa7XkWv1P",
+      "minutes": "1",
+      "resolve_after_minutes": "5",
+      "notification_resend_frequency_minutes": "5",
+      "tags": [
+        "##ACCOUNT_ID##",
+        "##DB_CLUSTER_IDENTIFIER##",
+        "ips-rds"
+      ]
+    }
+  ]
+}

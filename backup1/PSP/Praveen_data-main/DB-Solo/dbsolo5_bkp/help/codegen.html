@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - J2EE Code Generator</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+	<body>
+		<p></p>
+		<center>
+			<img src="images/logo.jpg" alt="DB Solo" /></center>
+		<a href="DBSolo.html">Back to Index </a></p>
+		<hr align="left" />
+		<h2 class="pHeading1">J2EE Code Generator Tool</h2>
+		<p class="pBody">The J2EE&nbsp;code generator tool allows you to generate EJB 3.0 annotated pojos as well as code for a JDBC&nbsp;access layer from existing tables in your database. The tool will reverse-engineer your tables into Java classes saving potentially hundreds of hours of coding and testing time. The following output formats are currently supported:</p>
+		<ul class="pBody">
+			<li class="pBody"><b>POJO</b> - Plain Old Java Object class files.</li>
+			<li class="pBody"><b>POJO +&nbsp;EJB 3.0</b> - Pojo class files with EJB 3.0 annotations.</li>
+			<li class="pBody"><b>JDBC</b> - Complete JDBC access layer implementing CRUD functionality using the DAO&nbsp;pattern.</li>
+			<li class="pBody"><b>JUnit tests</b> - JUnit tests for EJB 3.0 annotated entities and the JDBC&nbsp;access layer.</li>
+		</ul>
+		<p class="pBody">You can invoke the code generator tool from the table list of a schema/database or from a schema/database list. In the first case the tool will include the tables you selected and in the latter case it will include all tables from the selected schema/database.</p>
+		<p class="pBody"><img src="images/codegen_invoke1.jpg" alt="" height="145" width="469" border="0"/></p>
+		<p class="pBody">Alternatively, you can invoke the tool from the object browser tree by right-clicking a schema or table.</p>
+		<p class="pBody"><img src="images/codegen_invoke2.jpg" alt="" height="104" width="352" border="0"/></p>
+		<p class="pBody"></p>
+		<h3 class="pHeading2">Pre-Requisites</h3>
+		<p class="pBody">The code generation feature is supported for all DBMSs products that DB Solo supports; Oracle, Sybase, DB2, Microsoft SQL Server, solidDB, PostgreSQL and MySQL. By the same token, it will work on all supported OS platforms: Windows, Redhat Linux and Mac OS X.<br/>
+		</p>
+		<p class="pBody">The following schema-level requirements must be met for this feature to work correctly:</p>
+		<ul class="pBody">
+			<li>Each generated table needs to have a primary key defined.</li>
+			<li>For relationships between entities to be generated, foreign key constraints need to be defined for your tables.</li>
+		</ul>
+		</p>
+		<h3 class="pHeading2">Saving and Loading your code generation settings</h3>
+		<p class="pBody">You can modify dozens of attributes that will affect how the code generation is performed. Instead of entering these values every time you use the tool, you can persist the settings into an xml project file by using buttons at the bottom of each screen. The settings file will contain all general settings as well as settings pertaining to individual objects.</p>
+		<p class="pBody"><img src="images/codegen_saving_settings.jpg" alt="" height="600" width="800" border="0"/></p>
+		<p class="pBody">Figure - Save/Load Settings Buttons.</p>
+		<h3 class="pHeading2">General Settings</h3>
+		<p class="pBody">The first screen of the code generator tool allows you to set general options and settings that apply to all selected tables.</p>
+		<p class="pBody"><b>Package</b></p>
+		<p class="pBody">Java package name that all generated classes will be in.</p>
+		<p class="pBody"><b>Output Directory</b></p>
+		<p class="pBody">Output directory for generated classes. Notice that actual class files will be in a sub-directory of this directory as determined by the package name specified above. Click on the open button to browse the file system.</p>
+		<p class="pBody"><b>Use Generics</b></p>
+		<p class="pBody">If this checkbox is checked, then the generated Java code will use Java 5 generics whenever applicable.</p>
+		<p class="pBody"><b>Entity Name Prefix</b></p>
+		<p class="pBody">If you enter a string in this field, then all class names will get prefixed by the entered string. For example, if you enter XO and the entity name would be Emp, the resulting entity name would become XOEmp.</p>
+		<p class="pBody"><b>Entity Name Postfix</b></p>
+		<p class="pBody">If you enter a string in this field, then all class names will get postfixed by the entered string. For example, if you enter 'Impl' and the entity name would be Emp, the resulting entity name would become EmpImpl.</p>
+		<p class="pBody"><b>Implements Interface</b></p>
+		<p class="pBody">If you enter a name of an interface in this field, all generated classes will be declared to implement the interface in question. You can override this setting for individual classes on the next page.</p>
+		<p class="pBody"><b>Extends Class</b></p>
+		<p class="pBody">If you enter a class name in this field, all generated classes will be declared to extend the class you entered. You can override this setting for individual classes on the next page.</p>
+		<p class="pBody"><b>Field Scope</b></p>
+		<p class="pBody">All fields of the generated classes will be declared using the selected scope; public, protected, private or pacakge protected.</p>
+		<p class="pBody"><b>Getter/Setter Scope</b></p>
+		<p class="pBody">All getter/setter methods of the generated classes will be declared using the selected scope; public, protected, private or pacakge protected.</p>
+		<p class="pBody"><b>Generate toString()</b></p>
+		<p class="pBody">If this checkbox is selected, then all generated classes will have a toString()&nbsp;method defined. You can override this setting for individual classes on the next page.</p>
+		<p class="pBody"><b>Generate equals() and hashCode()</b></p>
+		<p class="pBody">If this checkbox is selected, then all generated classes will have equals() and hashCode() methods defined. You can override this setting for individual classes on the next page.</p>
+		<p class="pBody"><b>Output Format</b></p>
+		<p class="pBody">This is the most important setting of the page, since it will determine what kind of files will be generated by DB&nbsp;Solo.</p>
+		<ul class="pBody">
+			<li><b>POJOs</b> - Plain old Java object (POJO) will be generated for each selected table.</li>
+			<li><b>POJOs with EJB3 annotations</b> - Plain old Java object (POJO) will be generated for each selected table. In addition, the class will contain Java 5 annotations compatible with EJB-3 (JSR-220) and Hibernate specifications.</li>
+			<li class="pBody"><b>JUnit tests</b> - Hibernate SessionManager-based JUnit test will be created for each generated entity. The test class will derive from the standard JUnit TestCase and contain test methods for CRUD operations. Also, a utility class named HibernateUtil will be created. The utility class contains methods for generating random test data as well as methods related to Hibernate configuration and database access.</li>
+			<li><b>JDBC layer and DAOs</b> - This option will create a DAO&nbsp;(data access object) interface,and a JDBC implementation for each selected table. JUnit-based tests can be generated to test the implementation classes. Also, a DAOFactory class will be created allowing callers to conveniently retrieve implementations of the generated DAOs.</li>
+		</ul>
+		</p>
+		<p class="pBody"><img src="images/codegen_settings.jpg" alt="" height="600" width="800" border="0"/></p>
+		<h3 class="pHeading2">JDBC Code Generation Settings</h3>
+		<p class="pBody">When the JDBC-output option is selected, you can modify the related settings by clicking on the 'Settings' button that is enabled. This will bring up the dialog shown below.</p>
+		<p class="pBody"><img src="images/codegen_jdbc_settings.jpg" alt="" height="322" width="556" border="0"/></p>
+		<p class="pBody">The dialog allows you to change the following attributes affecting the JDBC code generator output:</p>
+		<p></p>
+		<ul class="pBody">
+			<li><b>Do not include password in generated code</b> - If this option is checked, the generated JUnit code does not include the password to the DB Server.</li>
+			<li><b>Generate JUnit tests</b> - If this option is checked, the code generator will create JUnit-based test classes for each DAO that was generated. The JUnit tests will test the CRUD-functionality of the DAOs as well as correct behavior of the generated finder methods.</li>
+			<li><b>Generate DAO Factory class</b> - If this option is checked, the code generator will create a DAOFactory class that provides a method to retrieve the DAO interfaces.</li>
+			<li><b>Package for JUnit test classes</b> - By default all class files will be in the main package of the project as defined on first settings page. By specifying a value in this field you can have the JUnit tests in a separate package.</li>
+			<li><b>Package for DAO interfaces and DAO Factory</b> - If a value is specified in this field, all the DAO interfaces and the generated abstract DAOFactory class will be in this package.</li>
+			<li><b>Package for DAO and DAO Factory implementation</b> - If a value is specified in this field, the JDBC implementations for the DAO interfaces will be in this package.</li>
+		</ul>
+		</p>
+		<h3 class="pHeading2">Java Pretty-Printer Settings</h3>
+		<p class="pBody">All generated Java-files will be processed by a code beautifier. The Java Format tab of the first screen allows you to configure the formatting options. Below is a list of currently supported formatting options.</p>
+		<ul class="pBody">
+			<li><b>Indent</b> - Number of spaces used for indentation.</li>
+			<li><b>Use TAB character</b> - Whether to use the TAB character or spaces for indentation.</li>
+			<li><b>Line Wrap</b> - Are long lines wrapped or not.</li>
+			<li><b>Line Size</b> - If line wrapping is enabled, line size will determine the maximum length of a line before it gets wrapped.</li>
+			<li><b>Newline before left brace</b> - If this option is selected, all left curly braces are preceded by a newline character .</li>
+			<li><b>Newline before right brace</b> - If this option is selected, all right curly braces are preceded by a newline character .</li>
+			<li><b>Number of spaces before left brace</b> - Number of spaces that will be inserted before left braces.</li>
+			<li><b>Number of spaces before right brace</b> - Number of spaces that will be inserted before right braces.</li>
+		</ul>
+		<p class="pBody"><img src="images/codegen_java_format.jpg" alt="" height="600" width="800" border="0"/></p>
+		<h3 class="pHeading2">Embedded Objects</h3>
+		<p class="pHeading2">Embedded objects, or components, are Java objects that do not have their own identity, but can be embedded inside entities. Embedded objects can be shared between different entities, but instances of these embedded objects are never shared. To be able to embed a component in an entity, one must first be created on the first screen of the code generator, under the 'Components' tab.</p>
+		<p class="pHeading2"><img src="images/codegen_components.jpg" alt="" height="423" width="625" border="0"/></p>
+		<p class="pHeading2">To create an embedded object, click on the Add-button on the left hand side and change the default name of the component. Next you need to add attributes to the new component using the Add-button in the Attributes-section. For each attribute, you can change the name and the Java type of the component field. After creating all necessary components and their attributes, you can embed them in your entities using the 'Embedded Components' tab on the second page of the J2EE code generator. To embed your newly created component into an entity, select the entity, go under the 'Embedded Components' tab and click on 'Embed'. This will bring up a dialog which will allow you to select the component you wish to embed.</p>
+		<p class="pHeading2"><img src="images/codegen_embedded_components.jpg" alt="" height="511" width="761" border="0"/></p>
+		<p class="pHeading2">After selecting the component to embed, you must map its fields to the columns of the selected table. This is done by clicking on the appropriate 'Mapped Column' cell in the 'Embedded Component Details' area. Notice that primary key or foreign key columns of the table cannot be mapped to the component fields. Using the example above where a component named Address is embedded inside a table named employee2, the following code will be generated (only relevant portions are shown) when EJB 3.0 Pojo output-option is selected.</p>
+		<pre><font color="#7b1414"><b>public class Employee2 implements java.io.Serializable</b></font></pre>
+		<pre><font color="#7b1414"><b>{</b></font></pre>
+		<pre><font color="#7b1414"><b>   private Address address;</b></font></pre>
+		<pre><font color="#7b1414"><b>
+   @AttributeOverrides({@AttributeOverride(name = &quot;street&quot;, column = @Column(name = &quot;street_col&quot;, unique = false, nullable = true, insertable = true, updatable = true))</b></font></pre>
+		<pre><font color="#7b1414"><b>      , @AttributeOverride(name = &quot;city&quot;, column = @Column(name = &quot;city_col&quot;, unique = false, nullable = true, insertable = true, updatable = true))</b></font></pre>
+		<pre><font color="#7b1414"><b>      , @AttributeOverride(name = &quot;state&quot;, column = @Column(name = &quot;state_col&quot;, unique = false, nullable = true, insertable = true, updatable = true))</b></font></pre>
+		<pre><font color="#7b1414"><b>      , @AttributeOverride(name = &quot;zip&quot;, column = @Column(name = &quot;zip_col&quot;, unique = false, nullable = true, insertable = true, updatable = true))</b></font></pre>
+		<pre><font color="#7b1414"><b>   })</b></font></pre>
+		<pre><font color="#7b1414"><b>   public Address getAddress() { return this.address;}</b></font></pre>
+		<pre><font color="#7b1414"><b>   public void setAddress(Address address) { this.address = address;}</b></font></pre>
+		<p><font color="#7b1414"><b>}<br/>
+							</b></font><font size="-1" color="#7b1414"><b>
+				</b></font><font size="-1">
+				 </font></p>
+		<p>Notice that code was also generated for the Address object itself. To differentiate embedded objects from other Java objects, they are marked with the @Embeddable annotation.</p>
+		<p></p>
+
+</font></pre>
+		<h3 class="pHeading2">Object Level Settings</h3>
+		<p class="pBody">The second screen of the code generator wizard allows you to set options at individual object level. The tree control on the left hand side allows you to select which tables/columns to generate code for. Simply uncheck the checkbox next to a table/column to remove the object from the code generation process. Unchecking a table will automatically uncheck all the columns below it. The right-hand side of the screen varies based on the selection in the tree control. If a table is selected in the tree, then the right-hand side will show class-level settings for that particular table/class. If a column is selected, then the right-hand side will show property-level settings for the selected column/property.</p>
+		<p class="pBody">The buttons below the tree control let you expand/collapse all items in the tree control.</p>
+		<h3 class="pHeading2">Table/Class Level Settings</h3>
+		<p class="pBody">If a table is selected in the tree conrol, the right-hand side will show table/class level settings corresponding to your selection. The first tab 'General' of this screen contrains general information about how the resulting Java class will look like.</p>
+		<p class="pBody"><b>Entity Name</b></p>
+		<p class="pBody">This field allows you to override the default entity (class) name that DB&nbsp;Solo generated based on the table name.</p>
+		<p class="pBody"><b>Implements Inteface</b></p>
+		<p class="pBody">If you enter an interface in this field, the generated class will be declared to implement the interface. Naturally, you have to provide methods, if any, that are specified in the interface.</p>
+		<p class="pBody"><b>Extends Class</b></p>
+		<p class="pBody">If you enter a class name in this field, the class generated from the selected table will extend the entered class.</p>
+		<p class="pBody"><b>Version Column</b></p>
+		<p class="pBody">If your table has an identifier column to be used with optimistic locking, you can specify it here. See Hibernate documentation for more information about optimistic locking.</p>
+		<p class="pBody"><b>Identifier Generation Method</b></p>
+		<p class="pBody">This setting allows you to specify how values are generated for the unique identifier column (primary key) for this table. Possible values are:</p>
+		<ul class="pBody">
+			<li><b>Assigned by code</b> - Your Java code will generate values for identifiers</li>
+			<li><b>Sequence</b> - Identifier values will be populated by sequence values</li>
+			<li><b>Identity column</b> - The primary key column is an identity column</li>
+		</ul>
+		</p>
+		<p class="pBody"><b>Sequence Name</b></p>
+		<p class="pBody">If your identifier generation strategy is defined to use a sequence, you can specify the sequence name in this field.</p>
+		<p class="pBody"><img src="images/codegen_columns.jpg" alt="" height="600" width="800" border="0"/></p>
+		<h3 class="pHeading2">One-to-Many Foreign Key Settings</h3>
+		<p class="pBody">The relationships between tables, and therefore between generated classes, are based on foreign-key constraints. Currently all foreign key relationships will be generated either as one-to-many or one-to-one relationships in the output files. Many-to-many relationships are also supported by utilizing mapping tables, see the chapter below. This chapter talks about many-to-one relationships and the following one talks about one-to-one relationships. The code generator will automatically detect if a relationship is either one-to-one or many-to-one. To determine that, a simple rule is followed: if the table containing the foreign-key also has a unique (or primary key) constraint over the same columns that constitue the foreign key, then the relationship is one-to-one, otherwise it is many-to-one.</p>
+		<p class="pBody">The table that has the foreign key constraint is the 'many' side and the table the foreign key constraint points to is considered the 'one' side. This means that the many-to-one side is the 'owning' side of the relationship. The characteristics of the generated mappings can be tweaked under the 'Foreign Keys' tab when a table is selected in the tree control.<br/>
+		</p>
+		<p class="pBody">The upper part of the screen contains all foreign key constraints that the selected table has, if any. The bottom part of the same screen lists details of the selected foreign key constraint.</p>
+		<p class="pBody">We're going to use an example where we have two tables, Emp and Dept where Emp has a foreign key reference to Dept. The default settings will result in following relationships to be created when 'POJOs with EJB3 annotations' output option is selected (only relevant code shown):</p>
+		<pre>
+<font color="#7b1414"><b>public class Dept 
+{
+    private Set emps;
+
+    @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.LAZY, mappedBy=&quot;dept&quot;)
+    public Set getEmps() {
+        return this.emps;
+    }
+    public void setEmps(Set emps) {
+        this.emps = emps;
+    } 
+}
+
+public class Emp 
+{
+    private Dept dept;
+    
+    @ManyToOne(cascade={},fetch=FetchType.LAZY)
+    @JoinColumn(name=&quot;DEPT_ID&quot;, unique=false, nullable=true, insertable=true, updatable=true)
+    public Dept getDept() {
+        return this.dept;
+    }
+    public void setDept(Dept dept) {
+        this.dept = dept;
+    } 
+}</b></font><font size="-1" color="#7b1414">
+</font></pre>
+		<p class="pBody"><b>Generate code for one to many side</b></p>
+		<p class="pBody">If this checkbox in unchecked, the one-to-many side property will not be generated at all. Using our example, the 'emps' property will not be generated at all:</p>
+		<pre>
+<b><font color="#7b1414">public class Dept 
+{
+}
+</font></b></pre>
+		<p class="pBody"><b>Lazy</b></p>
+		<p class="pBody">If this checkbox is checked, the property in question will be lazy-fetched, see Hibernate or EJB 3.0 documentation for more details on lazy-fetching. If the checkbox is unchecked, the property will be eagerly-fetched:</p>
+		<pre><b>
+<font color="#7b1414">public class Dept 
+{
+    private Set emps;
+
+    @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy=&quot;dept&quot;)
+    public Set getEmps() {
+        return this.emps;
+    }
+    public void setEmps(Set emps) {
+        this.emps = emps;
+    } 
+}</font></b>
+</pre>
+		<p class="pBody"><b>Colletion Property Name</b></p>
+		<p class="pBody">You can change the automatically generated property name by typing in a new name in this field. Using our example, if you entered 'employees' in the entry field, the following code would be generated:</p>
+		<pre>		
+<font color="#7b1414"><b>public class Dept 
+{
+    private Set employees;
+
+    @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy=&quot;dept&quot;)
+    public Set getEmployees() {
+        return this.employees;
+    }
+    public void setEmployees(Set employees) {
+        this.employees = employees;
+    } 
+}
+</b></font></pre>
+		<p class="pBody"><b>Collection Type</b></p>
+		<p class="pBody">You can change the collection type that will hold the child objects. By default the collection type is Set, but also List can be used. Using our example, changing this to 'List' would produce the following code:</p>
+		<pre><font color="#7b1414">		
+</font><b><font color="#7b1414">public class Dept 
+{
+    private List employees;
+
+    @OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy=&quot;dept&quot;)
+    public List getEmployees() {
+        return this.employees;
+    }
+    public void setEmployees(List employees) {
+        this.employees = employees;
+    } 
+}</font>
+</b></pre>
+		<p class="pBody"><b>Generate code for many to one side</b></p>
+		<p class="pBody">If this checkbox is unchecked, the many-to-one side will not have code for this relationship. Using our example, our Emp class would not have the 'dept' member variable at all:</p>
+		<pre>
+<font color="#7b1414"><b>public class Emp 
+{
+}
+</b></font></pre>
+		<p class="pBody"><b>Lazy</b></p>
+		<p class="pBody">If this checkbox is checked, the property in question will be lazy-fetched, otherwise eagerly-fetched. See the example above.</p>
+		<p class="pBody"><b>Parent Reference Name</b></p>
+		<p class="pBody">Name of the property that points to the parent object. Using our example, if you changed the name to 'department', the following code would be generated:</p>
+		<pre>
+<b><font color="#7b1414">public class Emp 
+{
+    private Dept department;
+    
+    @ManyToOne(cascade={},fetch=FetchType.LAZY)
+    @JoinColumn(name=&quot;DEPT_ID&quot;, unique=false, nullable=true, insertable=true, updatable=true)
+    public Dept getDepartment() {
+        return this.department;
+    }
+    public void setDepartment(Dept department) {
+        this.department = department;
+    } 
+}</font>
+</b></pre>
+		<p class="pBody"><img src="images/codegen_fk.jpg" alt="" height="493" width="787" border="0"/></p>
+		<p class="pBody">Figure - One-to-Many Foreign Key Settings</p>
+		<h3 class="pHeading2">One-to-One Foreign Key Settings</h3>
+		<p class="pHeading2">If the table that has the foreign key constraint also has a unique constraint whose columns match the foreign key columns, the relationship will be mapped as a one-to-one relationship. The DB&nbsp;Solo code generator can automatically detect when to use one-to-one or one-to-many mappings. Currently all one-to-one relationships are mapped as bidirectional relationships. Using an example where a table named 'heart' has a foreign key constraint (column body_id) to a table named 'body' and where the 'heart' table also has a unique constraint on the foreign-key column, the following EJB 3.0 annotated code would be generated:</p>
+		<pre><font color="#7b1414"><b>public class Body implements java.io.Serializable</b></font></pre>
+		<pre><font color="#7b1414"><b>{</b></font></pre>
+		<pre><font color="#7b1414"><b>private Heart heart;</b></font></pre>
+		<pre><font color="#7b1414"><b>@OneToOne(mappedBy = &quot;body&quot;)</b></font></pre>
+		<pre><font color="#7b1414"><b>public Heart getHeart() { return this.heart; }</b></font></pre>
+		<pre><font color="#7b1414"><b>public void setHeart(Heart heart){ this.heart = heart; }</b></font></pre>
+		<pre><font color="#7b1414"><b>}</b></font></pre>
+		<pre><font color="#7b1414"><b>public class Heart implements java.io.Serializable</b></font></pre>
+		<pre><font color="#7b1414"><b>{</b></font></pre>
+		<pre><font color="#7b1414"><b>private Body body;</b></font></pre>
+		<pre><font color="#7b1414"><b>@OneToOne</b></font></pre>
+		<pre><font color="#7b1414"><b>@JoinColumn(name = &quot;body_id&quot;, unique = false, nullable = true, insertable = true, updatable = true)</b></font></pre>
+		<pre><font color="#7b1414"><b>public Body getBody() { return this.body;}</b></font></pre>
+		<pre><font color="#7b1414"><b>public void setBody(Body body){this.body = body; }</b></font></pre>
+		<pre><font color="#7b1414"><b>}</b></font></pre>
+		<h3 class="pHeading2">One-to-One With Shared Primary Key Values</h3>
+		<p class="pHeading2">If the table containing the foreign key constraint has a primary key whose columns match with the foreign key columns, the primary key values of the related entities are guaranteed to match. Using the example above, the code for 'Body' would be identical, but instead of the @JoinColumn annotation, the 'Heart' class would use the @PrimaryKeyJoinColumn annotation as follows:</p>
+		<pre><font color="#7b1414"><b>public class Heart implements java.io.Serializable</b></font></pre>
+		<pre><font color="#7b1414"><b>{</b></font></pre>
+		<pre><font color="#7b1414"><b>private Body body;</b></font></pre>
+		<pre><font color="#7b1414"><b>@OneToOne</b></font></pre>
+		<pre><font color="#7b1414"><b>@PrimaryKeyoinColumn</b></font></pre>
+		<pre><font color="#7b1414"><b>public Body getBody() { return this.body;}</b></font></pre>
+		<pre><font color="#7b1414"><b>public void setBody(Body body){this.body = body; }</b></font></pre>
+		<pre><font color="#7b1414"><b>}</b></font></pre>
+		<p class="pHeading2">Notice that the @PrimaryKeyJoinColumn does not need the column names to be specified.</p>
+
+		<h3 class="pHeading2">Many-to-Many Relationships</h3>
+		<p>Many-to-many relationships are supported by using mapping tables. A mapping table is a table with exactly two foreign-key constraints pointing to the tables that share the many-to-many relationship. In addition, the mapping table needs to have a primary key that covers the foreign key constraints' columns. Consider the schema below where a project can have multiple workers and workers can be assigned to multiple projects at the same time. In this example, project_worker is the mapping table.</p>
+		 
+<pre><b><font color="#7b1414">CREATE TABLE project (project_id BIGINT NOT NULL PRIMARY KEY,
+                      start_date DATETIME NOT NULL,
+                      name       VARCHAR(50) NOT NULL);	
+                      
+CREATE TABLE worker (worker_id  BIGINT NOT NULL PRIMARY KEY,
+                     first_name VARCHAR(50) NOT NULL,
+                     last_name  VARCHAR(50) NOT NULL);                      	
+                     
+CREATE TABLE project_worker (fk_project_id BIGINT NOT NULL, fk_worker_id  BIGINT NOT NULL);
+
+ALTER TABLE project_worker ADD CONSTRAINT project_worker_fk1 FOREIGN KEY (fk_project_id) REFERENCES project (project_id);
+ALTER TABLE project_worker ADD CONSTRAINT project_worker_fk2 FOREIGN KEY (fk_worker_id) REFERENCES worker (worker_id);
+ALTER TABLE project_worker ADD CONSTRAINT project_worker_pk1 PRIMARY KEY (fk_project_id, fk_worker_id);
+</font></b>		
+</pre>
+		<p>To create a many to many relationship between the project and worker classes, you need to mark the project_worker table as a 'many-to-many mapping table'. This can be done by checking the appropriate checkbox in the 'General' screen. Notice that this button can only be selected for tables that contain two foreign keys and a primary key whose columns span the foreign key columns.</p>
+		<p><img src="images/codegen_many2many_selection.jpg" alt="" height="509" width="705" border="0"/></p>
+		<p>After selecting the many-to-many option, the foreign key panel of the same table will show the foreign key types as 'many-to-many' as depicted in the screen shot below. The foreign key screen lets you change the name and collection type of the properties that the generated Project and Worker classes will have.</p>
+		<p><img src="images/codegen_many2many_foreignkeys.jpg" alt="" height="508" width="705" border="0"/></p>
+		<p>Once the mapping table has been set up correctly, the code generator will output the following code, including the @ManyToMany relationship on both sides.</p>
+		<pre><font color="#7b1414"><b>public class Project</b></font></pre>
+		<pre><font color="#7b1414"><b>{</b></font></pre>
+		<pre><font color="#7b1414"><b>  private Set&lt;Worker&gt; workers;</b></font></pre>
+		<pre><font color="#7b1414"><b>  @ManyToMany </b></font></pre>
+		<pre><font color="#7b1414"><b>  @JoinTable(name = &quot;project_worker&quot;, 
+             joinColumns = { @JoinColumn(name = &quot;fk_project_id&quot;, referencedColumnName = &quot;project_id&quot;) },
+</b></font></pre>
+		<pre><font color="#7b1414"><b>             inverseJoinColumns = { @JoinColumn(name = &quot;fk_worker_id&quot;, referencedColumnName = &quot;worker_id&quot;) } )
+</b></font></pre>
+		<pre>
+<font color="#7b1414"><b>  public Set&lt;Worker&gt; getWorkers() { return this.workers; }
+</b></font></pre>
+		<pre><font color="#7b1414"><b>  public void setWorkers(Set&lt;Worker&gt; workers) { this.workers = workers; }</b></font></pre>
+		<pre>}
+
+			<pre><font color="#7b1414"><b>
+public class Worker
+{
+  private Set&lt;Project&gt; projects;
+  
+  @ManyToMany(mappedBy = "workers")
+  public Set&lt;Project> getProjects() { return this.projects;}
+  public void setProjects(Set&lt;Project> projects) { this.projects = projects; }
+}
+</b></font></pre>
+			<font color="#7b1414"><b>
+</b></font><font size="-1" color="#7b1414"><b>
+</b></font></b></pre>
+		<h3 class="pHeading2">Column/Property Level Settings</h3>
+		<p class="pBody">When you select a column in the tree control, the right-hand side shows a screen that allows you to specify the code generator will treat the selected column. Naturally, if the column is unchecked in the tree conrol, these settings will not be applicable.</p>
+		<p class="pBody"><b>Java Type</b></p>
+		<p class="pBody">The Java type for the property corresponding to the selected column. Notice that you must select Java types that make sense in the context of your column type. Currently the org.dom4j.Element type is only supported for Oracle XMLType data type, i.e. it cannot be used with SQL&nbsp;Server 2005 or DB2 native XML column data type.</p>
+		<p class="pBody"><b>Included in toString()</b></p>
+		<p class="pBody">Is this column included in the toString() method of the generated class.</p>
+		<p class="pBody"><b>Include in equals()&nbsp;and hashCode()</b></p>
+		<p class="pBody">Is this column included in the equals() and hashCode() methods of the generated class.</p>
+		<p class="pBody"><img src="images/codegen_column.jpg" alt="" height="600" width="800" border="0"/></p>
+		<p class="pBody">Figure - Column level settings</p>
+		
+		
+		<h3 class="pHeading2">Inheritance</h3>
+		<p class="pBody">The inheritance tab allows you to assign the inheritance strategy for generated classes and specify how inheritance is represented in the database. Code generator supports two different EJB 3.0 inheritance types, single-table inheritance and joined inheritance. Please refer to the EJB 3.0 / JSR-220 documentation for detailed explanation of the various inheritance types.</p>
+		<p class="pBody">Notice that the inheritance settings cannot be used with JDBC&nbsp;code generation.</p>
+		<h3 class="pHeading2">Joined Inheritance Type</h3>
+		<p class="pBody">Joined inheritance means that one table is mapped to a base class and N other tables contain the derived classes so that a derived class row has the same primary key value as the base class row in the base class table. The derived table usually has a foreign key to the primary key of the base class table, but the code generator does not require it. Only the base class should be set to 'Joined' inheritance type as shown below with the 'animal' table. The inheritance type of derived classes should be left untouched, i.e. they should be 'None'.</p>
+		<p class="pBody">The base class table must have a discriminator column specified that contains a value that will determine the exact type of the persisted object. If the base class is abstract, you cannot specify a discriminator value for it, but if it is not abstract, you must specify a discriminator value for it.</p>
+		<p class="pBody">The derived classes section of the panel allows you to add derived classes to the class hierarchy. Notice that you must specify at least one derived class.</p>
+		<p class="pBody"><img src="images/codegen_inheritance_joined.jpg" alt="" height="433" width="669" border="0"/></p>
+		<p class="pBody"></p>
+		<p class="pBody">To add a new derived class click on the 'Add' button of the derived classes section. This will bring up the dialog presented below where you must enter a discriminator value that identifies the instances of the derived classes and also pick a table that contains the data for the derived class.</p>
+		<p class="pBody"><img src="images/codegen_inheritance_joined_derived.jpg" alt="" height="240" width="380" border="0"/></p>
+		<p class="pBody">The sample code below (only relevant portions shown) is for base class called Animal and a derived class named Cat, the tables are 'dog' and 'cat' as depicted in the above examples.</p>
+		<pre><font color="#7b1414"><b>@Entity
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@Inheritance(strategy = InheritanceType.JOINED)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@DiscriminatorColumn(name = &quot;type&quot;)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@DiscriminatorValue(&quot;99&quot;)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@Table(name = &quot;animal&quot;, schema = &quot;hibernate&quot;, catalog = &quot;hibernate&quot;)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>public class Animal
+</b></font></pre>
+		<pre><font color="#7b1414"><b>{
+</b></font></pre>
+		<pre><font color="#7b1414"><b>  private int animalId;
+</b></font></pre>
+		<pre><font color="#7b1414"><b>  private int type;
+</b></font></pre>
+		<pre><font color="#7b1414"><b>  private String name;
+</b></font></pre>
+		<pre><font color="#7b1414"><b>}
+
+
+@Entity
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@DiscriminatorValue(&quot;2&quot;)			</b></font></pre>
+		<pre><font color="#7b1414"><b>@Table(name = &quot;cat&quot;, schema = &quot;hibernate&quot;, catalog = &quot;hibernate&quot;)			</b></font></pre>
+		<pre><font color="#7b1414"><b>@PrimaryKeyJoinColumn(name = &quot;cat_id&quot;)			</b></font></pre>
+		<pre><font color="#7b1414"><b>public class Cat extends Animal			</b></font></pre>
+		<pre><font color="#7b1414"><b>{			</b></font></pre>
+		<pre><font color="#7b1414"><b>  private boolean stripes;			</b></font></pre>
+		<pre><font color="#7b1414"><b>  private CatOwner catOwner;			</b></font></pre>
+		<pre><font color="#7b1414"><b>}
+</b></font><font size="-1">
+</font></pre>
+		<p class="pBody"></p>
+		<h3 class="pHeading2">Single Table Inheritance</h3>
+		<p class="pBody">In the single table inheritance model, as the name suggests, one table contains the data for both the base class and all derived classes. For each class, base or derived, you must pick the columns that the class will contain.</p>
+		<p class="pBody">Just like the Joined strategy, Single Table model requires a discriminator column and a discriminator value for the base class if it is not abstract.</p>
+		<p class="pBody"><img src="images/codegen_inheritance_single.jpg" alt="" height="481" width="715" border="0"/></p>
+		<p class="pBody"></p>
+		<p class="pBody">Since one table contains all fields of the base class and derived classes, you must first select columns that will be mapped to the base class. By clicking on the 'Edit' button, you can bring up the base class column selection dialog shown below. Notice that the base class will automatically contain the primary key and discriminator columns, therefore they are not shown on the list of available columns.</p>
+		<p class="pBody"><img src="images/codegen_inheritance_single_base.jpg" alt="" height="340" width="510" border="0"/></p>
+		<p class="pBody">To add derived classes to the class hierarchy, click on the 'Add' button in the 'Derived Classes' section of the screen. This will bring up a dialog presented below where you must enter a name for the new derived class, its discriminator value as well as the columns that will be mapped to it. Notice that you must pick at least one column for each derived class.</p>
+		<p class="pBody"><img src="images/codegen_inheritance_single_derived.jpg" alt="" height="340" width="530" border="0"/></p>
+		<p class="pBody"></p>
+		<p class="pBody">The sample code below (only relevant portions shown) is for base class called SingleTableInheritance and a derived class named Type1, both entities contained in the single_table_inheritance table shown in the screen shots above.</p>
+		<p class="pBody"></p>
+		<pre><font color="#7b1414"><b>@Entity
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@DiscriminatorColumn(name = &quot;type&quot;)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@DiscriminatorValue(&quot;99&quot;)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>@Table(name = &quot;single_table_inheritance&quot;, schema = &quot;hibernate&quot;, catalog = &quot;hibernate&quot;)
+</b></font></pre>
+		<pre><font color="#7b1414"><b>public class SingleTableInheritance
+</b></font></pre>
+		<pre><font color="#7b1414"><b>{
+</b></font></pre>
+		<pre><font color="#7b1414"><b>  private int id;
+</b></font></pre>
+		<pre><font color="#7b1414"><b>  private String common1;</b></font></pre>
+		<pre><font color="#7b1414"><b>}
+
+
+@Entity			</b></font></pre>
+		<pre><font color="#7b1414"><b>@DiscriminatorValue(&quot;1&quot;)			</b></font></pre>
+		<pre><font color="#7b1414"><b>public class Type1 extends SingleTableInheritance			</b></font></pre>
+		<pre><font color="#7b1414"><b>{			</b></font></pre>
+		<pre><font color="#7b1414"><b>  private String t1_col1;</pre>
+}
+</b></font>
+		
+		
+			<h3 class="pHeading2">Oracle XMLType</h3>
+		    <p class="pBody">Support for Oracle XMLType data type is provided in both EJB3 annotated classes and the JDBC access layer code. The generated code in both cases uses Oracle-specific classes such as OracleResultSet, OraclePreparedStatement and oracle.sql.OPAQUE.
+		    XMLType columns can be mapped to either Strings or org.dom4j.Elemenet types on the Java side. Trying to map XMLType columns to any other data type will fail. Notice that when EJB3 generation is used with XMLType columns, the
+		    generated code is Hibernate-specific, i.e. it's not generic EJB3 anymore and will not work outside Hibernate. The annotations for an XMLType column will look as follows:
+</p>
+			<p><b><font color="#7b1414">@Column(name = &quot;XMLCOL&quot;, updatable = true, nullable = true, insertable = true)</font></b></p>
+			<p><b><font color="#7b1414">  @Type(type = &quot;com.mycompany.HibernateOracleXML2Dom4jElement&quot;)</font></b></p>
+		<p><b><font color="#7b1414">public Element getXMLValue() </font></b><b><font color="#7b1414"> {     return this.XMLValue;   }<br/>
+				</font></b><b><font color="#7b1414">  public void setXMLValue(Element XMLValue)   {     this.XMLValue = XMLValue;   } 
+</font></b></p>
+		<p>In this example the <b><font color="#7b1414">HibernateOracleXML2Dom4jElement </font></b>class is generated by DB&nbsp;Solo and will implement the Hibernate UserType interface which is the standard way of providing custom mappings in Hibernate.</p>
+		<h3 class="pHeading2">Output</h3>
+		<p class="pBody">The last page of the code generator tool will show a list of files that were produced. The upper part of the screen has a list of Java or xml files that the tool produced. The bottom of the screen will show the contents of the selected file. </p>
+			<p class="pBody">Although the files are saved on your hard-drive you have two additional buttons on the screen that allow you to copy the selected file to system clipboard or to save it to a different file. </p>
+
+			<h3 class="pHeading2"> <img src="images/codegen_results.jpg" alt="" height="600" width="800" border="0"/> </h3>
+
+			<p class="pBody"> Figure - Output panel </p>
+		
+				<hr/>
+				<table border="0" cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td align="left"><a href="DBSolo.html">Back to Index </a></td>
+						<td align="right"><span style="font-size: 16px ; font-weight: bold">DB Solo<br />
+								
+						 </span><span style="font-size: 10px"><a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+								
+						 <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+								
+						 </span></td>
+						
+			</tr>
+					
+		
+				</table>
+				
+		</body>
+
+</html>

@@ -1,0 +1,46 @@
+
+Postgres: Metadata Views and 
+
+General database info is stored in pg_database and statistics are stored in pg_stat_database.
+
+select * from pg_database where datname='sysibobdb';
+
+
+
+
+--check size of the database
+SELECT pg_size_pretty( pg_database_size('sysibobdb'));
+
+SELECT SUM (bytes) / 1024 / 1024 / 1024 AS GB FROM dba_data_files;
+
+select 'ALTER TABLE '||substr(c.table_name,1,35)|| 
+' DISABLE CONSTRAINT '||constraint_name||' ;' 
+from dba_constraints c  where owner='PSPADM_DS1';
+--where c.table_name = 'TABLE_NAME' ;
+
+
+CREATE USER myuser IDENTIFIED BY password
+DEFAULT TABLESPACE users
+TEMPORARY TABLESPACE temp
+QUOTA UNLIMITED ON users
+QUOTA 100M ON my_data;
+
+
+set lines 300 head off echo off feedback off
+spool disable_constraints.sql
+select 'ALTER TABLE '||substr(c.table_name,1,35)|| ' DISABLE CONSTRAINT '||constraint_name||' ;'  from dba_constraints c  where owner='PSPADM_DS1' order by table_name;
+spool off
+set echo on feed on
+@trunc_ibobadm_apg_tab
+
+
+
+1.create new Aurora Postgres Database.
+2.AWS SCT 
+3.create replication instance in AWS DMS.
+4.create END points in AWS DMS
+5.create replication task in AWS DMS
+6.start full load migration from source to target.
+
+
+

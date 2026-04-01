@@ -1,0 +1,15 @@
+alter user psp_payroll_dm with nologin;
+alter user psp_payroll_dm_ue2 with nologin;
+alter user psp_veza_admin_usr with nologin;
+alter user pspadm_owner with nologin;
+alter user pspadm_readonly_role with nologin;
+alter user pspadm_readwrite_role with nologin;
+alter user pspapp with nologin;
+alter user pspapp_ue2 with nologin;
+alter user pspbatch_ro_user_ue2  with nologin;
+alter user pspbatch_rw_user_ue2  with nologin;
+alter user pspqsfinadmin with nologin;
+alter user pspread with nologin;
+alter user pspread_ue2 with nologin;
+alter user psprjf with nologin;
+alter user psprjf_ue2 with nologin;
