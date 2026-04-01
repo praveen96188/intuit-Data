@@ -1,0 +1,267 @@
+23:32:34 SQL> set serveroutput on
+23:32:34 SQL> 
+23:32:34 SQL> VARIABLE owner VARCHAR2(30);
+23:32:34 SQL> VARIABLE job_name VARCHAR2(30);
+23:32:34 SQL> 
+23:32:34 SQL> set term off
+23:32:34 SQL> BEGIN
+23:32:34   2  	 :owner := upper('&&1');
+23:32:34   3  	 :job_name := upper('&&2');
+23:32:34   4  	 IF INSTR(:owner,'.') > 0 THEN
+23:32:34   5  	  :job_name := SUBSTR(:owner, INSTR(:owner,'.') + 1 ) ;
+23:32:34   6  	     :owner    := SUBSTR(:owner, 1 , INSTR(:owner,'.') - 1 ) ;
+23:32:34   7  	 END IF;
+23:32:34   8  END;
+23:32:34   9  /
+old   2:    :owner := upper('&&1');
+new   2:    :owner := upper('INTUADMIN.IMPORT_DATA');
+Enter value for 2: exit
+old   3:    :job_name := upper('&&2');
+new   3:    :job_name := upper('exit');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+23:32:34 SQL> set term on
+23:32:34 SQL> 
+23:32:34 SQL> DECLARE
+23:32:34   2  	ind NUMBER;		 -- Loop index
+23:32:34   3  	h1 NUMBER;		 -- Data Pump job handle
+23:32:34   4  	percent_done NUMBER;	 -- Percentage of job complete
+23:32:34   5  	job_state VARCHAR2(30);  -- To keep track of job state
+23:32:34   6  	sts ku$_Status; 	 -- The status object returned by get_status
+23:32:34   7  	wip ku$_LogEntry;	  -- WIP
+23:32:34   8  	jd  ku$_JobDesc;	  -- Job Description
+23:32:34   9  	js  ku$_JobStatus;	  -- The job status from get_status
+23:32:34  10  	wsl ku$_WorkerStatusList; -- Worker status
+23:32:34  11  	error ku$_LogEntry;
+23:32:34  12  
+23:32:34  13  	max_completed_objects_length   NUMBER;
+23:32:34  14  	max_completed_rows_length      NUMBER;
+23:32:34  15  	max_completed_bytes_length	NUMBER;
+23:32:34  16  
+23:32:34  17  	col_pad_len  NUMBER	 := 50;
+23:32:34  18  BEGIN
+23:32:34  19  	    h1 := DBMS_DATAPUMP.attach(job_name  => :job_name
+23:32:34  20  				 ,  job_owner => CASE :owner WHEN '' THEN USER ELSE :owner END
+23:32:34  21  	       );
+23:32:34  22  
+23:32:34  23  	    /* Fetch Datapump Job Status */
+23:32:34  24  	    dbms_datapump.get_status( handle	=> h1
+23:32:34  25  				    , mask	=>   dbms_datapump.ku$_status_wip
+23:32:34  26  						   + dbms_datapump.ku$_status_job_desc
+23:32:34  27  						   + dbms_datapump.ku$_status_job_status
+23:32:34  28  						   + dbms_datapump.ku$_status_job_error
+23:32:34  29  				    , timeout	=> 0
+23:32:34  30  				    , job_state => job_state
+23:32:34  31  				    , status	=> sts);
+23:32:34  32  
+23:32:34  33  	    wip := sts.wip;
+23:32:34  34  	    jd	:= sts.job_description;
+23:32:34  35  	    js	:= sts.job_status;
+23:32:34  36  	    wsl := js.worker_status_list;
+23:32:34  37  	    error := sts.error;
+23:32:34  38  
+23:32:34  39  
+23:32:34  40  	   dbms_output.put_line(' ' );
+23:32:34  41  	   dbms_output.put_line('------------------------------------------' );
+23:32:34  42  	   dbms_output.put_line('Datapump Job Details' );
+23:32:34  43  	   dbms_output.put_line('------------------------------------------' );
+23:32:34  44  	   dbms_output.put_line(RPAD('Job Owner     : ' || jd.owner,col_pad_len)	|| RPAD('Remote Link	 : ' || jd.remote_link,col_pad_len)	 );
+23:32:34  45  	   dbms_output.put_line(RPAD('Job Name	    : ' || jd.job_name,col_pad_len)	|| RPAD('Exp Start Time  : ' || TO_CHAR(jd.exp_start_time,'DD-Mon-YY hh24:mi:ss'),col_pad_len)	);
+23:32:34  46  	   dbms_output.put_line(RPAD('Operation     : ' || jd.operation,col_pad_len)	|| RPAD('Exp Global Name : ' || jd.exp_global_name,col_pad_len)  );
+23:32:34  47  	   dbms_output.put_line(RPAD('Job Mode	    : ' || jd.job_mode,col_pad_len)	|| RPAD('Exp Platform	 : ' || jd.exp_platform,col_pad_len)	 );
+23:32:34  48  	   dbms_output.put_line(RPAD('Max Degree    : ' || jd.max_degree,col_pad_len)	|| RPAD('Exp DB Version  : ' || jd.exp_db_version,col_pad_len)	 );
+23:32:34  49  	   dbms_output.put_line(RPAD('Instance	    : ' || jd.instance,col_pad_len)	|| RPAD('Creator Privs	 : ' || jd.creator_privs,col_pad_len)	 );
+23:32:34  50  	   dbms_output.put_line(RPAD('Global Name   : ' || jd.global_name,col_pad_len)	|| RPAD('SCN		 : ' || jd.scn,col_pad_len)		 );
+23:32:34  51  	   dbms_output.put_line(RPAD('Platform	    : ' || jd.platform,col_pad_len)	);
+23:32:34  52  	   dbms_output.put_line(RPAD('DB Version    : ' || jd.db_version,col_pad_len)	);
+23:32:34  53  	   dbms_output.put_line(RPAD('Job StartTime : ' || TO_CHAR(jd.start_time,'DD-Mon-YY hh24:mi:ss'),col_pad_len)	 );
+23:32:34  54  	   dbms_output.put_line(RPAD('Duration	    : ' ||    CASE WHEN FLOOR(sysdate - jd.start_time) > 0 THEN  FLOOR(sysdate - jd.start_time) || 'd ' ELSE '' END
+23:32:34  55  							   || FLOOR(MOD((sysdate - jd.start_time) , 1) * 24 ) || 'h '
+23:32:34  56  							   || FLOOR(MOD((sysdate - jd.start_time)  * 24 , 1) * 60 )  || 'm '
+23:32:34  57  							   || FLOOR(MOD((sysdate - jd.start_time)  * 24 * 60 , 1) * 60 )  || 's '
+23:32:34  58  							   ,col_pad_len)    );
+23:32:34  59  	   dbms_output.put_line(RPAD('Termin Reason : ' || jd.term_reason,col_pad_len) );
+23:32:34  60  	   dbms_output.put_line('Logfile       : ' || jd.log_file );
+23:32:34  61  	   dbms_output.put_line('SQL File      : ' || jd.sql_file   );
+23:32:34  62  
+23:32:34  63  	   ind := jd.params.first;
+23:32:34  64  	   while ind is not null
+23:32:34  65  	   loop
+23:32:34  66  	       dbms_output.put_line('Parameter ' || ind || '   :'
+23:32:34  67  						 || ' Op - ' || jd.params(ind).param_op
+23:32:34  68  						 || ', ' || RPAD(jd.params(ind).param_name,25)
+23:32:34  69  						 || ' = ' || NVL(jd.params(ind).param_value_t ,jd.params(ind).param_value_n)
+23:32:34  70  				    );
+23:32:34  71  	       ind := jd.params.next(ind);
+23:32:34  72  	   end loop;
+23:32:34  73  
+23:32:34  74  	   dbms_output.put_line('------------------------------------------' );
+23:32:34  75  	   dbms_output.put_line('Datapump Job Status' );
+23:32:34  76  	   dbms_output.put_line('------------------------------------------' );
+23:32:34  77  	   dbms_output.put_line(RPAD('State	    : ' || js.state,col_pad_len )  || RPAD('Total Bytes     : ' || to_char(js.total_bytes,'999,999,999,999,999'),col_pad_len )	    );
+23:32:34  78  	   dbms_output.put_line(RPAD('Degree	    : ' || js.degree,col_pad_len ) || RPAD('Bytes Processed : ' || to_char(js.bytes_processed,'999,999,999,999,999'),col_pad_len )  );
+23:32:34  79  	   dbms_output.put_line(RPAD('% Done	    : ' || js.percent_done || ' %   <----- *****',col_pad_len )  || RPAD('Restart Count   : ' || js.restart_count,col_pad_len ) );
+23:32:34  80  	   dbms_output.put_line(RPAD('Phase	    : ' || js.phase,col_pad_len ) || RPAD('Error Count	   : ' || js.error_count,col_pad_len ));
+23:32:34  81  
+23:32:34  82  	   ind := js.files.first;
+23:32:34  83  	   dbms_output.put_line('DumpFiles     : ' || SUBSTR(js.files(ind).file_name,1,CASE INSTR(js.files(ind).file_name,'/',-1)
+23:32:34  84  											 WHEN 0 THEN INSTR(js.files(ind).file_name,'\',-1) - 1
+23:32:34  85  											 ELSE INSTR(js.files(ind).file_name,'/',-1) -1
+23:32:34  86  											 END
+23:32:34  87  							      )
+23:32:34  88  				);
+23:32:34  89  	   while ind is not null
+23:32:34  90  	   loop
+23:32:34  91  	       IF jd.operation = 'EXPORT' THEN
+23:32:34  92  		  dbms_output.put_line('.	      : '
+23:32:34  93  				  || SUBSTR(js.files(ind).file_name,INSTR(js.files(ind).file_name,'/',-1)+1)
+23:32:34  94  				  || ' ( Size - ' || LPAD(to_char(ROUND(js.files(ind).file_bytes_written/1024/1024),'999,999,999'),13) || ' MB )'
+23:32:34  95  				  );
+23:32:34  96  	       END IF;
+23:32:34  97  	       IF jd.operation = 'IMPORT' THEN
+23:32:34  98  		  -- Odd file number
+23:32:34  99  		  IF MOD(ind,3) = 1 THEN
+23:32:34 100  		      dbms_output.put('.	     : ' || SUBSTR(js.files(ind).file_name,INSTR(js.files(ind).file_name,'/',-1)+1) );
+23:32:34 101  		  END IF;
+23:32:34 102  		  IF MOD(ind,3) = 2 THEN
+23:32:34 103  		      dbms_output.put(',    '  || SUBSTR(js.files(ind).file_name,INSTR(js.files(ind).file_name,'/',-1)+1)   );
+23:32:34 104  		  END IF;
+23:32:34 105  		  IF MOD(ind,3) = 0 THEN
+23:32:34 106  		      dbms_output.put_line(',	 '  ||SUBSTR(js.files(ind).file_name,INSTR(js.files(ind).file_name,'/',-1)+1)	);
+23:32:34 107  		  END IF;
+23:32:34 108  	       END IF;
+23:32:34 109  	       ind := js.files.next(ind);
+23:32:34 110  	   end loop;
+23:32:34 111  
+23:32:34 112  	   dbms_output.put_line(' ');
+23:32:34 113  	   dbms_output.put_line('------------------------------------------' );
+23:32:34 114  	   dbms_output.put_line('Datapump Worker Status' );
+23:32:34 115  	   dbms_output.put_line('------------------------------------------' );
+23:32:34 116  
+23:32:34 117  	   max_completed_objects_length := 1;
+23:32:34 118  	   max_completed_rows_length := 1;
+23:32:34 119  	   max_completed_bytes_length := 1;
+23:32:34 120  	   ind := wsl.first;
+23:32:34 121  	   while ind is not null
+23:32:34 122  	   loop
+23:32:34 123  	      IF  LENGTH(wsl(ind).completed_objects) > max_completed_objects_length THEN
+23:32:34 124  		  max_completed_objects_length := LENGTH(wsl(ind).completed_objects);
+23:32:34 125  	      END IF;
+23:32:34 126  	      IF  LENGTH(ROUND(wsl(ind).completed_rows/1000)) > max_completed_rows_length THEN
+23:32:34 127  		  max_completed_rows_length := LENGTH(ROUND(wsl(ind).completed_rows/1000));
+23:32:34 128  	      END IF;
+23:32:34 129  	      IF  LENGTH(ROUND(wsl(ind).completed_bytes/1024/1024)) > max_completed_bytes_length THEN
+23:32:34 130  		  max_completed_bytes_length := LENGTH(ROUND(wsl(ind).completed_bytes/1024/1024));
+23:32:34 131  	      END IF;
+23:32:34 132  	      ind := wsl.next(ind);
+23:32:34 133  	   end loop;
+23:32:34 134  
+23:32:34 135  	   ind := wsl.first;
+23:32:34 136  	   while ind is not null
+23:32:34 137  	   loop
+23:32:34 138  
+23:32:34 139  	   /*
+23:32:34 140  	   percent_done := 0;
+23:32:34 141  	       BEGIN
+23:32:34 142  		   SELECT *
+23:32:34 143  		   into percent_done
+23:32:34 144  		   FROM (select ROUND(NVL(l.sofar / l.totalwork,0) *100,   2) pct_done
+23:32:34 145  		    from dba_datapump_sessions d
+23:32:34 146  			 LEFT OUTER JOIN gv$session s ON s.inst_id = d.inst_id	AND s.saddr   = d.saddr
+23:32:34 147  			 LEFT OUTER JOIN gv$process p ON s.inst_id = p.inst_id	AND s.paddr   = p.addr
+23:32:34 148  			 LEFT OUTER JOIN gv$session_longops l ON l.inst_id = s.inst_id	 AND l.sid  = s.sid
+23:32:34 149  		   WHERE d.owner_name = jd.owner
+23:32:34 150  		      AND d.job_name = jd.job_name
+23:32:34 151  		      AND d.session_type = 'WORKER'
+23:32:34 152  		      AND s.program like '%' || TRIM(wsl(ind).process_name) || '%'
+23:32:34 153  		     ORDER BY l.start_Time desc)
+23:32:34 154  		   WHERE ROWNUM=1
+23:32:34 155  		   ;
+23:32:34 156  	       EXCEPTION
+23:32:34 157  		   WHEN Others THEN
+23:32:34 158  		      NULL;
+23:32:34 159  	       END;
+23:32:34 160  	     */
+23:32:34 161  	       dbms_output.put_line('Worker ' || LPAD(wsl(ind).worker_number,2) || ' :'
+23:32:34 162  					      || ' '   || wsl(ind).process_name -- || '(Inst:' || wsl(ind).instance_id || ')'
+23:32:34 163  					      || ' , ' || LPAD(wsl(ind).percent_done,2) || '% Done'
+23:32:34 164  					      --|| ' ,' || LPAD(percent_done,6) || '% Done'
+23:32:34 165  					      || ' , Deg '  || wsl(ind).degree
+23:32:34 166  					      || ' , '	|| RPAD(wsl(ind).state,9)
+23:32:34 167  					      || ' , Completed Objects '  || LPAD(wsl(ind).completed_objects,max_completed_objects_length) || '/' ||  TRIM(wsl(ind).total_objects)
+23:32:34 168  					      || ' , '	|| LPAD(TRIM(to_char(wsl(ind).completed_rows/1000,'999999999')) , max_completed_rows_length) || ' K rows'
+23:32:34 169  					      || ' , Size ' || LPAD(TRIM(to_char(wsl(ind).completed_bytes/1024/1024,'99999999')), max_completed_bytes_length) || ' MB'
+23:32:34 170  					      || ' , ' || wsl(ind).schema || '.' || wsl(ind).name
+23:32:34 171  					      || CASE WHEN wsl(ind).partition IS NULL THEN '' ELSE '(' || wsl(ind).partition || ')' END
+23:32:34 172  					      || ' , ' || wsl(ind).object_type
+23:32:34 173  	       );
+23:32:34 174  	       ind := wsl.next(ind);
+23:32:34 175  	   end loop;
+23:32:34 176  	   DBMS_DATAPUMP.detach(h1);
+23:32:34 177  end;
+23:32:34 178  /
+------------------------------------------                                      
+Datapump Job Details                                                            
+------------------------------------------                                      
+Job Owner     : INTUADMIN                         Remote Link     :             
+Job Name      : IMPORT_DATA                       Exp Start Time  : 16-Mar-23   
+20:35:32                                                                        
+Operation     : IMPORT                            Exp Global Name : PSPSYS01    
+Job Mode      : SCHEMA                            Exp Platform    : Linux x86   
+64-bit                                                                          
+Max Degree    : 4                                 Exp DB Version  : 19.3.0.0.0  
+Instance      : PSPSYS01                          Creator Privs   : TRUE        
+Global Name   : PSPSYS01                          SCN             :             
+8376592487155                                                                   
+Platform      : Linux x86 64-bit                                                
+DB Version    : 19.3.0.0.0                                                      
+Job StartTime : 16-Mar-23 23:32:34                                              
+Duration      : 0h 0m 0s                                                        
+Termin Reason : 0                                                               
+Logfile       : /rdsdbdata/datapump/imp_pspadm_data.log                         
+SQL File      :                                                                 
+Parameter 1   : Op - EXPORT, CLIENT_COMMAND            =                        
+userid=intuadmin/********@pspsys01 dumpfile=DATA_PUMP_DIR:exp_pspadm_data_%U.dmp
+parallel=4 schemas=PSPADM filesize=100G content=data_only                       
+logfile=DATA_PUMP_DIR:exp_pspadm_data.log                                       
+Parameter 2   : Op - EXPORT, INCLUDE_METADATA          = 0                      
+------------------------------------------                                      
+Datapump Job Status                                                             
+------------------------------------------                                      
+State         : IDLING                            Total Bytes     :             
+132,365,919,236                                                                 
+Degree        : 4                                 Bytes Processed :             
+1,520,439,856                                                                   
+% Done        : -2 %   <----- *****               Restart Count   : 1           
+Phase         : 5                                 Error Count     : 0           
+DumpFiles     : /rdsdbdata/datapump                                             
+.             : exp_pspadm_data_%u.dmp,    exp_pspadm_data_01.dmp,              
+exp_pspadm_data_02.dmp                                                          
+.             : exp_pspadm_data_03.dmp,    exp_pspadm_data_04.dmp,              
+exp_pspadm_data_05.dmp                                                          
+------------------------------------------                                      
+Datapump Worker Status                                                          
+------------------------------------------                                      
+Worker  1 : DW00 ,  0% Done , Deg 0 , UNDEFINED , Completed Objects  0/0 ,    0 
+K rows , Size    0 MB , . ,                                                     
+Worker  2 : DW01 , 10% Done , Deg 1 , UNDEFINED , Completed Objects  7/0 , 1508 
+K rows , Size 2919 MB , PSPADM.PSP_COMPANY_EVENT_EMAIL_PARAM ,                  
+SCHEMA_EXPORT/TABLE/TABLE_DATA                                                  
+Worker  3 : DW02 ,  0% Done , Deg 0 , UNDEFINED , Completed Objects  0/0 ,    0 
+K rows , Size    0 MB , . ,                                                     
+Worker  4 : DW03 , 80% Done , Deg 1 , UNDEFINED , Completed Objects 24/0 , 2735 
+K rows , Size  747 MB , PSPADM.PSP_TAX , SCHEMA_EXPORT/TABLE/TABLE_DATA         
+Worker  5 : DW01 , 10% Done , Deg 1 , UNDEFINED , Completed Objects  1/0 , 1508 
+K rows , Size 2919 MB , PSPADM.PSP_COMPANY_EVENT_EMAIL_PARAM ,                  
+SCHEMA_EXPORT/TABLE/TABLE_DATA                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.67
+23:32:35 SQL> 
+23:32:35 SQL> UNDEFINE 1
+23:32:35 SQL> UNDEFINE 2
+23:32:35 SQL> 
+23:32:35 SQL> spool off

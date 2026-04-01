@@ -1,0 +1,1110 @@
+set search_path to ibobadm;
+SET
+--alter table ibobadm.psp_source_system_transmission detach partition psp_source_system_transmission_9999;
+--alter table ibobadm.psp_source_system_transmission attach partition psp_source_system_transmission_9999 FOR VALUES FROM ('2028-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-01-01 00:00:00') TO ('2026-02-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m012026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m012026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_as400 ADD CONSTRAINT sys_c008544_m012026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_cris ADD CONSTRAINT sys_c008544_m012026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_dflt ADD CONSTRAINT sys_c008544_m012026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_ews ADD CONSTRAINT sys_c008544_m012026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_null ADD CONSTRAINT sys_c008544_m012026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_psp ADD CONSTRAINT sys_c008544_m012026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m012026_from_qbdt ADD CONSTRAINT sys_c008544_m012026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-02-01 00:00:00') TO ('2026-03-01 00:00:00')
+    PARTITION BY LIST (from_source_system);  
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m022026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m022026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_as400 ADD CONSTRAINT sys_c008544_m022026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_cris ADD CONSTRAINT sys_c008544_m022026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_dflt ADD CONSTRAINT sys_c008544_m022026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_ews ADD CONSTRAINT sys_c008544_m022026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_null ADD CONSTRAINT sys_c008544_m022026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_psp ADD CONSTRAINT sys_c008544_m022026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m022026_from_qbdt ADD CONSTRAINT sys_c008544_m022026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+  
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-03-01 00:00:00') TO ('2026-04-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m032026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m032026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_as400 ADD CONSTRAINT sys_c008544_m032026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_cris ADD CONSTRAINT sys_c008544_m032026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_dflt ADD CONSTRAINT sys_c008544_m032026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_ews ADD CONSTRAINT sys_c008544_m032026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_null ADD CONSTRAINT sys_c008544_m032026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_psp ADD CONSTRAINT sys_c008544_m032026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m032026_from_qbdt ADD CONSTRAINT sys_c008544_m032026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+    
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-04-01 00:00:00') TO ('2026-05-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m042026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m042026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_as400 ADD CONSTRAINT sys_c008544_m042026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_cris ADD CONSTRAINT sys_c008544_m042026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_dflt ADD CONSTRAINT sys_c008544_m042026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_ews ADD CONSTRAINT sys_c008544_m042026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_null ADD CONSTRAINT sys_c008544_m042026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_psp ADD CONSTRAINT sys_c008544_m042026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m042026_from_qbdt ADD CONSTRAINT sys_c008544_m042026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-05-01 00:00:00') TO ('2026-06-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m052026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m052026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_as400 ADD CONSTRAINT sys_c008544_m052026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_cris ADD CONSTRAINT sys_c008544_m052026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_dflt ADD CONSTRAINT sys_c008544_m052026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_ews ADD CONSTRAINT sys_c008544_m052026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_null ADD CONSTRAINT sys_c008544_m052026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_psp ADD CONSTRAINT sys_c008544_m052026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m052026_from_qbdt ADD CONSTRAINT sys_c008544_m052026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-06-01 00:00:00') TO ('2026-07-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m062026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m062026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_as400 ADD CONSTRAINT sys_c008544_m062026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_cris ADD CONSTRAINT sys_c008544_m062026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_dflt ADD CONSTRAINT sys_c008544_m062026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_ews ADD CONSTRAINT sys_c008544_m062026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_null ADD CONSTRAINT sys_c008544_m062026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_psp ADD CONSTRAINT sys_c008544_m062026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m062026_from_qbdt ADD CONSTRAINT sys_c008544_m062026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-07-01 00:00:00') TO ('2026-08-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m072026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m072026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_as400 ADD CONSTRAINT sys_c008544_m072026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_cris ADD CONSTRAINT sys_c008544_m072026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_dflt ADD CONSTRAINT sys_c008544_m072026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_ews ADD CONSTRAINT sys_c008544_m072026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_null ADD CONSTRAINT sys_c008544_m072026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_psp ADD CONSTRAINT sys_c008544_m072026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m072026_from_qbdt ADD CONSTRAINT sys_c008544_m072026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-08-01 00:00:00') TO ('2026-09-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m082026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m082026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_as400 ADD CONSTRAINT sys_c008544_m082026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_cris ADD CONSTRAINT sys_c008544_m082026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_dflt ADD CONSTRAINT sys_c008544_m082026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_ews ADD CONSTRAINT sys_c008544_m082026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_null ADD CONSTRAINT sys_c008544_m082026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_psp ADD CONSTRAINT sys_c008544_m082026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m082026_from_qbdt ADD CONSTRAINT sys_c008544_m082026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-09-01 00:00:00') TO ('2026-10-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m092026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m092026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_as400 ADD CONSTRAINT sys_c008544_m092026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_cris ADD CONSTRAINT sys_c008544_m092026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_dflt ADD CONSTRAINT sys_c008544_m092026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_ews ADD CONSTRAINT sys_c008544_m092026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_null ADD CONSTRAINT sys_c008544_m092026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_psp ADD CONSTRAINT sys_c008544_m092026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m092026_from_qbdt ADD CONSTRAINT sys_c008544_m092026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-10-01 00:00:00') TO ('2026-11-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m102026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m102026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_as400 ADD CONSTRAINT sys_c008544_m102026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_cris ADD CONSTRAINT sys_c008544_m102026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_dflt ADD CONSTRAINT sys_c008544_m102026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_ews ADD CONSTRAINT sys_c008544_m102026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_null ADD CONSTRAINT sys_c008544_m102026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_psp ADD CONSTRAINT sys_c008544_m102026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m102026_from_qbdt ADD CONSTRAINT sys_c008544_m102026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-11-01 00:00:00') TO ('2026-12-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m112026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m112026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_as400 ADD CONSTRAINT sys_c008544_m112026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_cris ADD CONSTRAINT sys_c008544_m112026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_dflt ADD CONSTRAINT sys_c008544_m112026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_ews ADD CONSTRAINT sys_c008544_m112026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_null ADD CONSTRAINT sys_c008544_m112026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_psp ADD CONSTRAINT sys_c008544_m112026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m112026_from_qbdt ADD CONSTRAINT sys_c008544_m112026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026
+        PARTITION OF ibobadm.psp_source_system_transmission
+        FOR VALUES FROM ('2026-12-01 00:00:00') TO ('2027-01-01 00:00:00')
+    PARTITION BY LIST (from_source_system);
+CREATE TABLE
+--subpartitions
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_as400
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        FOR VALUES IN ('AS400');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_cris
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        FOR VALUES IN ('CRIS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_dflt
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        DEFAULT;
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_ews
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        FOR VALUES IN ('EWS');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_null
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        FOR VALUES IN (NULL);
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_psp
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        FOR VALUES IN ('PSP');
+CREATE TABLE
+CREATE TABLE ibobadm.psp_source_system_transmission_m122026_from_qbdt
+        PARTITION OF ibobadm.psp_source_system_transmission_m122026
+        FOR VALUES IN ('QBDT');
+CREATE TABLE
+--check constraints
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM0 CHECK (FROM_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM1 CHECK (TYPE IN('QueryEntitlement', 'ActivateFeature', 'QueryAccount', 'AuthenticatePIN', 'SetFeatureStatus', 'QueryPayrollStatus', 'CreateAccount', 'UpdateAccount', 'MigrateAccount', 'ValidateBankAccount', 'CreatePIN', 'ChangePIN', 'Sync', 'PayrollSubmission', 'ZeroPayroll', 'UpdateBankAccount', 'EntitlementExtensionUpdate', 'AgreementUpdate', 'AccountUpdate', 'ContactUpdate', 'Unknown', 'CUEVENT', 'CUINFOMOD', 'EntitlementExtensionNew', 'PayrollStatusQuery', 'ResetPIN', 'WS401KSubmitEmployees', 'WS401KSubmitPayroll', 'WSBillPaySendPaymentsToPayees', 'WSBillPayVoidPayments', 'WSBillPayQueryPaymentStatus', 'WS401KUpdateCompany', 'BalanceFile', 'AddService', 'ValidateSubscription', 'UpdateBillingDetails', 'EntitlementUnitActivation', 'EntitlementUnitDeactivation', 'EntitlementCancel', 'TaxExemptionLookup', 'TaxExemptionUpdate', 'MigrateEntitlement', 'UsageSync', 'UsageSend', 'QueryCustomerAsset', 'DeactivateService')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_as400 ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_cris ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_dflt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_ews ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_null ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_psp ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_qbdt ADD CONSTRAINT C_PSP_SOURCE_SYSTEM_TRANSM2 CHECK (TO_SOURCE_SYSTEM IN('ADE', 'CRIS', 'PSP', 'EWS', 'QBOE', 'QBDT', 'AS400', 'GEMINI', 'IOP', 'ERS', 'AMO')) NOT VALID;
+ALTER TABLE
+--PK
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_as400 ADD CONSTRAINT sys_c008544_m122026_from_as400 PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_cris ADD CONSTRAINT sys_c008544_m122026_from_cris PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_dflt ADD CONSTRAINT sys_c008544_m122026_from_dflt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_ews ADD CONSTRAINT sys_c008544_m122026_from_ews PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_null ADD CONSTRAINT sys_c008544_m122026_from_null PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_psp ADD CONSTRAINT sys_c008544_m122026_from_psp PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE
+ALTER TABLE ibobadm.psp_source_system_transmission_m122026_from_qbdt ADD CONSTRAINT sys_c008544_m122026_from_qbdt PRIMARY KEY (source_system_transmission_seq, realm_id);
+ALTER TABLE

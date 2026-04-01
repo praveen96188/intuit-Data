@@ -1,0 +1,232 @@
+import psycopg2
+from psycopg2 import OperationalError
+import sys
+import argparse
+from datetime import timedelta
+
+# Function to connect to the database
+def connect_to_db(host, dbname, user, password):
+    try:
+        connection = psycopg2.connect(
+            host=host,
+            database=dbname,
+            user=user,
+            password=password,
+            port=5432  # default PostgreSQL port
+        )
+        print("Successfully connected to the database.")
+        return connection
+    except OperationalError as e:
+        print("Error: Unable to connect to the database: {}".format(e))
+        sys.exit(1)
+
+# Function to read SQL query from a file
+def read_sql_from_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            sql = file.read()
+        return sql
+    except Exception as e:
+        print("Error reading SQL from file: {}".format(e))
+        sys.exit(1)
+
+# Function to execute the SQL query
+def execute_query(connection, sql_query):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(sql_query)
+        result = cursor.fetchall()
+        return result
+    except Exception as e:
+        print("Error executing query: {}".format(e))
+        sys.exit(1)
+    finally:
+        cursor.close()
+
+# Function to check active connections
+def check_active_connections(connection):
+    print("\n--- Active Connections ---")
+    sql_query = read_sql_from_file("check_active_connections.sql")  # SQL file for active connections
+    active_connections = execute_query(connection, sql_query)
+    for row in active_connections:
+        print("Connection state: {}, Count: {}".format(row[0], row[1]))
+
+# Function to check long-running queries
+def check_long_running_queries(connection):
+    print("\n--- Long-Running Queries ---")
+    sql_query = read_sql_from_file("check_long_running_queries.sql")  # SQL file for long-running queries
+    long_queries = execute_query(connection, sql_query)
+    if long_queries:
+        for query in long_queries:
+            print("PID: {}, Duration: {}, Query: {}".format(query[0], query[1], query[2]))
+    else:
+        print("No long-running queries found.")
+
+# Function to check database size
+def check_database_size(connection):
+    print("\n--- Database Size ---")
+    sql_query = read_sql_from_file("check_database_size.sql")  # SQL file for database size
+    db_size = execute_query(connection, sql_query)
+    print("Database Size: {}".format(db_size[0][0]))
+    
+# Function to check table sizes (Total, Data, Index)
+def check_table_sizes(connection):
+    print("\n--- Top 10 Largest Tables (By Total Size) ---")
+    sql_query = read_sql_from_file("check_table_sizes.sql")  # SQL file for table sizes
+    table_sizes = execute_query(connection, sql_query)
+    for table in table_sizes:
+        print("Table: {}, Total Size: {}, Data Size: {}, Index Size: {}".format(
+            table[0], table[1], table[2], table[3]
+        ))
+        
+# Function to check for unused indexes
+def check_unused_indexes(connection):
+    print("\n--- Unused Indexes ---")
+    sql_query = """
+    SELECT 
+        i.indexrelid::regclass AS index_name,
+        t.relname AS table_name
+    FROM pg_index i
+    JOIN pg_class t ON t.oid = i.indrelid
+    LEFT JOIN pg_stat_user_indexes s ON s.indexrelid = i.indexrelid
+    WHERE s.idx_scan = 0  -- Index has never been scanned
+    AND t.relkind = 'r';  -- Only for tables, not views
+    """
+    
+    unused_indexes = execute_query(connection, sql_query)
+    
+    if unused_indexes:
+        # Print header
+        print("{:<40} {:<40}".format("Table", "Index"))
+        print("-" * 80)  # Separator
+        
+        # Print data in tabular format
+        for index in unused_indexes:
+            table_name = index[1] if index[1] is not None else 'N/A'  # Table name
+            index_name = index[0] if index[0] is not None else 'N/A'  # Index name
+            
+            print("{:<40} {:<40}".format(table_name, index_name))
+    else:
+        print("No unused indexes found.")
+
+# Function to check table bloat
+def check_table_bloat(connection):
+    print("\n--- Top 5 Largest Tables ---")
+    sql_query = read_sql_from_file("check_table_bloat.sql")  # SQL file for table bloat
+    bloat_tables = execute_query(connection, sql_query)
+    for table in bloat_tables:
+        print("Table: {}, Size: {}".format(table[0], table[1]))
+
+# Function to check replication status and lag
+def check_replication_status(connection):
+    print("\n--- Replication Status and Lag ---")
+    sql_query = read_sql_from_file("check_replication_status.sql")  # SQL file for replication status
+    replication_status = execute_query(connection, sql_query)
+    
+    if replication_status:
+        for status in replication_status:
+            print("Application Name: {}, State: {}, Sync State: {}, Replay Lag: {}, "
+                  "Slot Name: {}, Active: {}, Current WAL LSN: {}".format(
+                      status[0], status[1], status[2], status[3], status[4], 
+                      status[5], status[6]))
+    else:
+        print("No replication or replication slots found.")
+
+# Function to check tables with dead tuples > 500k
+def check_dead_tuples(connection):
+    print("\n--- Tables with Dead Tuples > 500k ---")
+    sql_query = read_sql_from_file("check_dead_tuples.sql")  # SQL file for dead tuples check
+    dead_tuples = execute_query(connection, sql_query)
+    if dead_tuples:
+        for table in dead_tuples:
+            print("Table: {}, Dead Tuples: {}".format(table[0], table[1]))
+    else:
+        print("No tables with dead tuples greater than 500k.")
+        
+# Function to check vacuum progress
+def check_vacuum_progress(connection):
+    print("\n--- Vacuum Progress ---")
+    sql_query = read_sql_from_file("check_vacuum_progress.sql")  # SQL file for vacuum progress
+    vacuum_progress = execute_query(connection, sql_query)
+    
+    if vacuum_progress:
+        for progress in vacuum_progress:
+            print("Table OID: {}, Phase: {}, Heap Blocks Total: {}, Heap Blocks Scanned: {}, "
+                  "Heap Blocks Vacuumed: {}".format(progress[0], progress[1], progress[2], progress[3], progress[4]))
+    else:
+        print("No vacuum operations in progress.")
+
+# Function to check tables not vacuumed in the last 15 days
+def check_autovacuum_status(connection):
+    print("\n--- Tables Not Vacuumed in the Last 15 Days ---")
+    sql_query = read_sql_from_file("check_autovacuum_status.sql")  # SQL file for autovacuum status
+    tables_not_vacuumed = execute_query(connection, sql_query)
+    
+    if tables_not_vacuumed:
+        # Print header
+        print("{:<30} {:<20} {:<20} {:<20} {:<20}".format("Table", "Last Vacuum", "Last Autovacuum", 
+                                                          "Days Since Last Vacuum", "Days Since Last Autovacuum"))
+        
+        # Print data in table format
+        for table in tables_not_vacuumed:
+            # Handle None values and convert timedelta objects to string
+            table_name = table[0] if table[0] is not None else 'N/A'
+            
+            # Convert datetime.timedelta objects to total number of days (if applicable)
+            last_vacuum = table[1].days if isinstance(table[1], timedelta) else table[1] if table[1] is not None else 'N/A'
+            last_autovacuum = table[2].days if isinstance(table[2], timedelta) else table[2] if table[2] is not None else 'N/A'
+            
+            # For "Days Since Last Vacuum" and "Days Since Last Autovacuum", convert timedelta to total days
+            days_since_last_vacuum = table[3].days if isinstance(table[3], timedelta) else table[3] if table[3] is not None else 'N/A'
+            days_since_last_autovacuum = table[4].days if isinstance(table[4], timedelta) else table[4] if table[4] is not None else 'N/A'
+            
+            print("{:<30} {:<20} {:<20} {:<20} {:<20}".format(
+                table_name, last_vacuum, last_autovacuum, days_since_last_vacuum, days_since_last_autovacuum
+            ))
+    else:
+        print("All tables have been vacuumed recently.")
+
+# Function to perform the health check
+def health_check(host, dbname, user, password):
+    connection = connect_to_db(host, dbname, user, password)
+    
+    # Perform various health checks
+    check_active_connections(connection)
+    check_long_running_queries(connection)
+    check_database_size(connection)
+    check_table_sizes(connection)
+    check_unused_indexes(connection)
+    check_table_bloat(connection)
+    check_replication_status(connection)
+    check_dead_tuples(connection)
+    check_vacuum_progress(connection)
+    check_autovacuum_status(connection)
+
+    # Close the connection
+    connection.close()
+    print("\nHealth check completed.")
+
+# Function to parse command-line arguments
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="PostgreSQL Health Check for AWS RDS")
+    parser.add_argument('--host', required=True, help='The PostgreSQL endpoint (RDS endpoint)')
+    parser.add_argument('--dbname', required=True, help='The name of the database')
+    parser.add_argument('--user', required=True, help='The PostgreSQL username')
+    parser.add_argument('--password-file', required=True, help='Path to the file containing the PostgreSQL password')
+    return parser.parse_args()
+
+# Function to read password from file
+def read_password_from_file(password_file):
+    try:
+        with open(password_file, 'r') as f:
+            password = f.read().strip()  # Remove any leading/trailing whitespaces or newlines
+            return password
+    except Exception as e:
+        print("Error reading password from file: {}".format(e))
+        sys.exit(1)
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    password = read_password_from_file(args.password_file)
+    health_check(args.host, args.dbname, args.user, password)
+

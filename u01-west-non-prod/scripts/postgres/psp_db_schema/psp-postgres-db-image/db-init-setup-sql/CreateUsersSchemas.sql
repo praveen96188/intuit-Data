@@ -1,0 +1,8 @@
+CREATE USER psp_local WITH PASSWORD 'psp_local';
+CREATE USER psp_local1 WITH PASSWORD 'psp_local1';
+
+CREATE SCHEMA IF NOT EXISTS psp_local AUTHORIZATION psp_local;
+CREATE SCHEMA IF NOT EXISTS psp_local1 AUTHORIZATION psp_local1;
+
+ALTER ROLE psp_local SET SEARCH_PATH TO psp_local;
+ALTER ROLE psp_local1 SET SEARCH_PATH TO psp_local1;

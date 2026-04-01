@@ -1,0 +1,18 @@
+SELECT
+    t.relname AS table_name,
+    ROUND(pg_total_relation_size(t.oid) / 1024 / 1024 / 1024, 2) AS table_size_gb,  -- Table Size in GB
+    COALESCE(t.reltuples, 0) AS live_tuples,  -- Live Tuples (reltuples)
+    COALESCE(pg_stat_get_dead_tuple_count(t.oid), 0) AS dead_tuples,  -- Dead Tuples from pg_stat_get_dead_tuple_count
+    st.last_vacuum,
+    st.last_autovacuum,
+    age(st.last_vacuum) AS days_since_last_vacuum,
+    age(st.last_autovacuum) AS days_since_last_autovacuum
+FROM
+    pg_stat_user_tables st
+JOIN
+    pg_class t ON t.oid = st.relid
+WHERE
+    (st.last_vacuum IS NULL OR age(st.last_vacuum) > interval '15 days')
+    AND (st.last_autovacuum IS NULL OR age(st.last_autovacuum) > interval '15 days')
+ORDER BY
+    table_name;

@@ -1,0 +1,24 @@
+22:52:08 SQL> set serveroutput on
+22:52:08 SQL> 
+22:52:08 SQL> set echo on
+22:52:08 SQL> set feed on
+22:52:08 SQL> 
+22:52:08 SQL> DECLARE
+22:52:08   2  	hdnl NUMBER;
+22:52:08   3  BEGIN
+22:52:08   4  	hdnl := DBMS_DATAPUMP.open( operation => 'IMPORT', job_mode => 'SCHEMA', job_name=>'IMPORT_DATA');
+22:52:08   5  	DBMS_DATAPUMP.ADD_FILE( handle => hdnl, filename => 'exp_pspadm_data_%U.dmp', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_dump_file);
+22:52:08   6  	DBMS_DATAPUMP.add_file( handle => hdnl, filename => 'imp_pspadm_data.log', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_log_file);
+22:52:08   7  	DBMS_DATAPUMP.set_parallel(hdnl, 4);
+22:52:08   8  	DBMS_DATAPUMP.start_job(hdnl);
+22:52:08   9  	dbms_output.put_line('Import Handle: ' || hdnl);
+22:52:08  10  	DBMS_DATAPUMP.detach(hdnl);
+22:52:08  11  END;
+22:52:08  12  /
+Import Handle: 37                                                               
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:02.31
+22:52:10 SQL> 
+22:52:10 SQL> spool off

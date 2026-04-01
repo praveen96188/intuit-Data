@@ -1,0 +1,49 @@
+DROP TABLE IF EXISTS TEMP_SOURCESYS_PRINTEDCHKINFO CASCADE;
+
+--------------------------------------------------------
+-- Create temp table                                  --
+--------------------------------------------------------
+CREATE TABLE TEMP_SOURCESYS_PRINTEDCHKINFO (LIKE PSP_SOURCESYS_PRINTEDCHK_INFO INCLUDING ALL) ;
+
+--------------------------------------------------------
+-- Insert into temp table                             --
+--------------------------------------------------------
+INSERT INTO TEMP_SOURCESYS_PRINTEDCHKINFO
+(SOURCESYS_PRINTEDCHK_INFO_SEQ, VERSION, CREATED_DATE, MODIFIED_DATE, REALM_ID, NAME_LINE1, NAME_LINE2, NEXT_CHECK_NUMBER, SOURCE_SYSTEM_CODE, ADDRESS_FK)
+VALUES ('10000000-0000-0000-0000-000000000000', -1, timezone('UTC', CURRENT_TIMESTAMP), timezone('UTC', CURRENT_TIMESTAMP), -1, 'Intuit Payments, Inc', null, 1, 'QBDT', 'a1544b13-7095-4e77-89c3-7253cdeb7ac6')
+;
+
+--------------------------------------------------------
+-- Sychronize temp table and real table by            --
+-- inserting, deleting, and updating as necessary     --
+--------------------------------------------------------
+
+INSERT INTO PSP_SOURCESYS_PRINTEDCHK_INFO
+    (SOURCESYS_PRINTEDCHK_INFO_SEQ, VERSION, CREATED_DATE, MODIFIED_DATE, REALM_ID, NAME_LINE1, NAME_LINE2, NEXT_CHECK_NUMBER, SOURCE_SYSTEM_CODE, ADDRESS_FK)
+SELECT
+     SOURCESYS_PRINTEDCHK_INFO_SEQ, VERSION, CREATED_DATE, MODIFIED_DATE, REALM_ID, NAME_LINE1, NAME_LINE2, NEXT_CHECK_NUMBER, SOURCE_SYSTEM_CODE, ADDRESS_FK
+FROM
+   TEMP_SOURCESYS_PRINTEDCHKINFO tt
+WHERE
+   tt.SOURCESYS_PRINTEDCHK_INFO_SEQ NOT IN (SELECT SOURCESYS_PRINTEDCHK_INFO_SEQ FROM PSP_SOURCESYS_PRINTEDCHK_INFO)
+;
+
+-- no update to next check number, or any images
+UPDATE PSP_SOURCESYS_PRINTEDCHK_INFO rt
+SET (MODIFIED_DATE, VERSION, REALM_ID, NAME_LINE1, NAME_LINE2, SOURCE_SYSTEM_CODE, ADDRESS_FK) =
+(SELECT timezone('UTC', CURRENT_TIMESTAMP), tt.VERSION,  tt.REALM_ID, tt.NAME_LINE1, tt.NAME_LINE2, tt.SOURCE_SYSTEM_CODE, tt.ADDRESS_FK
+ FROM TEMP_SOURCESYS_PRINTEDCHKINFO tt WHERE tt.SOURCESYS_PRINTEDCHK_INFO_SEQ = rt.SOURCESYS_PRINTEDCHK_INFO_SEQ)
+;
+
+DELETE FROM PSP_SOURCESYS_PRINTEDCHK_INFO
+WHERE SOURCESYS_PRINTEDCHK_INFO_SEQ NOT IN (SELECT SOURCESYS_PRINTEDCHK_INFO_SEQ FROM TEMP_SOURCESYS_PRINTEDCHKINFO)
+;
+
+--------------------------------------------------------
+-- Drop temp table                                    --
+--------------------------------------------------------
+DROP TABLE TEMP_SOURCESYS_PRINTEDCHKINFO
+;
+
+COMMIT
+;

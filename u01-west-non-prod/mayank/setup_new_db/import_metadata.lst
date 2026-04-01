@@ -1,0 +1,26 @@
+22:36:00 SQL> set serveroutput on
+22:36:00 SQL> set feed on
+22:36:00 SQL> set time on
+22:36:00 SQL> set timi on
+22:36:00 SQL> 
+22:36:00 SQL> 
+22:36:00 SQL> DECLARE
+22:36:00   2  	hdnl NUMBER;
+22:36:00   3  BEGIN
+22:36:00   4  	hdnl := DBMS_DATAPUMP.open( operation => 'IMPORT', job_mode => 'SCHEMA', job_name=>'IMPORT_METADATA');
+22:36:00   5  	DBMS_DATAPUMP.ADD_FILE( handle => hdnl, filename => 'exp_pspadm_metadata.dmp', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_dump_file);
+22:36:00   6  	DBMS_DATAPUMP.add_file( handle => hdnl, filename => 'imp_pspadm_metadata.log', directory => 'DATA_PUMP_DIR', filetype => dbms_datapump.ku$_file_type_log_file);
+22:36:00   7  	DBMS_DATAPUMP.METADATA_FILTER(hdnl,'SCHEMA_EXPR','NOT IN (''ORDSYS'')');
+22:36:00   8  	DBMS_DATAPUMP.METADATA_FILTER(hdnl, 'EXCLUDE_PATH_EXPR', 'IN (''INDEX'', ''STATISTICS'')');
+22:36:00   9  	DBMS_DATAPUMP.start_job(hdnl);
+22:36:00  10  	dbms_output.put_line('Import Handle: ' || hdnl);
+22:36:00  11  	DBMS_DATAPUMP.detach(hdnl);
+22:36:00  12  END;
+22:36:00  13  /
+Import Handle: 34                                                               
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:03.64
+22:36:03 SQL> 
+22:36:03 SQL> spool off
