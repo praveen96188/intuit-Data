@@ -1,0 +1,1 @@
+import"./vendor-core-It9kLltR.js";import"./app-mobile-homepage-D4qFOLEC.js";import"./app-core-CNkauSwY.js";function t(){import.meta.url,import("_").catch(()=>1),async function*(){}().next()}export{t as __vite_legacy_guard};

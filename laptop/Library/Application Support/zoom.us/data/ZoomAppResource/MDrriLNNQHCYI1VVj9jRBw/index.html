@@ -1,0 +1,36 @@
+<!doctype html><html><head><script type="module" crossorigin src="./assets/polyfills-DhfRLQvf.js"></script><meta charset="utf-8"><link rel="icon" href="/favicon.ico"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Security-Policy" content=" img-src 'self' 'unsafe-inline' 'unsafe-eval' data: http: https: zmdf: filesystem: file:; script-src 'self' 'unsafe-eval' 'sha256-MS6/3FCg4WjP9gwgaBGwLpRCY6fZBgwmhVCdrPrNf3E=' 'sha256-tQjf8gvb2ROOMapIxFvFAYBeUJ0v1HCbOcSmDNXGtDo=' 'sha256-VA8O2hAdooB288EpSTrGLl7z3QikbWU9wwoebO/QaYk=' 'sha256-+5XkZFazzJo8n0iOP4ti/cLCMUudTf//Mzkb7xNPXIc=' 'nonce-oDU_2cQsIlkUqeWt5eisI3BE'; object-src 'none'; style-src 'self' 'unsafe-inline'; child-src 'none'; font-src 'self' data:; media-src 'self';"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><script nonce="oDU_2cQsIlkUqeWt5eisI3BE">console.time('isPhone');
+      const isProd = 'true' === 'true';
+
+      function getDeviceType() {
+        if (isProd) {
+          return 'pc';
+        }
+
+        const query = new URLSearchParams(window.location.search.substring(1));
+        return query.get('env');
+      }
+
+      function getSystemParam() {
+        if (window.unifyConfig && window.unifyConfig.systemParam) {
+          return window.unifyConfig.systemParam;
+        }
+
+        try {
+          // Android injected. Do not assign values.
+          // Error: Java bridge method can't be invoked on a non-injected object
+          const systemParam = window.android_config.getSystemParam();
+          return JSON.parse(systemParam);
+        } catch (err) {
+          return { deviceType: getDeviceType() };
+        }
+      }
+
+      function isPhone() {
+        // return getSystemParam().deviceType === 'phone';
+        return ['tablet', 'phone'].includes(getSystemParam().deviceType);
+      }
+
+      if (!isPhone()) {
+        window.location.href = 'desktop.html';
+      }
+      console.timeLog('isPhone');</script><script type="module" crossorigin src="./assets/index-B-44d9gt.js"></script><link rel="modulepreload" crossorigin href="./assets/vendor-core-It9kLltR.js"><link rel="modulepreload" crossorigin href="./assets/app-core-CNkauSwY.js"><link rel="modulepreload" crossorigin href="./assets/app-mobile-homepage-D4qFOLEC.js"><link rel="stylesheet" crossorigin href="./assets/vendor-core-2yvHXTeO.css"><link rel="stylesheet" crossorigin href="./assets/app-mobile-homepage-BDurBOtx.css"><script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();if(location.protocol!="file:"){window.__vite_is_modern_browser=true}</script><script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script></head><body><div id="app" class="global-search"></div><script crossorigin src="./sdk.js"></script><script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script><script nomodule crossorigin id="vite-legacy-polyfill" src="./assets/polyfills-legacy-DvfG-xDx.js"></script><script nomodule crossorigin id="vite-legacy-entry" data-src="./assets/index-legacy-Cdu32bD8.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script></body></html>

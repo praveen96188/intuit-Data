@@ -1,0 +1,1 @@
+System.register(["./vendor-core-legacy-D2wGIRtS.js","./app-desktop-legacy-B3wUkrgM.js","./app-common-legacy-BrG-UC8Y.js","./vendor-legacy-CrcNhbqC.js","./app-core-legacy-D4y_X6vd.js","./zoom-ui-desktop-legacy-C72unlgE.js"],(function(e,l){"use strict";return{setters:[null,null,null,null,null,null],execute:function(){}}}));

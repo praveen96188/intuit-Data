@@ -1,0 +1,1 @@
+System.register(["./vendor-core-legacy-D2wGIRtS.js","./app-mobile-homepage-legacy-nWKqLegI.js","./app-core-legacy-D4y_X6vd.js"],(function(e,l){"use strict";return{setters:[null,null,null],execute:function(){}}}));
