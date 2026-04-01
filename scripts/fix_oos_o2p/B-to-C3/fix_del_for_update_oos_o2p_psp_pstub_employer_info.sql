@@ -1,0 +1,13 @@
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('0acd1d16-6df9-4e07-82f6-8d778c65ba1a');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('1bc4940b-3371-4af6-836d-cbf11f1787f8');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('412efc1c-afae-4d73-80aa-df0816a7e537');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('6113d5dd-3be3-4a6d-8085-2b3ec00859a8');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('69492274-45d1-4abf-b150-4e28b8cf9b2c');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('9ae05e89-d21c-440b-b6c8-1e8a0ca2caa9');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('abb73547-982e-4203-868a-8de703ed73c6');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('b5a7e69e-653f-40ad-9832-51781dcaba42');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('badc0a3b-c357-4f87-aa38-d93ac0c7c536');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('c5871936-a9f8-44f7-beeb-f6b226ba3bd8');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('de059e61-fb03-461d-b138-1d3247c45e34');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('ea18d901-1b8a-4f99-ba7b-ca1326a68b9c');
+delete from pspadm.psp_pstub_employer_info where (pstub_employer_info_seq) in ('f0627847-9b52-439b-82a4-bc6b3d6ad7ac');

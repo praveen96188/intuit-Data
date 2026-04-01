@@ -1,0 +1,2 @@
+ select APPLY_NAME,STATE,COMMIT_POSITION,ELAPSED_APPLY_TIME/100 ELAPSED from gv$GG_apply_server order by 4
+/

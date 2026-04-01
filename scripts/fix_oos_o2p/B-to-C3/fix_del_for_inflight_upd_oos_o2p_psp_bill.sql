@@ -1,0 +1,12 @@
+delete from pspadm.psp_bill where (bill_seq) in ('272db067-7b53-427f-bac2-4fefa2a1fb48');
+delete from pspadm.psp_bill where (bill_seq) in ('58042179-5537-44bb-9bdd-9d46a136dc46');
+delete from pspadm.psp_bill where (bill_seq) in ('70ef089e-b732-4185-ac6a-1d76324a3f61');
+delete from pspadm.psp_bill where (bill_seq) in ('7ffee350-9c5e-436d-afed-8bcd804343ee');
+delete from pspadm.psp_bill where (bill_seq) in ('80cba3e9-9bf5-489b-8883-186b47d5f2b8');
+delete from pspadm.psp_bill where (bill_seq) in ('bbc6d75f-e79d-4747-953d-6bc2ec841a6a');
+delete from pspadm.psp_bill where (bill_seq) in ('bd71b0ef-56ce-42ed-97b5-d2c412f4a6ea');
+delete from pspadm.psp_bill where (bill_seq) in ('cfab6ad8-af24-4fda-af4e-ae423f95b33c');
+delete from pspadm.psp_bill where (bill_seq) in ('d169e670-cb5b-425a-9038-6c16784d8e1e');
+delete from pspadm.psp_bill where (bill_seq) in ('de5372f2-7d60-4f2b-b010-d45c6e59dfc6');
+delete from pspadm.psp_bill where (bill_seq) in ('17258fbe-2b6a-4bfb-b4dd-5ed77bfc7aaf');
+delete from pspadm.psp_bill where (bill_seq) in ('06561700-1cd7-40a9-97ab-b7e4a51b7442');

@@ -1,0 +1,99 @@
+SQL> set serveroutput on;
+SQL> 
+SQL> DECLARE
+  2  	CURSOR duplicate_cfr_list IS
+  3  	     select consumer_realm_id, count(*) as C from pspadm.psp_employee
+  4  	 where consumer_realm_id in ('9130347344678446')
+  5  	 group by consumer_realm_id having count(*) > 1 order by C desc;
+  6  
+  7  	 v_pstub_seq varchar2(200);
+  8  	 v_employee_seq varchar2(200);
+  9  	 v_count number :=1 ;
+ 10  
+ 11  	 v_emp_list_to_update varchar2(500);
+ 12  	 emp_array SYS.ODCIVARCHAR2LIST := SYS.ODCIVARCHAR2LIST();
+ 13  BEGIN
+ 14  
+ 15  
+ 16  
+ 17  	     FOR duplicate_cfr_list_rec IN duplicate_cfr_list
+ 18  	 LOOP
+ 19  	     DBMS_OUTPUT.PUT_LINE('===================');
+ 20  		 DBMS_OUTPUT.PUT_LINE ('CFR token ' || duplicate_cfr_list_rec.consumer_realm_id);
+ 21  		 SELECT PAYSTUB_SEQ into v_pstub_seq FROM(
+ 22  		     select PAYSTUB_SEQ from pspadm.psp_paystub where PSTUB_EMPLOYEE_INFO_FK in
+ 23  			 (select PSTUB_EMPLOYEE_INFO_SEQ from pspadm.PSP_PSTUB_EMPLOYEE_INFO where EMPLOYEE_FK in
+ 24  			     (select EMPLOYEE_SEQ from pspadm.PSP_EMPLOYEE where consumer_realm_id=duplicate_cfr_list_rec.consumer_realm_id))
+ 25  		     order by Paycheck_date desc
+ 26  		 ) WHERE ROWNUM<=1;
+ 27  
+ 28  	    DBMS_OUTPUT.PUT_LINE('The latest paystub seq is '|| v_pstub_seq);
+ 29  
+ 30  	    select e.employee_seq into v_employee_seq from pspadm.PSP_PAYSTUB ps ,pspadm.PSP_PSTUB_EMPLOYEE_INFO psei,pspadm.PSP_EMPLOYEE e where --0d0ebb9f-1b25-4aca-8885-4ba6a494aa56
+ 31  		 ps.PSTUB_EMPLOYEE_INFO_FK= psei.PSTUB_EMPLOYEE_INFO_SEQ
+ 32  		 AND psei.employee_fk=e.employee_seq
+ 33  		 AND ps.PAYSTUB_SEQ=v_pstub_seq;
+ 34  
+ 35  	    DBMS_OUTPUT.PUT_LINE('The corresponding Employee seq  is  '|| v_employee_seq);
+ 36  
+ 37  
+ 38  	     v_emp_list_to_update := '';
+ 39  	      emp_array.delete();
+ 40  	      v_count :=1;
+ 41  	     FOR employee_rec in (select * from pspadm.PSP_EMPLOYEE where consumer_realm_id=duplicate_cfr_list_rec.consumer_realm_id)
+ 42  	     LOOP
+ 43  
+ 44  
+ 45  		 IF employee_rec.employee_seq = v_employee_seq THEN
+ 46  		      dbms_output.put_line('Skipping the Employee seq  '||employee_rec.employee_seq);
+ 47  		      Continue;
+ 48  		 END IF;
+ 49  		 DBMS_OUTPUT.PUT_LINE('The employee seq is ' || employee_rec.employee_seq);
+ 50  		 --v_emp_list_to_update :=v_emp_list_to_update||''',';
+ 51  		 emp_array.extend();
+ 52  		 emp_array(v_count) :=	employee_rec.employee_seq;
+ 53  		 v_count :=v_count+1;
+ 54  
+ 55  	     END LOOP;
+ 56  
+ 57  
+ 58  
+ 59  	     --  dbms_output.put_line('v_count is '||v_count);
+ 60  	       select count(*) into v_count from pspadm.psp_employee where employee_seq in
+ 61  	       (select * from table(emp_array));
+ 62  
+ 63  
+ 64  	      dbms_output.put_line('Count of employees to be updated is '||v_count||' For cfr '||duplicate_cfr_list_rec.consumer_realm_id );
+ 65  
+ 66  	      FOR emp_rec in   ( select * from pspadm.psp_employee where employee_seq in
+ 67  	       (select * from table(emp_array)))
+ 68  	      LOOP
+ 69  		   dbms_output.put_line('Emp whose cfr is being update to null	is  '||emp_rec.employee_seq);
+ 70  	      END LOOP;
+ 71  
+ 72  	       -- TODO uncomment in PROD ::: update employees cfr to null in v_emp_list_to_update
+ 73  	       update pspadm.psp_employee set consumer_realm_id = NULL where  employee_seq in
+ 74  		(select * from table(emp_array));
+ 75  
+ 76  	 END LOOP;
+ 77  
+ 78  
+ 79  
+ 80  EXCEPTION
+ 81    WHEN OTHERS THEN
+ 82  	 DBMS_OUTPUT.PUT_LINE ('Error : ' || SQLERRM);
+ 83  END;
+ 84  /
+===================                                                                                                                                                                                                                                                                                         
+CFR token 9130347344678446                                                                                                                                                                                                                                                                                  
+The latest paystub seq is bf8a4ad9-76bf-4105-af65-8d841d7de833                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  10930158-23b3-4472-9b51-b89d69103681                                                                                                                                                                                                                                    
+The employee seq is fc36ac20-d8a7-46a7-87ec-18617ae55a49                                                                                                                                                                                                                                                    
+Skipping the Employee seq  10930158-23b3-4472-9b51-b89d69103681                                                                                                                                                                                                                                             
+Count of employees to be updated is 1 For cfr 9130347344678446                                                                                                                                                                                                                                              
+Emp whose cfr is being update to null  is  fc36ac20-d8a7-46a7-87ec-18617ae55a49                                                                                                                                                                                                                             
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> spool off

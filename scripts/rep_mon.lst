@@ -1,0 +1,34 @@
+SQL> 
+SQL> SELECT  dbms_sqltune.report_sql_monitor(
+  2                  sql_id=> v.sql_id,
+  3                  sql_exec_id => v.max_sql_exec_id
+  4          ) text_line
+  5  from     (
+  6          select
+  7                  sql_id,
+  8                  max(sql_exec_id)        max_sql_exec_id
+  9          from
+ 10                  v$sql_monitor
+ 11          where
+ 12                  sql_id = '&m_sql_id'
+ 13          and     status like 'DONE%'
+ 14          group by
+ 15                  sql_id
+ 16          )       v
+ 17  ;
+old  12:                 sql_id = '&m_sql_id'
+new  12:                 sql_id = '4bxbbf2c2gu1m'
+ERROR:
+ORA-14552: cannot perform a DDL, commit or rollback inside a query or DML
+ORA-06512: at "SYS.DBMS_SQLTUNE_UTIL1", line 1117
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 13800
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 19007
+ORA-06512: at "SYS.DBMS_SQLTUNE", line 19338
+ORA-06512: at line 1
+
+
+
+no rows selected
+
+SQL> 
+SQL> spool off

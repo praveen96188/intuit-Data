@@ -1,0 +1,10 @@
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('367a5946-d471-4b47-9e01-e2aed15e23b2') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('52791910-2600-4591-a20e-19b399f7021d') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('5bbfe8a4-a330-4f56-b1dc-a4c52dd1f3bd') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('5e29c778-1732-4fb0-9a3e-a3b617d0b86f') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('60461098-b50c-43f6-b64c-e9f4ea6986ab') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('942b1620-8b6e-4043-81bd-9ed900646ead') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('9d3d8de4-cd54-49f9-833d-0b2d698c2c50') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('af025be2-3ec2-4f03-a5bd-17eb96ec8c6d') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('b7b37ee5-fdab-4a65-88fc-b253a6a520db') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');
+insert into pspadm.psp_paystub select * from imp_psphpp02_pspadm.psp_paystub where (paystub_seq) in ('db42e924-bc9b-4c2b-b2d0-88f559e1d21b') and ( company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98');

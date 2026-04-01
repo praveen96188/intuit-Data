@@ -1,0 +1,12 @@
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('2055e85c-c7a4-4b36-837e-ceb2a5d11a58');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('5fc4174e-c12e-467e-9155-5ce21cf1dcbc');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c04b-d75a-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c04c-472f-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c04d-7641-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c04f-b80e-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c050-7d97-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c050-c5a4-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c056-3b32-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c057-fd8c-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('c115c05b-28e1-4e25-e040-007f01002882');
+insert into pspadm.psp_entitlement select * from imp_psphpp02_pspadm.psp_entitlement where (entitlement_seq) in ('f0a96465-4ef2-4ca4-a8bd-01a6d86ff70d');

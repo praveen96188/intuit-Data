@@ -1,0 +1,663 @@
+SQL> set trimspool on
+SQL> set lines 300
+SQL> set pages 3000
+SQL> col event for a30 trunc
+SQL> col machine for a15 trunc
+SQL> col username for a22
+SQL> col osuser for a11
+SQL> col module for a15 trunc
+SQL> col tablespace format a15
+SQL> col CLIENT_IDENTIFIER for a20
+SQL> col company_id for a20
+SQL> col jvm for a15 trunc
+SQL> col LOGONTIME for a12 trunc
+SQL> col Status for a1 trunc
+SQL> col sql_id for a15
+SQL> column sid_serial for a13
+SQL> set long 10000
+SQL> SET TRIMSPOOL ON
+SQL> set pages 0
+SQL> select ' ' from dual;
+
+
+SQL> select lpad(rpad(' SQL_ID/SQLTEXT with > 5 active sessions ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- SQL_ID/SQLTEXT with > 5 active sessions -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 1000
+SQL> select s.sql_id, count(1) count
+  2    from v$session s
+  3   where s.status='ACTIVE' and s.SQL_ID is not null
+  4   group by s.sql_id
+  5   having count(1) > 5
+  6   order by 2 desc;
+
+SQL_ID               COUNT
+--------------- ----------
+btuvgjf194f93           27
+2ypfagkg86n3y           23
+7qraab14w8qm9           20
+
+SQL> select sql_id, sql_fulltext
+  2    from v$sql
+  3   where sql_id in (select s.sql_id
+  4                      from v$session s
+  5                     where s.status='ACTIVE'
+  6                       and s.SQL_ID is not null
+  7                     group by s.sql_id
+  8                      having count(1) > 5)
+  9     and rownum < 2 ;
+
+SQL_ID          SQL_FULLTEXT
+--------------- --------------------------------------------------------------------------------
+2ypfagkg86n3y   /* EditFieldList.select(Prepared) */  SELECT tx_id, estatus, ecloudstatus_timest
+                amp FROM TxHeaders_1 TxHeaders WHERE tx_id = :1  FOR UPDATE OF tx_id, estatus, e
+                cloudstatus_timestamp WAIT 30
+
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Cluster Wise JVMs/Total connections to RPTDB ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Cluster Wise JVMs/Total connections to RPTDB -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+SQL> set pages 1000
+SQL> select substr(username,1,instr(username,'_')-1) "Cluster",
+  2         count(distinct username) "JVM's",count(*) "Total Connections"
+  3    from v$session where username like 'QBO%' group by substr(username,1,instr(username,'_')-1) order by 1 ;
+
+Cluster                                                                                                                       JVM's Total Connections
+------------------------------------------------------------------------------------------------------------------------ ---------- -----------------
+QBOC40                                                                                                                           38               812
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Wait event with > 5 active sessions waiting on it ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Wait event with > 5 active sessions waiting on it -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 1000
+SQL> select  event, count(1) count
+  2    from gv$session
+  3   where event not in (select name from V$EVENT_NAME where wait_class = 'Idle')
+  4   group by event
+  5   having count(1) > 5;
+
+EVENT                               COUNT
+------------------------------ ----------
+resmgr:cpu quantum                     18
+enq: TX - row lock contention          41
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Sessions responsible for blocking multiple other sessions ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Sessions responsible for blocking multiple other sessions -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 1000
+SQL> select blocking_session, count(1) count
+  2    from gv$session
+  3    where blocking_session is not null
+  4    having count(1) > 10
+  5   group by blocking_session;
+
+BLOCKING_SESSION      COUNT
+---------------- ----------
+           26296         11
+           10362         15
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Company id with > 10 active sessions ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Company id with > 10 active sessions -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+SQL> set pages 1000
+SQL> select client_identifier company_id, count(1)
+  2    from gv$session
+  3   where client_identifier is not null
+  4   group by client_identifier
+  5   having count(1) > 10
+  6   order by 2 desc;
+
+COMPANY_ID             COUNT(1)
+-------------------- ----------
+193514766349904             104
+
+SQL> select client_identifier company_id, machine jvm, count(1)
+  2    from v$session
+  3   where client_identifier in (select client_identifier
+  4                                 from v$session
+  5                                where client_identifier is not null
+  6                                group by client_identifier
+  7                               having count(1) > 10)
+  8   group by client_identifier, machine;
+
+COMPANY_ID           JVM               COUNT(1)
+-------------------- --------------- ----------
+193514766349904      pprdc40uw2apu07          3
+193514766349904      pprdc40uw2apu08          1
+193514766349904      pprdc40uw2aps06          2
+193514766349904      pprdc40uw2apj04          4
+193514766349904      pprdc40uw2apu00          1
+193514766349904      pprdc40uw2apu01          5
+193514766349904      pprdc40uw2apu03          4
+193514766349904      pprdc40uw2apu03          3
+193514766349904      pprdc40uw2apu04          2
+193514766349904      pprdc40uw2apu05          3
+193514766349904      pprdc40uw2apu05          6
+193514766349904      pprdc40uw2apj06         15
+193514766349904      pprdc40uw2apu04          4
+193514766349904      pprdc40uw2apu09          7
+193514766349904      pprdc40uw2apu09          2
+193514766349904      pprdc40uw2apu00          7
+193514766349904      pprdc40uw2apu08          2
+193514766349904      pprdc40uw2apu07          2
+193514766349904      pprdc40uw2apu04          5
+193514766349904      pprdc40uw2apu07          1
+193514766349904      pprdc40uw2apu02          3
+193514766349904      pprdc40uw2apu05          2
+193514766349904      pprdc40uw2apu01          3
+193514766349904      pprdc40uw2apu06          6
+193514766349904      pprdc40uw2apu04          3
+193514766349904      pprdc40uw2apu00          3
+193514766349904      pprdc40uw2apu04          3
+193514766349904      pprdc40uw2apj01          7
+193514766349904      pprdc40uw2apu01          1
+
+29 rows selected.
+
+SQL> set pages 0
+SQL> select lpad(rpad(' App/Web/DB machine having > 5 sessions ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- App/Web/DB machine having > 5 sessions -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+SQL> set pages 1000
+SQL> select username, count(1)
+  2    from gv$session
+  3   group by username
+  4   having count(1) > 5
+  5   order by 2 desc;
+
+USERNAME                 COUNT(1)
+---------------------- ----------
+QBOC40_UW2APP30                63
+QBOC40_UW2APP13                62
+QBOC40_UW2APP50                53
+                               50
+QBOC40_UW2APP32                38
+QBOC40_UW2APP14                34
+QBOC40_UW2APP60                31
+QBOC40_UW2APP54                29
+QBOC40_UW2APP09                28
+QBOC40_UW2APP00                27
+QBOC40_UW2APP20                24
+QBOC40_UW2APP68                22
+QBOC40_UW2APP11                20
+QBOC40_UW2APP56                20
+QBOC40_UW2APP28                20
+QBOC40_UW2APP06                20
+QBOC40_UW2APP08                18
+QBOC40_UW2APP58                18
+QBOC40_UW2APP23                18
+QBOC40_UW2APP85                17
+QBOC40_UW2APP25                16
+QBOC40_UW2APP40                16
+QBOC40_UW2APP82                15
+QBOC40_UW2APP18                15
+QBOC40_UW2APP21                15
+QBOC40_UW2APP93                14
+QBOC40_UW2APP38                14
+QBOC40_UW2APP34                14
+QBOC40_UW2APP07                14
+QBOC40_UW2APP04                14
+QBOC40_UW2APP65                14
+QBOC40_UW2APP41                13
+QBOC40_UW2APP69                13
+QBOC40_UW2APP19                13
+GGS                            12
+QBOC40_UW2APP88                10
+QBOC40_UW2APP92                10
+QBOC40_UW2APP78                10
+QBOC40_UW2APP55                10
+SYS                            10
+QBOC40_UW2APP01                10
+GGT                             7
+
+42 rows selected.
+
+SQL> set pages 0
+SQL> select lpad(rpad(' All ACTIVE sessions details - wait event, blocking session... ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- All ACTIVE sessions details - wait event, blocking session... -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 1000
+SQL> select username,
+  2         sql_id,
+  3         (sysdate-SQL_EXEC_START)*24*60*60 "RUNTIME(Secs)",
+  4         event,
+  5         client_identifier,
+  6         module,client_info,
+  7         machine,
+  8         to_char(LOGON_TIME,'DD-MON HH24:MI') LOGONTIME,
+  9         blocking_session,
+ 10         lpad((sid || ',' || lpad(serial#,5)),11) sid_serial,
+ 11         substr(status,1,1) Status
+ 12    from gv$session
+ 13    where (status = 'ACTIVE' or client_identifier is not null)
+ 14  --  and sql_id is not null
+ 15      and username is not null
+ 16      and type != 'BACKGROUND'
+ 17  order by 3 desc;
+
+USERNAME               SQL_ID          RUNTIME(Secs) EVENT                          CLIENT_IDENTIFIER    MODULE          CLIENT_INFO                                                      MACHINE         LOGONTIME    BLOCKING_SESSION SID_SERIAL    S
+---------------------- --------------- ------------- ------------------------------ -------------------- --------------- ---------------------------------------------------------------- --------------- ------------ ---------------- ------------- -
+QBOC40_UW2APP30        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apj06 25-JUN 22:47                     18,10207   I
+QBOC40_UW2APP30                                      SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  29126,22662   I
+QBOC40_UW2APP38                                      SQL*Net message from client    193514766349904      1530369191840   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu01 30-JUN 07:31                    973,15678   I
+QBOC40_UW2APP40        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu07 30-JUN 07:25                   1902,41459   I
+QBOC40_UW2APP18        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369190900   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu05 30-JUN 07:26                   1915,29614   I
+SYS                                                  rdbms ipc message                                   GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:56                   5636,58950   A
+QBOC40_UW2APP82                                      SQL*Net message from client    193514766349904      1530369191149   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 09:59                   5649,56786   I
+GGT                                                  rdbms ipc message                                   GoldenGate                                                                       ip-172-19-0-223 13-JUN 15:58                   6576,51177   A
+QBOC40_UW2APP09        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu07 28-JUN 23:43                   8481,49816   I
+GGT                                                  rdbms ipc message                                   GoldenGate                                                                       ip-172-19-0-223 21-JUN 14:39                   9394,28207   A
+GGT                                                  REPL Capture/Apply: messages                        GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:56                   9398, 9077   A
+GGT                                                  rdbms ipc message                                   GoldenGate                                                                       ip-172-19-0-223 13-JUN 18:05                  10336,65102   A
+QBOC40_UW2APP30                                      SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 26-JUN 10:05                  10353,39125   I
+GGT                                                  rdbms ipc message                                   GoldenGate                                                                       ip-172-19-0-223 30-JUN 07:29                  10361,64409   A
+QBOC40_UW2APP40        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369191327   193514777842129 /SendSales                                       pprdc40uw2apu07 28-JUN 23:35                  11279, 6510   I
+QBOC40_UW2APP13        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apj01 25-JUN 22:47                  11288,37635   I
+QBOC40_UW2APP34        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu09 29-JUN 00:06                  11295,61209   I
+QBOC40_UW2APP09        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu05 29-JUN 01:54                  11296,37936   I
+QBOC40_UW2APP50        ab69mnnq1fv74                 SQL*Net message from client    123145706009269      1530369190531   [123145706009269]Verify-/app/qbo-app/qbo.daily.verify.codata.201 pprdc40uw2apc02 30-JUN 02:05                  12223,37505   I
+QBOC40_UW2APP11        ab69mnnq1fv74                 SQL*Net message from client    123145656101342      1530369190633   [123145656101342]Verify-/app/qbo-app/qbo.daily.verify.codata.201 pprdc40uw2apc00 30-JUN 02:05                  12233,39670   I
+QBOC40_UW2APP21        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu08 28-JUN 23:58                  12235,31169   I
+QBOC40_UW2APP30        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apj06 26-JUN 10:05                  13184, 5777   I
+QBOC40_UW2APP56        82x1nku4a6qam                 SQL*Net message from client    123146053306779                                                                                       pprdc40uw2apc04 30-JUN 04:03                  14113,38220   I
+QBOC40_UW2APP18                                      log file sync                  193514766349904      1530369189571   193514777842129 /SendSales                                       pprdc40uw2apu05 30-JUN 01:00            15025 14120,21968   A
+GGT                                                  rdbms ipc message                                   GoldenGate                                                                       ip-172-19-0-223 18-JUN 01:16                  15031,50046   A
+QBOC40_UW2APP07        82x1nku4a6qam                 latch free                     193514766349904                                                                                       pprdc40uw2apu03 30-JUN 07:25                  15033,33034   I
+QBOC40_UW2APP14        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369190951   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:15                  15034,48049   I
+GGS                                                  LogMiner client: transaction                        GoldenGate                                                                       pprdc40uw210g11 13-JUN 13:58                  15969,56378   A
+QBOC40_UW2APP38                                      SQL*Net message from client    193514766349904      1530369191636   193514777842129 /SendSales                                       pprdc40uw2apu01 29-JUN 09:11                  15976,58980   I
+QBOC40_UW2APP13        ca0zmbawc63fy                 SQL*Net message from client    193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                  16920,57887   A
+QBOC40_UW2APP06                                      SQL*Net message from client    123145835154767      1530369191288   [123145835154767]Verify-/app/qbo-app/qbo.daily.verify.cobilling. pprdc40uw2apc08 30-JUN 04:03                  16928,53484   I
+QBOC40_UW2APP21        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu08 28-JUN 23:58                  16932, 1065   I
+QBOC40_UW2APP30        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apj06 26-JUN 08:16                  16943,43023   I
+SYS                                                  LogMiner reader: redo (idle)                        GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  17846,22672   A
+QBOC40_UW2APP09        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369191738   193514777842129 /SendSales                                       pprdc40uw2apu05 29-JUN 08:18                  17868,56353   I
+QBOC40_UW2APP65                                      SQL*Net message from client    193514766349904      1530369191801   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu07 29-JUN 02:24                  18784, 8565   I
+SYS                                                  LogMiner builder: idle                              GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  18786,58384   A
+QBOC40_UW2APP38                                      library cache: mutex X                                                                                                               pprdc40uw2apu01 29-JUN 00:29                  18810,34374   A
+QBOC40_UW2APP32        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu04 29-JUN 01:23                  18812,37354   I
+SYS                                                  LogMiner preparer: idle                             GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  19723,51127   A
+QBOC40_UW2APP30                                      SQL*Net message from client    193514456083274      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  19739,30313   I
+SYS                                                  LogMiner preparer: idle                             GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  20663,22441   A
+SYS                                                  LogMiner reader: redo (idle)                        GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  21600, 5864   A
+QBOC40_UW2APP00        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369191393   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu03 30-JUN 07:32                  21622,37939   I
+QBOC40_UW2APP41                                      SQL*Net message to client      193514766349904      1530369191811   193514777842129 /SendSales                                       pprdc40uw2apu00 28-JUN 23:43                  22548,64041   A
+QBOC40_UW2APP82        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369191265   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu04 29-JUN 01:31                  22577,32308   I
+QBOC40_UW2APP56        ab69mnnq1fv74                 SQL*Net message from client    123146054798864      1530369191067   [123146054798864]Verify-/app/qbo-app/qbo.daily.verify.codata.201 pprdc40uw2apc04 30-JUN 02:05                  23506,36382   I
+QBOC40_UW2APP41                                      SQL*Net message from client                         1530369190481   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu00 29-JUN 12:15                  23509,43172   A
+GGS                                                  LogMiner client: transaction                        GoldenGate                                                                       pprdc40uw210g11 13-JUN 13:57                  24418,43255   A
+QBOC40_UW2APP09        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu05 29-JUN 01:54                  24435,57688   I
+QBOC40_UW2APP30                                      SQL*Net message from client    123145804643192      1530369189132   0 /v3/company/batch                                              pprdc40uw2aps07 30-JUN 01:00                  24446,55558   I
+QBOC40_UW2APP18        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu05 29-JUN 02:01                  24447, 5017   I
+QBOC40_UW2APP32        ab69mnnq1fv74                 SQL*Net message from client    193514766349904      1530369190121   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:23                  24449,13996   I
+SYS                                                  LogMiner builder: idle                              GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  25355, 2856   A
+QBOC40_UW2APP01                                      SQL*Net message from client    1434634735           1530369191312   0 /v3/company/batch                                              pprdc40uw2aps07 29-JUN 01:46                  25377,42687   I
+QBOC40_UW2APP93        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu00 30-JUN 07:32                  25390,52306   I
+SYS                                                  LogMiner preparer: idle                             GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  26295,64426   A
+QBOC40_UW2APP18                                      log file sync                  193514766349904      1530369189757   193514777842129 /SendSales                                       pprdc40uw2apu05 29-JUN 02:01            15025 26296,14139   A
+QBOC40_UW2APP58        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu08 30-JUN 07:16                  26324,39044   I
+QBOC40_UW2APP30        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apj06 26-JUN 10:05                  26332,12001   I
+QBOC40_UW2APP41        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu00 29-JUN 01:00                  27267,19402   I
+SYS                                                  LogMiner preparer: idle                             GoldenGate                                                                       ip-172-19-0-223 13-JUN 13:58                  28175,41861   A
+QBOC40_UW2APP09        82x1nku4a6qam                 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu05 29-JUN 01:54                  29112,59705   I
+QBOC40_UW2APP82                                      SQL*Net message from client    193514766349904      1530369191118   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:31                    954,25596   I
+SYS                    35xynhkg80w90            5428 db file scattered read                              DBMS_SCHEDULER                                                                   ip-172-19-0-223 30-JUN 06:00                  14103,65187   A
+QBOC40_UW2APP14        btuvgjf194f93               1 enq: TX - row lock contention  193514766349904      1530369191061   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu04 30-JUN 07:26            26296 13166,17048   A
+QBOC40_UW2APP18        btuvgjf194f93               1 enq: TX - row lock contention  193514766349904      1530369190961   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu05 30-JUN 07:26               19 28210,27673   A
+QBOC40_UW2APP23        2ypfagkg86n3y               1 enq: TX - row lock contention  193514766349904      1530369189234   193514777842129 /SendSales                                       pprdc40uw2apu06 29-JUN 02:17            15041 16930,12510   A
+QBOC40_UW2APP32        btuvgjf194f93               1 enq: TX - row lock contention  193514766349904      1530369191116   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu04 30-JUN 07:26            23482 24437,33955   A
+QBOC40_UW2APP50        gy6bycsmnp61n               1 SQL*Net message from client    1445376575           1530369070301   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj04 25-JUN 23:43                  11303,36343   I
+QBOC40_UW2APP60        btuvgjf194f93               1 enq: TX - row lock contention  193514766349904      1530369190573   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu01 29-JUN 00:37            15041 16908,32561   A
+QBOC40_UW2APP60        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189108   193514777842129 /SendSales                                       pprdc40uw2apu01 29-JUN 08:22             2847    14, 8010   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                     15, 2397   A
+QBOC40_UW2APP40        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191792   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu07 30-JUN 07:25            24448    19,38540   A
+QBOC40_UW2APP32        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191439   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu04 29-JUN 08:34               19    22, 7592   A
+QBOC40_UW2APP23        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191691   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu06 29-JUN 02:17             8474   948,57153   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 26-JUN 10:05                    977, 3566   A
+QBOC40_UW2APP23        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189617   193514777842129 /SendSales                                       pprdc40uw2apu06 30-JUN 07:25             8474   983,30518   A
+QBOC40_UW2APP69        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190145   193514777842129 /SendSales                                       pprdc40uw2apu09 29-JUN 09:29            23500  1912,41506   A
+QBOC40_UW2APP18        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191722   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu05 29-JUN 02:01            23500  1921,36919   A
+QBOC40_UW2APP32        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190066   193514777842129 /SendSales                                       pprdc40uw2apu05 30-JUN 07:25            26296  2845,22984   A
+QBOC40_UW2APP00        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189859   193514777842129 /SendSales                                       pprdc40uw2apu03 29-JUN 01:08            13166  2847,18373   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                   2848,65201   A
+QBOC40_UW2APP00        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189887   193514777842129 /SendSales                                       pprdc40uw2apu03 29-JUN 01:08             1921  3777,63746   A
+QBOC40_UW2APP82        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189944   193514777842129 /SendSales                                       pprdc40uw2apu04 30-JUN 04:20             1921  3800, 4825   A
+QBOC40_UW2APP40        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189319   193514777842129 /SendSales                                       pprdc40uw2apu07 30-JUN 07:25            17853  4724, 4147   A
+QBOC40_UW2APP32        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190042   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:46            26296  4725,23742   A
+QBOC40_UW2APP82        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189856   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:31             1921  4738,56478   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                   5648,14993   A
+QBOC40_UW2APP08        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189626   193514777842129 /SendSales                                       pprdc40uw2apu02 29-JUN 00:52            15970  5653,18713   A
+QBOC40_UW2APP69        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191160   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu09 30-JUN 01:00            13155  5671,10592   A
+QBOC40_UW2APP40        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189763   193514777842129 /SendSales                                       pprdc40uw2apu07 28-JUN 23:35            13155  6574,63706   A
+QBOC40_UW2APP32        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191621   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu05 29-JUN 02:09            26296  7530,19656   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                   7532,24938   A
+QBOC40_UW2APP32        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369188630   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:46            26296  7548, 9489   A
+QBOC40_UW2APP21        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189749   193514777842129 /SendSales                                       pprdc40uw2apu08 28-JUN 23:58            26296  8474,54464   A
+QBOC40_UW2APP00        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189252   193514777842129 /SendSales                                       pprdc40uw2apu03 30-JUN 07:30            26296  8485,20109   A
+QBOC40_UW2APP14        5ysr82fgjdcam               0 db file sequential read        123145729767719      1530369189700   0 /v3/company/upload                                             pprdc40uw2apv03 29-JUN 02:09                   8491,44875   A
+QBOC40_UW2APP32        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189450   193514777842129 /SendSales                                       pprdc40uw2apu05 29-JUN 02:09            18800  9411,50713   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                   9412,48137   A
+QBOC40_UW2APP14        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189311   193514777842129 /SendSales                                       pprdc40uw2apu04 30-JUN 07:24            26296  9433,41419   A
+QBOC40_UW2APP00        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189710   193514777842129 /SendSales                                       pprdc40uw2apu03 29-JUN 01:08            26296 12214,37001   A
+QBOC40_UW2APP23        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189263   193514777842129 /SendSales                                       pprdc40uw2apu06 29-JUN 02:17            26296 12227,29925   A
+QBOC40_UW2APP07        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189937   193514777842129 /SendSales                                       pprdc40uw2apu03 29-JUN 01:00            26296 13155,43187   A
+QBOC40_UW2APP08        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189247   193514777842129 /SendSales                                       pprdc40uw2apu02 30-JUN 07:25            26296 13181, 6614   A
+QBOC40_UW2APP32        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189853   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:46            26296 14095,12431   A
+QBOC40_UW2APP69        ab69mnnq1fv74               0 SQL*Net message from client    193514766349904                                                                                       pprdc40uw2apu09 29-JUN 00:21                  14104,29165   A
+QBOC40_UW2APP82        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189131   193514777842129 /SendSales                                       pprdc40uw2apu04 29-JUN 01:31            26296 14106,35716   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 26-JUN 14:20                  14128,24829   A
+QBOC40_UW2APP19        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369188641   193514777842129 /SendSales                                       pprdc40uw2apu04 30-JUN 01:01            24437 15041,60473   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  15042, 6505   A
+QBOC40_UW2APP82        6gn5mf4hqcpfp               0 SQL*Net message from client    123145713827409      1530369191687   0 /v4/graphql                                                    pprdc40uw2apu04 29-JUN 01:31                  15056,17077   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 26-JUN 22:38                  15066,22813   A
+QBOC40_UW2APP04        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191737   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu01 30-JUN 07:25            26296 15970,36484   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                  15975,53831   A
+QBOC40_UW2APP78        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369191155   0 /domainservice/v1/invoice/status                               pprdc40uw2aps06 29-JUN 01:31            26296 15983, 8640   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  15989,33525   A
+QBOC40_UW2APP08        4jb51gtnm9usv               0 db file sequential read        193514766326084      1530369191833   0 /v4/entities                                                   pprdc40uw2apu02 29-JUN 10:08                  16916,24887   A
+QBOC40_UW2APP25        gy6bycsmnp61n               0 SQL*Net message from client    1445376575           1530369191162   0 /v3/company/payment                                            pprdc40uw2apv01 29-JUN 02:03                  16917,21803   I
+QBOC40_UW2APP09        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189800   193514777842129 /SendSales                                       pprdc40uw2apu05 29-JUN 01:54            26296 17853,54119   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  18787,37509   A
+QBOC40_UW2APP60        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189115   193514777842129 /SendSales                                       pprdc40uw2apu01 29-JUN 08:22            26296 18800,39088   A
+QBOC40_UW2APP93        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191199   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu00 29-JUN 11:38            26296 18805,43128   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 26-JUN 19:13                  19741,47591   A
+QBOC40_UW2APP08        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191372   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu02 30-JUN 07:25            26296 19751,31062   A
+QBOC40_UW2APP58        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189320   193514777842129 /SendSales                                       pprdc40uw2apu08 28-JUN 23:51            15041 19754,46040   A
+QBOC40_UW2APP82        fwsmty9szr3g9               0 library cache: mutex X                                                                                                               pprdc40uw2apu04 29-JUN 01:31                  19756,58263   A
+QBOC40_UW2APP18        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191624   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu05 29-JUN 02:01            26296 20673,65409   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                  21636,59013   A
+QBOC40_UW2APP82        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190056   193514777842129 /SendSales                                       pprdc40uw2apu04 30-JUN 04:20            13166 23482,19673   A
+KPOPAT                 6n4h3kyba110f               0 SQL*Net message to client                           SQL*Plus                                                                         pprdc34uw213g11 30-JUN 07:32                  23485,56626   A
+QBOC40_UW2APP32        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189560   193514777842129 /SendSales                                       pprdc40uw2apu05 29-JUN 02:09            13166 23500,22453   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 26-JUN 10:05                  23514,17615   A
+QBOC40_UW2APP41        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190154   193514777842129 /SendSales                                       pprdc40uw2apu00 28-JUN 23:43            15041 24420,23810   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                  24433,14663   A
+QBOC40_UW2APP54        btuvgjf194f93               0 enq: TX - row lock contention  193514766349904      1530369191212   0 /neo/v1/company/purchsales/send                                pprdc40uw2apu00 29-JUN 11:09            15041 24436,55671   A
+QBOC40_UW2APP93        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189883   193514777842129 /SendSales                                       pprdc40uw2apu00 30-JUN 07:32            15983 24448,49546   A
+QBOC40_UW2APP85        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189181   193514777842129 /SendSales                                       pprdc40uw2apu09 29-JUN 00:14            15983 24451, 8643   A
+QBOC40_UW2APP69        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189673   193514777842129 /SendSales                                       pprdc40uw2apu09 29-JUN 00:22            15041 25363,57744   A
+QBOC40_UW2APP23        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190096   193514777842129 /SendSales                                       pprdc40uw2apu06 29-JUN 02:17            20673 25388,57147   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  26316, 5577   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 SQL*Net message from client    193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  27248,20274   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  27251,44046   A
+QBOC40_UW2APP93        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369189140   193514777842129 /SendSales                                       pprdc40uw2apu00 29-JUN 08:46            24448 27263,24860   A
+QBOC40_UW2APP08        2ypfagkg86n3y               0 enq: TX - row lock contention  193514766349904      1530369190213   193514777842129 /SendSales                                       pprdc40uw2apu02 29-JUN 00:52            24448 27265,42355   A
+QBOC40_UW2APP23        ca0zmbawc63fy               0 SQL*Net message from client    193514766349904      1530369191029   193514777842129 /SendSales                                       pprdc40uw2apu06 30-JUN 07:25                  29131,22233   A
+QBOC40_UW2APP30        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369069790   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj06 25-JUN 22:47                  29134,60651   A
+QBOC40_UW2APP13        7qraab14w8qm9               0 resmgr:cpu quantum             193514766349904      1530369070040   Subscriber.global.QboInternal.Intuit.globalvirtual.prod.sbfinanc pprdc40uw2apj01 25-JUN 22:47                  29138,58724   A
+
+148 rows selected.
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Top N redo generating sessions ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Top N redo generating sessions -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+SQL> set pages 10000
+SQL> set lines 300
+SQL> --col machine for a35
+SQL> --col username for a10
+SQL> column sid_serial for a13;
+SQL> select b.username,
+  2        machine,
+  3        b.osuser,
+  4        b.status,
+  5        a.redo_mb,
+  6        lpad((b.sid || ',' || lpad(b.serial#,5)),11) sid_serial
+  7  from (select n.inst_id, sid,
+  8              round(value/1024/1024/1024,2) redo_mb
+  9          from gv$statname n, gv$sesstat s
+ 10          where n.inst_id=s.inst_id
+ 11                and n.name = 'redo size'
+ 12                and s.statistic# = n.statistic#
+ 13          order by value desc
+ 14      ) a,
+ 15      gv$session b
+ 16  where b.inst_id=a.inst_id
+ 17    and a.sid = b.sid
+ 18  and  rownum <= 10;
+
+USERNAME               MACHINE         OSUSER      S    REDO_MB SID_SERIAL
+---------------------- --------------- ----------- - ---------- -------------
+GGT                    ip-172-19-0-223 rdsdb       A      79.15 10336,65102
+GGT                    ip-172-19-0-223 rdsdb       A      76.06  6576,51177
+                       ip-172-19-0-223 rdsdb       A      53.13 12208,45894
+                       ip-172-19-0-223 rdsdb       A      53.11 11269,53543
+                       ip-172-19-0-223 rdsdb       A      52.87 13147,22898
+                       ip-172-19-0-223 rdsdb       A      52.85 14086,20921
+GGT                    ip-172-19-0-223 rdsdb       A      43.91 15031,50046
+QBOC40_UW2APP88        pprdc40uw2apb03 app         I       3.24 12210,25828
+GGT                    ip-172-19-0-223 rdsdb       A        1.7  9394,28207
+QBOC40_UW2APP88        pprdc40uw2apb03 app         I       1.38 19735,42295
+
+10 rows selected.
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Redo Generation History ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Redo Generation History -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 10000
+SQL> SELECT to_date(first_time) DAY,
+  2  to_char(sum(decode(to_char(first_time,'HH24'),'00',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "00",
+  3  to_char(sum(decode(to_char(first_time,'HH24'),'01',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "01",
+  4  to_char(sum(decode(to_char(first_time,'HH24'),'02',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "02",
+  5  to_char(sum(decode(to_char(first_time,'HH24'),'03',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "03",
+  6  to_char(sum(decode(to_char(first_time,'HH24'),'04',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "04",
+  7  to_char(sum(decode(to_char(first_time,'HH24'),'05',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "05",
+  8  to_char(sum(decode(to_char(first_time,'HH24'),'06',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "06",
+  9  to_char(sum(decode(to_char(first_time,'HH24'),'07',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "07",
+ 10  to_char(sum(decode(to_char(first_time,'HH24'),'08',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "08",
+ 11  to_char(sum(decode(to_char(first_time,'HH24'),'09',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "09",
+ 12  to_char(sum(decode(to_char(first_time,'HH24'),'10',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "10",
+ 13  to_char(sum(decode(to_char(first_time,'HH24'),'11',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "11",
+ 14  to_char(sum(decode(to_char(first_time,'HH24'),'12',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "12",
+ 15  to_char(sum(decode(to_char(first_time,'HH24'),'13',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "13",
+ 16  to_char(sum(decode(to_char(first_time,'HH24'),'14',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "14",
+ 17  to_char(sum(decode(to_char(first_time,'HH24'),'15',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "15",
+ 18  to_char(sum(decode(to_char(first_time,'HH24'),'16',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "16",
+ 19  to_char(sum(decode(to_char(first_time,'HH24'),'17',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "17",
+ 20  to_char(sum(decode(to_char(first_time,'HH24'),'18',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "18",
+ 21  to_char(sum(decode(to_char(first_time,'HH24'),'19',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "19",
+ 22  to_char(sum(decode(to_char(first_time,'HH24'),'20',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "20",
+ 23  to_char(sum(decode(to_char(first_time,'HH24'),'21',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "21",
+ 24  to_char(sum(decode(to_char(first_time,'HH24'),'22',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "22",
+ 25  to_char(sum(decode(to_char(first_time,'HH24'),'23',(BLOCKS*BLOCK_SIZE)/1024/1024/1024,0)),'999.9') "23"
+ 26  from
+ 27  v$archived_log
+ 28  where dest_id=1 and to_date(first_time) > sysdate -14
+ 29  group by
+ 30  to_char(first_time,'YYYY-MON-DD'), to_date(first_time)
+ 31  order by to_date(first_time);
+
+DAY       00     01     02     03     04     05     06     07     08     09     10     11     12     13     14     15     16     17     18     19     20     21     22     23
+--------- ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+17-JUN-18     .7    1.0     .6     .6     .6     .6    4.4    3.0    7.4    4.0    2.5     .9    2.8    1.3    1.2    1.6     .9    2.7    7.0    2.6     .7     .8     .7     .6
+18-JUN-18     .7    3.5    1.9     .8    1.9    1.5    2.1    2.6    6.4    7.2    9.0   13.3   12.0    4.3   12.3   10.3    3.1    2.7    2.2    1.2    1.2    1.6    1.7     .9
+19-JUN-18     .7    1.1     .9     .8    1.2    1.6   10.7    8.1    6.2    6.3   10.6    5.3   12.7   11.9    8.7    7.2    4.8    4.5    2.4    1.4    1.5    1.2    1.8    1.2
+20-JUN-18     .6    1.2     .8     .8     .9    7.5    6.6    9.1   11.9    9.3   11.1    6.8    9.8   10.8   14.5    7.2    3.1    1.6    1.9    1.3     .9     .8    1.4    8.5
+21-JUN-18    8.0    1.4    1.2     .8    1.1    1.3    4.8    6.4    8.2   14.5    6.5    8.4   12.8   10.9    9.0    3.0    3.8    1.6    1.6    2.0    1.1    6.1     .9     .6
+22-JUN-18     .5    1.2     .8    4.2     .9    1.3    1.9    2.5    2.9    3.0    2.9    2.9    2.6    2.3    2.0    1.5    1.1     .9     .8     .6     .6     .6     .6     .6
+23-JUN-18     .6    1.2     .7     .6     .6     .7     .8    1.2    1.3    1.2    1.1    1.0     .9     .8    1.0    1.4    1.5    1.9    1.2    1.1    2.9    2.0     .9    1.0
+24-JUN-18     .9    1.5     .6     .4     .5     .5    1.2    1.2    1.1    1.1    2.8    2.4    1.8    1.3    1.2    1.1    1.4    1.3    1.0    4.9    3.7    2.0    1.1     .6
+25-JUN-18     .4    1.2     .7    1.5    1.3    4.2    5.4    4.5   11.5   10.1    6.3   10.5    9.0    7.2    9.3    4.5    1.7    3.7    1.8    1.2    1.0     .7    1.7     .8
+26-JUN-18     .5    1.5     .8     .9     .8    1.5    6.0    6.3    5.1    3.8    3.7    5.8    6.2    3.7    3.2    3.4    3.3    7.3    1.2    2.1    1.8    1.6    1.3     .6
+27-JUN-18     .4    1.8     .8     .8    2.2    1.3    3.3    5.8    5.0    6.5    7.4    8.0    6.2    9.4   11.4    7.6    2.4    1.7   12.6    4.0    2.2    1.9    1.3    1.3
+28-JUN-18    1.0    2.0    2.3     .7    1.0    1.3    2.5   10.0    5.0    5.8    5.9   11.3   11.5    9.5    4.8    2.1    5.0    1.1    1.2    5.2     .9    1.0    1.9     .6
+29-JUN-18    1.1    1.2     .8     .8    1.7    1.7    1.9    3.0    9.1    8.5    4.3    5.4    6.2    3.6    2.5    2.3    2.0    1.2    4.1     .7     .5     .5     .8     .5
+30-JUN-18     .4    2.0     .8     .6     .6     .6     .8    2.7     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0     .0
+
+14 rows selected.
+
+SQL> 
+SQL> set pages 0
+SQL> select lpad(rpad(' Undo Utilization Status ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Undo Utilization Status -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 10000
+SQL> 
+SQL> select status,count(1) "Undo Blocks",sum(bytes)/1024/1024/1024 "Size(GB)" from dba_undo_extents group by status;
+
+S Undo Blocks   Size(GB)
+- ----------- ----------
+U         852 1.10754395
+A           2 .008789063
+E           2 .001953125
+
+SQL> 
+SQL> set pages 0
+SQL> select lpad(rpad(' Sessions sorting data on disk ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Sessions sorting data on disk -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 10000
+SQL> SELECT tablespace,
+  2         s.username,
+  3         s.sql_id sql_id,
+  4         substr(s.module,1,15) module,
+  5         client_identifier,
+  6         sum((u.blocks * (select value from v$parameter where name='db_block_size')))/1024/1024/1024 "Size(GB)",
+  7         lpad((s.sid || ',' || lpad(s.serial#,5)),11) sid_serial,
+  8         p.spid os_process
+  9  FROM gv$session s, gv$sort_usage u, gv$process p
+ 10  WHERE s.saddr=u.session_addr
+ 11  and p.addr = s.paddr
+ 12  and u.extents > 10
+ 13  and u.inst_id = s.inst_id
+ 14  and TABLESPACE like '%TEMP%'
+ 15  group by tablespace,
+ 16           s.username,
+ 17           s.sql_id,
+ 18           substr(s.module,1,15),
+ 19           client_identifier,
+ 20           lpad((s.sid || ',' || lpad(s.serial#,5)),11),
+ 21           p.spid;
+
+no rows selected
+
+SQL> set pages 0
+SQL> select lpad(rpad(' Database/System Metrics ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- Database/System Metrics -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+SQL> set pages 10000
+SQL> col "Metric" for a45
+SQL> col "Metric Unit" for a30
+SQL> select m.metric_name "Metric" ,
+  2         round(m.value,2)	"Current Value",
+  3         round(s.average,2) "Average Value",
+  4         round(s.MAXVAL,2) "Max Value",
+  5         m.metric_unit "Metric Unit"
+  6   FROM v$sysmetric	   m,
+  7        v$sysmetric_summary s
+  8  WHERE m.group_id=s.group_id
+  9    AND m.METRIC_ID=s.METRIC_ID
+ 10    AND s.average > 0
+ 11    AND s.metric_name IN ('Redo Allocation Hit Ratio',
+ 12  			'Redo Generated Per Sec',
+ 13  						'Logons Per Sec',
+ 14  						'Logical Reads Per Sec',
+ 15  					--	'Redo Writes Per Sec',
+ 16  						'Host CPU Utilization (%)',
+ 17  						'Network Traffic Volume Per Sec',
+ 18  					--	'Enqueue Timeouts Per Sec',
+ 19  					--	'Enqueue Waits Per Sec',
+ 20  					--	'Enqueue Requests Per Sec',
+ 21  						'Consistent Read Gets Per Sec',
+ 22  						'Physical Read Total IO Requests Per Sec',
+ 23  						'Physical Write Total IO Requests Per Sec',
+ 24  						'Current Logons Count',
+ 25  						'SQL Service Response Time',
+ 26  						'Database Wait Time Ratio',
+ 27  						'Database CPU Time Ratio',
+ 28  						'Shared Pool Free %',
+ 29  						'PGA Cache Hit %',
+ 30  						'Session Limit %',
+ 31  						'Database Time Per Sec',
+ 32  					--	'Physical Write IO Requests Per Sec',
+ 33  						'Physical Write Total Bytes Per Sec',
+ 34  					--	'Physical Read IO Requests Per Sec',
+ 35  						'Physical Read Total Bytes Per Sec',
+ 36  						'Current OS Load',
+ 37  						'Session Count',
+ 38  						'Average Synchronous Single-Block Read Latency',
+ 39  						'I/O Megabytes per Second',
+ 40  						'Average Active Sessions',
+ 41  						'Total PGA Allocated')
+ 42   ORDER BY 1	;
+
+Metric                                        Current Value Average Value  Max Value Metric Unit
+--------------------------------------------- ------------- ------------- ---------- ------------------------------
+Average Active Sessions                               80.85         14.45      80.85 Active Sessions
+Average Synchronous Single-Block Read Latency          2.53          1.21       2.81 Milliseconds
+Consistent Read Gets Per Sec                      4276340.1    1025972.08 4317172.73 Blocks Per Second
+Current Logons Count                                    892        797.52        893 Logons
+Current OS Load                                       79.82         13.96      79.85 Number Of Processes
+Database CPU Time Ratio                               38.63         80.33      91.33 % Cpu/DB_Time
+Database Time Per Sec                               8085.04       1444.67    8085.04 CentiSeconds Per Second
+Database Wait Time Ratio                              61.37         19.67      61.37 % Wait/DB_Time
+Host CPU Utilization (%)                              96.92         27.12      96.92 % Busy/(Idle+Busy)
+I/O Megabytes per Second                              27.63         28.44      46.09 Megabtyes per Second
+Logical Reads Per Sec                            4283695.77    1031082.65 4324111.52 Reads Per Second
+Logons Per Sec                                          .35           .32        .96 Logons Per Second
+Network Traffic Volume Per Sec                   8282189.13    5476562.55 11717143.9 Bytes Per Second
+PGA Cache Hit %                                       99.49         99.49      99.49 % Bytes/TotalBytes
+Physical Read Total Bytes Per Sec                25423971.9    26715161.5   37270979 Bytes Per Second
+Physical Read Total IO Requests Per Sec             1729.15       1397.84    2000.07 Requests Per Second
+Physical Write Total Bytes Per Sec               3541142.76    3105812.76 15462442.7 Bytes Per Second
+Physical Write Total IO Requests Per Sec             300.61        234.06     597.04 Requests Per Second
+Redo Allocation Hit Ratio                             99.99         99.99        100 % (#Redo - RedoSpaceReq)/#Redo
+Redo Generated Per Sec                           1054153.98     843453.99 4912208.94 Bytes Per Second
+SQL Service Response Time                               .12           .03        .12 CentiSeconds Per Call
+Session Count                                           933        839.33        937 Sessions
+Session Limit %                                        3.11          2.79       3.12 % Sessions/Limit
+Shared Pool Free %                                    16.63         16.84       16.9 % Free/Total
+Total PGA Allocated                              2592199680    1914483108 2592199680 bytes
+
+25 rows selected.
+
+SQL> 
+SQL> set pages 0
+SQL> select lpad(rpad(' OS level stats ',105,'-*'),150,'-*') from dual;
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- OS level stats -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+SQL> set pages 1000
+SQL> col value for 9999999999999.9
+SQL> select stat_name, value from gv$osstat  where STAT_NAME like '%FREE%' or STAT_NAME like '%TIME%' or STAT_NAME like 'LOAD';
+
+STAT_NAME                                                                   VALUE
+---------------------------------------------------------------- ----------------
+IDLE_TIME                                                           77399527069.0
+BUSY_TIME                                                            1823590949.0
+USER_TIME                                                             191877449.0
+SYS_TIME                                                               92369902.0
+IOWAIT_TIME                                                           700981817.0
+NICE_TIME                                                            1526797304.0
+RSRC_MGR_CPU_WAIT_TIME                                                    90910.0
+LOAD                                                                         80.7
+FREE_MEMORY_BYTES                                                    3142856704.0
+SWAP_FREE_BYTES                                                    257937629184.0
+
+10 rows selected.
+
+SQL> 
+SQL> /*
+SQL> set pages 0
+SQL> select lpad(rpad(' Blocking sessions tree ',105,'-*'),150,'-*') from dual;
+SQL> set pages 10000
+SQL> column sess format a8 word_wrapped
+SQL> column id1   format 99999999
+SQL> column id2   format 99999999
+SQL> column req       format 999
+SQL> column type  format a4
+SQL> column "Module" format a30 word_Wrapped
+SQL> SELECT lpad('-->',DECODE(b.request,0,0,5),' ')||b.sid sess
+SQL>         , b.id1
+SQL>         , b.id2
+SQL>         , b.lmode
+SQL>        ,  b.request req, b.type --, wait_sessf(sid) "Module"
+SQL> FROM V$LOCK b,v$session a
+SQL>   WHERE b.id1 IN (SELECT id1 FROM gV$LOCK WHERE lmode = 0) and a.sid=b.sid -- and a.inst_id=b.inst_id
+SQL>   ORDER BY b.id1,b.request;
+SQL> */
+SQL> spool off;

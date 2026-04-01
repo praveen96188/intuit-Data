@@ -1,0 +1,2 @@
+delete from pspadm.psp_financial_transaction where (financial_transaction_seq) in ('543403a2-eb8d-4056-84d9-c1e7ec4e5454') and ( company_fk) in ('b52661c5-1e78-4b31-a726-995974994583');
+delete from pspadm.psp_financial_transaction where (financial_transaction_seq) in ('8021cd8d-14c3-4f56-bfb2-c9fbccf618d2') and ( company_fk) in ('b52661c5-1e78-4b31-a726-995974994583');

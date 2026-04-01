@@ -1,0 +1,12 @@
+delete from pspadm.psp_company_service where (company_service_seq) in ('3c937fd4-025f-4042-9944-0572feed2440');
+delete from pspadm.psp_company_service where (company_service_seq) in ('43cea21f-124c-4df4-a98f-044b7abb4e48');
+delete from pspadm.psp_company_service where (company_service_seq) in ('6632fe3e-12d2-4c03-8d21-f3297370a440');
+delete from pspadm.psp_company_service where (company_service_seq) in ('6db3c58f-35a9-46f7-9ce6-a6c743f045b2');
+delete from pspadm.psp_company_service where (company_service_seq) in ('738a22db-87bb-4e7c-a74b-cbef0b3a6a88');
+delete from pspadm.psp_company_service where (company_service_seq) in ('79f47313-7404-4324-9d6e-9095ed124dfb');
+delete from pspadm.psp_company_service where (company_service_seq) in ('7c9d4707-02eb-4616-9ed4-a0bbdbaf7377');
+delete from pspadm.psp_company_service where (company_service_seq) in ('8bd0eea6-5b9f-4671-a658-37b2b563c37c');
+delete from pspadm.psp_company_service where (company_service_seq) in ('97aa2905-e454-4fbb-97ee-cce1b572ebad');
+delete from pspadm.psp_company_service where (company_service_seq) in ('9c908e6e-47d2-4f49-b458-259ef5c6b019');
+delete from pspadm.psp_company_service where (company_service_seq) in ('ad6d30d8-b013-4f82-8905-4759797a7343');
+delete from pspadm.psp_company_service where (company_service_seq) in ('f9156c02-3acb-4c6f-ac0d-82dd180486c7');

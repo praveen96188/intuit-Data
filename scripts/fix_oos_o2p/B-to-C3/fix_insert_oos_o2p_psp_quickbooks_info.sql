@@ -1,0 +1,13 @@
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('01b6ba6a-24d2-4143-90fe-495cd850e822');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('06c7e24d-3af0-472d-8657-6161143cf01f');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('1581a5ea-a3ab-4cec-827f-8089a1e352f7');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('1dee6386-a6d7-4a41-9000-c1e072e29da5');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('1f1da659-6ff7-4230-8d3f-1ce6ce94be50');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('2fcf3d95-b57e-480c-980b-5eb4c0ff8b03');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('30c821b6-c496-4ba7-8ee0-0b70d9e9c34e');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('50823972-71a4-44fb-aa8b-05714a81d5cb');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('537a66f3-fcc9-4d61-92f3-d9c890df68a0');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('a1815aee-0588-4b04-a8f4-093f0404f4aa');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('ccaac296-3a27-4fac-b246-57d1840578a1');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('da571a2d-38c8-4483-b99f-d87a3e5b5148');
+insert into pspadm.psp_quickbooks_info select * from imp_psphpp02_pspadm.psp_quickbooks_info where (quickbooks_info_seq) in ('e7bbb510-3c34-442b-bf2c-7497c64681b9');

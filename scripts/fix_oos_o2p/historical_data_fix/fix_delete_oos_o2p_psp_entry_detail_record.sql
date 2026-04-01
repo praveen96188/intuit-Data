@@ -1,0 +1,12 @@
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('09c3dcd2-1cf4-4e2f-9a8f-d684f1b69543') and ( company_fk) in ('02377c36-db15-4441-8e0f-e7378e416f1c');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('a29c2014-d91c-468b-a88f-5a1e3a5fce37') and ( company_fk) in ('02377c36-db15-4441-8e0f-e7378e416f1c');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('dfa2748b-b4e1-476c-813b-2d2d0c36f3bf') and ( company_fk) in ('8f000439-820a-438b-8e44-fb2ab5ea40a0');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('f9ce5287-ead2-4f52-9e25-f9cee3b1ed58') and ( company_fk) in ('8f000439-820a-438b-8e44-fb2ab5ea40a0');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('a7463bee-5246-40ea-a600-56099426f59e') and ( company_fk) in ('a39dbf1a-239e-468b-a879-256f1d2d5458');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('ade6bd54-505f-45df-a265-a40fd3b66bfb') and ( company_fk) in ('a39dbf1a-239e-468b-a879-256f1d2d5458');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('7409a702-b712-416c-8af1-c48d676d9947') and ( company_fk) in ('d356b60a-1923-4f1c-88c1-b1ee0c55ded5');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('dc874acb-d6e5-41c3-ac33-95c24cedb1bc') and ( company_fk) in ('d356b60a-1923-4f1c-88c1-b1ee0c55ded5');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('e0c51eaf-e444-4d6a-ad48-686863fc278c') and ( company_fk) in ('d356b60a-1923-4f1c-88c1-b1ee0c55ded5');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('ed2912df-407b-4c4c-9069-6d752b4c156a') and ( company_fk) in ('d356b60a-1923-4f1c-88c1-b1ee0c55ded5');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('ee0b9b78-7007-403a-8940-e9b50302bab9') and ( company_fk) in ('d356b60a-1923-4f1c-88c1-b1ee0c55ded5');
+delete from pspadm.psp_entry_detail_record where (entry_detail_record_seq) in ('ee6463e0-b254-4c3e-9ab6-d59712248af1') and ( company_fk) in ('d356b60a-1923-4f1c-88c1-b1ee0c55ded5');

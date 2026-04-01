@@ -1,0 +1,12 @@
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('3872adfe-14df-4e22-a5df-892cd0be3c3a');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('39fd71d6-9df6-4819-8f3e-8d2418f3507d');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('49fbb425-803b-49a5-9d45-4bdc73f48201');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('61b2f8ef-a3b6-40c7-a720-c9b16e2a6a2a');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('766737b6-4fd5-4cea-9131-be0921f5a555');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('7b09c9b4-29da-4277-a79e-d4c73f193e7e');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('7da0d357-2a77-45cd-9dd9-b8667511bea6');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('8ab4a7bd-274e-4486-85f0-24da614e6754');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('fc8c1508-1429-452b-a225-47fe746ff036');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('a3676a61-d460-4fce-83f0-3455e94465fc');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('b618ef1a-a82c-4ae5-b0e2-c271e761c707');
+delete from pspadm.psp_payroll_run where (payroll_run_seq) in ('e67194f2-bf81-48a8-9852-78af814b7c0f');

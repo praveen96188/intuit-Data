@@ -1,0 +1,10 @@
+delete from pspadm.psp_address where (address_seq) in ('1a5579fe-a47a-4298-ae17-b96a7fbf22be');
+delete from pspadm.psp_address where (address_seq) in ('256cfabd-1683-4a25-980f-90ecbfaac5e1');
+delete from pspadm.psp_address where (address_seq) in ('2be6cc72-08f1-4535-8b5c-54357b674931');
+delete from pspadm.psp_address where (address_seq) in ('310f76d7-5b4c-47c3-8cea-72e07ed06d41');
+delete from pspadm.psp_address where (address_seq) in ('687f1d39-7ec6-4f15-a478-b68a744680be');
+delete from pspadm.psp_address where (address_seq) in ('b3cdc533-206d-4f99-8bab-e19040061b2c');
+delete from pspadm.psp_address where (address_seq) in ('bfd05dcf-b495-4a9b-94d9-9d66f1db6c82');
+delete from pspadm.psp_address where (address_seq) in ('c3b1fcac-d923-4810-b44c-60886ac96fd2');
+delete from pspadm.psp_address where (address_seq) in ('e853a83a-8e0d-4b68-a6fb-f93c5b960ceb');
+delete from pspadm.psp_address where (address_seq) in ('eb7d1b17-02ee-4f3c-88dd-2bbcc69ebaf9');

@@ -1,0 +1,10 @@
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('0d9e8958-897f-4847-99b9-84ec49da989e');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('31ab2be7-5c66-4f08-bb09-1fd36112e281');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('433873a4-53fb-4465-a8eb-91394f00be0f');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('ab8cbaca-00e6-4c1a-a2eb-8247b8ff25c6');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('ade950da-ace1-457d-9c10-f268048228f3');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('c02c7e48-bb0d-46ff-9df0-7125ab8610eb');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('c2e879bc-4abc-4720-b7e0-8334593c7d08');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('df1b8bab-dd3d-4cac-8c6e-367ef1d45ed9');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('ee72bd31-e4eb-404a-8b18-5a3eb757dafe');
+insert into pspadm.psp_paycheck select * from imp_psphpp02_pspadm.psp_paycheck where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( paycheck_seq) in ('fb637706-1b3a-4a31-8e3e-49e7be2b5ffd');

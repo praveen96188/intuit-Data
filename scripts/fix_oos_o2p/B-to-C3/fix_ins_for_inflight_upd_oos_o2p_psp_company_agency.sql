@@ -1,0 +1,12 @@
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('0705a598-6b38-444f-9fdc-48071b8e88fc');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('22f4f7df-8f53-4b19-884c-240e69f3a9ae');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('303654d6-b80c-41e6-9d92-6d7fb45bb9c6');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('51e33a8c-369c-4858-8d63-18ca3ae4b8fb');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('6125c7c6-a16d-42e8-ad05-ec705b07e856');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('74fa338b-16a0-4fdb-b0ea-48e52b56bf62');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('86e2bbe7-6d61-4516-8e27-2b1cd5564c4d');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('aeeddfe5-1cf9-40f8-9d23-f5ca877a3054');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('b00d1026-c57d-40e1-a99a-eec132f99c7e');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('b99103d6-2d7d-4ddf-84f6-1bf42d9118a8');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('c4814c73-0e4f-4408-963f-69cbdca10b8d');
+insert into pspadm.psp_company_agency select * from imp_psphpp02_pspadm.psp_company_agency where (company_agency_seq) in ('cea6b6ad-3886-40f9-8084-2c3938b02e9b');

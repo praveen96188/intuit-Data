@@ -1,0 +1,12 @@
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('ba49b4e6-273e-4e59-a366-b5c56e198a86');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('d12c34b7-8634-4c28-a95f-b5dc42d888b8');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('f28ac167-9a16-4e86-86af-456e65c440c6');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('04c94883-69f6-4718-ac85-500e6f740c4f');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('0726a67b-07f2-41f6-b23e-a86866df663c');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('1f6e62d0-6e12-4c1e-9b61-cd4086085a0a');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('240d9498-3b70-43a9-a05c-031884a08f0f');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('29a8d714-0720-4f7c-9dc1-85dd4cf0e3f6');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('2aa2a3a3-bad5-4d64-bfeb-536828aebdb5');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('324b679f-edbb-40f8-8ebc-c0c0f47bafe0');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('6d351dd0-a272-4860-a3d6-8ce98f644018');
+delete from pspadm.psp_liability_check where (liability_check_seq) in ('769e4bad-9fcc-49ab-81ad-1c91852979c9');

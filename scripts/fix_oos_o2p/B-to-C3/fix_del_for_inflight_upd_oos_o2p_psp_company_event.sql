@@ -1,0 +1,2 @@
+delete from pspadm.psp_company_event where (company_event_seq) in ('1bb136f8-b429-4597-8f6a-2e85349e8641') and ( company_fk) in ('47ec5ce2-d528-462e-9843-73cf57fa9a8c');
+delete from pspadm.psp_company_event where (company_event_seq) in ('d2b711ec-293b-4463-9058-a4cd4d4fa523') and ( company_fk) in ('a87672ef-2816-461a-85c2-c911f4952f9a');

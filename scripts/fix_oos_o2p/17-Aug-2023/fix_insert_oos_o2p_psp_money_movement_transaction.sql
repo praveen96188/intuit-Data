@@ -1,0 +1,1 @@
+insert into pspadm.psp_money_movement_transaction select * from imp_psphpp02_pspadm.psp_money_movement_transaction where (company_fk) in ('e1de4a04-792c-4214-a6bd-578aba7c3f10') and ( money_movement_transaction_seq) in ('f9d5bcd1-0359-42b5-9e45-1e93f73922fd');

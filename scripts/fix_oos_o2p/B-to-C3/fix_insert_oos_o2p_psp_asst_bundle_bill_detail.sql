@@ -1,0 +1,9 @@
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('0b0a8a27-ee33-460e-8a83-26b212a5190d');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('0cef7853-3baf-4d36-8b34-d19ab3714fc0');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('21a26648-a2d2-47c5-bfa6-7798c5a55664');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('260e8d0a-a13a-4ada-bc1f-b95995aca47f');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('434c0859-f705-41dc-ba91-3e2ee8b9cb7a');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('46a4eb1e-5b75-49b9-b1e9-b564116e2ece');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('663afca6-a1ee-4126-aaa3-092a3ed10aca');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('84293570-c958-4867-9762-153e7d810de1');
+insert into pspadm.psp_asst_bundle_bill_detail select * from imp_psphpp02_pspadm.psp_asst_bundle_bill_detail where (asst_bundle_bill_detail_seq) in ('d9c4e381-73c0-4754-8fd6-767fd4431858');

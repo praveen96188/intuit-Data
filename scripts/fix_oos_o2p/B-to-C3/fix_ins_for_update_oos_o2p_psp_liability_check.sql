@@ -1,0 +1,15 @@
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('812cad33-de2a-4b3e-bdd4-7360d8c82a5b');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('8458ec55-29d7-4891-9200-c775c2bfb4c3');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('a753e39a-82d5-4670-a534-09799b04ff2c');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('ba356de1-b3bf-4bc2-865e-f7177006b04c');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('ea537754-64fc-41b8-880a-65ba53679d40');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('c45a9c0b-768a-4497-a2db-d68d2091cd69');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('cdc83113-cac3-4371-a235-a23a04e884b1');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('de42b237-8c32-4bb2-b83b-5a1bd199cd49');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('019a516c-0915-4784-b739-9840f6d586da');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('083e1765-9293-4f82-a693-06d2bebbac17');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('285cf0f1-df52-4f32-817b-0649f745ed11');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('558fd95a-d52c-4c32-adea-517fb2db5ab9');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('79f78baf-5250-416b-9cc9-8300bfd3695c');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('7a6e1f3b-f5a3-4e52-8c56-7aad6404e6ae');
+insert into pspadm.psp_liability_check select * from imp_psphpp02_pspadm.psp_liability_check where (liability_check_seq) in ('7bdb2449-6e03-4546-a0c2-f1ba0f4bc392');

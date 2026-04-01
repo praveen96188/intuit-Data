@@ -1,0 +1,14 @@
+set session_replication_role=replica;
+\i fix_del_for_upd_oos_o2p_psp_deduction.sql
+\i fix_del_for_upd_oos_o2p_psp_disburse_advice_tax_liab.sql
+\i fix_del_for_upd_oos_o2p_psp_paystub.sql
+\i fix_del_for_upd_oos_o2p_psp_pstub_employee_info.sql
+\i fix_del_for_upd_oos_o2p_psp_pstub_paid_timeoff_item.sql
+\i fix_del_for_upd_oos_o2p_psp_qbdt_transaction_info.sql
+\i fix_ins_for_upd_oos_o2p_psp_deduction.sql
+\i fix_ins_for_upd_oos_o2p_psp_disburse_advice_tax_liab.sql
+\i fix_ins_for_upd_oos_o2p_psp_paystub.sql
+\i fix_ins_for_upd_oos_o2p_psp_pstub_employee_info.sql
+\i fix_ins_for_upd_oos_o2p_psp_pstub_paid_timeoff_item.sql
+\i fix_ins_for_upd_oos_o2p_psp_qbdt_transaction_info.sql
+

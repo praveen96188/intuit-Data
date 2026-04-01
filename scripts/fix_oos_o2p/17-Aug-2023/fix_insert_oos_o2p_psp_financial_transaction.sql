@@ -1,0 +1,1 @@
+insert into pspadm.psp_financial_transaction select * from imp_psphpp02_pspadm.psp_financial_transaction where (company_fk) in ('f8cf6bff-66b0-4099-a63f-e81078148db2') and ( financial_transaction_seq) in ('c20e81f5-f042-4db2-ad8a-04eaec6d1da7');

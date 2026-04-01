@@ -1,0 +1,2 @@
+delete from pspadm.psp_money_movement_transaction where (money_movement_transaction_seq) in ('7b9b78ad-0340-40a3-8193-573d5f786b76') and ( company_fk) in ('bc82eb1a-3bb8-4e09-a523-4a333e9789a7');
+delete from pspadm.psp_money_movement_transaction where (money_movement_transaction_seq) in ('ab53b648-72b5-4d5c-a0cf-8643caf54ce8') and ( company_fk) in ('9d3f4c8d-f656-4058-a87b-7f3eebb28ebc');

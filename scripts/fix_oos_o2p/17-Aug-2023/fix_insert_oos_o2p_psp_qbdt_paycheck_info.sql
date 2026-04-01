@@ -1,0 +1,2 @@
+insert into pspadm.psp_qbdt_paycheck_info select * from imp_psphpp02_pspadm.psp_qbdt_paycheck_info where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( qbdt_paycheck_info_seq) in ('58b6a333-71be-4127-a10b-4a2f0d566fa8');
+insert into pspadm.psp_qbdt_paycheck_info select * from imp_psphpp02_pspadm.psp_qbdt_paycheck_info where (company_fk) in ('448183e3-0071-42f2-b756-7d38803eed98') and ( qbdt_paycheck_info_seq) in ('b0a0786b-1a09-455d-aee1-efb066dc38ad');

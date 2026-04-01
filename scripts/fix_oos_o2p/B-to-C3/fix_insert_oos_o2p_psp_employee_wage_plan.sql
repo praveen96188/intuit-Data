@@ -1,0 +1,9 @@
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('4fb96deb-76de-427e-bfb2-af72dafd5b4a');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('54823b24-cace-404d-8f0d-32b530c1ed3f');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('a243bc2b-33ab-47df-8b54-54f2eef171b8');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('c027e4b6-6f77-4f90-8b50-81d8b6a6c22b');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('f32350ad-a198-4b39-8e1e-339def3b8bc9');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('f64acdd7-8d34-4398-9467-816cfbdeece1');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('19fe5703-c459-40ad-9ae7-2e0f6eaabe90');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('29bf3973-a38a-4428-9a67-6b4044593434');
+insert into pspadm.psp_employee_wage_plan select * from imp_psphpp02_pspadm.psp_employee_wage_plan where (employee_wage_plan_seq) in ('4379192c-b449-4492-9d85-bf7ddf290c3f');

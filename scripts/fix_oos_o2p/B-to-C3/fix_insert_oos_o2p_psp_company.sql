@@ -1,0 +1,12 @@
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('72e0e7c6-b98d-43cf-aa29-fd2fe93adc61');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('7c21f58d-b51d-40e4-be97-07efc3c4bb3e');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('8031bfc8-dd03-43f4-8ec3-b92508ff75d6');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('835b425c-eac9-4b47-af3f-73dde2bc8745');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('9959e8c9-d034-440e-8de3-abf497d5fdbe');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('a265492a-e7d2-4e93-a420-cecebfe60281');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('a719d969-af4f-4d41-ad00-0f1450832ddc');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('d9c6f44e-cc9a-4cf5-8774-65f78bf71a5c');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('dc4dde87-2f9e-452e-82e2-bf0e4e8601c9');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('e2be1cb4-5968-4f88-a7e3-4516bd83453e');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('e2d3c79d-d033-435f-bebd-dac2a712396e');
+insert into pspadm.psp_company select * from imp_psphpp02_pspadm.psp_company where (company_seq) in ('e6c70239-e78f-4eae-97a9-4b48174ed462');

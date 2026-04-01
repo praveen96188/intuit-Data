@@ -1,0 +1,12 @@
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('17e3adab-de90-4c39-b091-d2fd3a715f78');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('2604630c-2152-4cba-bc1c-b67a5cbf37dc');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('365253ba-6478-4d1a-934b-d79db38c1771');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('3f3fd6ba-2616-434f-b2c9-41af482b06a1');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('65e627bc-f7d5-4299-83e2-d448ef305bb4');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('66b8a544-d5de-4d06-a673-e8c6841d6545');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('77180c1d-1422-44ee-9668-554edd92f9bf');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('ab17ce59-03e2-4f27-bf0e-a99a665d62b4');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('b3d8013d-9228-4376-9a95-813d30ee6078');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('c2d0090c-6c03-4521-a8ad-5d0cb98e315c');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('c4dde0fb-9327-4daf-beee-f2eb933302ed');
+insert into pspadm.psp_payroll_run select * from imp_psphpp02_pspadm.psp_payroll_run where (payroll_run_seq) in ('e43f8677-8900-4d55-b415-b4082f2e2ed2');

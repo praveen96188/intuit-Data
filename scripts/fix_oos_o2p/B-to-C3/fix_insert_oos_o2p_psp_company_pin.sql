@@ -1,0 +1,11 @@
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('17dae8b3-9c1b-49f2-904a-e5334964276e');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('6e59dd1a-0e16-4b1b-b294-54affc784a68');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('8697eb85-fedc-4f63-8ddb-6ddf12e51c9d');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('92ec8eff-ea44-4336-be5b-7d9d36633234');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('99ee99d7-6034-47cc-8630-1e752dfcbd77');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('a2df44cb-ecde-4d83-b1cb-4628794a4193');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('c24c42df-9e9e-465d-a5c9-53d8979f77de');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('c686c379-2aaa-43ee-ad72-5fbcc2fa93b3');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('cea8d094-858b-4f7e-96f2-fb6ee53fba02');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('f67d2f2e-bb46-48e0-a8e4-66218391a57b');
+insert into pspadm.psp_company_pin select * from imp_psphpp02_pspadm.psp_company_pin where (company_pin_seq) in ('fd7b7cb7-6677-47e1-9c47-95a1dd264ad5');

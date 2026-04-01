@@ -1,0 +1,15 @@
+\o again_fix_delete_insert_oos_o2p.log
+set session_replication_role=replica;
+\i fix_delete_oos_o2p_psp_pstub_employee_info.sql
+\i fix_delete_oos_o2p_psp_pstub_paid_timeoff_item.sql
+\i fix_delete_oos_o2p_psp_qbdt_transaction_info.sql
+\i fix_insert_oos_o2p_psp_financial_transaction.sql
+\i fix_insert_oos_o2p_psp_paycheck_split.sql
+\i fix_insert_oos_o2p_psp_paystub.sql
+\i fix_insert_oos_o2p_psp_property_audit.sql
+\i fix_insert_oos_o2p_psp_pstub_employee_info.sql
+\i fix_insert_oos_o2p_psp_pstub_paid_timeoff_item.sql
+\i fix_insert_oos_o2p_psp_qbdt_paycheck_info.sql
+\i fix_insert_oos_o2p_psp_qbdt_transaction_info.sql
+\i fix_insert_oos_o2p_psp_tax.sql
+

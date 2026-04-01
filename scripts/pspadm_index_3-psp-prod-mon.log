@@ -1,0 +1,27 @@
+Timing is on.
+set search_path=pspadm;
+SET
+Time: 1.124 ms
+SELECT CURRENT_TIMESTAMP;
+      current_timestamp       
+------------------------------
+ 2023-10-25 22:30:33.56022-07
+(1 row)
+
+Time: 1.118 ms
+create index concurrently idx_company_src_company_var_ops on pspadm.psp_company USING BTREE (lower(source_company_id) varchar_pattern_ops);
+CREATE INDEX
+Time: 193761.725 ms (03:13.762)
+create index concurrently idx_payrollrun_compfk_pyrl_type on psp_payroll_run (company_fk, payroll_run_type);
+CREATE INDEX
+Time: 753456.822 ms (12:33.457)
+create index concurrently idx_employee_user_auth_id on pspadm.psp_employee USING BTREE (user_auth_id);
+CREATE INDEX
+Time: 61715.955 ms (01:01.716)
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-25 22:47:22.496203-07
+(1 row)
+
+Time: 1.081 ms

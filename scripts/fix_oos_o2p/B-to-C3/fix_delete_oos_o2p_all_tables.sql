@@ -1,0 +1,24 @@
+set session_replication_role=replica;
+\o fix_delete_oos_o2p_all_tables.log
+\i fix_delete_oos_o2p_psp_entry_detail_record.sql
+\i fix_delete_oos_o2p_psp_money_movement_transaction.sql
+\i fix_delete_oos_o2p_psp_pstub_employee_info.sql
+\i fix_delete_oos_o2p_psp_pstub_paid_timeoff_item.sql
+\i fix_delete_oos_o2p_psp_pstub_pay_item.sql
+\i fix_delete_oos_o2p_psp_qbdt_transaction_info.sql
+\i fix_delete_oos_o2p_psp_address.sql
+\i fix_delete_oos_o2p_psp_company_pin.sql
+\i fix_delete_oos_o2p_psp_ee_payrollitem_qtrtotals.sql
+\i fix_delete_oos_o2p_psp_employee_custom_field.sql
+\i fix_delete_oos_o2p_psp_employee_payroll_item.sql
+\i fix_delete_oos_o2p_psp_employee_tax.sql
+\i fix_delete_oos_o2p_psp_liability_check_line.sql
+\i fix_delete_oos_o2p_psp_payroll_item_taxable_to.sql
+\i fix_delete_oos_o2p_psp_pstub_address.sql
+\i fix_delete_oos_o2p_psp_pstub_dditem.sql
+\i fix_delete_oos_o2p_psp_pstub_msg.sql
+\i fix_delete_oos_o2p_psp_qbdt_unprocessed_request.sql
+\i fix_delete_oos_o2p_psp_tax_table_misc_data.sql
+\i fix_delete_oos_o2p_psp_vmp_employee_info.sql
+quit
+
