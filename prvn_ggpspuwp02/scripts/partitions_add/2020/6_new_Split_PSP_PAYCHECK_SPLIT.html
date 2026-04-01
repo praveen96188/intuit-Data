@@ -1,0 +1,531 @@
+SQL> @6_new_Split_PSP_PAYCHECK_SPLIT.sql
+SQL> set pagesize 500
+SQL> SET MARKUP HTML ON ENTMAP ON SPOOL ON PREFORMAT OFF ;
+SQL&gt; alter table pspadm.PSP_PAYCHECK_SPLIT
+<br>
+  2  split partition PAYCHKSPLIT_9999 at (to_date('07/01/2020', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition PAYCHKSPLIT_BA12020 tablespace PSP_LOB01,
+<br>
+  5   partition PAYCHKSPLIT_9999  tablespace PSP_LOB01
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+
+Table altered.<br>
+<br>
+
+
+Elapsed: 00:00:00.02
+SQL&gt; 
+<br>
+SQL&gt; alter table pspadm.PSP_PAYCHECK_SPLIT
+<br>
+  2  split partition PAYCHKSPLIT_9999 at (to_date('01/01/2020', 'MM/DD/YYYY'))
+<br>
+  3  into
+<br>
+  4  (partition PAYCHKSPLIT_BA22020  tablespace PSP_LOB01,
+<br>
+  5   partition PAYCHKSPLIT_9999  tablespace PSP_LOB01
+<br>
+  6   )
+<br>
+  7  UPDATE INDEXES;
+<br>
+<pre>
+split partition PAYCHKSPLIT_9999 at (to_date('01/01/2020', 'MM/DD/YYYY'))
+                *
+</pre>
+ERROR at line 2:
+<br>
+ORA-14080: partition cannot be split along the specified high bound 
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; select segment_name, segment_type, partition_name, tablespace_name from dba_segments where owner = 'PSPADM' and segment_name = 'PSP_PAYCHECK_SPLIT' and partition_name like 'PAYCHKSPLIT_BA%2020' order by partition_name;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+SEGMENT_NAME
+</th>
+<th scope="col">
+SEGMENT_TYPE
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+PAYCHKSPLIT_BA12020
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+1 row selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.15
+SQL&gt; select table_name, partition_name, high_value, tablespace_name from dba_tab_partitions where table_owner = 'PSPADM' and table_name = 'PSP_PAYCHECK_SPLIT' and partition_name like 'PAYCHKSPLIT_BA%2020' order by partition_position;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+TABLE_NAME
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+HIGH_VALUE
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+PAYCHKSPLIT_BA12020
+</td>
+<td>
+TIMESTAMP' 2020-07-01 00:00:00'
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+1 row selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.14
+SQL&gt; select index_name, partition_name,  high_value, tablespace_name, status from dba_ind_partitions where index_owner = 'PSPADM' and index_name in (select index_name from dba_indexes where owner = 'PSPADM' and table_name = 'PSP_PAYCHECK_SPLIT') and partition_name like 'PAYCHKSPLIT_BA%2020' order by partition_position, index_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.35
+SQL&gt; 
+<br>
+SQL&gt; select segment_name, segment_type, partition_name, tablespace_name from dba_segments where owner = 'PSPADM' and segment_name = 'PSP_PAYCHECK_SPLIT' and partition_name like 'PAYCHKSPLIT_BA%2011' order by partition_name;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+SEGMENT_NAME
+</th>
+<th scope="col">
+SEGMENT_TYPE
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+PAYCHKSPLIT_BA12011
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+PAYCHKSPLIT_BA22011
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+</table>
+<p>
+
+2 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.14
+SQL&gt; select table_name, partition_name, high_value, tablespace_name from dba_tab_partitions where table_owner = 'PSPADM' and table_name = 'PSP_PAYCHECK_SPLIT' and partition_name like 'PAYCHKSPLIT_BA%2011' order by partition_position;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+TABLE_NAME
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+HIGH_VALUE
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+PAYCHKSPLIT_BA12011
+</td>
+<td>
+TIMESTAMP' 2011-07-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+PAYCHKSPLIT_BA22011
+</td>
+<td>
+TIMESTAMP' 2012-01-01 00:00:00'
+</td>
+<td>
+PSP_DATA01
+</td>
+</tr>
+</table>
+<p>
+
+2 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.13
+SQL&gt; select index_name, partition_name,  high_value, tablespace_name, status from dba_ind_partitions where index_owner = 'PSPADM' and index_name in (select index_name from dba_indexes where owner = 'PSPADM' and table_name = 'PSP_PAYCHECK_SPLIT') and partition_name like 'PAYCHKSPLIT_BA%2011' order by partition_position, index_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.35
+SQL&gt; 
+<br>
+SQL&gt; select segment_name, segment_type, partition_name, tablespace_name from dba_segments where owner = 'PSPADM' and segment_name = 'PSP_PAYCHECK_SPLIT' and partition_name like 'PAYCHKSPLIT_9999%' order by partition_name;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+SEGMENT_NAME
+</th>
+<th scope="col">
+SEGMENT_TYPE
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+TABLE PARTITION
+</td>
+<td>
+PAYCHKSPLIT_9999
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+1 row selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.13
+SQL&gt; select table_name, partition_name, high_value, tablespace_name from dba_tab_partitions where table_owner = 'PSPADM' and table_name = 'PSP_PAYCHECK_SPLIT' and partition_name = 'PAYCHKSPLIT_9999' order by partition_position;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+TABLE_NAME
+</th>
+<th scope="col">
+PARTITION_NAME
+</th>
+<th scope="col">
+HIGH_VALUE
+</th>
+<th scope="col">
+TABLESPACE_NAME
+</th>
+</tr>
+<tr>
+<td>
+PSP_PAYCHECK_SPLIT
+</td>
+<td>
+PAYCHKSPLIT_9999
+</td>
+<td>
+MAXVALUE
+</td>
+<td>
+PSP_LOB01
+</td>
+</tr>
+</table>
+<p>
+
+1 row selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.13
+SQL&gt; select index_name, partition_name,  high_value, tablespace_name, status from dba_ind_partitions where index_owner = 'PSPADM' and index_name in (select index_name from dba_indexes where owner = 'PSPADM' and table_name = 'PSP_PAYCHECK_SPLIT') and partition_name = 'PAYCHKSPLIT_9999' order by partition_position, index_name;
+<br>
+
+no rows selected
+
+<br>
+Elapsed: 00:00:00.36
+SQL&gt; 
+<br>
+SQL&gt; select owner, object_name, object_type, status from dba_objects where object_name not like 'BIN%' and owner like 'PSP%' and status != 'VALID' order by 1,3,2;
+<br>
+<p>
+<table border='1' width='90%' align='center' summary='Script output'>
+<tr>
+<th scope="col">
+OWNER
+</th>
+<th scope="col">
+OBJECT_NAME
+</th>
+<th scope="col">
+OBJECT_TYPE
+</th>
+<th scope="col">
+STATUS
+</th>
+</tr>
+<tr>
+<td>
+PSPADM
+</td>
+<td>
+BATCH_FILL_COMP_COL
+</td>
+<td>
+PACKAGE BODY
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+CMP3$123806
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+CMP4$123806
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+PRC_REMOVE_COMPANY_FAST
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPAPP
+</td>
+<td>
+V_PSP_EMPLOYEE
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPREAD
+</td>
+<td>
+CMP3$123806
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPREAD
+</td>
+<td>
+CMP4$123806
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPREAD
+</td>
+<td>
+PRC_OFFLOAD_UPDATE_PAYROLL
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPREAD
+</td>
+<td>
+PRC_REMOVE_COMPANY_FAST
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPREAD
+</td>
+<td>
+PSE_EVENT_LOG
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+<tr>
+<td>
+PSPREAD
+</td>
+<td>
+V_PSP_EMPLOYEE
+</td>
+<td>
+SYNONYM
+</td>
+<td>
+INVALID
+</td>
+</tr>
+</table>
+<p>
+
+11 rows selected.<br>
+<br>
+
+
+Elapsed: 00:00:00.00
+SQL&gt; 
+<br>
+SQL&gt; spool off
+<br>

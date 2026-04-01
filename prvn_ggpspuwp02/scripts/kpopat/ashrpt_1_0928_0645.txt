@@ -1,0 +1,399 @@
+
+ASH Report For QBOPP017/QBOPP017
+
+DB Name         DB Id    Instance     Inst Num Release     RAC Host
+------------ ----------- ------------ -------- ----------- --- ------------
+QBOPP017       442120222 QBOPP017            1 12.1.0.2.0  NO  ip-172-19-2-
+
+CPUs           SGA Size       Buffer Cache        Shared Pool    ASH Buffer Size
+---- ------------------ ------------------ ------------------ ------------------
+  32    184,320M (100%)   150,528M (81.7%)     17,815M (9.7%)              M (%)
+In-memory Area Size
+------------------
+       0.0M (0.0%)
+
+
+          Analysis Begin Time:   28-Sep-18 06:30:00
+            Analysis End Time:   28-Sep-18 06:45:00
+                 Elapsed Time:        15.0 (mins)
+            Begin Data Source:   DBA_HIST_ACTIVE_SESS_HISTORY
+                                 in AWR snapshot 19497
+              End Data Source:   DBA_HIST_ACTIVE_SESS_HISTORY
+                                 in AWR snapshot 19498
+                 Sample Count:         193
+      Average Active Sessions:        2.14
+  Avg. Active Session per CPU:        0.07
+                Report Target:   None specified
+
+Top User Events            DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                                                               Avg Active
+Event                               Event Class        % Event   Sessions
+----------------------------------- --------------- ---------- ----------
+CPU + Wait for CPU                  CPU                  59.59       1.28
+db file sequential read             User I/O              8.81       0.19
+enq: TX - row lock contention       Application           6.22       0.13
+log file sync                       Commit                3.63       0.08
+db file parallel read               User I/O              1.55       0.03
+          -------------------------------------------------------------
+
+Top Background Events      DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                                                               Avg Active
+Event                               Event Class     % Activity   Sessions
+----------------------------------- --------------- ---------- ----------
+db file parallel write              System I/O           16.06       0.34
+CPU + Wait for CPU                  CPU                   2.07       0.04
+          -------------------------------------------------------------
+
+Top Event P1/P2/P3 Values  DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+Event                          % Event  P1 Value, P2 Value, P3 Value % Activity
+------------------------------ ------- ----------------------------- ----------
+Parameter 1                Parameter 2                Parameter 3
+-------------------------- -------------------------- --------------------------
+db file parallel write           16.06          "1","0","2147483647"      16.06
+requests                   interrupt                  timeout
+
+db file sequential read           8.81            "7","36334610","1"       0.52
+file#                      block#                     blocks
+
+enq: TX - row lock contention     6.22 "1415053318","3014664","59839       6.22
+name|mode                  usn<<16 | slot             sequence
+
+log file sync                     3.63        "4694","436006263","0"       0.52
+buffer#                    sync scn                   NOT DEFINED
+
+db file parallel read             1.55                   "1","3","3"       0.52
+files                      blocks                     requests
+
+          -------------------------------------------------------------
+
+Top Service/Module         DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+Service        Module                   % Activity Action               % Action
+-------------- ------------------------ ---------- ------------------ ----------
+SYS$BACKGROUND UNNAMED                       17.10 UNNAMED                 17.10
+SYS$USERS      UNNAMED                       15.03 UNNAMED                 15.03
+               GoldenGate                     3.11 OGG$CAP_EIAPP017 -       1.04
+                                                   OGG$RQBQPD17 - App       1.04
+               1538140226364                  2.59 1145188110               0.52
+               1538141648848                  1.55 123146125821844          1.55
+          -------------------------------------------------------------
+
+Top Client IDs             DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                                                              Avg Active
+Client ID                                          % Activity   Sessions
+-------------------------------------------------- ---------- ----------
+User            Program                           Service
+--------------- --------------------------------- --------------------
+193514592677674                                          2.59       0.06
+QBOC17_UW2APP82 JDBC Thin Client                  SYS$USERS
+
+193514592677674                                          2.59       0.06
+QBOC17_UW2APP92 JDBC Thin Client                  SYS$USERS
+
+193514592677674                                          2.07       0.04
+QBOC17_UW2APP14 JDBC Thin Client                  SYS$USERS
+
+123146125821844                                          1.55       0.03
+QBOC17_UW2APP08 JDBC Thin Client                  SYS$USERS
+
+123146125821844                                          1.55       0.03
+QBOC17_UW2APP31 JDBC Thin Client                  SYS$USERS
+
+          -------------------------------------------------------------
+
+Top SQL Command Types      DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> 'Distinct SQLIDs' is the count of the distinct number of SQLIDs
+      with the given SQL Command Type found over all the ASH samples
+      in the analysis period
+
+                                           Distinct            Avg Active
+SQL Command Type                             SQLIDs % Activity   Sessions
+---------------------------------------- ---------- ---------- ----------
+SELECT                                           44      48.70       1.04
+PL/SQL EXECUTE                                    4      10.36       0.22
+CALL METHOD                                       1       4.15       0.09
+INSERT                                            4       3.63       0.08
+UPDATE                                            2       1.04       0.02
+          -------------------------------------------------------------
+
+Top Phases of Execution    DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                                          Avg Active
+Phase of Execution             % Activity   Sessions
+------------------------------ ---------- ----------
+SQL Execution                       58.03       1.24
+PLSQL Execution                      3.63       0.08
+Parse                                1.04       0.02
+          -------------------------------------------------------------
+
+
+Top SQL with Top Events    DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                 SQL ID         FullPlanhash             Planhash
+----------------------- -------------------- --------------------
+           Sampled #
+       of Executions     % Activity Event
+-------------------- -------------- ------------------------------
+% Event Top Row Source                    % RwSrc
+------- --------------------------------- -------
+          7bgz7cv2bkbnb            964317700           1455869074
+                  16           8.29 CPU + Wait for CPU
+   8.29 TABLE ACCESS - BY LOCAL INDEX ROW    6.22
+/* V3.QueryUtil.prepareAndExecuteQuery com.intuit.qbo.bl.txns.servicev3.query.Bi
+llPaymentQueryHandler */ select * from (select /*+ FIRST_ROWS */ tx_id, rownum r
+num from (select tx_id from txheaders_1 where tx_type_id in (14,15) and NVL(UP
+PER(doc_num), ' ') = UPPER(:1 ) order by last_modify_date DESC , tx_id DESC
+
+          b9z0cfzfarrjz           3438616246           1307131846
+                   4           6.22 enq: TX - row lock contention
+   6.22 FOR UPDATE                           6.22
+/* EditFieldList.select(Prepared) */ SELECT id_type_id, last_used_id FROM Ids_1
+ Ids WHERE id_type_id = :1 FOR UPDATE OF id_type_id, last_used_id WAIT 30
+
+          bx3v63gzf8tr3             73566873            966207572
+                  11           5.70 CPU + Wait for CPU
+   5.70 INDEX - RANGE SCAN                   4.15
+/* BeginningBalances.generate com.intuit.qbo.reports.QZReport */ select sum(TxD
+etails.amount), Accounts.account_type_id, Accounts.order_by_name, TxDetails.acco
+unt_id from TxDetails_1 TxDetails, Accounts_1 Accounts, TxHeaders_1 TxHeaders wh
+ere (( TxHeaders.tx_type_id IN ( (select /*+ cardinality(t 10) */ COLUMN_VALU
+
+          82x1nku4a6qam                  N/A                  N/A
+                   0           5.18 CPU + Wait for CPU
+   5.18 ** Row Source Not Available **       5.18
+BEGIN dbms_session.set_identifier (:1 ) ; END;
+
+          acgvwu0ryuu57            876461132           2257654394
+                   5           2.59 db file sequential read
+   2.07 TABLE ACCESS - BY LOCAL INDEX ROW    2.07
+/* V3.QueryUtil.invoiceTrackerListQueryWithModifyDate com.intuit.qbo.bl.txns.ser
+vicev3.query.InvoiceQueryHandler */ select * from (select /*+ FIRST_ROWS */ tx_i
+d, txnstatuscolumn, datecolumns, rownum rnum from (select tx_id, CASE WHEN is_
+ar_paid = 1 AND is_voided = 1 THEN 'void' WHEN is_ar_paid = 1AND is_
+
+          -------------------------------------------------------------
+
+Top SQL with Top Row SourcesDB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45
+
+                 SQL ID         FullPlanHash             PlanHash
+----------------------- -------------------- --------------------
+           Sampled #
+       of Executions     % Activity
+-------------------- --------------
+Row Source                               % RwSrc Top Event               % Event
+---------------------------------------- ------- ----------------------- -------
+          7bgz7cv2bkbnb            964317700           1455869074
+                  16           8.29
+TABLE ACCESS - BY LOCAL INDEX ROWID BATC    6.22 CPU + Wait for CPU         6.22
+/* V3.QueryUtil.prepareAndExecuteQuery com.intuit.qbo.bl.txns.servicev3.query.Bi
+llPaymentQueryHandler */ select * from (select /*+ FIRST_ROWS */ tx_id, rownum r
+num from (select tx_id from txheaders_1 where tx_type_id in (14,15) and NVL(UP
+PER(doc_num), ' ') = UPPER(:1 ) order by last_modify_date DESC , tx_id DESC
+
+
+
+INDEX - RANGE SCAN                          2.07 CPU + Wait for CPU         2.07
+
+          b9z0cfzfarrjz           3438616246           1307131846
+                   4           6.22
+FOR UPDATE                                  6.22 enq: TX - row lock cont    6.22
+/* EditFieldList.select(Prepared) */ SELECT id_type_id, last_used_id FROM Ids_1
+ Ids WHERE id_type_id = :1 FOR UPDATE OF id_type_id, last_used_id WAIT 30
+
+          bx3v63gzf8tr3             73566873            966207572
+                  11           5.70
+INDEX - RANGE SCAN                          4.15 CPU + Wait for CPU         4.15
+/* BeginningBalances.generate com.intuit.qbo.reports.QZReport */ select sum(TxD
+etails.amount), Accounts.account_type_id, Accounts.order_by_name, TxDetails.acco
+unt_id from TxDetails_1 TxDetails, Accounts_1 Accounts, TxHeaders_1 TxHeaders wh
+ere (( TxHeaders.tx_type_id IN ( (select /*+ cardinality(t 10) */ COLUMN_VALU
+
+          82x1nku4a6qam                  N/A                  N/A
+                   0           5.18
+** Row Source Not Available **              5.18 CPU + Wait for CPU         5.18
+BEGIN dbms_session.set_identifier (:1 ) ; END;
+
+          acgvwu0ryuu57            876461132           2257654394
+                   5           2.59
+TABLE ACCESS - BY LOCAL INDEX ROWID BATC    2.07 db file sequential read    2.07
+/* V3.QueryUtil.invoiceTrackerListQueryWithModifyDate com.intuit.qbo.bl.txns.ser
+vicev3.query.InvoiceQueryHandler */ select * from (select /*+ FIRST_ROWS */ tx_i
+d, txnstatuscolumn, datecolumns, rownum rnum from (select tx_id, CASE WHEN is_
+ar_paid = 1 AND is_voided = 1 THEN 'void' WHEN is_ar_paid = 1AND is_
+
+          -------------------------------------------------------------
+
+Top SQL using literals     DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                  No data exists for this section of the report.
+          -------------------------------------------------------------
+
+Top Parsing Module/Action  DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+Module                         Action                           % Activ
+------------------------------ -------------------------------- -------
+Event                             % Event
+------------------------------ ----------
+                                                                   1.04
+CPU + Wait for CPU                   1.04
+          -------------------------------------------------------------
+
+Top PL/SQL Procedures      DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> 'PL/SQL entry subprogram' represents the application's top-level
+      entry-point(procedure, function, trigger, package initialization
+      or RPC call) into PL/SQL.
+-> 'PL/SQL current subprogram' is the pl/sql subprogram being executed
+      at the point of sampling . If the value is 'SQL', it represents
+      the percentage of time spent executing SQL for the particular
+      plsql entry subprogram
+
+PLSQL Entry Subprogram                                            % Activity
+----------------------------------------------------------------- ----------
+PLSQL Current Subprogram                                           % Current
+----------------------------------------------------------------- ----------
+QBO.QBO_VPD_PACKAGE.VPD_SETCONTEXT                                      1.04
+   SYS.STANDARD.SYS_CONTEXT#1                                           0.52
+          -------------------------------------------------------------
+
+Top Java Workload          DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                  No data exists for this section of the report.
+          -------------------------------------------------------------
+
+Top Call Types             DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+Call Type                                     Count % Activity Avg Active
+---------------------------------------- ---------- ---------- ----------
+V8 Bundled Exec                                 140      72.54       1.56
+COMMIT                                            7       3.63       0.08
+FETCH                                             5       2.59       0.06
+Golden Gate RPC                                   3       1.55       0.03
+Cursor close all                                  2       1.04       0.02
+          -------------------------------------------------------------
+
+
+Top Sessions               DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> '# Samples Active' shows the number of ASH samples in which the session
+      was found waiting for that particular event. The percentage shown
+      in this column is calculated with respect to wall clock time
+      and not total database activity.
+-> 'XIDs' shows the number of distinct transaction IDs sampled in ASH
+      when the session was waiting for that particular event
+-> For sessions running Parallel Queries, this section will NOT aggregate
+      the PQ slave activity into the session issuing the PQ. Refer to
+      the 'Top Sessions running PQs' section for such statistics.
+
+   Sid, Serial# % Activity Event                             % Event
+--------------- ---------- ------------------------------ ----------
+User                 Program                          # Samples Active     XIDs
+-------------------- ------------------------------ ------------------ --------
+    14086,45273       5.18 db file parallel write               5.18
+SYS                  oracle@ip-172-19-2-83 (DBW3)         10/90 [ 11%]        0
+
+    12208,46013       4.15 db file parallel write               4.15
+SYS                  oracle@ip-172-19-2-83 (DBW1)          8/90 [  9%]        0
+
+    14128,47579       4.15 db file sequential read              1.55
+QBOC17_UW2APP31      JDBC Thin Client                      3/90 [  3%]        1
+
+                           enq: TX - row lock contention        1.55
+                                                           3/90 [  3%]        0
+
+     4747, 2116       3.63 CPU + Wait for CPU                   3.63
+QBOC17_UW2APP82      JDBC Thin Client                      7/90 [  8%]        1
+
+    11269,55212       3.63 db file parallel write               3.63
+SYS                  oracle@ip-172-19-2-83 (DBW0)          7/90 [  8%]        0
+
+          -------------------------------------------------------------
+
+Top Blocking Sessions      DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> Blocking session activity percentages are calculated with respect to
+      waits on enqueues, latches and "buffer busy" only
+-> '% Activity' represents the load on the database caused by
+      a particular blocking session
+-> '# Samples Active' shows the number of ASH samples in which the
+      blocking session was found active.
+-> 'XIDs' shows the number of distinct transaction IDs sampled in ASH
+      when the blocking session was found active.
+
+ Blocking Sid (Inst) % Activity Event Caused                      % Event
+-------------------- ---------- ------------------------------ ----------
+User                 Program                          # Samples Active     XIDs
+-------------------- ------------------------------ ------------------ --------
+ 15037,47478(     1)       6.22 enq: TX - row lock contention        6.22
+QBOC17_UW2APP33      JDBC Thin Client                      3/90 [  3%]        0
+
+ 15025,37771(     1)       3.63 log file sync                        3.63
+** NOT FOUND **      BLOCKING SESSION NOT FOUND            0/90 [  0%]      N/A
+
+          -------------------------------------------------------------
+
+
+Top Sessions running PQs   DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                  No data exists for this section of the report.
+          -------------------------------------------------------------
+
+Top DB Objects             DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> With respect to Application, Cluster, User I/O, buffer busy waits and
+   In-Memory DB events only.
+-> Tablespace name is not available for reports generated from the root PDB
+   of a consolidated database.
+
+      Object ID % Activity Event                             % Event
+--------------- ---------- ------------------------------ ----------
+Object Name (Type)                                    Tablespace
+----------------------------------------------------- --------------------------
+          34097       6.74 enq: TX - row lock contention        6.22
+QBO_DATA.IDS_1 (TABLE)                                QBO_DATA
+          -------------------------------------------------------------
+
+Top DB Files               DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> With respect to Cluster and User I/O events only.
+
+        File ID % Activity Event                             % Event
+--------------- ---------- ------------------------------ ----------
+File Name                                             Tablespace
+----------------------------------------------------- -------------------------
+              7      10.36 db file sequential read              8.81
+/rdsdbdata/db/QBOPP017_A/datafile/o1_mf_qbo_data_dgqm QBO_DATA
+
+                           db file parallel read                1.04
+
+
+          -------------------------------------------------------------
+
+Top Latches                DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+
+                  No data exists for this section of the report.
+          -------------------------------------------------------------
+
+
+Activity Over Time         DB/Inst: QBOPP017/QBOPP017  (Sep 28 06:30 to 06:45)
+-> Analysis period is divided into smaller time slots
+-> Top 3 events are reported in each of those slots
+-> 'Slot Count' shows the number of ASH samples in that slot
+-> 'Event Count' shows the number of ASH samples waiting for
+   that event in that slot
+-> '% Event' is 'Event Count' over all ASH samples in the analysis period
+
+                         Slot                                   Event
+Slot Time (Duration)    Count Event                             Count % Event
+-------------------- -------- ------------------------------ -------- -------
+06:30:00   (5.0 min)       94 CPU + Wait for CPU                   62   32.12
+                              enq: TX - row lock contention        12    6.22
+                              db file parallel write                8    4.15
+06:35:00   (5.0 min)       46 CPU + Wait for CPU                   28   14.51
+                              db file parallel write               12    6.22
+                              db file sequential read               5    2.59
+06:40:00   (5.0 min)       53 CPU + Wait for CPU                   29   15.03
+                              db file parallel write               11    5.70
+                              db file sequential read               6    3.11
+          -------------------------------------------------------------
+
+End of Report

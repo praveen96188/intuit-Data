@@ -1,0 +1,23 @@
+drop index pspadm.psp_financial_transaction_fk6_p13 ;
+drop index pspadm.psp_financial_transaction_fk6_p14 ;
+drop index pspadm.psp_financial_transaction_fk6_p15 ;
+drop index pspadm.psp_financial_transaction_fk6_p2 ;
+drop index pspadm.psp_financial_transaction_fk6_p3 ;
+drop index pspadm.psp_financial_transaction_fk6_p4 ;
+drop index pspadm.psp_financial_transaction_fk6_p5 ;
+drop index pspadm.psp_financial_transaction_fk6_p6 ;
+drop index pspadm.psp_financial_transaction_fk6_p7 ;
+drop index pspadm.psp_financial_transaction_fk6_p8 ;
+drop index pspadm.psp_financial_transaction_fk6_p9 ;
+create index psp_financial_transaction_fk6_p13 on pspadm.psp_financial_transaction_p13 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p14 on pspadm.psp_financial_transaction_p14 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p15 on pspadm.psp_financial_transaction_p15 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p2 on pspadm.psp_financial_transaction_p2 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p3 on pspadm.psp_financial_transaction_p3 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p4 on pspadm.psp_financial_transaction_p4 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p5 on pspadm.psp_financial_transaction_p5 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p6 on pspadm.psp_financial_transaction_p6 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p7 on pspadm.psp_financial_transaction_p7 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p8 on pspadm.psp_financial_transaction_p8 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+create index psp_financial_transaction_fk6_p9 on pspadm.psp_financial_transaction_p9 USING BTREE (company_fk ASC,paycheck_split_fk ASC);
+

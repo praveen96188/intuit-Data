@@ -1,0 +1,186 @@
+SQL> set serveroutput on;
+SQL> 
+SQL> DECLARE
+  2  	CURSOR duplicate_cfr_list IS
+  3  	     select consumer_realm_id, count(*) as C from pspadm.psp_employee
+  4  	 where consumer_realm_id in ('1003935320',
+  5  '1012626775',
+  6  '1026363035',
+  7  '1029397450',
+  8  '1029509105',
+  9  '1030486360',
+ 10  '1033614400',
+ 11  '1043588885',
+ 12  '1047481935',
+ 13  '1048258775')
+ 14  	 group by consumer_realm_id having count(*) > 1 order by C desc;
+ 15  
+ 16  	 v_pstub_seq varchar2(200);
+ 17  	 v_employee_seq varchar2(200);
+ 18  	 v_count number :=1 ;
+ 19  
+ 20  	 v_emp_list_to_update varchar2(500);
+ 21  	 emp_array SYS.ODCIVARCHAR2LIST := SYS.ODCIVARCHAR2LIST();
+ 22  BEGIN
+ 23  
+ 24  
+ 25  
+ 26  	     FOR duplicate_cfr_list_rec IN duplicate_cfr_list
+ 27  	 LOOP
+ 28  	     DBMS_OUTPUT.PUT_LINE('===================');
+ 29  		 DBMS_OUTPUT.PUT_LINE ('CFR token ' || duplicate_cfr_list_rec.consumer_realm_id);
+ 30  		 SELECT PAYSTUB_SEQ into v_pstub_seq FROM(
+ 31  		     select PAYSTUB_SEQ from pspadm.psp_paystub where PSTUB_EMPLOYEE_INFO_FK in
+ 32  			 (select PSTUB_EMPLOYEE_INFO_SEQ from pspadm.PSP_PSTUB_EMPLOYEE_INFO where EMPLOYEE_FK in
+ 33  			     (select EMPLOYEE_SEQ from pspadm.PSP_EMPLOYEE where consumer_realm_id=duplicate_cfr_list_rec.consumer_realm_id))
+ 34  		     order by Paycheck_date desc
+ 35  		 ) WHERE ROWNUM<=1;
+ 36  
+ 37  	    DBMS_OUTPUT.PUT_LINE('The latest paystub seq is '|| v_pstub_seq);
+ 38  
+ 39  	    select e.employee_seq into v_employee_seq from pspadm.PSP_PAYSTUB ps ,pspadm.PSP_PSTUB_EMPLOYEE_INFO psei,pspadm.PSP_EMPLOYEE e where --0d0ebb9f-1b25-4aca-8885-4ba6a494aa56
+ 40  		 ps.PSTUB_EMPLOYEE_INFO_FK= psei.PSTUB_EMPLOYEE_INFO_SEQ
+ 41  		 AND psei.employee_fk=e.employee_seq
+ 42  		 AND ps.PAYSTUB_SEQ=v_pstub_seq;
+ 43  
+ 44  	    DBMS_OUTPUT.PUT_LINE('The corresponding Employee seq  is  '|| v_employee_seq);
+ 45  
+ 46  
+ 47  	     v_emp_list_to_update := '';
+ 48  	      emp_array.delete();
+ 49  	      v_count :=1;
+ 50  	     FOR employee_rec in (select * from pspadm.PSP_EMPLOYEE where consumer_realm_id=duplicate_cfr_list_rec.consumer_realm_id)
+ 51  	     LOOP
+ 52  
+ 53  
+ 54  		 IF employee_rec.employee_seq = v_employee_seq THEN
+ 55  		      dbms_output.put_line('Skipping the Employee seq  '||employee_rec.employee_seq);
+ 56  		      Continue;
+ 57  		 END IF;
+ 58  		 DBMS_OUTPUT.PUT_LINE('The employee seq is ' || employee_rec.employee_seq);
+ 59  		 --v_emp_list_to_update :=v_emp_list_to_update||''',';
+ 60  		 emp_array.extend();
+ 61  		 emp_array(v_count) :=	employee_rec.employee_seq;
+ 62  		 v_count :=v_count+1;
+ 63  
+ 64  	     END LOOP;
+ 65  
+ 66  
+ 67  
+ 68  	     --  dbms_output.put_line('v_count is '||v_count);
+ 69  	       select count(*) into v_count from pspadm.psp_employee where employee_seq in
+ 70  	       (select * from table(emp_array));
+ 71  
+ 72  
+ 73  	      dbms_output.put_line('Count of employees to be updated is '||v_count||' For cfr '||duplicate_cfr_list_rec.consumer_realm_id );
+ 74  
+ 75  	      FOR emp_rec in   ( select * from pspadm.psp_employee where employee_seq in
+ 76  	       (select * from table(emp_array)))
+ 77  	      LOOP
+ 78  		   dbms_output.put_line('Emp whose cfr is being update to null	is  '||emp_rec.employee_seq);
+ 79  	      END LOOP;
+ 80  
+ 81  	       -- TODO uncomment in PROD ::: update employees cfr to null in v_emp_list_to_update
+ 82  	       update pspadm.psp_employee set consumer_realm_id = NULL where  employee_seq in
+ 83  		(select * from table(emp_array));
+ 84  
+ 85  	 END LOOP;
+ 86  
+ 87  
+ 88  
+ 89  EXCEPTION
+ 90    WHEN OTHERS THEN
+ 91  	 DBMS_OUTPUT.PUT_LINE ('Error : ' || SQLERRM);
+ 92  END;
+ 93  /
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1012626775                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 0ca61390-3d30-4333-8a9b-a10979c238d4                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  e1b6bd6e-29ca-4ebe-a135-47ab3ffebdc1                                                                                                                                                                                                                                    
+Skipping the Employee seq  e1b6bd6e-29ca-4ebe-a135-47ab3ffebdc1                                                                                                                                                                                                                                             
+The employee seq is 4ff3b092-47bd-4de0-9ba2-baad1961c948                                                                                                                                                                                                                                                    
+The employee seq is c78d11b1-530d-47ea-86f6-fb086557c35b                                                                                                                                                                                                                                                    
+Count of employees to be updated is 2 For cfr 1012626775                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  4ff3b092-47bd-4de0-9ba2-baad1961c948                                                                                                                                                                                                                             
+Emp whose cfr is being update to null  is  c78d11b1-530d-47ea-86f6-fb086557c35b                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1043588885                                                                                                                                                                                                                                                                                        
+The latest paystub seq is bbb5b9d9-1e67-4acf-9f2c-0514b35df35d                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  5e28affe-f562-4422-82c1-a95edfd9ae03                                                                                                                                                                                                                                    
+Skipping the Employee seq  5e28affe-f562-4422-82c1-a95edfd9ae03                                                                                                                                                                                                                                             
+The employee seq is 04006c27-0f9a-4711-ae49-cf5deec65be0                                                                                                                                                                                                                                                    
+The employee seq is c12dda72-27e7-4917-ac54-064aa743ce7b                                                                                                                                                                                                                                                    
+Count of employees to be updated is 2 For cfr 1043588885                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  04006c27-0f9a-4711-ae49-cf5deec65be0                                                                                                                                                                                                                             
+Emp whose cfr is being update to null  is  c12dda72-27e7-4917-ac54-064aa743ce7b                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1003935320                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 6e5ec433-e925-4d1f-b4a3-f57715dbfa7e                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  d2bf66d9-6429-4072-8859-39cf94a712f1                                                                                                                                                                                                                                    
+The employee seq is dfbacd23-7091-4311-ac2e-f29fe46ed099                                                                                                                                                                                                                                                    
+Skipping the Employee seq  d2bf66d9-6429-4072-8859-39cf94a712f1                                                                                                                                                                                                                                             
+The employee seq is 3b82054e-254a-4d77-85ea-2e15c920b2a3                                                                                                                                                                                                                                                    
+Count of employees to be updated is 2 For cfr 1003935320                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  3b82054e-254a-4d77-85ea-2e15c920b2a3                                                                                                                                                                                                                             
+Emp whose cfr is being update to null  is  dfbacd23-7091-4311-ac2e-f29fe46ed099                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1030486360                                                                                                                                                                                                                                                                                        
+The latest paystub seq is c4dae387-a4ac-46bc-9b50-b2dad1ac1522                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  986ef304-a4a7-4fac-aee1-d5039e7a7081                                                                                                                                                                                                                                    
+Skipping the Employee seq  986ef304-a4a7-4fac-aee1-d5039e7a7081                                                                                                                                                                                                                                             
+The employee seq is 528c615d-c653-4957-86b4-87c4fdde6e61                                                                                                                                                                                                                                                    
+Count of employees to be updated is 1 For cfr 1030486360                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  528c615d-c653-4957-86b4-87c4fdde6e61                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1033614400                                                                                                                                                                                                                                                                                        
+The latest paystub seq is a3517aa1-8602-46ce-964b-97aeb7a25d1c                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  67c724f7-6f42-49a7-95b4-78071373b8ff                                                                                                                                                                                                                                    
+Skipping the Employee seq  67c724f7-6f42-49a7-95b4-78071373b8ff                                                                                                                                                                                                                                             
+The employee seq is 10b58698-e4ea-431d-91bc-c8dd06d1650d                                                                                                                                                                                                                                                    
+Count of employees to be updated is 1 For cfr 1033614400                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  10b58698-e4ea-431d-91bc-c8dd06d1650d                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1047481935                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 1a84f093-b7c9-4533-b7f1-d8ed1cc69be0                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  e6cfe960-14ac-4c87-8b2d-62f32357302e                                                                                                                                                                                                                                    
+Skipping the Employee seq  e6cfe960-14ac-4c87-8b2d-62f32357302e                                                                                                                                                                                                                                             
+The employee seq is caa071be-27b2-4e49-a6c1-74433168ee07                                                                                                                                                                                                                                                    
+Count of employees to be updated is 1 For cfr 1047481935                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  caa071be-27b2-4e49-a6c1-74433168ee07                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1048258775                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 8c954008-5494-4e83-85ae-920cbde07688                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  67af002a-ff38-478e-9619-e86970676fbc                                                                                                                                                                                                                                    
+The employee seq is c1c2ce2b-f57e-459d-80e1-2d2ac0d27c02                                                                                                                                                                                                                                                    
+Skipping the Employee seq  67af002a-ff38-478e-9619-e86970676fbc                                                                                                                                                                                                                                             
+Count of employees to be updated is 1 For cfr 1048258775                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  c1c2ce2b-f57e-459d-80e1-2d2ac0d27c02                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1029397450                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 6ccc9777-657a-438e-b70b-3854456c33c4                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  250ea2f2-2394-4c48-9b73-bef9fe953b33                                                                                                                                                                                                                                    
+The employee seq is 846a14eb-320d-4f07-bd84-e37ba0bfbd54                                                                                                                                                                                                                                                    
+Skipping the Employee seq  250ea2f2-2394-4c48-9b73-bef9fe953b33                                                                                                                                                                                                                                             
+Count of employees to be updated is 1 For cfr 1029397450                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  846a14eb-320d-4f07-bd84-e37ba0bfbd54                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1026363035                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 5e57c83e-5dfe-44b4-8475-634162928477                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  aa9f74fd-d9b7-4cb9-b8b9-b28b2a742632                                                                                                                                                                                                                                    
+The employee seq is a915bd56-b839-437c-a547-b6fcabef3b73                                                                                                                                                                                                                                                    
+Skipping the Employee seq  aa9f74fd-d9b7-4cb9-b8b9-b28b2a742632                                                                                                                                                                                                                                             
+Count of employees to be updated is 1 For cfr 1026363035                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  a915bd56-b839-437c-a547-b6fcabef3b73                                                                                                                                                                                                                             
+===================                                                                                                                                                                                                                                                                                         
+CFR token 1029509105                                                                                                                                                                                                                                                                                        
+The latest paystub seq is 2d8806f5-2844-402d-a514-4630e851a3cf                                                                                                                                                                                                                                              
+The corresponding Employee seq  is  0fa65fbf-8c43-4724-b856-7d0bd4027f2c                                                                                                                                                                                                                                    
+The employee seq is 365e4a25-77bc-4af2-9df7-ad5d03c95201                                                                                                                                                                                                                                                    
+Skipping the Employee seq  0fa65fbf-8c43-4724-b856-7d0bd4027f2c                                                                                                                                                                                                                                             
+Count of employees to be updated is 1 For cfr 1029509105                                                                                                                                                                                                                                                    
+Emp whose cfr is being update to null  is  365e4a25-77bc-4af2-9df7-ad5d03c95201                                                                                                                                                                                                                             
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> spool off

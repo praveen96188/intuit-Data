@@ -1,0 +1,1 @@
+sqlplus kpopat@qbopp034
