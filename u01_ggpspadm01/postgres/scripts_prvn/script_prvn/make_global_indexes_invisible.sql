@@ -1,0 +1,32 @@
+set echo on feedback on
+spool MAKE_GLOBAL_INDEXES_INVISIBLE
+exec dbms_streams.set_tag (hextoraw(1));
+alter index PSPADM.IDX_PSP_FINANCIAL_TRANSACTION_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_COMPANY_EVENT_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_COMPANY_EVENT_DETAIL_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_COMPANY_EVENT_EMAIL_PARAM_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_COMPENSATION_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_ENTRY_DETAIL_RECORD_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_FINANCIAL_TRANS_STATE_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_LEDGER_BALANCE_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_MONEY_MOVEMENT_TRANSACTION_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PAYCHECK_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PAYCHECK_SPLIT_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PROPERTY_AUDIT_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PSTUB_PAY_ITEM_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_QBDT_PAYCHECK_INFO_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_QBDT_PAYLINE_INFO_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_TAX_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_DISBURSE_ADVICE_TAX_LIAB_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_QBDT_TRANSACTION_INFO_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PAYSTUB_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_DEDUCTION_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PSTUB_PAID_TIMEOFF_ITEM_GLOBAL invisible;
+alter index PSPADM.IDX_PSP_PSTUB_EMPLOYEE_INFO_GLOBAL invisible;
+
+-- to fix sql plan for 76f0bnuth7bda
+alter index pspadm.IDX_ENTITLEMENT_MESSAGE_CR_DATE_GLOBAL invisible;
+
+spool off
+
+

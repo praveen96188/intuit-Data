@@ -1,0 +1,159 @@
+pspapg02=> \timing
+Timing is on.
+pspapg02=> set search_path=pspadm;
+SET
+Time: 0.479 ms
+pspapg02=> SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2024-04-26 22:39:32.228194-07
+(1 row)
+
+Time: 0.453 ms
+pspapg02=> CREATE INDEX  concurrently psp_hcm401k_company_policy_fk1
+pspapg02-> ON pspadm.psp_hcm401k_company_policy
+pspapg02-> USING BTREE (hcm401k_policy_fk , realm_id );
+CREATE INDEX
+Time: 272.332 ms
+pspapg02=> CREATE INDEX concurrently psp_hcm401k_company_qbdt_p_fk1
+pspapg02-> ON pspadm.psp_hcm401k_company_qbdt_pitem
+pspapg02-> USING BTREE (hcm401k_company_policy_fk , realm_id );
+CREATE INDEX
+Time: 43.560 ms
+pspapg02=> CREATE INDEX concurrently psp_hcm401k_employee_deduc_fk1
+pspapg02-> ON pspadm.psp_hcm401k_employee_deduction
+pspapg02-> USING BTREE (hcm401k_company_policy_fk , realm_id );
+CREATE INDEX
+Time: 5775.720 ms (00:05.776)
+pspapg02=> SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2024-04-26 22:40:14.056823-07
+(1 row)
+
+Time: 0.438 ms
+pspapg02=> 
+pspapg02=> 
+pspapg02=> \timing
+Timing is off.
+pspapg02=> set search_path=pspadm;
+SET
+pspapg02=> SELECT CURRENT_TIMESTAMP;
+      current_timestamp      
+-----------------------------
+ 2024-04-26 22:41:42.8086-07
+(1 row)
+
+pspapg02=> create index concurrently psp_qbdt_request_info_crdt_p0 on pspadm.psp_qbdt_request_info_p0 USING BTREE (created_date);
+CREATE INDEX
+pspapg02=> create index concurrently psp_qbdt_request_info_crdt_p1 on pspadm.psp_qbdt_request_info_p1 USING BTREE (created_date);
+CREATE INDEX
+pspapg02=> create index concurrently psp_qbdt_request_info_crdt_p2 on pspadm.psp_qbdt_request_info_p2 USING BTREE (created_date);
+CREATE INDEX
+pspapg02=> create index concurrently psp_qbdt_request_info_crdt_p3 on pspadm.psp_qbdt_request_info_p3 USING BTREE (created_date);
+CREATE INDEX
+pspapg02=> 
+pspapg02=> CREATE INDEX psp_qbdt_request_info_crdt ON ONLY pspadm.psp_qbdt_request_info USING BTREE (created_date );
+CREATE INDEX
+pspapg02=> alter index psp_qbdt_request_info_crdt attach partition pspadm.psp_qbdt_request_info_crdt_p0 ;
+ALTER INDEX
+pspapg02=> alter index psp_qbdt_request_info_crdt attach partition pspadm.psp_qbdt_request_info_crdt_p1 ;
+ALTER INDEX
+pspapg02=> alter index psp_qbdt_request_info_crdt attach partition pspadm.psp_qbdt_request_info_crdt_p2 ;
+ALTER INDEX
+pspapg02=> alter index psp_qbdt_request_info_crdt attach partition pspadm.psp_qbdt_request_info_crdt_p3 ;
+ALTER INDEX
+pspapg02=> 
+pspapg02=> SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2024-04-26 22:48:23.129656-07
+(1 row)
+
+pspapg02=> \timing
+Timing is on.
+pspapg02=> set search_path=pspadm;
+SET
+Time: 0.474 ms
+pspapg02=> SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2024-04-26 22:49:52.382686-07
+(1 row)
+
+Time: 0.529 ms
+pspapg02=> create index concurrently psp_qbdt_request_info_fk1_p0 on pspadm.psp_qbdt_request_info_p0 USING BTREE (source_system_transmission_fk , realm_id);
+CREATE INDEX
+Time: 100810.982 ms (01:40.811)
+pspapg02=> create index concurrently psp_qbdt_request_info_fk1_p1 on pspadm.psp_qbdt_request_info_p1 USING BTREE (source_system_transmission_fk , realm_id);
+CREATE INDEX
+Time: 104015.316 ms (01:44.015)
+pspapg02=> create index concurrently psp_qbdt_request_info_fk1_p2 on pspadm.psp_qbdt_request_info_p2 USING BTREE (source_system_transmission_fk , realm_id);
+CREATE INDEX
+Time: 101295.031 ms (01:41.295)
+pspapg02=> create index concurrently psp_qbdt_request_info_fk1_p3 on pspadm.psp_qbdt_request_info_p3 USING BTREE (source_system_transmission_fk , realm_id);
+CREATE INDEX
+Time: 102906.350 ms (01:42.906)
+pspapg02=> CREATE INDEX psp_qbdt_request_info_fk1 ON ONLY pspadm.psp_qbdt_request_info USING BTREE (source_system_transmission_fk , realm_id );
+CREATE INDEX
+Time: 61.849 ms
+pspapg02=> alter index psp_qbdt_request_info_fk1 attach partition pspadm.psp_qbdt_request_info_fk1_p0 ;
+ALTER INDEX
+Time: 67.225 ms
+pspapg02=> alter index psp_qbdt_request_info_fk1 attach partition pspadm.psp_qbdt_request_info_fk1_p1 ;
+ALTER INDEX
+Time: 32.588 ms
+pspapg02=> alter index psp_qbdt_request_info_fk1 attach partition pspadm.psp_qbdt_request_info_fk1_p2 ;
+ALTER INDEX
+Time: 17.620 ms
+pspapg02=> alter index psp_qbdt_request_info_fk1 attach partition pspadm.psp_qbdt_request_info_fk1_p3 ;
+ALTER INDEX
+Time: 7.730 ms
+pspapg02=> 
+pspapg02=> set search_path=pspadm;
+SET
+Time: 0.435 ms
+pspapg02=> SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2024-04-26 23:04:42.530361-07
+(1 row)
+
+Time: 0.441 ms
+pspapg02=> create index concurrently psp_qbdt_request_info_fk2_p0 on pspadm.psp_qbdt_request_info_p0 USING BTREE (company_fk);
+CREATE INDEX
+Time: 58579.067 ms (00:58.579)
+pspapg02=> create index concurrently psp_qbdt_request_info_fk2_p1 on pspadm.psp_qbdt_request_info_p1 USING BTREE (company_fk);
+CREATE INDEX
+Time: 58817.706 ms (00:58.818)
+pspapg02=> create index concurrently psp_qbdt_request_info_fk2_p2 on pspadm.psp_qbdt_request_info_p2 USING BTREE (company_fk);
+CREATE INDEX
+Time: 57590.118 ms (00:57.590)
+pspapg02=> create index concurrently psp_qbdt_request_info_fk2_p3 on pspadm.psp_qbdt_request_info_p3 USING BTREE (company_fk);
+CREATE INDEX
+Time: 58845.271 ms (00:58.845)
+pspapg02=> CREATE INDEX  psp_qbdt_request_info_fk2 ON ONLY pspadm.psp_qbdt_request_info USING BTREE (company_fk);
+CREATE INDEX
+Time: 5.798 ms
+pspapg02=> alter index psp_qbdt_request_info_fk2 attach partition pspadm.psp_qbdt_request_info_fk2_p0 ;
+ALTER INDEX
+Time: 4.897 ms
+pspapg02=> alter index psp_qbdt_request_info_fk2 attach partition pspadm.psp_qbdt_request_info_fk2_p1 ;
+ALTER INDEX
+Time: 3.915 ms
+pspapg02=> alter index psp_qbdt_request_info_fk2 attach partition pspadm.psp_qbdt_request_info_fk2_p2 ;
+ALTER INDEX
+Time: 3.370 ms
+pspapg02=> alter index psp_qbdt_request_info_fk2 attach partition pspadm.psp_qbdt_request_info_fk2_p3 ;
+ALTER INDEX
+Time: 4.639 ms
+pspapg02=> SELECT pg_class.relname 
+pspapg02-> FROM pg_class, pg_index 
+pspapg02-> WHERE pg_index.indisvalid = false 
+pspapg02-> AND pg_index.indexrelid = pg_class.oid;
+ relname 
+---------
+(0 rows)
+
+Time: 2.919 ms
+

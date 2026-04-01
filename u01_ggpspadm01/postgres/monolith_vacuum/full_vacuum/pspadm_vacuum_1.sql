@@ -1,0 +1,34 @@
+\timing
+set search_path to pspadm;
+
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p0;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p1;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p2;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p3;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p4;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p5;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p6;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit_p7;
+vacuum (full, analyze, verbose) pspadm.psp_property_audit;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p0;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p1;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p2;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p3;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p4;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p5;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p6;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p7;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p8;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p9;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p10;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p11;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p12;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p13;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p14;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split_p15;
+vacuum (full, analyze, verbose) pspadm.psp_paycheck_split;
+vacuum (full, analyze, verbose) pspadm.psp_deduction_p0;
+vacuum (full, analyze, verbose) pspadm.psp_deduction_p1;
+vacuum (full, analyze, verbose) pspadm.psp_deduction_p2;
+vacuum (full, analyze, verbose) pspadm.psp_deduction_p3;
+vacuum (full, analyze, verbose) pspadm.psp_deduction;

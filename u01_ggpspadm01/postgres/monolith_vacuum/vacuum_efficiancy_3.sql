@@ -1,0 +1,24 @@
+\timing
+vacuum (analyze, verbose) pg_catalog.pg_statistic;                                   
+vacuum (analyze, verbose) perfstat.pg_stat_all_indexes_hist_p2023_11_07;
+vacuum (analyze, verbose) perfstat.pg_stat_all_tables_hist_p2023_11_07; 
+vacuum (analyze, verbose) perfstat.pg_stat_statements_hist_p2023_11_07; 
+vacuum (analyze, verbose) pspadm.psp_company_payroll_item;           
+vacuum (analyze, verbose) pspadm.psp_company_law; 
+SELECT pg_sleep(120);                    
+vacuum (analyze, verbose) pspadm.psp_paycheck_usage_2023;            
+vacuum (analyze, verbose) pspadm.psp_entity_update_m112023;          
+vacuum (analyze, verbose) pspadm.psp_rafenrollment;                   
+vacuum (analyze, verbose) pspadm.psp_entity_update_m102023;           
+vacuum (analyze, verbose) pspadm.psp_fraud_bank_account;              
+vacuum (analyze, verbose) pg_catalog.pg_type;  
+SELECT pg_sleep(120);                           
+vacuum (analyze, verbose) pspadm.psp_tax_payment_on_hold_reason;      
+vacuum (analyze, verbose) perfstat.host_stat_hist_default;              
+vacuum (analyze, verbose) pspadm.psp_address;                         
+vacuum (analyze, verbose) pg_catalog.pg_attribute;                        
+vacuum (analyze, verbose) pg_catalog.pg_class;    
+SELECT pg_sleep(120);                        
+vacuum (analyze, verbose) pspadm.psp_entity_update_m122023;           
+vacuum (analyze, verbose) pspadm.psp_comp_pmttemplate_pmtmethod;      
+vacuum (analyze, verbose) pspadm.psp_employee_wage_plan; 

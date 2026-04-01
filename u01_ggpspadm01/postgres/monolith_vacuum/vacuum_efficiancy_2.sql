@@ -1,0 +1,33 @@
+\timing
+
+vacuum (analyze, verbose) pspadm.psp_pstub_employee_info_p1;
+vacuum (analyze, verbose) pspadm.psp_bank_account ;
+vacuum (analyze, verbose) pspadm.psp_pstub_employee_info_p2;
+vacuum (analyze, verbose) pspadm.psp_pstub_employee_info_p3;
+SELECT pg_sleep(120);
+vacuum (analyze, verbose) pg_index  ;
+vacuum (analyze, verbose) pg_inherits      ;
+vacuum (analyze, verbose) pspadm.psp_ee_payrollitem_qtrtotals ;
+vacuum (analyze, verbose) pspadm.psp_company_pin  ;
+vacuum (analyze, verbose) pspadm.psp_company_bank_account  ;
+SELECT pg_sleep(120);
+vacuum (analyze, verbose) pspadm.psp_law_rate_range ;
+vacuum (analyze, verbose) pspadm.psp_fset_file    ;
+vacuum (analyze, verbose) pspadm.psp_fset_filing_detail    ;
+vacuum (analyze, verbose) pspadm.psp_state_report_output   ;
+vacuum (analyze, verbose) pg_constraint    ;
+SELECT pg_sleep(120);
+vacuum (analyze, verbose) pspadm.psp_gems_ledger_posting_rule ;
+vacuum (analyze, verbose) pspadm.psp_company_daily_liability;
+vacuum (analyze, verbose) pspadm.psp_message_log  ;
+vacuum (analyze, verbose) pspadm.psp_entitlement_message_2023 ;
+vacuum (analyze, verbose) pspadm.psp_company_agency ;
+SELECT pg_sleep(120);
+vacuum (analyze, verbose) pspadm.psp_company_service;
+vacuum (analyze, verbose) pspadm.psp_qbdt_payroll_item_info;
+vacuum (analyze, verbose) pg_stat_all_indexes_hist_p2023_11_07;
+vacuum (analyze, verbose) pspadm.psp_company_law_rate      ;
+SELECT pg_sleep(120);
+vacuum (analyze, verbose) pg_stat_all_tables_hist_p2023_11_07 ;
+vacuum (analyze, verbose) pspadm.psp_company      ;
+vacuum (analyze, verbose) pg_stat_statements_hist_p2023_11_07 ;

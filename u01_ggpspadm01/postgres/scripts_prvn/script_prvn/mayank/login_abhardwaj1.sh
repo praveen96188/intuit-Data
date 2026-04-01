@@ -1,0 +1,1 @@
+sqlplus intuadmin@qbopp034

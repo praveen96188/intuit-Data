@@ -1,0 +1,378 @@
+SQL> SELECT F.TABLESPACE_NAME,
+  2  ((T.TOTAL_SPACE - F.FREE_SPACE)) "USED (GB)",
+  3  (F.FREE_SPACE) "FREE (GB)",
+  4  (T.TOTAL_SPACE) "TOTAL (GB)",
+  5  ((ROUND ((F.FREE_SPACE/T.TOTAL_SPACE)*100)))||' %' PER_FREE
+  6  FROM
+  7          (select fs.tablespace_name, decode(df.maxspace,0,fs.freespace,(df.maxspace - df.allocspace + fs.freespace)) as FREE_SPACE
+  8           from
+  9           (select tablespace_name,
+ 10           sum(bytes)/1024/1024/1024 as freespace
+ 11           from dba_free_space
+ 12           where tablespace_name <> 'UNDOTBS'
+ 13           group by tablespace_name) fs,
+ 14           ( select tablespace_name,
+ 15           sum(greatest(maxbytes,bytes))/1024/1024/1024 as maxspace,
+ 16           sum(bytes)/1024/1024/1024 as allocspace
+ 17           from dba_data_Files
+ 18           group by tablespace_name) df
+ 19           where fs.tablespace_name=df.tablespace_name
+ 20          ) F,
+ 21          (
+ 22          SELECT TABLESPACE_NAME,
+ 23          ROUND (SUM (greatest(maxbytes,BYTES)))/1024/1024/1024 as TOTAL_SPACE
+ 24          FROM DBA_DATA_FILES
+ 25          GROUP BY TABLESPACE_NAME
+ 26          ) T
+ 27  WHERE F.TABLESPACE_NAME = T.TABLESPACE_NAME
+ 28  AND (ROUND ((F.FREE_SPACE/T.TOTAL_SPACE)*100)) < 100;
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)
+-------------------------------------------------- ------------- -------------
+   TOTAL (GB) PER_FREE
+------------- ----------
+PSP_IDX02                                                   4746         28022
+        32768 86 %
+
+PSP_DATA04                                                  3802         28966
+        32768 88 %
+
+PSP_DATA01                                                  3566         29202
+        32768 89 %
+
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)
+-------------------------------------------------- ------------- -------------
+   TOTAL (GB) PER_FREE
+------------- ----------
+PSP_DATA02                                                  3722         29046
+        32768 89 %
+
+PSP_DATA03                                                  3354         29414
+        32768 90 %
+
+PSP_IDX01                                                   6069         26699
+        32768 81 %
+
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)
+-------------------------------------------------- ------------- -------------
+   TOTAL (GB) PER_FREE
+------------- ----------
+UNDO_T1                                                       64          4032
+         4096 98 %
+
+PSP_IDX03                                                   5250         27518
+        32768 84 %
+
+PSP_IDX04                                                   5099         27669
+        32768 84 %
+
+
+9 rows selected.
+
+SQL> set lines 1000
+SQL> l
+  1  SELECT F.TABLESPACE_NAME,
+  2  ((T.TOTAL_SPACE - F.FREE_SPACE)) "USED (GB)",
+  3  (F.FREE_SPACE) "FREE (GB)",
+  4  (T.TOTAL_SPACE) "TOTAL (GB)",
+  5  ((ROUND ((F.FREE_SPACE/T.TOTAL_SPACE)*100)))||' %' PER_FREE
+  6  FROM
+  7          (select fs.tablespace_name, decode(df.maxspace,0,fs.freespace,(df.maxspace - df.allocspace + fs.freespace)) as FREE_SPACE
+  8           from
+  9           (select tablespace_name,
+ 10           sum(bytes)/1024/1024/1024 as freespace
+ 11           from dba_free_space
+ 12           where tablespace_name <> 'UNDOTBS'
+ 13           group by tablespace_name) fs,
+ 14           ( select tablespace_name,
+ 15           sum(greatest(maxbytes,bytes))/1024/1024/1024 as maxspace,
+ 16           sum(bytes)/1024/1024/1024 as allocspace
+ 17           from dba_data_Files
+ 18           group by tablespace_name) df
+ 19           where fs.tablespace_name=df.tablespace_name
+ 20          ) F,
+ 21          (
+ 22          SELECT TABLESPACE_NAME,
+ 23          ROUND (SUM (greatest(maxbytes,BYTES)))/1024/1024/1024 as TOTAL_SPACE
+ 24          FROM DBA_DATA_FILES
+ 25          GROUP BY TABLESPACE_NAME
+ 26          ) T
+ 27  WHERE F.TABLESPACE_NAME = T.TABLESPACE_NAME
+ 28* AND (ROUND ((F.FREE_SPACE/T.TOTAL_SPACE)*100)) < 100
+SQL> /
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)    TOTAL (GB) PER_FREE
+-------------------------------------------------- ------------- ------------- ------------- ----------
+PSP_IDX02                                                   4746         28022         32768 86 %
+PSP_DATA04                                                  3802         28966         32768 88 %
+PSP_DATA01                                                  3566         29202         32768 89 %
+PSP_DATA02                                                  3722         29046         32768 89 %
+PSP_DATA03                                                  3354         29414         32768 90 %
+PSP_IDX01                                                   6069         26699         32768 81 %
+UNDO_T1                                                       64          4032          4096 98 %
+PSP_IDX03                                                   5250         27518         32768 84 %
+PSP_IDX04                                                   5099         27669         32768 84 %
+
+9 rows selected.
+
+SQL> 
+SQL> 
+SQL> SELECT tablespace_name,
+  2         sum(bytes)/1024/1024/1024 allocated_space,
+  3         sum(case when bytes > maxbytes then bytes else maxbytes end)/1024/1024/1024 total_space_inc_ext,
+  4         ((sum(case when bytes > maxbytes then bytes else maxbytes end)/1024/1024/1024)/(sum(bytes)/1024/1024/1024) - 1)*100 auto_ext_pct_avlbl
+  5    FROM dba_data_files
+  6   WHERE tablespace_name='&TS'
+  7   GROUP BY tablespace_name ;
+Enter value for ts: PSP_DATA01
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_DATA01'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_DATA01                                                    4096               32768         699.999999
+
+SQL> /
+Enter value for ts: PSP_DATA02
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_DATA02'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_DATA02                                                    4096               32768         699.999999
+
+SQL> /
+Enter value for ts: PSP_DATA03
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_DATA03'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_DATA03                                                    4096               32768         699.999999
+
+SQL> /
+Enter value for ts: PSP_DATA04
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_DATA04'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_DATA04                                                    4096               32768         699.999999
+
+SQL> /
+Enter value for ts: PSP_IDX01
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_IDX01'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_IDX01                                                     6396               32768           412.3202
+
+SQL> /
+Enter value for ts: PSP_IDX02
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_IDX02'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_IDX02                                                     4996               32768         555.884707
+
+SQL> /
+Enter value for ts: PSP_IDX03
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_IDX03'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_IDX03                                                     5600               32768         485.142857
+
+SQL> /
+Enter value for ts: PSP_IDX04
+old   6:  WHERE tablespace_name='&TS'
+new   6:  WHERE tablespace_name='PSP_IDX04'
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_IDX04                                                     5400               32768         506.814814
+
+SQL> 
+SQL> 
+SQL> 
+SQL> SELECT tablespace_name,
+  2         sum(bytes)/1024/1024/1024 allocated_space,
+  3         sum(case when bytes > maxbytes then bytes else maxbytes end)/1024/1024/1024 total_space_inc_ext,
+  4         ((sum(case when bytes > maxbytes then bytes else maxbytes end)/1024/1024/1024)/(sum(bytes)/1024/1024/1024) - 1)*100 auto_ext_pct_avlbl
+  5    FROM dba_data_files
+  6  -- WHERE tablespace_name='&TS'
+  7   GROUP BY tablespace_name
+  8  /
+Enter value for ts: 
+old   6: -- WHERE tablespace_name='&TS'
+new   6: -- WHERE tablespace_name=''
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+SYSTEM                                                      .78125               32768            4194204
+PSP_IDX02                                                     4996               32768         555.884707
+SYSAUX                                                  2.35021973               32768         1394152.61
+PSP_DATA04                                                    4096               32768         699.999999
+ARC_DATA01                                                      50               32768              65436
+GGS_DATA                                                         1               32768            3276700
+APPBUGFIX_DATA                                                  10               32768             327580
+PSP_DATA01                                                    4096               32768         699.999999
+PSP_DATA02                                                    4096               32768         699.999999
+PSP_LOB01                                                      100               32768              32668
+RDSADMIN                                                  .0078125               32768          419430300
+
+TABLESPACE_NAME                                    ALLOCATED_SPACE TOTAL_SPACE_INC_EXT AUTO_EXT_PCT_AVLBL
+-------------------------------------------------- --------------- ------------------- ------------------
+PSP_DATA03                                                    4096               32768         699.999999
+PSP_IDX01                                                     6396               32768           412.3202
+UNDO_T1                                                       4096                4096                  0
+USERS                                                    .09765625               32768           33554332
+PSP_IDX03                                                     5600               32768         485.142857
+ARC_IDX01                                                        5               32768             655260
+PSP_FLUX                                                         5               32768             655260
+GGT_DATA                                                         1               32768            3276700
+TOOLS                                                            5               32768             655260
+PSP_IDX04                                                     5400               32768         506.814814
+PSP_LOG                                                         10               32768             327580
+
+22 rows selected.
+
+SQL> SELECT sum(bytes)/1024/1024/1024 allocated_space FROM dba_data_files;
+
+ALLOCATED_SPACE
+---------------
+     43062.2369
+
+SQL> 
+SQL> select sum(bytes)/1024/1024/1024 from dba_segments ;
+
+SUM(BYTES)/1024/1024/1024
+-------------------------
+                35678.695
+
+SQL> select segment_type, sum(bytes)/1024/1024/1024 allocated_space FROM dba_data_files segment_type;
+select segment_type, sum(bytes)/1024/1024/1024 allocated_space FROM dba_data_files segment_type
+       *
+ERROR at line 1:
+ORA-00904: "SEGMENT_TYPE": invalid identifier
+
+
+SQL> desc dba_data_files
+ Name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Null?    Type
+ ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -------- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ FILE_NAME                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  VARCHAR2(513)
+ FILE_ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    NUMBER
+ TABLESPACE_NAME                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            VARCHAR2(30)
+ BYTES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      NUMBER
+ BLOCKS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     NUMBER
+ STATUS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     VARCHAR2(9)
+ RELATIVE_FNO                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               NUMBER
+ AUTOEXTENSIBLE                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             VARCHAR2(3)
+ MAXBYTES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   NUMBER
+ MAXBLOCKS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  NUMBER
+ INCREMENT_BY                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               NUMBER
+ USER_BYTES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 NUMBER
+ USER_BLOCKS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                NUMBER
+ ONLINE_STATUS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              VARCHAR2(7)
+ LOST_WRITE_PROTECT                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         VARCHAR2(7)
+
+SQL>  select segment_type, sum(bytes)/1024/1024/1024 from dba_segments group by segment_type;
+
+SEGMENT_TYPE       SUM(BYTES)/1024/1024/1024
+------------------ -------------------------
+INDEX                              3973.1748
+CLUSTER                           .104980469
+TABLE PARTITION                   12949.3189
+LOBINDEX                          .049926758
+TABLE SUBPARTITION                .001953125
+LOBSEGMENT                        13.7068481
+INDEX PARTITION                   17146.6092
+ROLLBACK                          .000427246
+TABLE                             1461.50433
+LOB PARTITION                     70.6710815
+NESTED TABLE                      .000793457
+
+SEGMENT_TYPE       SUM(BYTES)/1024/1024/1024
+------------------ -------------------------
+TYPE2 UNDO                        63.4443359
+
+12 rows selected.
+
+SQL> 
+SQL> 
+SQL> select segment_type, round(sum(bytes)/1024/1024/1024) from dba_segments group by segment_type;
+
+SEGMENT_TYPE       ROUND(SUM(BYTES)/1024/1024/1024)
+------------------ --------------------------------
+INDEX                                          3973
+CLUSTER                                           0
+TABLE PARTITION                               12949
+LOBINDEX                                          0
+TABLE SUBPARTITION                                0
+LOBSEGMENT                                       14
+INDEX PARTITION                               17147
+ROLLBACK                                          0
+TABLE                                          1462
+LOB PARTITION                                    71
+NESTED TABLE                                      0
+
+SEGMENT_TYPE       ROUND(SUM(BYTES)/1024/1024/1024)
+------------------ --------------------------------
+TYPE2 UNDO                                       63
+
+12 rows selected.
+
+SQL> a  order by  1
+  1* select segment_type, round(sum(bytes)/1024/1024/1024) from dba_segments group by segment_type order by  1
+SQL> /
+
+SEGMENT_TYPE       ROUND(SUM(BYTES)/1024/1024/1024)
+------------------ --------------------------------
+CLUSTER                                           0
+INDEX                                          3973
+INDEX PARTITION                               17147
+LOB PARTITION                                    71
+LOBINDEX                                          0
+LOBSEGMENT                                       14
+NESTED TABLE                                      0
+ROLLBACK                                          0
+TABLE                                          1462
+TABLE PARTITION                               12949
+TABLE SUBPARTITION                                0
+
+SEGMENT_TYPE       ROUND(SUM(BYTES)/1024/1024/1024)
+------------------ --------------------------------
+TYPE2 UNDO                                       63
+
+12 rows selected.
+
+SQL> select segment_type, round(sum(bytes)/1024/1024/1024) from dba_segments group by segment_type order by 2;
+
+SEGMENT_TYPE       ROUND(SUM(BYTES)/1024/1024/1024)
+------------------ --------------------------------
+NESTED TABLE                                      0
+CLUSTER                                           0
+ROLLBACK                                          0
+LOBINDEX                                          0
+TABLE SUBPARTITION                                0
+LOBSEGMENT                                       14
+TYPE2 UNDO                                       63
+LOB PARTITION                                    71
+TABLE                                          1462
+INDEX                                          3973
+TABLE PARTITION                               12949
+
+SEGMENT_TYPE       ROUND(SUM(BYTES)/1024/1024/1024)
+------------------ --------------------------------
+INDEX PARTITION                               17147
+
+12 rows selected.
+
+SQL> 
+SQL> 
+SQL> 

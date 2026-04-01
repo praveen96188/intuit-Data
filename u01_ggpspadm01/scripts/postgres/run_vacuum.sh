@@ -1,0 +1,19 @@
+cd /u01/scripts/postgres
+#./run_on_prod_audit.sh run_vacuum_18Feb_4.sql |tee run_vacuum_18Feb_4.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_5.sql |tee run_vacuum_18Feb_5.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_6.sql |tee run_vacuum_18Feb_6.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_7.sql |tee run_vacuum_18Feb_7.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_8.sql |tee run_vacuum_18Feb_8.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_9.sql |tee run_vacuum_18Feb_9.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_10.sql |tee run_vacuum_18Feb_10.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_11.sql |tee run_vacuum_18Feb_11.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_12.sql |tee run_vacuum_18Feb_12.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_13.sql |tee run_vacuum_18Feb_13.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_14.sql |tee run_vacuum_18Feb_14.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_15.sql |tee run_vacuum_18Feb_15.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_16.sql |tee run_vacuum_18Feb_16.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_17.sql |tee run_vacuum_18Feb_17.log ;
+#./run_on_prod_audit.sh run_vacuum_18Feb_18.sql |tee run_vacuum_18Feb_18.log ;
+./run_on_prod_audit.sh run_vacuum_26Apr2023_6.sql |tee run_vacuum_26Apr2023_6.log ;
+./run_on_prod_audit.sh run_vacuum_26Apr2023_7.sql |tee run_vacuum_26Apr2023_7.log ;
+./run_on_prod_audit.sh run_vacuum_26Apr2023_8.sql |tee run_vacuum_26Apr2023_8.log ;

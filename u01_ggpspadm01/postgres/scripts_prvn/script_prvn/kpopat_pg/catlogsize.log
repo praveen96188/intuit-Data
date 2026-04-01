@@ -1,0 +1,64 @@
+pspapg02=> SELECT relname, nspname ,
+pspapg02->    (sum(pg_relation_size(c.oid))/1024/1024/1024) AS size
+pspapg02->  FROM pg_class c
+pspapg02->  LEFT JOIN pg_namespace n ON (n.oid = c.relnamespace)
+pspapg02-> WHERE nspname IN ('pg_catalog', 'information_schema')
+pspapg02-> --  AND relname like 'txdetails_%p9'
+pspapg02->  GROUP by nspname, relname
+pspapg02->  ORDER BY size DESC
+pspapg02-> ;
+                    relname                     |      nspname       |            size            
+------------------------------------------------+--------------------+----------------------------
+ pg_attribute                                   | pg_catalog         |         1.1418685913085938
+ pg_attribute_relid_attnam_index                | pg_catalog         |     0.45622253417968750000
+ pg_attribute_relid_attnum_index                | pg_catalog         |     0.26857757568359375000
+ pg_class                                       | pg_catalog         |     0.24977874755859375000
+ pg_depend_depender_index                       | pg_catalog         |     0.10371398925781250000
+ pg_depend                                      | pg_catalog         |     0.09706878662109375000
+ pg_depend_reference_index                      | pg_catalog         |     0.07773590087890625000
+ pg_statistic                                   | pg_catalog         |     0.06942749023437500000
+ pg_index                                       | pg_catalog         |     0.06539916992187500000
+ pg_type                                        | pg_catalog         |     0.04671478271484375000
+ pg_class_relname_nsp_index                     | pg_catalog         |     0.03630065917968750000
+ pg_class_tblspc_relfilenode_index              | pg_catalog         |     0.02661895751953125000
+ pg_inherits                                    | pg_catalog         |     0.01621246337890625000
+ pg_index_indexrelid_index                      | pg_catalog         |     0.01136779785156250000
+ pg_index_indrelid_index                        | pg_catalog         |     0.00898742675781250000
+ pg_type_oid_index                              | pg_catalog         |     0.00834655761718750000
+ pg_shdepend                                    | pg_catalog         |     0.00555419921875000000
+ pg_shdepend_depender_index                     | pg_catalog         |     0.00489044189453125000
+ pg_shdepend_reference_index                    | pg_catalog         |     0.00132751464843750000
+ pg_statistic_relid_att_inh_index               | pg_catalog         |     0.00105285644531250000
+ pg_proc                                        | pg_catalog         |     0.00080108642578125000
+ pg_trigger                                     | pg_catalog         |     0.00070953369140625000
+ pg_constraint                                  | pg_catalog         |     0.00064086914062500000
+ pg_trigger_tgrelid_tgname_index                | pg_catalog         |     0.00057220458984375000
+ pg_constraint_conrelid_contypid_conname_index  | pg_catalog         |     0.00035095214843750000
+ pg_description                                 | pg_catalog         |     0.00033569335937500000
+ pg_attrdef                                     | pg_catalog         |     0.00029754638671875000
+ pg_proc_proname_args_nsp_index                 | pg_catalog         |     0.00026702880859375000
+ pg_class_oid_index                             | pg_catalog         |     0.00026702880859375000
+ pg_collation                                   | pg_catalog         |     0.00025177001953125000
+ pg_type_typname_nsp_index                      | pg_catalog         |     0.00023651123046875000
+ pg_constraint_conname_nsp_index                | pg_catalog         |     0.00022888183593750000
+ pg_description_o_c_o_index                     | pg_catalog         |     0.00021362304687500000
+ pg_trigger_oid_index                           | pg_catalog         |     0.00017547607421875000
+ pg_trigger_tgconstraint_index                  | pg_catalog         |     0.00013732910156250000
+ pg_rewrite                                     | pg_catalog         |     0.00011444091796875000
+ pg_inherits_relid_seqno_index                  | pg_catalog         |     0.00010681152343750000
+ pg_operator                                    | pg_catalog         |     0.00010681152343750000
+ pg_collation_name_enc_nsp_index                | pg_catalog         |     0.00010681152343750000
+ pg_constraint_oid_index                        | pg_catalog         |     0.00010681152343750000
+ pg_proc_oid_index                              | pg_catalog         | 0.000091552734375000000000
+ sql_features                                   | information_schema | 0.000061035156250000000000
+ pg_collation_oid_index                         | pg_catalog         | 0.000053405761718750000000
+ pg_constraint_conparentid_index                | pg_catalog         | 0.000053405761718750000000
+ pg_inherits_parent_index                       | pg_catalog         | 0.000053405761718750000000
+ pg_amop                                        | pg_catalog         | 0.000053405761718750000000
+ pg_constraint_contypid_index                   | pg_catalog         | 0.000053405761718750000000
+ pg_amop_opr_fam_index                          | pg_catalog         | 0.000045776367187500000000
+ pg_foreign_table                               | pg_catalog         | 0.000045776367187500000000
+ pg_amop_fam_strat_index                        | pg_catalog         | 0.000045776367187500000000
+ pg_attrdef_adrelid_adnum_index                 | pg_catalog         | 0.000045776367187500000000
+ pg_operator_oprname_l_r_n_index                | pg_catalog         | 0.000045776367187500000000
+

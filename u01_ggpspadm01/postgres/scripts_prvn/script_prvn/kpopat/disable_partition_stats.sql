@@ -1,0 +1,57 @@
+
+col GLOBAL_GRANULARITY format a40
+col SCHEMA_GRANULARITY format a40
+col TABLE_GRANULARITY format a40
+col owner format a10
+col table_name format a40
+
+select
+        DBMS_STATS.GET_PREFS('GRANULARITY') as GLOBAL_GRANULARITY,
+        DBMS_STATS.GET_PREFS('GRANULARITY', 'QBO_DATA') as SCHEMA_GRANULARITY
+from dual;
+
+-- exec DBMS_STATS.SET_SCHEMA_PREFS('QBO_DATA', 'GRANULARITY', 'GLOBAL');
+
+PROMPT === Before Change ===
+
+select owner, table_name, dbms_stats.get_prefs(ownname=>'QBO_DATA',tabname=>t.table_name,pname=>'GRANULARITY') table_granularity
+from dba_tables t
+where owner = 'QBO_DATA'
+and partitioned='YES'
+order by table_name;
+
+PROMPT === Setting table granularity to GLOBAL ===
+
+set timing on 
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'ARAPCREDITPMNTCHARGELINKS_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'AUDITINFO_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'AUDITTXHEADERS_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'AUDITTXDETAILS_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'CASHBASIS_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'TXHEADERS_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'TXDETAILS_1', 'GRANULARITY', 'GLOBAL');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'NAMES_1', 'GRANULARITY', 'GLOBAL');
+set timing off
+
+PROMPT === After Change ===
+
+select owner, table_name, dbms_stats.get_prefs(ownname=>'QBO_DATA',tabname=>t.table_name,pname=>'GRANULARITY') table_granularity
+from dba_tables t
+where owner = 'QBO_DATA'
+and partitioned='YES'
+order by table_name;
+
+
+/*
+PROMPT === Rollback ===
+
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'ARAPCREDITPMNTCHARGELINKS_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'AUDITINFO_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'AUDITTXHEADERS_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'AUDITTXDETAILS_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'CASHBASIS_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'TXHEADERS_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'TXDETAILS_1', 'GRANULARITY', 'AUTO');
+exec DBMS_STATS.SET_TABLE_PREFS ('QBO_DATA', 'NAMES_1', 'GRANULARITY', 'AUTO');
+
+*/

@@ -1,0 +1,2 @@
+SELECT count(*) from pg_stat_activity where state in ('active','idle in transaction') and pid != pg_backend_pid();
+

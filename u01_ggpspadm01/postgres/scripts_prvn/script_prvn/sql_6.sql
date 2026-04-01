@@ -1,0 +1,25 @@
+\timing 
+ /* criteria query */ select this_.SOURCE_SYSTEM_TRANSMISSION_SEQ as source_s1_252_0_,
+                            this_.VERSION                        as version2_252_0_,
+                            this_.CREATOR_ID                     as creator_3_252_0_,
+                            this_.CREATED_DATE                   as created_4_252_0_,
+                            this_.MODIFIER_ID                    as modifier5_252_0_,
+                            this_.MODIFIED_DATE                  as modified6_252_0_,
+                            this_.REALM_ID                       as realm_id7_252_0_,
+                            this_.HOST                           as host8_252_0_,
+                            this_.FROM_SOURCE_SYSTEM             as from_sou9_252_0_,
+                            this_.FINALIZE_DATE_TIME             as finaliz10_252_0_,
+                            this_.REQUEST_TOKEN                  as request11_252_0_,
+                            this_.RESPONSE_TOKEN                 as respons12_252_0_,
+                            this_.TYPE                           as type15_252_0_,
+                            this_.INITIALIZE_DATE_TIME           as initial16_252_0_,
+                            this_.DESCRIPTION                    as descrip17_252_0_,
+                            this_.TO_SOURCE_SYSTEM               as to_sour18_252_0_,
+                            this_.TRANSMISSION_IDENTIFIER        as transmi19_252_0_,
+                            this_.I_P_ADDRESS                    as i_p_add20_252_0_,
+                            this_.APPLICATION_VERSION            as applica21_252_0_,
+                            this_.APPLICATION_ID                 as applica22_252_0_,
+                            this_.TAX_TABLE_ID                   as tax_tab23_252_0_,
+                            this_.COMPANY_ID                     as company24_252_0_
+                     from ibobadm.PSP_SOURCE_SYSTEM_TRANSMISSION this_
+                     where ((this_.TRANSMISSION_IDENTIFIER = 'cd3a2c95-864d-4b1b-abea-5b7f89ea708e' and this_.COMPANY_ID = 'b04071af-6de5-427a-a2a9-4b542f1315e0') and this_.CREATED_DATE > date '2022-11-01');

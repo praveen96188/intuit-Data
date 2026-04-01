@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - General</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+  <body>
+    <p>
+      <center> <img src="images/logo.jpg" alt="DB Solo" /> </center>
+      <a href="DBSolo.html"> Back to Index </a>
+    </p>
+    <hr align="left" />
+
+
+
+
+
+<a name="wp1019028"> </a><h2 class="pHeading1">
+Query Editor
+</h2>
+<a name="wp1020088"> </a><p>
+DB Solo's Query Editor allows you to execute SQL Statements and create and edit stored procedures. It has support for auto-completion, multiple SQL statements, substitution variables, DBMS_OUTPUT and explain plan. DB Solo has
+built-in stored procedure editors for Oracle, Sybase ASE and SQL Server, but you should use the Query Editor to create and edit stored procedures for other databases.
+</p>
+<p>
+The toolbar of the Query Editor has two or three combo boxes for selecting the current server connection, database and schema. The exact number of combo boxes depends on the currently selected server connection. For example, Oracle connections only have two combo boxes, one for
+the server connection and another one for the schema. 
+</p>
+<img src="images/query_editor_combo_boxes.png" border="0" hspace="0" vspace="0"/>
+
+<p>
+The selected schema will be the 'current' schema when you run your queries. In Oracle, selecting a certain schema from the dropdown is equivalent to issuing the following statement before running the query:
+</p>
+<pre>
+alter session set current_schema=X
+</pre>
+<p>
+where X is the schema selected in the combo box (Notice that you should never need to explicitly issue the above ALTER SESSION statement in the query window). Other databases also have similar command issued before your queries are run. 
+</p>
+
+
+<a name="wp1013431"> </a><h3 class="pHeading2">
+SQL Query
+</h3>
+<a name="wp1020150"> </a><p>
+Below screen, <a  href="query.html#wp1022339">Query Results</a>, displays the results of a simple SELECT query.  
+Middle section of the query window displays all the rows returned from your query. Bottom section displays details on the selected cell within the results. 
+If you select more than one cell form the result grid, the detail panel will show you statistics on your selection. You can hide/show the detail panel by clicking on the corresponding toggle-button or by pressing Ctrl-Alt-D.
+For example, if you select numeric cells, the detail panel shows you statistics on the selected values such as MIN, MAX, and AVG. 
+If you have executed more than one query in the query window, the middle part will contain a tab for each query. 
+You can view the results of each query in their respective tabs.
+</p>
+<a name="wp1013597"> </a><p>
+A search is also available within the query window. This allows you to quickly search for a specific value within the result set.
+</p>
+<a name="wp1012975"> </a><div style="color: #000000; font-size: 5pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 54pt; margin-right: 0pt; margin-top: 0pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+</div><div align="left"><img src="images/query_window.gif" height="821" width="1217" border="0" hspace="0" vspace="0"/>
+</div><div style="color: #000000; font-size: 5pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 54pt; margin-right: 0pt; margin-top: 0pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+</div>
+<a name="wp1022339"> </a><p>Figure - Query Results</p>
+<a name="wp1022340"> </a>
+
+<h3 class="pHeading2">Executing Multiple Statements</h3>
+<p>
+The Query Editor supports running multiple statements at once. The statements can be queries or DML/DDL statements, or a combination of them. The statements must be separated by either semicolon or the 'GO' keyword. You can change the settings to only use a semicolon or 'GO' as 
+statement separator instead of the default setting which accepts either one. When you have more than one statement in the Query Editor, DB Solo will send them to your server one at a time. The 'Stop' drop down
+dictates what happens when an error or a warning is encountered when running a statement. By default, it is set to 'After Errors' which means statements after a failed statement will not be executed at all. Other 
+possible values are 'After Warnings' and 'Never'. When 'Never' is selected, a failed statement will not stop the subsequent statements from being executed. In most cases the default setting 'After Errors' is the most
+appropriate setting. If your statements are solely DML/DDL statements or queries that return no rows, the results panel will only contain the 'LOG' tab that shows you the queries that were executed and their execution times.
+If you queries return rows, the results panel will add a tab for each result set returned by your queries. Notice that some databases, such as SQL Server', can return more than one result set from a single query.
+</p>
+<img src="images/query_editor_multiple_statements.png" border="0" hspace="0" vspace="0"/>
+
+<h3 class="pHeading2">Execute Current</h3>
+<p>
+If the Query Editor window contains multiple statements separated by semicolons or 'GO' statements, and you wish to only run the statement under the cursor, 
+you can do it by selecting Query/Execute Current from the main menu or by hitting F5. 
+If your Query Editor only has one statement, 'Execute Current' functions the same way as the standard 'Execute' action (Ctrl-Enter).
+</p>
+
+<h3 class="pHeading2">Auto-Completion</h3>
+<p>
+The auto-completion allows you to write queries more efficiently by providing completion suggestions as you type in your queries. This feature supports the most common SQL 
+statements including SELECT, UPDATE, INSERT, DELETE and others. The auto-completion popup will automatically appear after you type in a space or a period, provided you are in 
+a location where auto-completion can provide a suggestion. You can also force the auto-completion popup by pressing Ctrl-Shift-Space. If you wish not to use the auto-completion feature, you can disble it in Settings/Query Editor/Editor.
+</p>
+<img src="images/query_editor_auto_completion.png" border="0" hspace="0" vspace="0"/>
+
+<h3 class="pHeading2">Stored Procedures and Functions</h3>
+<p>
+DB Solo has built-in procedure editors for Oracle, SQL Server and Sybase, but you need to use the Query Editor to create/edit procedures for other databases, such as Postgres or MySQL. 
+Many times procedures contains multiple statements separated by semicolons and since DB Solo by default uses semicolons as statement separators, you cannot simply use the 'Execute Query' 
+button since DB Solo would try to break your procedure into multiple separate statements and send them to the server one at a time. 
+Instead, you need to use the Query/Execute SQL Buffer As-Is menu item or type Ctrl-Space which will send the entire contents of the Query Editor
+to your server in one chunk. Alternatively, you can go to settings and change the default statement separator to 'GO' only and make sure your procedure does not have any 'GO' statements. 
+If you do this, you must remember to separate multiple ordinary statements with 'GO' keywords instead of semicolons.
+</p>
+<img src="images/query_editor_function.png" border="0" hspace="0" vspace="0"/>
+
+<h3 class="pHeading2">Pinning Result Sets</h3>
+<p>
+Often times you want to keep the results of one query around as a reference while executing other queries. Each result set in the results panel has a button named 'Pin this result set' that allows you to do that.
+Once the button is selected, the result set in question will be preserved even after you execute other queries. The icon in the tabbed pane will reflect the fact that a result set is pinned, allowing you to easily
+identify result sets that were pinned. If you wish not to keep your pinned result set around anymore, simply click on the 'Pin' button again and next time you run a query the result set in question will not appear anymore.
+</p>
+
+<h3 class="pHeading2">Substitution Variables</h3>
+<p>
+The Query Editor allows you to write generic queries that contain substitution variables that will be replaced by actual values when you run the query. To use a
+substitution variable make sure the 'enable substitution variables' button is pressed before running the query,
+<p>
+<img src="images/query_editor_substitution_variables.png" border="0" hspace="0" vspace="0"/>
+<p>
+The substitution variables must only contain characters and are prefixed by an ampersand as follows
+</p>
+<pre>
+select * from emp where emp_id < &amp;oid;
+
+</pre>
+<p>
+When you run the query in question ou will be prompted to enter a value for 'oid'. 
+</p>
+<img src="images/query_editor_substitution_variables_value.png" border="0" hspace="0" vspace="0"/>
+<p>
+The variable substitution dialog has a Preview-tab that allows you to view the query as it will be sent to the database.
+</p>
+<img src="images/query_editor_substitution_variables_preview.png" border="0" hspace="0" vspace="0"/>
+
+<p>
+You can also have default values for substitution variables in your script by using the following syntax
+</p>
+<pre>
+select * from emp where emp_id < &amp;oid[55]
+
+</pre>
+<p>
+where 55 is the default value you want to specify for your variable. If you don't change the default value, the query will be sent to your server as
+</p>
+<pre>
+select * from emp where emp_id < 55
+</pre>
+
+<h3 class="pHeading2">DBMS_OUTPUT (Oracle)</h3>
+<p>
+DB Solo has a built-in procedure editor and debugger for Oracle, so most likely you would not want to use the Query Editor to edit your procedures. However, if you want to run anynymous blocks you must use the 
+Query Editor for that. Often times your anonymous blocks or procedures/functions called from your anonymous block contain calls to the standard Oracle DMBS_OUTPUT package. By default, the output from these calls will not be
+shown in the results panel. If you want to include the output from DBMS_OUTPUT calls, you must make sure the 'Enable/Disable DBMS_OUTPUT retrieval' toggle-button is selected before you execute the anonymous 
+block. Output from the DBMS_OUTPUT package will be shown in grey font in the 'LOG' tab.
+</p>
+<img src="images/query_editor_dbms_output.png" border="0" hspace="0" vspace="0"/>
+
+<h3 class="pHeading2">Query History</h3>
+
+<a name="wp1022344"> </a><p>
+Query history is automatically maintained by DB Solo. The history contains the last 100 (configurable) queries you have executed. To see a list of past queries:
+</p>
+<a name="wp1020580"> </a><div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 5pt; margin-left: 54pt; margin-right: 0pt; margin-top: 3pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+1.	Select <b class="cBold">Query</b> from the top menu bar.
+</div>
+<a name="wp1020588"> </a><div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 5pt; margin-left: 54pt; margin-right: 0pt; margin-top: 3pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+2.	From the pull down menu select, <b class="cBold">Query History</b>.
+</div>
+<a name="wp1020589"> </a><div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 5pt; margin-left: 54pt; margin-right: 0pt; margin-top: 3pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+3.	Options include choosing a <b class="cBold">Server Connection</b> and creating a <b class="cBold">Filter</b> for further refinement. By selecting a server in the <b class="cBold">Server Connection</b> combo box you can filter the list to only contain queries executed against the selected server. Entering a value in the <b class="cBold">Filter</b> field will dynamically filter the list to only include entries that contain the entered string.
+</div>
+<a name="wp1020641"> </a><div style="color: #000000; font-size: 10pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 5pt; margin-left: 54pt; margin-right: 0pt; margin-top: 3pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+4.	Select the query by highlighting it and click the <b class="cBold">Select</b> button. You can also double-click on a query in the list. See <a  href="query.html#wp1020602">Query History</a> displayed below.
+</div>
+<a name="wp1020598"> </a><div style="color: #000000; font-size: 5pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 54pt; margin-right: 0pt; margin-top: 0pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+</div><div align="left"><img src="images/query_history.gif" height="570" width="680" border="0" hspace="0" vspace="0"/>
+</div><div style="color: #000000; font-size: 5pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 54pt; margin-right: 0pt; margin-top: 0pt; text-align: left; text-decoration: none; text-indent: -18pt; text-transform: none">
+</div>
+<a name="wp1020602"> </a><p>Figure - Query History</p>
+
+
+
+
+    <hr/>
+
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td align="left">
+           <a href="DBSolo.html"> Back to Index </a>
+        </td>
+        <td align="right">
+          <span style="font-size: 16px ; font-weight: bold">
+            DB Solo<br />
+          </span>
+          <span style="font-size: 10px">
+            <a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+            <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+          </span>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

@@ -1,0 +1,13 @@
+vacuum (analyze, verbose) perfstat.host_stat_hist ;
+vacuum (analyze, verbose) perfstat.pg_stat_activity_sample_p2022_11_23 ;
+vacuum (analyze, verbose) perfstat.pg_stat_statements_hist_p2022_11_23 ;
+vacuum (analyze, verbose) perfstat.pg_stat_activity_hist_p2022_11_23 ;
+vacuum (analyze, verbose) perfstat.pg_stat_all_tables_hist_p2022_11_23 ;
+vacuum (analyze, verbose) perfstat.pg_stat_all_indexes_hist_p2022_11_23 ;
+vacuum (analyze, verbose) perfstat.dba_plans_hist_p2022_11_23 ;
+vacuum (analyze, verbose) perfstat.pg_stat_activity_sample_p2022_11_24 ;
+vacuum (analyze, verbose) perfstat.pg_stat_statements_hist_p2022_11_24 ;
+vacuum (analyze, verbose) perfstat.pg_stat_activity_hist_p2022_11_24 ;
+vacuum (analyze, verbose) perfstat.pg_stat_all_tables_hist_p2022_11_24 ;
+vacuum (analyze, verbose) perfstat.pg_stat_all_indexes_hist_p2022_11_24 ;
+vacuum (analyze, verbose) perfstat.dba_plans_hist_p2022_11_24 ;

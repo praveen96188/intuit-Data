@@ -1,0 +1,2 @@
+exec sbg_vdba.gen_qbo_capacity_dummy
+exit

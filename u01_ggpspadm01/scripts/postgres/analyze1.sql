@@ -1,0 +1,10 @@
+set search_path=pspadm;
+vacuum (analyze, verbose) psp_company_event_detail_p0;
+vacuum (analyze, verbose) psp_company_event_detail_p1;
+vacuum (analyze, verbose) psp_company_event_detail_p2;
+vacuum (analyze, verbose) psp_company_event_detail_p3;
+vacuum (analyze, verbose) psp_company_event_detail_p4;
+vacuum (analyze, verbose) psp_company_event_detail_p5;
+vacuum (analyze, verbose) psp_company_event_detail_p6;
+vacuum (analyze, verbose) psp_company_event_detail_p7;
+analyze PSP_COMPANY_EVENT_DETAIL;

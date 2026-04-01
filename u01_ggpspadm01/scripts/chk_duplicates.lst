@@ -1,0 +1,66 @@
+10:02:41 SQL> select job_type,count(*) from PSPADM.psp_batch_job_status group by job_type having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.00
+10:02:41 SQL> select app_name, preference_name, employee_fk,count(*) from PSPADM.psp_pstub_employee_preference group by app_name, preference_name, employee_fk having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.31
+10:02:41 SQL> select company_usage_fk, bill_date,count(*) from PSPADM.psp_bill group by company_usage_fk, bill_date having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:51.30
+10:03:32 SQL> select source_company_id, source_system_cd,count(*) from PSPADM.psp_company group by source_company_id, source_system_cd having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:06.46
+10:03:39 SQL> select /*+ PARALLEL(4) */source_company_id, source_system_cd, license_id, entitlement_id,count(*) from PSPADM.psp_company_usage group by source_company_id, source_system_cd, license_id, entitlement_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.27
+10:03:39 SQL> select /*+ PARALLEL(4) */usage_period_fk, source_employee_id,count(*) from PSPADM.psp_employee_usage group by usage_period_fk, source_employee_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:04:32.77
+10:08:12 SQL> select /*+ PARALLEL(4) */license_number, entitlement_offering_code,count(*) from PSPADM.psp_entitlement group by license_number, entitlement_offering_code having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:03.67
+10:08:15 SQL> select /*+ PARALLEL(4) */source_dd_txn_id, paycheck_fk,count(*) from PSPADM.psp_paycheck_split group by source_dd_txn_id, paycheck_fk having count(*)>1;
+select /*+ PARALLEL(4) */source_dd_txn_id, paycheck_fk,count(*) from PSPADM.psp_paycheck_split group by source_dd_txn_id, paycheck_fk having count(*)>1
+*
+ERROR at line 1:
+ORA-12801: error signaled in parallel query server P002 
+ORA-01652: unable to extend temp segment by 128 in tablespace TEMP 
+
+
+Elapsed: 00:18:48.45
+10:27:04 SQL> select /*+ PARALLEL(4) */employee_usage_fk, source_paycheck_id,count(*) from PSPADM.psp_paycheck_usage group by employee_usage_fk, source_paycheck_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:06:17.65
+10:33:21 SQL> select /*+ PARALLEL(4) */company_fk, source_pay_run_id,count(*) from PSPADM.psp_payroll_run group by company_fk, source_pay_run_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:02:46.98
+10:36:08 SQL> select /*+ PARALLEL(4) */system_parameter_cd,count(*) from PSPADM.psp_system_parameter group by system_parameter_cd having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.01
+10:36:08 SQL> select /*+ PARALLEL(4) */company_usage_fk, start_date, end_date,count(*) from PSPADM.psp_usage_period group by company_usage_fk, start_date, end_date having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:06.24
+10:36:15 SQL> 
+10:36:15 SQL> spool off

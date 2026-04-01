@@ -1,0 +1,10 @@
+GRANT  SELECT, INSERT, DELETE, UPDATE ON pspadm.psp_qbdt_request_info  to pspadm_readwrite_role;
+GRANT  SELECT, INSERT, DELETE, UPDATE ON pspadm.psp_hcm401k_company_policy  to pspadm_readwrite_role;
+GRANT  SELECT, INSERT, DELETE, UPDATE ON pspadm.psp_hcm401k_company_qbdt_pitem  to pspadm_readwrite_role;
+GRANT  SELECT, INSERT, DELETE, UPDATE ON pspadm.psp_hcm401k_employee_deduction  to pspadm_readwrite_role;
+GRANT  SELECT, INSERT, DELETE, UPDATE ON pspadm.psp_hcm401k_policy  to pspadm_readwrite_role;
+GRANT  SELECT ON pspadm.psp_qbdt_request_info  to pspadm_readonly_role;
+GRANT  SELECT ON pspadm.psp_hcm401k_company_policy  to pspadm_readonly_role;
+GRANT  SELECT ON pspadm.psp_hcm401k_company_qbdt_pitem  to pspadm_readonly_role;
+GRANT  SELECT ON pspadm.psp_hcm401k_employee_deduction  to pspadm_readonly_role;
+GRANT  SELECT ON pspadm.psp_hcm401k_policy  to pspadm_readonly_role;

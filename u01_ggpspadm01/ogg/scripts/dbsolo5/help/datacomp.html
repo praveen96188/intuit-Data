@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - Database Table Data Comparison Tool</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+	<body>
+		<p></p>
+		<center>
+			<img src="images/logo.jpg" alt="DB Solo" /></center>
+		<a href="DBSolo.html">Back to Index </a></p>
+		<hr align="left" />
+		<a name="wp1005198"></a>
+		<h2 class="pHeading1">Table Data Comparison Tool</h2>
+		<p class="pBody">Table Data Comparison Tool allows you to compare data in one or more pairs of tables. The tables can be in the same or different schemas/databases and they don't need to have the same name or columns. Comparison can be done between tables in different DBMS platforms such as Oracle and SQL Server.</p>
+		<p class="pBody">You can invoke the Table Data Comparison Tool from the 'Tools' menu in the main toolbar of DB Solo.</p>
+		<h3 class="pHeading2">Schema/Database Selection</h3>
+		<p class="pBody">The first screen of the comparison tool allows you to select the schemas/databases that contain the tables you wish to compare. The tree control on the left hand side allows you to select 'source' of the comparison and the right side lets you pick the 'destination' schema.<br/>
+			</p>
+		<h3 class="pHeading2"><img src="images/datacomp_schemas.jpg" alt="" height="511" width="644" border="0"/></h3>
+		<p class="pBody">Figure - Select Schema/Database Screen</p>
+		<br/>
+		<p class="pBody">After selecting the schemas/databases click on 'Next' to move to table selection panel.</p>
+		<h3 class="pHeading2">Table Selection</h3>
+		<p class="pBody2">The table selection screen lets you select the tables you want to include in the comparison. The tree control on the left hand side lets you select the tables and their columns to be included in the comparison. Notice that you always have to select the primary key columns of a table if you wish to include the table in the data comparison. The right-hand side lets you select what the primary key columns of the table are. By default the actual primary key constraints' columns are selected, if one exists. If the table does not have a primary key constraint, you must select a set of columns that uniquely identify rows in the table, i.e. no two rows can have the same values in the primary key columns. If the selected columns do not uniquely identify rows in the table, the comparison results are not accurate.</p>
+		<p class="pBody2">The right-hand side also lets you pick the table that the selected table will be compared against. By default a table with the same name will be selected from the destination schema/database, if one exists. You can also select and/or override the primary key columns for the mapped (destination side) table.</p>
+		<h3 class="pHeading2"><img src="images/datacomp_tables.jpg" alt="" height="557" width="757" border="0"/></h3>
+		<p class="pHeading2">The second tab of the panel allows you to enter a where statement for both the source and the destination side. This is useful if you don't wish to compare all rows in the tables. For example, lets say your table contains sales data and you only wanted to compare the last day. In this case you would enter a where statement that would only return sales data for the day you want to include.</p>
+		<p class="pHeading2"><img src="images/datacomp_where.jpg" alt="" height="557" width="757" border="0"/></p>
+		<h3 class="pHeading2">Settings</h3>
+		<p class="pBody">The various options in the settings screen allow you to fine-tune the comparison process. All settings will get persisted when you close DB Solo, so you don't have to re-enter the same settings next time you want to run the comparison. You can configure the following settings:</p>
+		<p class="pBody"><b>Strings</b></p>
+		<ul>
+			<li class="pBody">Ignore string case - When this is checked, all string column (CHAR, VARCHAR, CLOB, etc) comparisons will be case-insensitive</li>
+			<li class="pBody">Trim leading/trailing whitespace - When this option is checked, the column values will be trimmed (whitespace will be removed) from both ends before performing the comparison.</li>
+		</ul>
+		<p class="pBody"><b>Numeric</b></p>
+		<ul>
+			<li class="pBody">Ignore sign - When this is checked, the sign of the numeric columns (NUMBER, REAL, INT, FLOAT, etc) will be ignored, i.e. values -123 and 123 would match.</li>
+			<li class="pBody">Compare Decimals - If this setting is NOT checked, only whole numbers will be compared, i.e. 33.45 and 33.99 would match.</li>
+		</ul>
+		<p class="pBody"><b>Date/Time</b></p>
+		<ul>
+			<li class="pBody">Compare years, months, etc - If one of these is unchecked, the appropriate date/time component will not be compared at all.</li>
+		</ul>
+		<h3 class="pHeading2"><img src="images/datacomp_settings.jpg" alt="" height="511" width="644" border="0"/></h3>
+		<p class="pBody">Figure - Comparison Settings</p>
+		<br/>
+		<p class="pBody">After applying all the settings you wish to change, click on 'Next' to start the comparison. Notice that if the number of rows to compare is large , the comparison may potentially take several minutes to complete.</p>
+		<h3 class="pHeading2">Results</h3>
+		<p class="pBody">After DB Solo has completed the comparison process, you will see the results screen that is divided into two sections. The upper part lists all the compared tables and gives a summary of the comparison process. When you select a table in the upper section, the comparison result details will be shown in the bottom section for that table. The bottom screen has the following four tabs:</p>
+		<ul>
+			<li class="pBody">Different - This tab shows rows that exist in the source and destination database, but do not have the same values. The values that do not match are colored so it becomes obvious where the conflicts are.</li>
+			<li class="pBody">Missing - The rows in this tab are present in the destination table but missing from the source table.</li>
+			<li class="pBody">Extra - These rows are present in the source table but missing from the destination table.</li>
+			<li class="pBody">Matching - These rows are present in both tables and their values match.</li>
+		</ul>
+		<ul class="pBody"></ul>
+		</p>
+		<h3 class="pHeading2"><img src="images/datacomp_results.jpg" alt="" height="612" width="816" border="0"/></h3>
+		<p class="pBody">Figure - Results Panel</p>
+
+		<h3 class="pHeading2">Creating A Data Synchronization SQL Script</h3>
+		<p>The table data comparison tool has a Synchronization Script creator which allows you to create a DML script that contains all required SQL&nbsp;<b>DELETE/INSERT/UPDATE</b> statements to synchronize the selected source tables with their counterparts on the destination side. First you need to select the tables and individual rows to be included in the synchronization script by checking the appropriate checkboxes in the 'Sync' columns. When you check the Sync checkbox on the table list, all rows that are different will automatically be selected for that table.</p>
+		<p>The first screen of the synchronization script creator dialog allows you to change the script generation settings. The settings screen will let you change the keyword case of the SQL&nbsp;statements, the statement separator type and whether identifiers are shown in brackets, quotes or neither. You can optionally also include the tables' schemas/owners in the generated script.</p>
+		<p></p>
+		<p><img src="images/datacomp_sync_settings.jpg" alt="" height="482" width="755" border="0"/></p>
+		<p>The last page of the Synchronization Script Wizard will show the DML&nbsp;script based on the data comparison results and your settings. The buttons on this screen let you save the script to a file or copy it to the system clipboard.</p>
+		<p><img src="images/datacomp_sync_script.jpg" alt="" height="508" width="756" border="0"/></p>
+		
+		<h3 class="pHeading2">SQL*Loader [Oracle]</h3>
+		
+		<p>DB Solo can optionally create control (.CTL) and data (.DAT) files that can be used to load the data into the database using SQL*Loader. The delete 
+statements will still appear in the SQL sync file but inserts and updates will be handled by SQL*Loader. One of the main benefits of this approach
+is the fact that you can work with large BLOB and CLOB values that cannot be handled using the standard sync SQL script. E.g. if the sync script contains
+an UPDATE/INSERT statement with a string literal longer than 4K, Oracle will issue the following error when you try to run the sync script: </p>
+
+<p><b>ORA-01704: string literal too long</b></p>
+
+<p>Another benefit is that SQL*Loader can typically insert rows in a much shorter time than running the sync SQL script would take, especially if the number
+of rows is large.
+</p>
+
+<p>To enable the SQL*Loader feature, make sure the 'Use SQL*Loader scripts to INSERT and UPDATE data' option is set to 'Yes' on the Options-screen of the 
+Sync Script Creator dialog. You also need to specify a folder where all the SQL*Loader specific files will be stored. DB Solo will create one pair of files
+for each table; a data file (.DAT) and a control file (.CTL). Additionally, one BIN/TXT file will be created for each BLOB/CLOB column value. If the rows
+that need to be synced contain lots of large BLOB/CLOB values, make sure you have enough hard-drive space to store all the values. <p>
+
+<p><b><i>DELETE Statements</i></b></p>
+<p>SQL*Loader cannot delete individual rows, therefore all the DELETE statements will appear in the SQL file.</p>
+
+<p><b><i>INSERT Statements</i></b></p>
+<p>All the INSERT statements will be handled by SQL*Loader. There is one record in the .DAT file for each row that needs to be inserted. </p>
+
+<p><b><i>UPDATE Statements</i></b></p>
+<p>SQL*Loader does not support updates. As a result of this, the SQL sync file will have DELETE statements for all rows that need to be updated.
+The .DAT file will then contain a record for each row that needs to be updated. The SQL sync file needs to be run first to do the deletes 
+and after that SQL*Loader needs to be invoked to do the inserts. Notice that the records in the .DAT file will contain all the columns of the record, 
+not just the ones that are different.</p>
+
+<p><b><i>BLOB and CLOB Values</i></b></p>
+<p>If the record to be updated contains BLOB or CLOB columns, DB Solo will store each BLOB/CLOB value in a separate file. The .DAT file will then contain 
+just the name of the file that contains the actual BLOB/CLOB value. In the control file the filler column is specified as follows:</p>
+
+<p><b>X_FILENAME FILLER CHAR(256)</b></p>
+
+<p>where X is the name of the column and the actual BLOB/CLOB value will be loaded on the next line using the following control file syntax:</p>
+
+<p><b>X LOBFILE(X_FILENAME) TERMINATED BY EOF</b></p>
+
+<p>where X is again the name of the column.</p>
+
+		<p></p>
+		
+		<h3 class="pHeading2">Loading &amp; Saving Your Table Data Compare Tool Project Files</h3>
+		<p>The 'Load Project' button on the first page of the comparison tool allows you to open projects you have saved earlier. The project files contain information about the source / destination databases you have selected, tables/columns you selected for comparison as well as all the comparison settings from the comparison options page of the tool.</p>
+		<p>After completing a table data comparison, you can save your settings on the last page of the comparison tool by clicking on the 'Save Project' button.</p>
+		
+	
+		<h3 class="pHeading2">Table Data Comparison Command-Line Tool</h3>
+		
+		<p>Data comparison can be run from a command shell using settings from a saved project file. This allows you to run data comparisons regularly using cron or a similar mechanism. The following shell command will run a data comparison from settings in 'myproject.xml':</p>
+							<p><b>commandLine -dataCompare myproject.xml</b></p>
+							<p>where 'myproject.xml' is a project file. You can use project files on different machines as long as the configured server connection names match. The project files are xml text files that can be edited manually outside DB Solo.</p>
+							<p>The command line tool will output errors and other messages in <b>dataCompare.log </b>file.</p>
+		
+		<h3 class="pHeading2"></h3>
+		<hr/>
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+			<tr>
+				<td align="left"><a href="DBSolo.html">Back to Index </a></td>
+				<td align="right"><span style="font-size: 16px ; font-weight: bold">DB Solo<br />
+						 </span><span style="font-size: 10px"><a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+						 <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+						 </span></td>
+			</tr>
+		</table>
+	</body>
+
+</html>

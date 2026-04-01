@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DB Solo Help - Export Tool</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+  </head>
+
+  <body>
+    <p>
+      <center> <img src="images/logo.jpg" alt="DB Solo" /> </center>
+      <a href="DBSolo.html"> Back to Index </a>
+    </p>
+    <hr align="left" />
+
+
+
+
+
+<h2 class="pHeading1">Export Tool</h2>
+
+<p class="pBody">The Export Tool allows you to export data from a table or query to a CSV, HTML or SQL file. The rows are exported as they are retrieved from the database, this allows one to export millions of rows without running out of memory.</p>
+<p class="pBody"> The export tool supports all supported DBMS products including Oracle, Cassandra, Vertica, SQL Server, Sybase ASA/ASE, MySQL and PostgreSQL. Similarly, it supports all OS platforms; Linux, Windows and MacOS.</p>
+<p class="pBody">You can invoke the Export Tool from the 'Tools' menu in the main toolbar of DB Solo.</p>
+
+
+<h3 class="pHeading2">Selecting Data Source</h3>
+<p class="pBody">The first page of the export wizard allows you to choose where the exported data is selected from, a table or a query. When the 'Table' option is selected, you must pick the source table from the tree control on the first page. Only one table can be selected at a time. </p>
+		<p class="pBody"><img src="images/export_source_table.png" alt="" height="739" width="1090" border="0"/></p>
+		<p class="pBody">When the 'Query' option is selected, you need to enter the select statement and pick the database/schema that will be used when executing the query. Any SELECT statement supported by the underlying database engine can be entered, including views, joins, where statements and order by statements.</p>
+		<p class="pBody"><img src="images/export_source_query.png" alt="" height="738" width="1092" border="0"/></p>
+
+
+		<h3 class="pHeading2">Export Format Options</h3>
+<p class="pBody">The second page of the export tool lets you configure various output options, including which columns will be exported. The first section allows you to select the output destination, either the system clipboard or a file.
+When the file-option is selected, you can choose the file encoding that will be used when text is written to the file. </p>
+<p class="pBody">You must enter the name and path of the destination file in the The 'Destination File' section. You can also use the folder-button to bring up a file chooser that lets you navigate to the folder/file you wish to use. </p>
+<p class="pBody">The 'Export Format' section lets you pick the export format; CSV, HTML or SQL. When the CSV-option is selected, you must enter both column and row separator character(s). By default, comma is used as the column separator and a newline 
+is used as the record separator. When CSV or HTML-option is selected, you can also indicate if you want column headers (column names) to appear on the first row.</p>
+<p class="pBody">The 'Columns' section allows you to pick columns that will be part of the export. When the CSV or HTML-option is checked, you can also set the output format for each column. You must go thru all the columns that you wish
+to export and set the format for them individually. The syntax of the format depends on the column type in question, when you select a column type that requires a special format there is a quickhelp button available that explains the syntax in more detail. 
+You can also change the default format by going to Tools/Settings/Export Tool. This way you don't need to change the format for each column individually, assuming you wish to use the same format for each column of the same type (e.g. numeric, date, etc).
+</p>
+
+		
+<p class="pBody"><img src="images/export_settings_csv.png" alt="" height="739" width="1089" border="0"/></p>
+
+<h3 class="pHeading2">HTML Export Options</h3>
+<p class="pBody">When the output format is set to 'HTML', you can click on the 'HTML Settings' button to change the format of the HTML document that will be generated. The following HTML options can be configured.<ul>
+  <li><b>Page Title</b> Title of the generated HTML document</li>
+  <li><b>Heading</b> Title of the generated HTML document</li>
+</ul>
+The following options can be set for the header, even and odd rows individually.
+<ul>
+  <li><b>Font Size</b> Font size of the row text</li>
+  <li><b>Column Alignment</b> Text alignment for the columns; left, right or center</li>
+  <li><b>Background color</b> Background color for the specified row type</li>
+</ul>
+</p><img src="images/export_settings_html.png" alt="" height="572" width="634" border="0"/>
+		<h3 class="pHeading2">SQL Export Options</h3>
+<p class="pBody">When the output format is set to 'SQL', you can click on the 'SQL Settings' button to change the format of the generated SQL statements. The following options can be configured.<ul>
+  <li><b>Keywords</b> Are the keywords in upper case or lower case</li>
+  <li><b>Statement Separator</b> Are the SQL statements separated by a semicolon or the 'GO' keyword</li>
+  <li><b>Identifiers</b> The identifiers can be wrapped in brackets or quotes</li>
+  <li><b>Table Name</b> Name of the table that will be used in the INSERT statements</li>
+  <li><b>Schema</b> Name of the schema/owner/database that will be used in the INSERT statements. If this field is left blank, the INSERT statements will not specify the schema, just the table name</li>
+			<li><b>Include CREATE TABLE statement</b> If this option is checked, the first statement in the SQL script is a CREATE TABLE statement.</li>
+		</ul>
+</p><img src="images/export_settings_sql.png" alt="" height="570" width="634" border="0"/>
+		<h3 class="pHeading2">Results</h3>
+<p class="pBody">After setting the format options to desired values, click 'Next' to start the export process. Depending on the number of rows that will be exported, this can take several minutes or even longer.
+Once the data export is completed, the export wizard will show the results screen. The results page will only the first 20 rows that were exported. </p>
+		<p class="pBody"><img src="images/export_results.png" alt="" height="740" width="1092" border="0"/></p>
+
+		<h3 class="pHeading2">Saving and Loading Export Project Files</h3>
+<p class="pBody">On the last page of the export wizard you can click on the 'Save Project' button to save the selected export settings to a project file. These saved project files can then be used on the first page using the 'Load Project' button.
+The project file contains all selected options including the data source, column formats and the CSV/SQL/HTML settings.</p>
+
+<h3 class="pHeading2">Running the Export Tool from Command Line</h3>
+<p class="pBody">Exports can be run from a command shell using settings from a saved project file. This allows you to run exports regularly using cron or a similar mechanism. The following shell command will run an export from settings in 'myproject.xml':</p>
+<p class="pBody"><b>commandLine -export myproject.xml</b></p>
+<p class="pBody">where 'myproject.xml' is a project file. You can use project files on different machines as long as the configured server connection names match. The project files are standard xml text files that can be edited manually outside DB Solo.</p>
+<p class="pBody">The command line tool will output errors and other messages in <b>export.log </b>file.</p>
+<p></p>
+		<hr/>
+
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+        <td align="left">
+           <a href="DBSolo.html"> Back to Index </a>
+        </td>
+        <td align="right">
+          <span style="font-size: 16px ; font-weight: bold">
+            DB Solo<br />
+          </span>
+          <span style="font-size: 10px">
+            <a href="http://www.dbsolo.com">www.dbsolo.com</a><br />
+            <a href="mailto:support@dbsolo.com">support@dbsolo.com</a><br />
+          </span>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

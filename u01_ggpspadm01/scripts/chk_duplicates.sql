@@ -1,0 +1,16 @@
+set echo on feedback on
+spool chk_duplicates
+select job_type,count(*) from PSPADM.psp_batch_job_status group by job_type having count(*)>1; 
+select app_name, preference_name, employee_fk,count(*) from PSPADM.psp_pstub_employee_preference group by app_name, preference_name, employee_fk having count(*)>1;
+select company_usage_fk, bill_date,count(*) from PSPADM.psp_bill group by company_usage_fk, bill_date having count(*)>1;
+select source_company_id, source_system_cd,count(*) from PSPADM.psp_company group by source_company_id, source_system_cd having count(*)>1;
+select /*+ PARALLEL(4) */source_company_id, source_system_cd, license_id, entitlement_id,count(*) from PSPADM.psp_company_usage group by source_company_id, source_system_cd, license_id, entitlement_id having count(*)>1;
+select /*+ PARALLEL(4) */usage_period_fk, source_employee_id,count(*) from PSPADM.psp_employee_usage group by usage_period_fk, source_employee_id having count(*)>1;
+select /*+ PARALLEL(4) */license_number, entitlement_offering_code,count(*) from PSPADM.psp_entitlement group by license_number, entitlement_offering_code having count(*)>1;
+select /*+ PARALLEL(4) */source_dd_txn_id, paycheck_fk,count(*) from PSPADM.psp_paycheck_split group by source_dd_txn_id, paycheck_fk having count(*)>1;
+select /*+ PARALLEL(4) */employee_usage_fk, source_paycheck_id,count(*) from PSPADM.psp_paycheck_usage group by employee_usage_fk, source_paycheck_id having count(*)>1;
+select /*+ PARALLEL(4) */company_fk, source_pay_run_id,count(*) from PSPADM.psp_payroll_run group by company_fk, source_pay_run_id having count(*)>1;
+select /*+ PARALLEL(4) */system_parameter_cd,count(*) from PSPADM.psp_system_parameter group by system_parameter_cd having count(*)>1;
+select /*+ PARALLEL(4) */company_usage_fk, start_date, end_date,count(*) from PSPADM.psp_usage_period group by company_usage_fk, start_date, end_date having count(*)>1;
+
+spool off

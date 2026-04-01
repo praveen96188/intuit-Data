@@ -1,0 +1,826 @@
+SQL> SELECT F.TABLESPACE_NAME,
+  2  ((T.TOTAL_SPACE - F.FREE_SPACE)) "USED (GB)",
+  3  (F.FREE_SPACE) "FREE (GB)",
+  4  (T.TOTAL_SPACE) "TOTAL (GB)",
+  5  ((ROUND ((F.FREE_SPACE/T.TOTAL_SPACE)*100)))||' %' PER_FREE
+  6  FROM
+  7   (select fs.tablespace_name, decode(df.maxspace,0,fs.freespace,(df.maxspace - df.allocspace + fs.freespace)) as FREE_SPACE
+  8    from
+  9    (select tablespace_name,
+ 10    sum(bytes)/1024/1024/1024 as freespace
+ 11    from dba_free_space
+ 12    where tablespace_name <> 'UNDOTBS'
+ 13    group by tablespace_name) fs,
+ 14    ( select tablespace_name,
+ 15    sum(greatest(maxbytes,bytes))/1024/1024/1024 as maxspace,
+ 16    sum(bytes)/1024/1024/1024 as allocspace
+ 17    from dba_data_Files
+ 18    group by tablespace_name) df
+ 19    where fs.tablespace_name=df.tablespace_name
+ 20   ) F,
+ 21   (
+ 22   SELECT TABLESPACE_NAME,
+ 23   ROUND (SUM (greatest(maxbytes,BYTES)))/1024/1024/1024 as TOTAL_SPACE
+ 24   FROM DBA_DATA_FILES
+ 25   GROUP BY TABLESPACE_NAME
+ 26   ) T
+ 27  WHERE F.TABLESPACE_NAME = T.TABLESPACE_NAME
+ 28  /
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)
+-------------------------------------------------- ------------- -------------
+   TOTAL (GB) PER_FREE
+------------- ----------
+SYSAUX                                                         1         32767
+        32768 100 %
+
+GGT_DATA                                                       0         32768
+        32768 100 %
+
+USERS                                                          0         32768
+        32768 100 %
+
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)
+-------------------------------------------------- ------------- -------------
+   TOTAL (GB) PER_FREE
+------------- ----------
+SYSTEM                                                         0         32768
+        32768 100 %
+
+RDSADMIN                                                       0         32768
+        32768 100 %
+
+GGS_DATA                                                       0         32768
+        32768 100 %
+
+
+TABLESPACE_NAME                                        USED (GB)     FREE (GB)
+-------------------------------------------------- ------------- -------------
+   TOTAL (GB) PER_FREE
+------------- ----------
+UNDO_T1                                                        0           100
+          100 100 %
+
+QBO                                                            0         32768
+        32768 100 %
+
+QBO_DATA                                                       0         32768
+        32768 100 %
+
+
+9 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> desc dba_data_files
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ FILE_NAME                                          VARCHAR2(513)
+ FILE_ID                                            NUMBER
+ TABLESPACE_NAME                                    VARCHAR2(30)
+ BYTES                                              NUMBER
+ BLOCKS                                             NUMBER
+ STATUS                                             VARCHAR2(9)
+ RELATIVE_FNO                                       NUMBER
+ AUTOEXTENSIBLE                                     VARCHAR2(3)
+ MAXBYTES                                           NUMBER
+ MAXBLOCKS                                          NUMBER
+ INCREMENT_BY                                       NUMBER
+ USER_BYTES                                         NUMBER
+ USER_BLOCKS                                        NUMBER
+ ONLINE_STATUS                                      VARCHAR2(7)
+
+SQL> select FILE_NAME, BYTES/1024/1024/1024 from dba_data_files;
+
+FILE_NAME
+--------------------------------------------------------------------------------
+BYTES/1024/1024/1024
+--------------------
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_system_cnk3o693_.dbf
+           .48828125
+
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_sysaux_cnk3obr4_.dbf
+          .630249023
+
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_undo_t1_cnk3ofkb_.dbf
+             .234375
+
+
+FILE_NAME
+--------------------------------------------------------------------------------
+BYTES/1024/1024/1024
+--------------------
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_users_cnk3og5y_.dbf
+           .09765625
+
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_rdsadmin_cnk4zkh1_.dbf
+          .006835938
+
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_qbo_dp70sym3_.dbf
+                  10
+
+
+FILE_NAME
+--------------------------------------------------------------------------------
+BYTES/1024/1024/1024
+--------------------
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_qbo_data_dp70v3cy_.dbf
+                 100
+
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_ggs_data_dp717bv1_.dbf
+                   1
+
+/rdsdbdata/db/QBOPP060_A/datafile/o1_mf_ggt_data_dp717gov_.dbf
+                   1
+
+
+9 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL>  select 'alter user '||username||' identified by "znj#!kYV" ;' from dba_users where username like 'QBO%UW2%'
+  2  
+SQL> 
+SQL> 
+SQL> -- $RCKK?gM
+SQL> 
+SQL> c\znj#!kYV\$RCKK?gM
+  1*  select 'alter user '||username||' identified by "$RCKK?gM" ;' from dba_users where username like 'QBO%UW2%'
+SQL> /
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP62 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP03 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP90 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP34 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP38 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP47 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP70 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP13 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP17 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP30 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP06 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP81 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP87 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP67 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP58 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP26 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP92 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP96 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP71 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP51 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP73 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP41 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP94 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP23 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP93 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP78 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP89 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP52 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP16 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP65 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP76 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP66 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP40 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP24 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP74 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP49 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP44 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP11 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP05 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP29 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP64 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP37 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP80 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP91 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP48 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP04 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP59 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP83 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP07 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP02 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP53 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP86 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP55 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP39 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP50 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP35 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP84 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP20 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP82 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP43 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP72 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP57 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP61 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP25 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP98 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP46 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP45 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP14 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP42 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP77 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP00 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP75 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP60 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP36 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP79 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP22 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP32 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP97 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP10 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP01 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP33 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP27 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP31 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP12 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP68 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP63 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP56 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP15 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP85 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP19 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP09 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2ADMIN identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP95 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP88 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP99 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP08 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP21 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP18 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP54 identified by "$RCKK?gM" ;
+
+'ALTERUSER'||USERNAME||'IDENTIFIEDBY"$RCKK?GM";'
+--------------------------------------------------------------------------------
+alter user QBOC60_UW2APP28 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP69 identified by "$RCKK?gM" ;
+
+101 rows selected.
+
+SQL> set pages 0
+SQL> 
+SQL> 
+SQL> 
+SQL> l
+  1*  select 'alter user '||username||' identified by "$RCKK?gM" ;' from dba_users where username like 'QBO%UW2%'
+SQL> /
+alter user QBOC60_UW2APP62 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP03 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP90 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP34 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP38 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP47 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP70 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP13 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP17 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP30 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP06 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP81 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP87 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP67 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP58 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP26 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP92 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP96 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP71 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP51 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP73 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP41 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP94 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP23 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP93 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP78 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP89 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP52 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP16 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP65 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP76 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP66 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP40 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP24 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP74 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP49 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP44 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP11 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP05 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP29 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP64 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP37 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP80 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP91 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP48 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP04 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP59 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP83 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP07 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP02 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP53 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP86 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP55 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP39 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP50 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP35 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP84 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP20 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP82 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP43 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP72 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP57 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP61 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP25 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP98 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP46 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP45 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP14 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP42 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP77 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP00 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP75 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP60 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP36 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP79 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP22 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP32 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP97 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP10 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP01 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP33 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP27 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP31 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP12 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP68 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP63 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP56 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP15 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP85 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP19 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP09 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2ADMIN identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP95 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP88 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP99 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP08 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP21 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP18 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP54 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP28 identified by "$RCKK?gM" ;
+alter user QBOC60_UW2APP69 identified by "$RCKK?gM" ;
+
+101 rows selected.
+
+SQL> alter user QBOC60_UW2APP62 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP03 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP90 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP34 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP38 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP47 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP70 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP13 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP17 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP30 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP06 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP81 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP87 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP67 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP58 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP26 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP92 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP96 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP71 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP51 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP73 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP41 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP94 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP23 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP93 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP78 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP89 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP52 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP16 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP65 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP76 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP66 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP40 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP24 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP74 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP49 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP44 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP11 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP05 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP29 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP64 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP37 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP80 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP91 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP48 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP04 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP59 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP83 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP07 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP02 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP53 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP86 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP55 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP39 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP50 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP35 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP84 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP20 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP82 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP43 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP72 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP57 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP61 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP25 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP98 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP46 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP45 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP14 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP42 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP77 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP00 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP75 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP60 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP36 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP79 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP22 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP32 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP97 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP10 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP01 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP33 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP27 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP31 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP12 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP68 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP63 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP56 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP15 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP85 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP19 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP09 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2ADMIN identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP95 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP88 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP99 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP08 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP21 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP18 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP54 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP28 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> alter user QBOC60_UW2APP69 identified by "$RCKK?gM" ;
+
+User altered.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> set heading off;
+SQL> begin
+  2  for x in (select synonym_name from all_synonyms where owner = 'PUBLIC' and (table_owner = 'QBO' or table_owner= 'QBORPT'))
+  3  loop
+  4  execute immediate 'drop public synonym ' || x.synonym_name;
+  5  end loop;
+  6  end;
+  7  /
+
+PL/SQL procedure successfully completed.
+
+SQL> show parameter instance_name
+instance_name                        string      QBOPP060
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 

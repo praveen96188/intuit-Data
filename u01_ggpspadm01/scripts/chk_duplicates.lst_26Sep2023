@@ -1,0 +1,62 @@
+06:21:26 SQL> select job_type,count(*) from PSPADM.psp_batch_job_status group by job_type having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.00
+06:21:26 SQL> select app_name, preference_name, employee_fk,count(*) from PSPADM.psp_pstub_employee_preference group by app_name, preference_name, employee_fk having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.17
+06:21:26 SQL> select company_usage_fk, bill_date,count(*) from PSPADM.psp_bill group by company_usage_fk, bill_date having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:21.52
+06:21:48 SQL> select source_company_id, source_system_cd,count(*) from PSPADM.psp_company group by source_company_id, source_system_cd having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:08.19
+06:21:56 SQL> select /*+ PARALLEL(4) */source_company_id, source_system_cd, license_id, entitlement_id,count(*) from PSPADM.psp_company_usage group by source_company_id, source_system_cd, license_id, entitlement_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.12
+06:21:56 SQL> select /*+ PARALLEL(4) */usage_period_fk, source_employee_id,count(*) from PSPADM.psp_employee_usage group by usage_period_fk, source_employee_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:01:33.12
+06:23:29 SQL> select /*+ PARALLEL(4) */license_number, entitlement_offering_code,count(*) from PSPADM.psp_entitlement group by license_number, entitlement_offering_code having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.35
+06:23:30 SQL> select /*+ PARALLEL(4) */source_dd_txn_id, paycheck_fk,count(*) from PSPADM.psp_paycheck_split group by source_dd_txn_id, paycheck_fk having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:09:10.38
+06:32:40 SQL> select /*+ PARALLEL(4) */employee_usage_fk, source_paycheck_id,count(*) from PSPADM.psp_paycheck_usage group by employee_usage_fk, source_paycheck_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:04:49.58
+06:37:30 SQL> select /*+ PARALLEL(4) */company_fk, source_pay_run_id,count(*) from PSPADM.psp_payroll_run group by company_fk, source_pay_run_id having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:02:05.65
+06:39:35 SQL> select /*+ PARALLEL(4) */system_parameter_cd,count(*) from PSPADM.psp_system_parameter group by system_parameter_cd having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:00.01
+06:39:35 SQL> select /*+ PARALLEL(4) */company_usage_fk, start_date, end_date,count(*) from PSPADM.psp_usage_period group by company_usage_fk, start_date, end_date having count(*)>1;
+
+no rows selected
+
+Elapsed: 00:00:03.62
+06:39:39 SQL> 
+06:39:39 SQL> spool off

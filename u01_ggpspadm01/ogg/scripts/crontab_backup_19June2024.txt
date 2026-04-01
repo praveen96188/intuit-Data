@@ -1,0 +1,104 @@
+#Audit Postgres DB Monitoring
+* * * * * cd /u01/postgres/scripts; ./chk_active_session_pg.sh psp-prod-ibob prodapgib 1>/dev/null 2>&1
+* * * * * cd /u01/postgres/scripts; ./chk_db_max_tran_id_pg.sh psp-prod-ibob prodapgib 1>/dev/null 2>&1
+* * * * * cd /u01/postgres/scripts; ./chk_catalog_size_pg.sh psp-prod-ibob prodapgib 1>/dev/null 2>&1
+*/5 * * * * cd /u01/postgres/scripts; ./chk_long_running_queries_pg.sh psp-prod-ibob prodapgib 1>/dev/null 2>&1
+*/5 * * * * cd /u01/postgres/scripts; ./chk_blocking_queries_pg.sh psp-prod-ibob prodapgib 1>/dev/null 2>&1
+
+#Staging database monitoring
+* * * * * cd /u01/postgres/scripts; ./chk_active_session_pg.sh ppsp-stg-pitparmo pitparmo 1>/dev/null 2>&1
+* * * * * cd /u01/postgres/scripts; ./chk_db_max_tran_id_pg.sh ppsp-stg-pitparmo pitparmo 1>/dev/null 2>&1
+* * * * * cd /u01/postgres/scripts; ./chk_catalog_size_pg.sh ppsp-stg-pitparmo pitparmo 1>/dev/null 2>&1
+#*/5 * * * * cd /u01/postgres/scripts; ./chk_long_running_queries_pg.sh ppsp-stg-pitparmo pitparmo 1>/dev/null 2>&1
+#*/5 * * * * cd /u01/postgres/scripts; ./chk_blocking_queries_pg.sh ppsp-stg-pitparmo pitparmo 1>/dev/null 2>&1
+
+#Monolith Postgres DB Monitoring
+* * * * * cd /u01/postgres/scripts; ./chk_active_session_pg_mon.sh psp-prod-uw02 pspapg02 psp-prod-uw02 psp-prod-uw022 psp-prod-uw023 psp-prod-uw024 psp-prod-uw025 1>/dev/null 2>&1
+* * * * * cd /u01/postgres/scripts; ./chk_catalog_size_pg.sh psp-prod-uw02 pspapg02 1>/dev/null 2>&1
+*/5 * * * * cd /u01/postgres/scripts; ./chk_long_running_queries_pg.sh psp-prod-uw02 pspapg02 1>/dev/null 2>&1
+*/5 * * * * cd /u01/postgres/scripts; ./chk_blocking_queries_pg.sh psp-prod-uw02 pspapg02 1>/dev/null 2>&1
+
+#staging dbsolo valiadation for qri
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pitparmo-parapgib-pspadm-ibobadm-hcm-cdc 1>/dev/null 2>&1
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pitparmo-parapgib-pspadm-ibobadm-qri-gg-cdc 1>/dev/null 2>&1
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pitparmo-parapgib-pspadm-ibobadm-hcm-val-cdc 1>/dev/null 2>&1
+##0 22 * * * cd /u01/ogg/scripts/dbsolo5/; ./staging_mon_aud_48hrs_alert.sh 1>/dev/null 2>&1
+#prod audit-mon DMS migration
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh prodapgib-pspapg02-ibobadm-pspadm-hcm-fullload-cdc 1>/dev/null 2>&1
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh prodapgib-pspapg02-ibobadm-pspadm-qri-fullload-cdc 1>/dev/null 2>&1
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh prodapgib-pspapg02-ibobadm-pspadm-hcm-val-cdc 1>/dev/null 2>&1
+
+##prod DBSOLO validation 
+##0 21 * * * cd /u01/ogg/scripts/dbsolo5/; ./prod_aud_mon_48hr_alert.sh  1>/dev/null 2>&1
+
+##DMS Exeptions monolith
+##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_p2p_exeption.sh pspapg02 psp-prod-uw02 1>log/apply_exceptions_report_p2p_pspapg02.log 2>&1
+##DMS Validation Mismatch
+##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_validation_mismatch.sh pspapg02 psp-prod-uw02 1>log/validation_report_p2p_pspapg02.log 2>&1
+
+##DMS-Task-Status-Mon-Aud
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-prodapgib-pspadm-ibobadm-hcm-cdc 1>/dev/null 2>&1
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-prodapgib-pspadm-ibobadm-hcm-val-cdc 1>/dev/null 2>&1
+##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-prodapgib-pspadm-ibobadm-qri-gg-cdc 1>/dev/null 2>&1
+
+##DB-solo-mon-Aud-every-4hrs
+##0 */4 * * * cd /u01/ogg/scripts/dbsolo5/; ./prod_mon_aud_6hrs_alert.sh  1>/dev/null 2>&1
+
+##DMS Exeptions Audit
+##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_audit_p2p_exeption.sh prodapgib psp-prod-ibob2 1>log/apply_exceptions_report_p2p_prodapgib.log 2>&1
+##DMS Validation Mismatch AUdit
+##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_audit_validation_mismatch.sh prodapgib psp-prod-ibob2 1>log/validation_report_p2p_prodapgib.log 2>&1
+
+
+
+##DMS Tasks Status monitoring B-C3
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-1 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-2 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-2-2tab 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-3 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-4 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-5 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-6 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-7 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-8 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-9 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psphdg02-psp-prod-mon-pspadm-task-pem 1>/dev/null 2>&1
+
+##DMS Tasks Status monitoring C3-D3
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task1a 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task1b 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task1c 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task2 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task3 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task4 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task5 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task6 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task7a 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task7b 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task7c 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task7d 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh psppp01-psphpp06-pspadm-task8 1>/dev/null 2>&1
+
+##DMS Tasks Status monitoring C2-D2Prime
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task1a 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task1b 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task1c 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task1d 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task2 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task3 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task4 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task5 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task6 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task7a 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task7b 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task7c 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task7d 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task7e 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task7f 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./check_dms_status.sh pspapg02-psphpp07-pspadm-task8 1>/dev/null 2>&1
+
+##DMS Apply Exceptions monitoring C3 and D3
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_apply_exceptions.sh psphpp06 psphpp06 1>/dev/null 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_apply_exceptions.sh psppp01 psp-prod-mon1 1>log/apply_exceptions_report_o2p_psppp01.log 2>&1
+##DECOMMISSIONED##*/30 * * * * cd /u01/postgres/scripts; ./chk_dms_apply_exceptions.sh psphpp07 psphpp07 1>/dev/null 2>&1
+
