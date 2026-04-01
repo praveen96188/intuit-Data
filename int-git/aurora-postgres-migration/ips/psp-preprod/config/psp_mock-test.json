@@ -1,0 +1,50 @@
+{
+  "id": "psptest",
+  "description": "PSP Mock Client Cluster",
+  "bu": "SBSEG",
+  "dbName": "testdb",
+  "multiAZ": "false",
+  "region": "us-west-2",
+  "readersPerCluster": 0,
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "enableAutoMinorVersionUpgrade": "false",
+  "cloudwatchLogsRetention": "180",
+  "metricSetId": "defaultMetricSetRef",
+  "backupWindow":"05:00-05:30",
+  "maintenanceWindow":"Mon:07:00-Mon:07:30",
+  "backupRetention" : "7",
+  "clusterParameterGroupRef": "pspmock:mockclient-pg-13-cluster",
+  "instanceParameterGroupRef": "pspmock:mockclient-pg-13-instance",
+  "subnetGroupRef": "pspmock:mockdbsubnetgrp",
+  "engineMajorVersion" : "13",
+  "engineMinorVersion" : "4",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "ppd",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBGSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "environments": [
+    {
+      "name": "dev",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary-test",      
+      "clusters": [
+        {
+          "id": "test",
+          "engineMajorVersion" : "13",
+          "engineMinorVersion" : "4",
+          "instanceType": "r6g.xlarge",
+          "securityGroupRef" : "pspmock:testsecuritygrp"
+        }
+      ]
+    }
+  ]
+   }
+  ]
+}

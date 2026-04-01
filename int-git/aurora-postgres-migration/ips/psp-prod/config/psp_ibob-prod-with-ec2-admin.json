@@ -1,0 +1,134 @@
+{
+  "id": "psp",
+  "description": "Monolith",
+  "bu": "SBSEG",
+  "instanceType": "r5.large",
+  "dbName": "pspuwp02",
+  "multiAZ": "true",
+  "region": "us-west-2",
+  "readersPerCluster": 0,
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "clusterParameterGroupRef": "psp:IBOBAPG126Cluster",
+  "instanceParameterGroupRef": "psp:IBOBAPG126Instance",
+  "subnetGroupRef": "psp:ppddbsubnetgrp",
+  "securityGroupRef" : "psp:ppddbsecuritygrp",
+  "engineMajorVersion" : "12",
+  "engineMinorVersion" : "6",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "e2e",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBG",
+    "intuit:billing:fp": "PSP"
+  },
+  "adminInstanceConfig": {
+    "deploy": "false",
+    "instanceSize": "t2.micro"
+  },    
+  "environments": [
+    {
+      "name": "dev",
+      "splunkIndex": "lambda_logs",
+      "splunkEnv": "E2E",
+      "groups": [
+        {
+          "name": "primary",      
+      "clusters": [
+        {
+          "id": "ibob",
+          "engineMajorVersion" : "12",
+         "engineMinorVersion" : "6"
+        }
+      ]
+    }
+  ]
+   }
+  ],
+ "metrics": {
+    "ipsMetrics": [
+      {
+        "metricName": [
+          "num_active_connections",
+          "buffer_cache_by_database",
+          "buffer_cache_breakup",
+          "active_conn_by_wait_event",
+          "long_running_transactions",
+          "locks",
+          "growth_trends_by_db",
+          "growth_trends_by_schema",
+          "growth_trends_by_object",
+          "vacuum_efficiency",
+          "global_replication_lag",
+          "uptime"
+        ],
+        "schedule": "*/1 * * * *"
+      }
+    ],
+    "customMetrics": [
+      {
+        "metricName": [
+          "num_active_connections"
+        ],
+        "schedule": "*/5 * * * *"
+      }
+    ],
+    "splunkMetrics": [
+      {
+        "metricName": [
+          "vacuum_run_history",
+          "list_extentions",
+          "list_unused_indexes",
+          "qpm_data",
+          "top_sql",
+          "table_bloat",
+          "index_bloat"
+        ],
+        "schedule": "0 * * * *"
+      }
+    ],
+"metrics": {
+    "ipsMetrics": [
+      {
+        "metricName": [
+          "num_active_connections",
+          "buffer_cache_by_database",
+          "buffer_cache_breakup",
+          "active_conn_by_wait_event",
+          "long_running_transactions",
+          "locks",
+          "growth_trends_by_db",
+          "growth_trends_by_schema",
+          "growth_trends_by_object",
+          "vacuum_efficiency",
+          "global_replication_lag",
+          "uptime"
+        ],
+        "schedule": "*/1 * * * *"
+      }
+    ],
+    "customMetrics": [
+      {
+        "metricName": [
+          "num_active_connections"
+        ],
+        "schedule": "*/5 * * * *"
+      }
+    ],
+    "splunkMetrics": [
+      {
+        "metricName": [
+          "vacuum_run_history",
+          "list_extentions",
+          "list_unused_indexes",
+          "qpm_data",
+          "top_sql",
+          "table_bloat",
+          "index_bloat"
+        ],
+        "schedule": "0 * * * *"
+      }
+    ]
+  }    
+  }
+}

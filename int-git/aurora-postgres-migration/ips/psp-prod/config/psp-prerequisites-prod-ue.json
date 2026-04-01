@@ -1,0 +1,178 @@
+{
+  "id": "psp",
+  "description": "PSP Prod Aurora Data Store",
+  "bu": "SBSEG",
+  "region": "us-east-2",
+  "multiAZ": "true",
+  "deployMonitoring": "true",
+  "enableEnhancedMonitoring": "true",
+  "tags": {
+    "intuit:billing:component": "PSP",
+    "intuit:billing:appenv": "prod",
+    "intuit:billing:service_assetid": "6847740825712235356",
+    "intuit:billing:bu": "SBSEG",
+    "intuit:billing:fp": "PSP"
+  },
+  "sharedResources" : {
+    "parameterGroups" : [
+      {
+        "id" : "monolith-pg-14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "log_autovacuum_min_duration": "0",
+          "rds.force_autovacuum_logging_level": "log",          
+          "autovacuum_vacuum_cost_delay" : "20",
+          "rds.enable_plan_management" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan",
+          "autovacuum": "on",
+          "rds.logical_replication" : "true",          
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      },
+      {
+        "id" : "ibob-pg-14-cluster",
+        "type" : "CLUSTER",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "timezone" : "US/Pacific",
+          "rds.force_ssl": "true",
+          "autovacuum_vacuum_cost_delay" : "20",
+          "log_autovacuum_min_duration": "1000",
+          "rds.force_autovacuum_logging_level": "log",          
+          "rds.enable_plan_management" : "1",
+          "shared_preload_libraries": "auto_explain,pg_stat_statements,pg_hint_plan",
+          "autovacuum": "on",
+          "rds.logical_replication" : "true",          
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"                              
+        }
+      },
+      {
+        "id" : "monolith-pg-14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "off",
+          "apg_plan_mgmt.use_plan_baselines": "false",          
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "200",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",          
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "1000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      },
+      {
+        "id" : "ibob-pg-14-instance",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "off",
+          "apg_plan_mgmt.use_plan_baselines": "false",          
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",          
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "100000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "auto_explain,pg_stat_statements,pg_hint_plan",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      },
+      {
+        "id" : "ibob-pg-14-reader",
+        "type" : "INSTANCE",
+        "engineMajorVersion" : "14",
+        "engineMinorVersion" : "3",
+        "parameters" : {
+          "apg_plan_mgmt.capture_plan_baselines": "off",
+          "apg_plan_mgmt.use_plan_baselines": "false",          
+          "log_min_messages" : "ERROR",
+          "log_min_error_statement": "INFO",
+          "auto_explain.log_analyze" : "1",
+          "auto_explain.log_buffers" : "1",
+          "auto_explain.log_min_duration" : "1000",
+          "auto_explain.log_timing" : "1",
+          "auto_explain.log_nested_statements": "1",
+          "auto_explain.log_triggers": "1",          
+          "default_statistics_target" : "512",
+          "log_filename" : "postgresql.log.%Y-%m-%d",
+          "log_lock_waits" : "1",
+          "log_min_duration_statement" : "100000",
+          "log_statement" : "ddl",
+          "log_temp_files" : "65536",
+          "max_parallel_maintenance_workers" : "64",
+          "max_parallel_workers" : "64",
+          "max_parallel_workers_per_gather" : "4",
+          "random_page_cost" : "1",
+          "shared_preload_libraries" : "pg_stat_statements,auto_explain,pg_hint_plan",
+          "work_mem" : "65536",
+          "max_locks_per_transaction": "2000",
+          "max_pred_locks_per_transaction": "2000"          
+        }
+      }            
+    ],
+    "dbSubnetGroups" : [
+      {
+        "id" : "produedbsubnetgrp",
+        "subnetType" : "DATA"
+      }
+    ],
+    "securityGroups" : [
+      {
+        "id" : "produedbsecuritygrp",
+        "description" : "Allow incoming traffic from app servers",
+        "inboundRules" : [
+          {
+            "sourceSecurityGroupId": "sg-08748b6611c231213",
+            "port" : "5432",
+            "protocol": "tcp"
+          },
+          {
+            "sourceSecurityGroupId": "sg-08993192c80b2fabf",
+            "port" : "5432",
+            "protocol": "tcp"
+          }                                        
+        ]        
+      }
+    ]
+  }
+}

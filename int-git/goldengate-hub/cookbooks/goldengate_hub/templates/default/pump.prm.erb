@@ -1,0 +1,23 @@
+EXTRACT <%= @process %>
+
+RMTHOST <%= @remote_host %>, mgrport <%= @remote_port %>, ENCRYPT AES128, TIMEOUT 120, PARAMS -UL, COMPRESS
+
+RMTTRAIL ./dirdat/<%= @trail_location %>/tr<%= @trail_format_option %>
+PASSTHRU
+
+discardfile ./dirrpt/<%= @process %>.dsc, megabytes 100, append
+discardrollover at 00:01
+
+STATOPTIONS RESETREPORTSTATS
+Report at 23:55
+ReportRollover at 00:01 on sunday
+
+--REPORTCOUNT EVERY 5 MINTUES RATE
+
+<%= node['oracle']['replicate_schema_clause1'] %>
+<%= node['oracle']['replicate_schema_clause2'] %>
+<%= node['oracle']['replicate_schema_clause3'] %>
+<%= node['oracle']['replicate_schema_clause4'] %>
+<%= node['oracle']['replicate_schema_clause5'] %>
+<%= node['oracle']['replicate_schema_clause6'] %>
+

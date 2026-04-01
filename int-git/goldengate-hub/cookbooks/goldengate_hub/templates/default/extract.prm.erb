@@ -1,0 +1,33 @@
+EXTRACT <%= @process %>
+
+SETENV (ORACLE_HOME='<%= node['oracle']['home_directory'] %>')
+
+USERIDALIAS ggsource
+
+<%= @ggt_replication %>
+--TRANLOGOPTIONS MINEFROMACTIVEDG
+
+ENCRYPTTRAIL
+EXTTRAIL ./dirdat/<%= @trail_location %>/tr<%= @trail_format_option %>
+
+DDL INCLUDE MAPPED EXCLUDE UNMAPPED EXCLUDE OTHER
+<%= @ddl_replication %>
+
+discardfile ./dirrpt/<%= @process %>.dsc,  megabytes 100, append
+DISCARDROLLOVER AT 01:00
+
+statoptions resetreportstats, reportfetch
+report at 23:50
+reportrollover at 00:01 on sunday
+
+LOGALLSUPCOLS
+--REPORTCOUNT EVERY 5 MINTUES RATE
+
+NOCOMPRESSDELETES
+
+<%= node['oracle']['replicate_schema_clause1'] %>
+<%= node['oracle']['replicate_schema_clause2'] %>
+<%= node['oracle']['replicate_schema_clause3'] %>
+<%= node['oracle']['replicate_schema_clause4'] %>
+<%= node['oracle']['replicate_schema_clause5'] %>
+<%= node['oracle']['replicate_schema_clause6'] %>

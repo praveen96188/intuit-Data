@@ -1,0 +1,14 @@
+PORT <%= node['oracle']['goldengate_manager_port'] %>
+DYNAMICPORTLIST <%= node['oracle']['goldengate_dynamic_port_list'] %> 
+PURGEOLDEXTRACTS ./dirdat/<%= node['oracle']['sid'] %>/tr*, USECHECKPOINTS, MINKEEPDAYS 10
+PURGEOLDEXTRACTS ./dirdat/<%= node['oracle']['trail_location']['extract_to_iac'] %>/tr*, USECHECKPOINTS, MINKEEPDAYS 10
+<% if node['oracle']['remote_db']['replicat_from_qdc'] != nil -%>
+PURGEOLDEXTRACTS ./dirdat/<%= node['oracle']['remote_db']['replicat_from_qdc'] %>/tr*, USECHECKPOINTS, MINKEEPDAYS 10
+<% end -%>
+<% if node['oracle']['remote_db']['replicat_from_r2'] != nil -%>
+PURGEOLDEXTRACTS ./dirdat/<%= node['oracle']['remote_db']['replicat_from_r2'] %>/tr*, USECHECKPOINTS, MINKEEPDAYS 10
+<% end -%>
+<% if node['oracle']['remote_db']['replicat_from_r1'] != nil -%>
+PURGEOLDEXTRACTS ./dirdat/<%= node['oracle']['remote_db']['replicat_from_r1'] %>/tr*, USECHECKPOINTS, MINKEEPDAYS 10
+<% end -%>
+AUTORESTART ER *, RETRIES 3, WAITMINUTES 5, RESETMINUTES 60

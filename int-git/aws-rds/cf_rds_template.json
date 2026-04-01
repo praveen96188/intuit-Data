@@ -1,0 +1,295 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create QBO RDS stack",
+  "Parameters": {
+    "AllocatedStorage": {
+      "Default": "100",
+      "Description": "Amount of storage (in gigabytes) to be initially allocated for the DB instance",
+      "MinValue": "50",
+      "MaxValue": "6144",
+      "Type": "Number"
+    },
+    "DBName": {
+      "Default": "",
+      "Description": "Oracle System ID (SID) of the created DB instance",
+      "Type": "String"
+    },
+    "DnsName": {
+      "Default": "",
+      "Description": "CNAME record to create in the hosted zone for the DB instance",
+      "Type": "String"
+    },
+    "HostedZoneId": {
+      "Default": "",
+      "Description": "ID of the hosted zone",
+      "Type": "String"
+    },
+    "KmsKeyId": {
+      "Default": "",
+      "Description": "KMS key identifier for the DB instance",
+      "Type": "String"
+    },
+    "Port": {
+      "Default": "1521",
+      "Description": "Port number on which the DB accepts connections",
+      "MinValue": "1150",
+      "MaxValue": "65535",
+      "Type": "Number"
+    },
+    "PreferredBackupWindow": {
+      "Default": "",
+      "Description": "Daily time range (in UTC) during which automated backups are created",
+      "Type": "String"
+    },
+    "PreferredMaintenanceWindow": {
+      "Default": "",
+      "Description": "Weekly time range (in UTC) during which system maintenance can occur",
+      "Type": "String"
+    },
+    "EngineVersion": {
+      "Description": "Db Engine Version",
+      "Type": "String",
+      "Default": ""
+    },
+    "DBParameterGroupName": {
+      "Description": "Db Parameter Group Name",
+      "Type": "String",
+      "Default": ""
+    },
+    "DBSubnetGroupName": {
+      "Description": "Db Subnet Group Name",
+      "Type": "String",
+      "Default": ""
+    },
+    "OptionGroupName": {
+      "Description": "Db Option Group Name",
+      "Type": "String",
+      "Default": ""
+    },
+    "MonitoringInterval": {
+      "Description": "CloudWatch Metrics interval",
+      "Type": "Number",
+      "Default": "60"
+    },
+    "MonitoringRoleArn": {
+      "Description": "CloudWatch metrics IAM role",
+      "Type": "String",
+      "Default": ""
+    },
+    "SecurityGroup": {
+      "Description": "Db Secirity Group",
+      "Type": "String",
+      "Default": ""
+    },
+    "DBType": {
+      "Description": "DB Type",
+      "Type": "String",
+      "Default": ""
+    },
+    "AppEnv": {
+      "Description": "App Env",
+      "Type": "String",
+      "Default": ""
+    },
+    "DBTagEnv": {
+      "Description": "DB Tag Env",
+      "Type": "String",
+      "Default": ""
+    },
+    "DBTagCluster": {
+      "Description": "DB Tag Cluster",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "CreateRecordSet": { "Fn::Not": [ { "Fn::Equals": [ { "Ref": "HostedZoneId" }, "" ] } ] },
+    "UseKmsKeyId": { "Fn::Not": [ { "Fn::Equals": [ { "Ref": "KmsKeyId" }, "" ] } ] }
+  },
+  "Resources": {
+    "DBInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": { "Fn::FindInMap": [ "StorageSizes", {"Ref": "DBType"}, {"Ref": "AppEnv"} ] },
+        "AutoMinorVersionUpgrade": "false",
+        "BackupRetentionPeriod": { "Fn::FindInMap": [ "BackupRetentionPeriods", {"Ref": "DBType"}, {"Ref": "AppEnv"} ] },
+        "CharacterSetName": "AL32UTF8",
+        "DBInstanceClass": { "Fn::FindInMap": [ "InstanceTypes", {"Ref": "DBType"}, {"Ref": "AppEnv"} ] },
+        "DBInstanceIdentifier": { "Ref": "DBName" },
+        "DBName": { "Ref": "DBName" },
+        "DBParameterGroupName": { "Ref": "DBParameterGroupName" },
+        "DBSubnetGroupName": { "Ref": "DBSubnetGroupName" },
+        "Engine": "oracle-ee",
+        "EngineVersion": { "Ref": "EngineVersion" },
+        "Iops": { "Fn::FindInMap": [ "IOPS", {"Ref": "DBType"}, {"Ref": "AppEnv"} ] },
+        "KmsKeyId": { "Fn::If": [ "UseKmsKeyId", { "Ref": "KmsKeyId" }, { "Ref": "AWS::NoValue" } ] },
+        "LicenseModel": "bring-your-own-license",
+        "MasterUsername": "intuadmin",
+        "MasterUserPassword": "changeme",
+        "MonitoringInterval": 60,
+        "MonitoringRoleArn": { "Ref": "MonitoringRoleArn" },
+        "MultiAZ": "true",
+        "OptionGroupName": { "Ref": "OptionGroupName" },
+        "Port": { "Ref": "Port" },
+        "PreferredBackupWindow": { "Ref": "PreferredBackupWindow" },
+        "PreferredMaintenanceWindow": { "Ref": "PreferredMaintenanceWindow" },
+        "StorageEncrypted": "true",
+        "StorageType": { "Fn::FindInMap": [ "StorageTypes", {"Ref": "DBType"}, {"Ref": "AppEnv"} ] },
+        "VPCSecurityGroups": [ { "Ref": "SecurityGroup" } ],
+        "Tags": [
+          { "Key": "env", "Value": {"Ref": "DBTagEnv"} },
+          { "Key": "cluster", "Value": {"Ref": "DBTagCluster"} }
+        ]
+      },
+      "DeletionPolicy": "Retain"
+    },
+    "RecordSet": {
+      "Type": "AWS::Route53::RecordSet",
+      "Condition": "CreateRecordSet",
+      "Properties": {
+        "HostedZoneId": { "Ref": "HostedZoneId" },
+        "Name": { "Ref": "DnsName" },
+        "ResourceRecords": [ { "Fn::GetAtt": [ "DBInstance", "Endpoint.Address" ] } ],
+        "TTL": "300",
+        "Type": "CNAME"
+      },
+      "DeletionPolicy": "Retain"
+    }
+  },
+  "Outputs": {
+    "TNS": {
+      "Description": "TNS entry for the DB instance",
+      "Value": { "Fn::Join": [ "", [
+        "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=",
+        { "Fn::If": [ "CreateRecordSet", { "Ref": "DnsName" }, { "Fn::GetAtt": [ "DBInstance", "Endpoint.Address" ] } ] },
+        ")(PORT=",
+        { "Fn::GetAtt": [ "DBInstance", "Endpoint.Port" ] },
+        "))(CONNECT_DATA=(SID=",
+        { "Ref": "DBName" },
+        ")))"
+      ] ] }
+    }
+  },
+
+  "Mappings": {
+      "InstanceTypes": {
+          "clusterdb": {
+              "qa": "db.r5.large",
+              "e2e": "db.r5.large",
+              "e2es": "db.r5.large",
+              "stg": "db.r4.xlarge",
+              "sbx": "db.r4.xlarge",
+              "prf": "db.r5.large",
+              "prod": "db.r5.2xlarge",
+              "prods": "db.r4.2xlarge",
+              "prodm": "db.r4.4xlarge",
+              "prodx": "db.r4.8xlarge",
+              "prodn": "db.r4.8xlarge"
+          },
+          "reportdb": {
+              "qa": "db.r4.xlarge",
+              "e2e": "db.r4.xlarge",
+              "stg": "db.r4.xlarge",
+              "sbx": "db.r4.xlarge",
+              "prf": "db.r4.4xlarge",
+              "prod": "db.r4.4xlarge"
+          }
+      },
+
+      "StorageTypes": {
+          "clusterdb": {
+              "qa": "io1",
+              "e2e": "io1",
+              "e2es": "io1",
+              "stg": "gp2",
+              "sbx": "gp2",
+              "prf": "io1",
+              "prod": "io1",
+              "prods": "io1",
+              "prodm": "io1",
+              "prodx": "io1",
+              "prodn": "io1"
+          },
+          "reportdb": {
+              "qa": "gp2",
+              "e2e": "gp2",
+              "stg": "gp2",
+              "sbx": "gp2",
+              "prf": "io1",
+              "prod": "io1"
+          }
+      },
+
+      "StorageSizes": {
+          "clusterdb": {
+              "qa": "500",
+              "e2e": "500",
+              "e2es": "100",
+              "stg": "100",
+              "sbx": "100",
+              "prf": "500",
+              "prod": "5000",
+              "prods": "200",
+              "prodm": "1000",
+              "prodx": "8000",
+              "prodn": "2000"
+          },
+          "reportdb": {
+              "qa": "100",
+              "e2e": "100",
+              "stg": "100",
+              "sbx": "100",
+              "prf": "200",
+              "prod": "500"
+          }
+      },
+
+      "IOPS": {
+          "clusterdb": {
+              "qa": "5000",
+              "e2e": "5000",
+              "e2es": "5000",
+              "stg": "0",
+              "sbx": "0",
+              "prf": "15000",
+              "prod": "15000",
+              "prods": "1000",
+              "prodm": "3000",
+              "prodx": "24000",
+              "prodn": "9000"
+          },
+          "reportdb": {
+              "qa": "0",
+              "e2e": "0",
+              "stg": "0",
+              "sbx": "0",
+              "prf": "1000",
+              "prod": "2000"
+          }
+      },
+
+      "BackupRetentionPeriods": {
+          "clusterdb": {
+              "qa": "7",
+              "e2e": "7",
+              "e2es": "7",
+              "stg": "7",
+              "sbx": "35",
+              "prf": "7",
+              "prod": "35",
+              "prods": "35",
+              "prodm": "35",
+              "prodx": "35",
+              "prodn": "35"
+          },
+          "reportdb": {
+              "qa": "7",
+              "e2e": "7",
+              "stg": "7",
+              "sbx": "35",
+              "prf": "7",
+              "prod": "35"
+          }
+      }
+  }
+}

@@ -1,0 +1,37 @@
+REPLICAT <%= @process %> 
+
+SETENV (ORACLE_HOME='<%= node['oracle']['home_directory'] %>')
+
+USERIDALIAS ggtarget
+
+<%= @ggt_replication %>
+
+DBOPTIONS DEFERREFCONST
+DBOPTIONS NOSKIPTEMPLOB
+
+DDL INCLUDE ALL EXCLUDE INSTR 'SYS_PLSQL' EXCLUDE INSTR 'ALTER INDEX'
+DDLERROR 1435 IGNORE INCLUDE OPTYPE ALTER OBJTYPE SESSION
+
+DISCARDFILE ./dirrpt/<%= @process %>.dsc, APPEND
+DISCARDROLLOVER at 00:01
+
+STATOPTIONS RESETREPORTSTATS
+REPORT AT 23:58
+REPORTROLLOVER AT 00:01
+
+--REPORTCOUNT EVERY 5 MINUTES, RATE
+
+APPLYNOOPUPDATES
+ASSUMETARGETDEFS
+
+<%= node['oracle']['replicate_map_exception1'] %>
+<%= node['oracle']['replicate_map_exception2'] %>
+<%= node['oracle']['replicate_map_exception3'] %>
+<%= node['oracle']['replicate_map_exception4'] %>
+<%= node['oracle']['replicate_map_exception5'] %>
+<%= node['oracle']['replicate_map_exception6'] %>
+
+<%= node['oracle']['replicate_map_clause1'] %>
+<%= node['oracle']['replicate_map_clause2'] %>
+<%= node['oracle']['replicate_map_clause3'] %>
+

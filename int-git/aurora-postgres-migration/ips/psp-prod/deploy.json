@@ -1,0 +1,53 @@
+{
+  "targets": [
+    {
+      "name": "primary-cluster",
+      "accountId": "8935-4763-7742",
+      "vpcId": "vpc-0d8f1534aaab54ac6",
+      "region": "us-west-2"
+    },
+    {
+      "name": "dr-cluster",
+      "accountId": "8935-4763-7742",
+      "vpcId": "vpc-0f237640b6948c5e1",
+      "region": "us-east-2"
+    }    
+  ],
+  "stages": [
+    {
+      "name": "psp-clusters",
+      "deployments": [
+        {
+          "environment": "prod",
+           "target": "primary-cluster"
+        },        
+        {
+          "environment": "prod",
+          "group": "primary-ibob",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "prod",
+          "group": "dr-ibob",
+          "target": "dr-cluster"
+        },        
+        {
+          "environment": "prod",
+          "group": "primary-arc",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "prod",
+          "group": "primary-pituwt90",
+          "target": "primary-cluster"
+        },
+        {
+          "environment": "stg",
+          "group": "primary-pitparmo",
+          "target": "primary-cluster"
+        }                                        
+      ]
+    }
+  ]
+}
+

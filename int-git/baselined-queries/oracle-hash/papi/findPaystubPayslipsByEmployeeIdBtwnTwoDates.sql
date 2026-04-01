@@ -1,0 +1,11 @@
+--Workflow :  - com.intuit.psp.papprs.payslip.resource.PayslipResource.getPayDetailInformation 
+--query name :  - findPaystubPayslipsByEmployeeIdBtwnTwoDates
+--line number : - 52
+--Splunk link : - https://github.intuit.com/payroll-dtpayroll/desktop-pay-api/blob/dfa2285d140cfe567fbc560e223c6ac421bbccf8/app/papprs/src/main/java/com/intuit/psp/papprs/payslip/resource/PayslipResource.java#L52
+--Time taken without baseline : - 21.1 sec
+--sqlhash -Mayank to fill
+
+/* findPaystubPayslipsByEmployeeIdBtwnTwoDates */ select companypay6_.COMPANY_PAYROLL_ITEM_SEQ as col_0_0_, companypay6_.PAYROLL_ITEM_FK as col_1_0_, pstubpayit5_.CUR_AMT as col_2_0_, pstubpayit5_.QTY_TIME as col_3_0_, paystub0_.PAYSTUB_SEQ as col_4_0_, paystub0_.PAYCHECK_DATE as col_5_0_, paystub0_.PAY_BEGIN_DATE as col_6_0_, paystub0_.PAY_END_DATE as col_7_0_, paystub0_.GROSS_PAY as col_8_0_, paystub0_.NET_PAY as col_9_0_, qbdtpayrol4_.OVERTIME_MULTIPLIER as col_10_0_ from PSP_PAYSTUB paystub0_ cross join PSP_PSTUB_EMPLOYEE_INFO pstubemplo1_ cross join PSP_EMPLOYEE employee2_ inner join PSP_INDIVIDUAL employee2_1_ on employee2_.EMPLOYEE_SEQ=employee2_1_.INDIVIDUAL_SEQ cross join PSP_COMPANY company3_ cross join PSP_QBDT_PAYROLL_ITEM_INFO qbdtpayrol4_ cross join PSP_PSTUB_PAY_ITEM pstubpayit5_ cross join PSP_COMPANY_PAYROLL_ITEM companypay6_ where  paystub0_.COMPANY_FK=? and  pstubemplo1_.COMPANY_FK=? and  company3_.IS_DG_DISASSOCIATED=? and  pstubpayit5_.COMPANY_FK=? and paystub0_.PSTUB_EMPLOYEE_INFO_FK=pstubemplo1_.PSTUB_EMPLOYEE_INFO_SEQ and paystub0_.COMPANY_FK=pstubemplo1_.COMPANY_FK and pstubpayit5_.PAYSTUB_FK=paystub0_.PAYSTUB_SEQ and pstubpayit5_.COMPANY_FK=paystub0_.COMPANY_FK and pstubemplo1_.EMPLOYEE_FK=employee2_.EMPLOYEE_SEQ and employee2_.COMPANY_FK=company3_.COMPANY_SEQ and pstubemplo1_.COMPANY_FK=employee2_.COMPANY_FK and qbdtpayrol4_.LIST_ID=pstubpayit5_.PAYROLL_ITEM_LIST_ID and qbdtpayrol4_.COMPANY_PAYROLL_ITEM_FK=companypay6_.COMPANY_PAYROLL_ITEM_SEQ and (companypay6_.ADDITIONAL_PAYROLL_ITEM_FK is null) and qbdtpayrol4_.COMPANY_FK=company3_.COMPANY_SEQ and (pstubpayit5_.TYPE in (?)) and paystub0_.PAYCHECK_DATE>=? and paystub0_.PAYCHECK_DATE<=? and company3_.I_A_M_REALM_ID=? and employee2_.EMPLOYEE_SEQ=? order by col_5_0_, paystub0_.CREATED_DATE
+
+--Time taken after baseline : - less than 2 sec.
+--Plan after baseline - 7rmstnmgw0dq5
