@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service"
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="taxcredits-java-object" class="com.intuit.sbd.payroll.psp.adapters.taxcredits.TaxCreditsJavaAdapter" default="true" />
+    </adapters>
+
+    <default-channels>
+        <channel ref="taxcredits-secure-http"/>
+    </default-channels>
+
+   <destination id="taxcreditsservice">
+        <properties>
+            <source>com.intuit.sbd.payroll.psp.adapters.taxcredits.adapter.TaxCreditsAdapter</source>
+            <scope>application</scope>
+        </properties>
+        <adapter ref="taxcredits-java-object"/>
+    </destination>   
+
+</service>

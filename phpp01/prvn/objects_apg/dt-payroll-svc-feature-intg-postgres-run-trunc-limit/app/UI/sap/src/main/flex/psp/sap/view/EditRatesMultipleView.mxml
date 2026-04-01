@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:view="psp.sap.view.*"
+         creationComplete="onCreationComplete();"
+         minWidth="350"
+         verticalGap="0">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.ComboBox;
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+        import mx.events.CollectionEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.model.LawQuarterRates;
+        import psp.sap.model.QuarterRate;
+        import psp.sap.viewmodel.EditRatesMultipleViewModel;
+
+        private var mViewModel:EditRatesMultipleViewModel;
+        private var mTempViewModel:EditRatesMultipleViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EditRatesMultipleViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EditRatesMultipleViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                if (mViewModel != null) {
+                    mViewModel.addEventListener(CollectionEvent.COLLECTION_CHANGE, function (e:Event):void {
+                        fineIllJustBindTheDataMyself();
+                    });
+                }
+            } else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function fineIllJustBindTheDataMyself():void {
+            //I give up, Flex.  I just... give up...
+            for (var i:int = 0; i < mViewModel.lawQuarterRates.length; i++) {
+                var lawQuarterRate:LawQuarterRates = LawQuarterRates(mViewModel.lawQuarterRates.getItemAt(i));
+                for (var j:int = 0; j < lawQuarterRate.rates.length; j++) {
+                    var quarterRate:QuarterRate = QuarterRate(lawQuarterRate.rates.getItemAt(j));
+                    if (i >= yearCombo.length || i >= quarterCombo.length) {
+                        continue;
+                    }
+                    if (j >= yearCombo[i].length || j >= quarterCombo[i].length) {
+                        continue;
+                    }
+                    ComboBox(yearCombo[i][j]).selectedItem = quarterRate.yearText;
+                    ComboBox(quarterCombo[i][j]).selectedItem = quarterRate.quarterText;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to update these rates?";
+            Alert.show(msgString,
+                    "Update Rate Confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+
+        private function onNewPercentageTextCreationComplete(event:Event):void {
+            var target:UIComponent = UIComponent(event.currentTarget);
+            var quarterRate:QuarterRate = getQuarterRateFromTarget(target);
+            if (quarterRate != null) {
+                viewModel.getNewPercentageTextValidator(quarterRate).listener = target;
+            }
+        }
+
+        private function onQuarterYearCreationComplete(event:Event):void {
+            var target:UIComponent = UIComponent(event.currentTarget);
+            var quarterRate:QuarterRate = getQuarterRateFromTarget(target);
+            if (quarterRate != null) {
+                viewModel.getQuarterYearValidator(quarterRate).listener = target;
+            }
+        }
+
+        private function onQuarterQuarterCreationComplete(event:Event):void {
+            var target:UIComponent = UIComponent(event.currentTarget);
+            var quarterRate:QuarterRate = getQuarterRateFromTarget(target);
+            if (quarterRate != null) {
+                viewModel.getQuarterQuarterValidator(quarterRate).listener = target;
+            }
+        }
+
+        private function getQuarterRateFromTarget(target:UIComponent):QuarterRate {
+            if (target.parent == null) {
+                return null; //the old ones seem to be sticking around for some reason
+            }
+            var lawQuarterRates:LawQuarterRates = LawQuarterRates(viewModel.lawQuarterRates.getItemAt(target.repeaterIndices[0]));
+            return QuarterRate(lawQuarterRates.rates.getItemAt(target.repeaterIndices[1]));
+        }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Edit Rates for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="headerBorder" id="headerLabel" paddingLeft="2" paddingBottom="0"
+              paddingTop="5"/>
+
+    <mx:LinkButton label="Edit one quarter"
+                   styleName="inlineLinkButtonStyle"
+                   paddingBottom="0"
+                   click="viewModel.editSingleRate()"/>
+
+    <mx:Text text="Quarters must be in increasing order."
+             visible="{viewModel.quarterOutOfOrder}"
+             includeInLayout="{viewModel.quarterOutOfOrder}"
+             styleName="errorMessageStyle"/>
+
+    <mx:Text text="Consecutive rates must be different."
+             visible="{viewModel.consecutiveRateSame}"
+             includeInLayout="{viewModel.consecutiveRateSame}"
+             styleName="errorMessageStyle"/>
+
+    <mx:Repeater dataProvider="{viewModel.lawQuarterRates}" id="lawQuarterRatesRepeater">
+        <mx:Label text="{LawQuarterRates(lawQuarterRatesRepeater.currentItem).law.name}" paddingTop="6" fontWeight="bold"/>
+
+        <mx:Grid backgroundColor="0xeeeeee" paddingBottom="4">
+            <mx:GridRow>
+                <mx:GridItem/>
+                <mx:GridItem>
+                    <mx:Label text="Effective Quarter" fontStyle="italic"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Label text="Rate" fontStyle="italic"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:Repeater dataProvider="{LawQuarterRates(lawQuarterRatesRepeater.currentItem).rates}" id="quarterRateRepeater">
+                <mx:GridRow verticalAlign="middle">
+                    <mx:GridItem verticalAlign="middle">
+                        <mx:Spacer width="3"/>
+                        <mx:LinkButton icon="{SAP.instance.icons.addRow}"
+                                       toolTip="Insert after"
+                                       visible="{LawQuarterRates(lawQuarterRatesRepeater.currentItem).rates.length &lt; 5}"
+                                       click="viewModel.insertAfter(LinkButton(event.currentTarget).repeaterIndices[0], LinkButton(event.currentTarget).repeaterIndices[1])"
+                                       paddingLeft="0"
+                                       skin='{null}'
+                                       width="10"/>
+                        <mx:Spacer width="0"/>
+                        <mx:LinkButton icon="{SAP.instance.icons.deleteRow}"
+                                       visible="{QuarterRate(quarterRateRepeater.currentItem).canDelete}"
+                                       click="viewModel.deleteAt(LinkButton(event.currentTarget).repeaterIndices[0], LinkButton(event.currentTarget).repeaterIndices[1])"
+                                       skin='{null}'
+                                       width="10"
+                                       paddingLeft="0"/>
+                    </mx:GridItem>
+                    <mx:GridItem width="155" verticalAlign="middle">
+                        <mx:Label text="{QuarterRate(quarterRateRepeater.currentItem).quarter.label}"
+                                  fontWeight="bold"
+                                  visible="{!QuarterRate(quarterRateRepeater.currentItem).canDelete}"
+                                  includeInLayout="{!QuarterRate(quarterRateRepeater.currentItem).canDelete}"/>
+                        <view:ErrorBox creationComplete="onQuarterYearCreationComplete(event)" changeThemeColor="false" width="78"
+                                       visible="{QuarterRate(quarterRateRepeater.currentItem).canDelete}"
+                                       includeInLayout="{QuarterRate(quarterRateRepeater.currentItem).canDelete}">
+                            <controls:ComboBoxEx id="yearCombo"
+                                                 selectedItem="{QuarterRate(quarterRateRepeater.currentItem).yearText}"
+                                                 dataProvider="{viewModel.taxYears}"
+                                                 change="QuarterRate(ComboBox(event.currentTarget).getRepeaterItem()).yearText = String(ComboBox(event.currentTarget).selectedItem)"
+                                                 creationComplete="fineIllJustBindTheDataMyself()"/>
+                        </view:ErrorBox>
+                        <view:ErrorBox creationComplete="onQuarterQuarterCreationComplete(event)" changeThemeColor="false" width="63"
+                                       visible="{QuarterRate(quarterRateRepeater.currentItem).canDelete}"
+                                       includeInLayout="{QuarterRate(quarterRateRepeater.currentItem).canDelete}">
+                            <controls:ComboBoxEx id="quarterCombo"
+                                                 selectedItem="{QuarterRate(quarterRateRepeater.currentItem).quarterText}"
+                                                 dataProvider="{viewModel.taxQuarters}"
+                                                 change="QuarterRate(ComboBox(event.currentTarget).getRepeaterItem()).quarterText = String(ComboBox(event.currentTarget).selectedItem)"
+                                                 creationComplete="fineIllJustBindTheDataMyself()"/>
+                        </view:ErrorBox>
+                    </mx:GridItem>
+                    <mx:GridItem>
+                        <mx:HBox horizontalGap="0" styleName="noPadding">
+                            <mx:TextInput width="90"
+                                          restrict="-0-9."
+                                          text="{QuarterRate(quarterRateRepeater.currentItem).newPercentageText}"
+                                          change="QuarterRate(TextInput(event.currentTarget).getRepeaterItem()).newPercentageText = (TextInput(event.currentTarget).text)"
+                                          creationComplete="onNewPercentageTextCreationComplete(event)"/>
+                            <mx:Label text="%" styleName="noPadding"/>
+                        </mx:HBox>
+                    </mx:GridItem>
+                </mx:GridRow>
+            </mx:Repeater>
+        </mx:Grid>
+
+    </mx:Repeater>
+
+    <controls:SAPCheckBox label="Push to QuickBooks" dataField="pushToQuickBooks"/>
+
+    <mx:HBox horizontalAlign="right" width="100%">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+</mx:VBox>

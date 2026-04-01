@@ -1,0 +1,138 @@
+03:39:40 SQL> 
+03:39:40 SQL> --  disable online index rebuild cleanup job
+03:39:40 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+19-JAN-23 03.00.41.834460 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.10
+03:39:40 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.03
+03:39:40 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+19-JAN-23 03.00.41.834460 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+03:39:40 SQL> -- get table size
+03:39:40 SQL> select sum(bytes)/1024/1024/1024 from dba_segments where segment_name=upper('psp_pstub_pay_item');
+
+SUM(BYTES)/1024/1024/1024                                                       
+-------------------------                                                       
+                1159.5625                                                       
+
+1 row selected.
+
+Elapsed: 00:00:00.17
+03:39:40 SQL> 
+03:39:40 SQL> create index pspadm.psp_pstub_pay_item_fk2 on pspadm.psp_pstub_pay_item (company_fk, realm_id) online parallel 8;
+create index pspadm.psp_pstub_pay_item_fk2 on pspadm.psp_pstub_pay_item (company_fk, realm_id) online parallel 8
+*
+ERROR at line 1:
+ORA-12801: error signaled in parallel query server P002 
+ORA-01652: unable to extend temp segment by 128 in tablespace TEMP 
+
+
+Elapsed: 00:11:34.93
+03:51:15 SQL> alter index pspadm.psp_pstub_pay_item_fk2 noparallel;
+alter index pspadm.psp_pstub_pay_item_fk2 noparallel
+*
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+Elapsed: 00:00:00.00
+03:51:15 SQL> --  get index size
+03:51:15 SQL> select sum(bytes)/1024/1024/1024 from dba_segments where segment_name=upper('psp_pstub_pay_item_fk2');
+
+SUM(BYTES)/1024/1024/1024                                                       
+-------------------------                                                       
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.17
+03:51:15 SQL> select degree from dba_indexes where index_name=upper('psp_pstub_pay_item_fk2');
+
+DEGREE                                                                          
+----------------------------------------                                        
+1                                                                               
+
+1 row selected.
+
+Elapsed: 00:00:00.03
+03:51:15 SQL> --  enable online index rebuild cleanup job
+03:51:15 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+19-JAN-23 03.00.41.834460 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+03:51:15 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+03:51:15 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+17-FEB-23 08.00.41.521828 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+03:51:15 SQL> 
+03:51:15 SQL> spool off

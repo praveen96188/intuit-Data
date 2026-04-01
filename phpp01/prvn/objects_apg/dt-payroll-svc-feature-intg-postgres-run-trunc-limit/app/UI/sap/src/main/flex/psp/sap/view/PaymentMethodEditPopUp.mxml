@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="490"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.collections.ArrayCollection;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Payment;
+        import psp.sap.viewmodel.PaymentMethodEditViewModel;
+
+        private var mViewModel:PaymentMethodEditViewModel;
+        private var mTempViewModel:PaymentMethodEditViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private const TRUNC_TEXT_HEIGHT:int = 20;
+        private const TRUNC_TEXT_WIDTH:int = 210;
+        private const NO_PAYMENT_METHODS_ENABLED_ERROR_MESSAGE:String = "No payment Methods are enabled."+ String('\n') + "Fix the above problems to update this payment's payment method.";
+
+        [Bindable]
+        public function get viewModel():PaymentMethodEditViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PaymentMethodEditViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getYesNo(item:Object, column:DataGridColumn):String {
+                if (item[column.dataField] == null)
+                    return 'No';
+                return (item[column.dataField]) ? "Yes" : "No";
+            }
+
+        public function getRequirementsString(item:Object, column:DataGridColumn):String {
+            var requirements:ArrayCollection = (item[column.dataField]) as ArrayCollection;
+            return requirements.toArray().join('\n');
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Label text="Edit Payment Method" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:HRule width="100%" height="13"/>
+
+    <mx:HBox paddingTop="10">
+        <mx:VBox verticalGap="0">
+            <mx:Label text="EIN: " fontWeight="bold"/>
+            <mx:Label text="Legal Name: " fontWeight="bold"></mx:Label>
+            <mx:Label text="PSID: " fontWeight="bold"></mx:Label>
+            <mx:Label text="Payment Template: " fontWeight="bold"></mx:Label>
+            <mx:Label text="Amount: " fontWeight="bold"></mx:Label>
+            <mx:Label text="Due Date: " fontWeight="bold"></mx:Label>
+            <mx:Label text="Current Payment Method: " fontWeight="bold"></mx:Label>
+
+        </mx:VBox>
+        <mx:VBox verticalGap="0">
+            <mx:Label text="{Payment(viewModel.payment).ein}"/>
+            <pspui:TruncatedText
+                    id="legalNameText"
+                    text="{Payment(viewModel.payment).companyName}"
+                    height="{TRUNC_TEXT_HEIGHT}"
+                    width="{TRUNC_TEXT_WIDTH}"
+                    includeInLayout="{Payment(viewModel.payment).companyName != null}"
+                    visible="{Payment(viewModel.payment).companyName != null}"/>
+            <mx:Label text="{Payment(viewModel.payment).psId}"/>
+            <mx:Label text="{Payment(viewModel.payment).paymentType}"/>
+            <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(Payment(viewModel.payment).amount)}"/>
+            <mx:Label text="{SAPDateFormatters.dateFormatShort.format(Payment(viewModel.payment).dueDate)}"/>
+            <mx:Label text="{Payment(viewModel.payment).paymentMethod}"/>
+
+
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:VBox>
+        <controls:SAPDataGrid dataProvider="{viewModel.paymentMethods}"
+                              maxRows="8"
+                              variableRowHeight="true"
+                              selectable="false" draggableColumns="false" sortableColumns="false" resizableColumns="false">
+            <controls:columns>
+                <controls:SAPDataGridColumn
+                        headerText="Method"
+                        width="120"
+                        dataField="paymentMethodName"/>
+                <controls:SAPDataGridColumn
+                        headerText="Enabled"
+                        labelFunction="getYesNo"
+                        width="70"
+                        dataField="isEnabled"/>
+                <controls:SAPDataGridColumn
+                        headerText="Reasons not enabled"
+                        width="265"
+                        labelFunction="getRequirementsString"
+                        wordWrap="true"
+                        dataField="requirements"/>
+
+            </controls:columns>
+        </controls:SAPDataGrid>
+
+        <mx:Text text="{NO_PAYMENT_METHODS_ENABLED_ERROR_MESSAGE}" fontWeight="bold" color="red"
+                 visible="{(!viewModel.isDataLoading &amp;&amp; viewModel.validPaymentMethods.length == 0)}"
+                 includeInLayout="{(!viewModel.isDataLoading &amp;&amp; viewModel.validPaymentMethods.length == 0)}"/>
+
+
+    </mx:VBox>
+     <mx:HBox paddingTop="10">
+         <mx:Label text="New Payment Method: " fontWeight="bold"/>
+         <controls:SAPComboBox id="paymentMethodComboBox" dataField="newPaymentMethod" dataProvider="{viewModel.validPaymentMethods}" paddingLeft="0"
+                      enabled="{(viewModel.validPaymentMethods.length > 0)}" width="150"/>
+    </mx:HBox>
+
+
+    <mx:HBox>
+        <mx:HBox paddingLeft="225" paddingBottom="15" paddingTop="5">
+            <mx:Button label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button label="Save" click="viewModel.save()" paddingLeft="10" enabled="{viewModel.canSave}"/>
+        </mx:HBox>
+    </mx:HBox>
+
+</mx:VBox>
+

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.events.CloseEvent;
+        import mx.controls.Alert;
+        import psp.sap.viewmodel.BanksAddBankAccountViewModel;
+
+        private static const FIRST_COLUMN_WIDTH:int = 245;
+        private static const SECOND_COLUMN_WIDTH:int = 130;
+
+        private var mViewModel:BanksAddBankAccountViewModel;
+        private var mTempViewModel:BanksAddBankAccountViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():BanksAddBankAccountViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:BanksAddBankAccountViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel= value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+            radioRandomDebits.selected = true;
+        }
+
+        private function confirmSave(event:Event):void
+        {
+            var msgString:String;
+            if(viewModel.isAddBankAccount){
+                msgString = "Are you sure you want to add this bank account?";
+                if(viewModel.isCurrentAccount())
+                    msgString += "\n\nNote: This account number, routing number, and account type matches the current account information. New random debits will not be generated.";
+            }
+            else{
+                msgString = "Are you sure you want to edit this bank account?";
+            }
+            Alert.show(	msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if(evt_obj.detail == Alert.OK)
+            {
+                viewModel.save();
+            }
+        }
+
+        private function effectStartOut():void {
+            movePendingBox.height = 0;
+        }
+
+        private function effectStartIn():void {
+            movePendingBox.height = 10;
+        }
+        	        	
+    	]]>
+    </mx:Script>
+
+    <mx:Resize id="r1" duration="750"/>
+
+
+    <mx:VBox styleName="padderBox">
+        <mx:VBox styleName="ddGrayMiniBoxStyle" width="400" verticalGap="5">
+            <mx:HBox>
+                <controls:RequiredLabel text="Routing Number" dataField="rtnNumber" width="{FIRST_COLUMN_WIDTH}"/>
+                <mx:Text id="rtnNumberText" width="{SECOND_COLUMN_WIDTH}" text="{viewModel.rtnNumber}" visible="{!viewModel.isAddBankAccount}" includeInLayout="{!viewModel.isAddBankAccount}"/>
+                <controls:SAPTextInput dataField="rtnNumber" maxChars="9" width="{SECOND_COLUMN_WIDTH}" restrict="0-9"  visible="{viewModel.isAddBankAccount}" includeInLayout="{viewModel.isAddBankAccount}"/>
+            </mx:HBox>
+
+            <mx:HBox>
+                <controls:RequiredLabel text="Account Number" dataField="accountNumber" width="{FIRST_COLUMN_WIDTH}"/>
+                <mx:Text id="accountNumberText" width="{SECOND_COLUMN_WIDTH}" text="{UIUtils.maskBankAccountNumbers(viewModel.accountNumber)}" visible="{!viewModel.isAddBankAccount}" includeInLayout="{!viewModel.isAddBankAccount}"/>
+                <controls:SAPTextInput dataField="accountNumber" maxChars="17" width="{SECOND_COLUMN_WIDTH}" visible="{viewModel.isAddBankAccount}" includeInLayout="{viewModel.isAddBankAccount}"/>
+            </mx:HBox>
+
+            <mx:HBox>
+                <mx:Label id="accountTypeLabel" text="Account Type" width="{FIRST_COLUMN_WIDTH}"/>
+                <mx:Text id="accountTypeText" width="{SECOND_COLUMN_WIDTH}" text="{viewModel.accountType}" visible="{!viewModel.isAddBankAccount}" includeInLayout="{!viewModel.isAddBankAccount}"/>
+                <mx:ComboBox id="accountTypeCombo" width="{SECOND_COLUMN_WIDTH}" dataProvider="{viewModel.accountTypes}"  visible="{viewModel.isAddBankAccount}" includeInLayout="{viewModel.isAddBankAccount}"/>
+            </mx:HBox>
+
+            <mx:HBox>
+                <controls:RequiredLabel text="Bank Name" dataField="bankName" width="{FIRST_COLUMN_WIDTH}"/>
+                <controls:SAPTextInput dataField="bankName" maxChars="100" width="{SECOND_COLUMN_WIDTH}" />
+            </mx:HBox>
+
+            <mx:HBox>
+                <controls:RequiredLabel text="QB Bank Account Name" dataField="sourceBankName" width="{FIRST_COLUMN_WIDTH}"/>
+                <controls:SAPTextInput dataField="sourceBankName" maxChars="100" width="{SECOND_COLUMN_WIDTH}" />
+            </mx:HBox>
+
+            <mx:RadioButtonGroup id="radioGroup"/>
+
+            <mx:VBox verticalGap="0"
+                     visible="{viewModel.canAddAgentVerified}"
+                     includeInLayout="{viewModel.canAddAgentVerified}">
+                <mx:HBox>
+                    <mx:Label text="Add Using Random Debits" width="{FIRST_COLUMN_WIDTH}"/>
+                    <mx:RadioButton
+                            id="radioRandomDebits"
+                            value="{true}"
+                            groupName="radioGroup"/>
+                </mx:HBox>
+
+                <mx:HBox>
+                    <mx:Label text="Add (Agent Verified)" width="{FIRST_COLUMN_WIDTH}"/>
+                    <mx:RadioButton
+                            id="radioAgentVerified"
+                            value="{false}"
+                            groupName="radioGroup"/>
+                </mx:HBox>
+                <mx:HBox id="movePendingBox"
+                         height="{radioAgentVerified.selected ? 20 : 0}"
+                         resizeEffect="r1">
+                    <mx:Label text="Move Pending Txns"
+                              width="{FIRST_COLUMN_WIDTH}"
+                              paddingLeft="5"/>
+                    <mx:CheckBox id="movePending"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+
+    </mx:VBox>
+
+    <mx:Spacer height="5"/>
+
+    <mx:HBox horizontalAlign="right" width="400">
+        <mx:Button label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="randomDebits" label="Save" click="confirmSave(event)" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+    <!-- account type bindings -->
+    <mx:Binding source="viewModel.accountType" destination="accountTypeCombo.selectedItem"/>
+    <mx:Binding source="accountTypeCombo.selectedItem as String" destination="viewModel.accountType" />
+
+    <!-- add type -->
+    <mx:Binding source="radioRandomDebits.selected" destination="viewModel.createRandomDebits" />
+    <mx:Binding source="viewModel.createRandomDebits" destination="radioRandomDebits.selected" />
+
+    <!-- move pending bindings -->
+    <mx:Binding source="viewModel.movePending" destination="movePending.selected" />
+    <mx:Binding source="movePending.selected" destination="viewModel.movePending" />
+
+
+</mx:VBox>

@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.irs.gov/efile" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.4x">
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="efileTypes.xsd"/>
+	<xsd:include schemaLocation="StateeFileTypes.xsd"/>
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>eFile Types used in FSET that are not in StateeFileTypes</Description>
+			<TaxYear>2008</TaxYear>
+			<MaturityLevel>Draft Release 1.0</MaturityLevel>
+			<ReleaseDate>Thursday, February 7, 2008</ReleaseDate>
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:simpleType name="QuarterType">
+		<xsd:annotation>
+			<xsd:documentation>The number of the quarter: 1,2,3,4.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[1-4]{1}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="RateType">
+		<xsd:annotation>
+			<xsd:documentation>Base type for tax rates.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:totalDigits value="5"/>
+			<xsd:fractionDigits value="3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="PaymentScheduleType">
+		<xsd:annotation>
+			<xsd:documentation>Base type for payment schedules. </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Month1Liabilities" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="LiabilityAmount" type="DayDecimalType" maxOccurs="31">
+							<xsd:annotation>
+								<xsd:documentation>State withholding tax liability incurred for a period of the month on a given day of the month.  Day of the month is an numeric attribute of this element.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Month1Deposits" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="DepositAmount" type="DayDecimalType" maxOccurs="31">
+							<xsd:annotation>
+								<xsd:documentation>Amount of employer withholding tax payment on a day of the month.  Day of the month is a numeric attribute of this element.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TotalMonth1Liability" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employer state witholding tax liability for month 1.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="TotalMonth1Deposits" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employer state withholding payments for month 1.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Month2Liabilities" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="LiabilityAmount" type="DayDecimalType" maxOccurs="31">
+							<xsd:annotation>
+								<xsd:documentation>State withholding tax liability incurred for a period of the month on a given day of the month.  Day of the month is an numeric attribute of this element.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Month2Deposits" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="DepositAmount" type="DayDecimalType" maxOccurs="31">
+							<xsd:annotation>
+								<xsd:documentation>Amount of employer withholding tax payment on a day of the month.  Day of the month is a numeric attribute of this element.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TotalMonth2Liability" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employer state witholding tax liability for month 2.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="TotalMonth2Deposits" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Month3Liabilities" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="LiabilityAmount" type="DayDecimalType" maxOccurs="31">
+							<xsd:annotation>
+								<xsd:documentation>State withholding tax liability incurred for a period of the month on a given day of the month.  Day of the month is an numeric attribute of this element.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Month3Deposits" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="DepositAmount" type="DayDecimalType" maxOccurs="31">
+							<xsd:annotation>
+								<xsd:documentation>Amount of employer withholding tax payment on a day of the month.  Day of the month is a numeric attribute of this element.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TotalMonth3Liability" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employer state witholding tax liability for month 1.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="TotalMonth3Deposits" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="TotalQuarterLiability" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employer state withholding tax liability for quarter.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="TotalQuarterDeposits" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employer state withholding tax payments for quarter.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="DayDecimalType">
+		<xsd:annotation>
+			<xsd:documentation>Base type for Day Decimal.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="PaymentScheduleDecimalType">
+				<xsd:attribute name="ActivityDay" use="required">
+					<xsd:simpleType>
+						<xsd:restriction base="IntegerPosType">
+							<xsd:maxInclusive value="31"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="PaymentScheduleDecimalType">
+		<xsd:annotation>
+			<xsd:documentation>Base type for payment schedule decimal amount.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="DecimalNNType">
+			<xsd:totalDigits value="14"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="PayRollType">
+		<xsd:annotation>
+			<xsd:documentation>Base type for payroll lisiting.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Employee" type="EmployeeType" maxOccurs="unbounded"/>
+			<xsd:element name="EmployeeNameFormat" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Employee name format.  For example:  full name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EmployeeType">
+		<xsd:annotation>
+			<xsd:documentation>Base type to record employee specific tax filing information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Employee" type="PersonType">
+				<xsd:annotation>
+					<xsd:documentation>Contact information for the employee.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TotalWages" type="AmountType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Enter total employee wages, tips and other compensation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxableWages" type="AmountType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total employee wages, tips and other compensation subject to tax.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxWithheld" type="AmountType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Employee taxes withheld.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EmployeeContribution" type="AmountType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Employee UI contribution.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TypeOfEmployment" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Enter type of employment.  For Example full time, part time, seasonal.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxState" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Enter state where tax is incurred.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="WagePlan" type="StringType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Name of employer wage plan.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OutOfStateWages" minOccurs="0" maxOccurs="50">
+				<xsd:annotation>
+					<xsd:documentation>Breakdown of wage information for secondary state(s)</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="TotalWages" type="AmountType">
+							<xsd:annotation>
+								<xsd:documentation>Enter Total employee wages, tips and other compensation</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TaxableWages" type="AmountType">
+							<xsd:annotation>
+								<xsd:documentation>Enter Taxable employee wages, tips and other cmpensation subject to tax.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TaxState" type="xsd:string">
+							<xsd:annotation>
+								<xsd:documentation>Enter state where wages incurred</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="Decimal3Type">
+		<xsd:annotation>
+			<xsd:documentation>Base type for decimal 3.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:totalDigits value="6"/>
+			<xsd:fractionDigits value="3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="Decimal6Type">
+		<xsd:annotation>
+			<xsd:documentation>Base type for decimal 6.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:decimal">
+			<xsd:totalDigits value="6"/>
+			<xsd:fractionDigits value="6"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="BusinessAddressType">
+		<xsd:annotation>
+			<xsd:documentation>Base type for all business addresses.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="BusinessName" type="BusinessNameType" minOccurs="0" maxOccurs="2">
+				<xsd:annotation>
+					<xsd:documentation>Enter business name</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Address" type="AddressType">
+				<xsd:annotation>
+					<xsd:documentation>Enter business street address</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PhoneNumber" type="PhoneNumberType" minOccurs="0"/>
+			<xsd:element name="ForeignPhoneNumber" type="String20Type" minOccurs="0"/>
+			<xsd:element name="TIN" type="TINType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Either Federal Employer Identification Number or Social Security Number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- StateEINType used for Enrollments and Data Exchange -->
+	<xsd:complexType name="StateEINType">
+		<xsd:annotation>
+			<xsd:documentation>Defines a state account number type</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TypeStateEIN">
+				<xsd:annotation>
+					<xsd:documentation>Defines the State Employer Identification Number Type</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="StringType">
+						<xsd:enumeration value="WithholdingAccountNo"/>
+						<xsd:enumeration value="UIAccountNo"/>
+						<xsd:enumeration value="StateControlNo"/>
+						<xsd:enumeration value="EFileAccountNo"/>
+						<xsd:enumeration value="EFTAccountNo"/>
+						<xsd:enumeration value="StateRegistrationNo"/>
+						<xsd:enumeration value="StateAccountID"/>
+						<xsd:enumeration value="CentralRegistrationNumber"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="StateEINValue" type="String20Type">
+				<xsd:annotation>
+					<xsd:documentation>Defines the State Employer Identification Number</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="StateEINExtension">
+					<xsd:annotation>
+						<xsd:documentation>Sub-account numbers to identify multiple locations and subsidiaries (optional plant identifier for reporting).</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:simpleContent>
+							<xsd:extension base="String20Type"/>
+						</xsd:simpleContent>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Mail preference type -->
+	<xsd:simpleType name="MailPreferenceType">
+		<xsd:annotation>
+			<xsd:documentation>Preferred Address/Media Code for correspondence</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="EML">
+				<xsd:annotation>
+					<xsd:documentation>E-mail</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="FAX">
+				<xsd:annotation>
+					<xsd:documentation>FAX</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="USPS">
+				<xsd:annotation>
+					<xsd:documentation>U.S. Postal Service</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- Type information for financial data -->
+	<xsd:complexType name="EnrollmentFinancialInformationType">
+		<xsd:choice>
+			<xsd:element name="CreditRemittance" type="xsd:boolean"/>
+			<xsd:sequence>
+				<xsd:element name="DebitRemittance" type="xsd:boolean" fixed="true"/>
+				<xsd:choice>
+					<xsd:element name="UseMasterAccount" type="xsd:boolean"/>
+					<xsd:sequence>
+						<xsd:element name="UseTaxpayerAccount" type="xsd:boolean" fixed="true"/>
+						<xsd:element name="BankAccount" type="BankAccountCompositeType"/>
+						<xsd:element name="PrenoteBankAccountInd" type="xsd:boolean"/>
+					</xsd:sequence>
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="BankAccountCompositeType">
+		<xsd:sequence>
+			<xsd:element name="ReceivingDFIName" type="String50Type" minOccurs="0"/>
+			<xsd:element name="RoutingNumber" type="RoutingTransitNumberType"/>
+			<xsd:element name="AccountNumber" type="BankAccountNumberType"/>
+			<xsd:element name="AccountType" type="BankAccountType"/>
+			<xsd:choice>
+				<xsd:element name="NotIATTransaction" type="CheckboxType"/>
+				<xsd:element name="IsIATTransaction" type="CheckboxType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Prior Year Credit -->
+	<xsd:complexType name="PriorYearCreditType">
+		<xsd:sequence>
+			<xsd:element name="PriorCreditYear" type="YearType"/>
+			<xsd:element name="PriorYearWithheld" type="AmountType"/>
+			<xsd:element name="PriorYearPaid" type="AmountType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Current Year Credit -->
+	<xsd:complexType name="CurrentYearCreditType">
+		<xsd:sequence>
+			<xsd:element name="CurrentCreditDate" type="DateType"/>
+			<xsd:element name="CurrentYearWithheld" type="AmountType"/>
+			<xsd:element name="CurrentYearPaid" type="AmountType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Tax Remitted Period Amount -->
+	<xsd:complexType name="TaxRemittedPeriodAmountType">
+		<xsd:sequence>
+			<xsd:element name="TaxRemittedPeriodEnd" type="DateType"/>
+			<xsd:element name="TaxRemittedPaymentDate" type="DateType"/>
+			<xsd:element name="TaxRemittedTaxWithheld" type="AmountType"/>
+			<xsd:element name="TaxRemittedTaxPaid" type="AmountType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Payment Schedule Assigned -->
+	<xsd:simpleType name="PaymentScheduleAssignedType">
+		<xsd:annotation>
+			<xsd:documentation>Payment schedule abbreviations</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="AcceleratedMonthly"/>
+			<xsd:enumeration value="Annual"/>
+			<xsd:enumeration value="Daily"/>
+			<xsd:enumeration value="LimitDriven"/>
+			<xsd:enumeration value="Monthly"/>
+			<xsd:enumeration value="OctalMonthly"/>
+			<xsd:enumeration value="QuarterMonthly"/>
+			<xsd:enumeration value="Quarterly"/>
+			<xsd:enumeration value="SemiAnnual"/>
+			<xsd:enumeration value="SemiWeekly"/>
+			<xsd:enumeration value="SemiMonthly"/>
+			<xsd:enumeration value="TiedToFederal"/>
+			<xsd:enumeration value="Weekly"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- Type for Numeric Code with Length of 4 -->
+	<xsd:simpleType name="NumericCode4Type">
+		<xsd:restriction base="StringType">
+			<xsd:pattern value="[0-9]{4}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

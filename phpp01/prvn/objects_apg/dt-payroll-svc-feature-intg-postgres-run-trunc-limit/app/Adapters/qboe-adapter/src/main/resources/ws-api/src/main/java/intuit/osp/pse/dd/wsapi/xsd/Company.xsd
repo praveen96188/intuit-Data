@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://company.xsd.wsapi.dd.pse.osp.intuit" xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" xmlns:ad="http://address.xsd.wsapi.dd.pse.osp.intuit" xmlns:cn="http://contact.xsd.wsapi.dd.pse.osp.intuit" targetNamespace="http://company.xsd.wsapi.dd.pse.osp.intuit" elementFormDefault="qualified">
+	<xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+	<xs:import namespace="http://address.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="Address.xsd"/>
+	<xs:import namespace="http://contact.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="Contact.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Data Transfer Object Company</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="Company">
+		<xs:sequence>
+			<xs:element name="SourceSystemCd" type="dd:SourceSystemType" nillable="false"/>
+			<xs:element name="CompanyID" type="dd:IDType" nillable="false"/>
+			<xs:element name="FEIN" type="dd:FEINType" nillable="false"/>
+			<xs:element name="LegalName" nillable="false">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="100"/>
+						<xs:whiteSpace value="collapse"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="DBA" nillable="true" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="100"/>
+						<xs:whiteSpace value="collapse"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="LegalAddress" type="ad:Address" nillable="false"/>
+			<xs:element name="MailingAddress" type="ad:Address" nillable="false"/>
+			<xs:element name="NotificationEmail" type="dd:EmailType" nillable="false"/>
+			<xs:element name="Contact" type="cn:Contact" nillable="false" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

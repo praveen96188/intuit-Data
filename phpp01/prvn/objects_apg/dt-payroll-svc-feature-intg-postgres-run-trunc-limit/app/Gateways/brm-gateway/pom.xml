@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Gateways</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>brm-gateway</artifactId>
+    <name>brm-gateway</name>
+  
+ 
+    <dependencies>
+        <!-- project dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>payroll-services-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+        <!-- End of project dependency -->   
+    
+        <!-- Dependencies Read from Local Repository -->   
+        <dependency>     
+            <groupId>localRepo.jscapesftp</groupId>
+            <artifactId>sftp</artifactId>                  
+        </dependency>
+
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <!-- End of Dependencies Read from Local Repository --> 
+    </dependencies>
+  
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.resources.dir}</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <targetPath>resources</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>                                   
+                    <wsdlDirectory>${project.resources.dir}</wsdlDirectory>
+                    <wsdlFiles>
+                        <wsdlFile>IntuitBRMUsage.wsdl</wsdlFile>
+                    </wsdlFiles>
+                    <sourceDestDir>${project.target.generated.sources}</sourceDestDir>
+                    <verbose>true</verbose> 
+                    <keep>true</keep>  
+                </configuration>
+
+                <!--if you want to use a specific version of JAX-WS, you can do so like this--> 
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun.xml.ws</groupId>
+                        <artifactId>jaxws-tools</artifactId>
+                        <version>2.2.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

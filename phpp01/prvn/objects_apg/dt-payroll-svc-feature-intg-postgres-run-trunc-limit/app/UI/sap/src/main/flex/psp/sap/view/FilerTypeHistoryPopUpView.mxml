@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="540"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.model.FilerType;
+        import psp.sap.model.Quarter;
+        import psp.sap.viewmodel.FilerTypeHistoryPopUpViewModel;
+
+        private var mViewModel:FilerTypeHistoryPopUpViewModel;
+        private var mTempViewModel:FilerTypeHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():FilerTypeHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:FilerTypeHistoryPopUpViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Label text="Filer Type History"
+              styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+
+    <controls:SAPDataGrid
+            width="100%"
+            paddingRight="10"
+            selectable="false"
+            draggableColumns="false"
+            dataProvider="{viewModel.filerTypes}"
+            maxRows="6">
+        <controls:columns>
+            <controls:SAPDataGridColumn
+                    headerText="Filer Type"
+                    width="130"
+                    dataField="filerType"/>
+            <controls:SAPDataGridColumn headerText="Effective Quarter"
+                               width="120"
+                               dataField="effectiveQuarter"
+                               sortCompareFunction="{function(o1:FilerType, o2:FilerType):int {return Quarter.sortCompareFunction(o1.effectiveQuarter, o2.effectiveQuarter)}}">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.FilerType;
+                                ]]></mx:Script>
+                            <mx:Text fontWeight="{FilerType(data).effectiveQuarter.isCurrentQuarter() ? 'bold' : 'normal'}"
+                                     fontStyle="{FilerType(data).invalidDate == null ? 'normal' : 'italic'}"
+                                     text="{FilerType(data).effectiveQuarter.label}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+
+            <controls:SAPDataGridColumn
+                    headerText="Change Date"
+                    width="140"
+                    resizable="false"
+                    dataField="modifiedDate"
+                    labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+
+            <controls:SAPDataGridColumn
+                    headerText="Changed By"
+                    width="130"
+                    dataField="modifierId"/>
+
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

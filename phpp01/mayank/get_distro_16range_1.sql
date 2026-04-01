@@ -1,0 +1,33 @@
+set pages 0 lines 300 echo on head on timing on echo on feedback on trimspool on
+spool get_distro_16range
+
+Select /*+ parallel(a,16) */a.TAX_SEQ From
+    (
+        Select /*+ parallel(e,16) */Row_Number() OVER (Order by TAX_SEQ) rno, e.TAX_SEQ
+        From pspadm.PSP_TAX e order by rno 
+    ) a
+Where rno in (325087864, 650175727, 975263591, 1300351455, 1625439318, 1950527182, 2275615045, 2600702909, 2925790773, 3250878636, 3575966500, 3901054364, 4226142227, 4551230091, 4876317954, 5201405818);
+
+Select /*+ parallel(a,16) */a.PSTUB_PAY_ITEM_SEQ From
+    (
+        Select /*+ parallel(e,16) */Row_Number() OVER (Order by PSTUB_PAY_ITEM_SEQ) rno, e.PSTUB_PAY_ITEM_SEQ
+        From pspadm.PSP_PSTUB_PAY_ITEM e order by rno 
+    ) a
+Where rno in (258090255, 516180510, 774270764, 1032361019, 1290451274, 1548541529, 1806631784, 2064722039, 2322812293, 2580902548, 2838992803, 3097083058, 3355173313, 3613263567, 3871353822, 4129444077);
+
+Select /*+ parallel(a,16) */a.COMPANY_EVENT_DETAIL_SEQ From
+    (
+        Select /*+ parallel(e,16) */Row_Number() OVER (Order by COMPANY_EVENT_DETAIL_SEQ) rno, e.COMPANY_EVENT_DETAIL_SEQ
+        From pspadm.PSP_COMPANY_EVENT_DETAIL e order by rno 
+    ) a
+Where rno in (210583243, 421166486, 631749729, 842332972, 1052916215, 1263499458, 1474082701, 1684665944, 1895249186, 2105832429, 2316415672, 2526998915, 2737582158, 2948165401, 3158748644, 3369331887);
+
+Select /*+ parallel(a,16) */a.COMPANY_EVENT_EMAIL_PARAM_SEQ From
+    (
+        Select /*+ parallel(e,16) */Row_Number() OVER (Order by COMPANY_EVENT_EMAIL_PARAM_SEQ) rno, e.COMPANY_EVENT_EMAIL_PARAM_SEQ
+        From pspadm.PSP_COMPANY_EVENT_EMAIL_PARAM e order by rno 
+    ) a
+Where rno in (186328406, 372656811, 558985217, 745313622, 931642028, 1117970433, 1304298839, 1490627244, 1676955650, 1863284055, 2049612461, 2235940866, 2422269272, 2608597677, 2794926083, 2981254488);
+
+spool off
+

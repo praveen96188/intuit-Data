@@ -1,0 +1,9 @@
+
+PROMPT finished DBUpgrade_002.019.006.001.sql
+ALTER TABLE PSP_PAYCHECK_USAGE
+    DROP CONSTRAINT C_PSP_PAYCHECK_USAGE1;
+
+ALTER TABLE PSP_PAYCHECK_USAGE
+    ADD CONSTRAINT C_PSP_PAYCHECK_USAGE1
+        CHECK (REASON_FOR_FREE_CHARGE IN ('AlreadyBilled', 'UsageTransfer', 'TrialUpgrade', 'None', 'Trial', 'Upgrade', 'NotPartOfUsageBilling'))
+            ENABLE NOVALIDATE;

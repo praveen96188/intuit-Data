@@ -1,0 +1,1 @@
+, "$it.columnName$" $it.columnType$ $it.nullable$

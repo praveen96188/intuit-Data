@@ -1,0 +1,293 @@
+00:11:44 SQL> 
+00:11:44 SQL> DECLARE
+00:11:44   2  
+00:11:44   3  	RECORD_COUNT	   INTEGER   := 0;
+00:11:44   4  	MAX_RECORDS	   INTEGER   := 10000;
+00:11:44   5  	PROCESSED_RECORDS  INTEGER   := 0;
+00:11:44   6  	ERROR_RECORDS	   INTEGER   := 0;
+00:11:44   7  	MAX_FETCH_RECORDS  INTEGER   := 100;
+00:11:44   8  	BATCH_COUNT	   INTEGER   := 0;
+00:11:44   9  	START_DATE	   DATE := TO_DATE('2011-07-22', 'yyyy-mm-dd');
+00:11:44  10  	END_DATE	   DATE := TO_DATE('2011-09-30', 'yyyy-mm-dd');
+00:11:44  11  	PARTITION_END_DATE DATE := START_DATE + 1;
+00:11:44  12  
+00:11:44  13  BEGIN
+00:11:44  14  	SELECT count(*) INTO RECORD_COUNT from PSPADM.PSP_COMPANY_EVENT_DETAIL WHERE COMPANY_FK IS NULL;
+00:11:44  15  
+00:11:44  16  	DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+00:11:44  17  
+00:11:44  18  	WHILE (START_DATE < END_DATE AND RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS)
+00:11:44  19  
+00:11:44  20  	  LOOP
+00:11:44  21  	    DBMS_OUTPUT.PUT_LINE('OUTER LOOP');
+00:11:44  22  	    BATCH_COUNT := 1; --TO ENTER THE LOOP AT LEAST ONCE FOR A DAY.
+00:11:44  23  
+00:11:44  24  	    WHILE (BATCH_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS)
+00:11:44  25  
+00:11:44  26  	      LOOP
+00:11:44  27  		BEGIN
+00:11:44  28  		  DBMS_OUTPUT.PUT_LINE('INNER LOOP');
+00:11:44  29  
+00:11:44  30  		  MERGE INTO PSPADM.PSP_COMPANY_EVENT_DETAIL ced
+00:11:44  31  		  using (SELECT cedi.COMPANY_EVENT_DETAIL_SEQ, cei.COMPANY_FK
+00:11:44  32  			 FROM PSPADM.PSP_COMPANY_EVENT_DETAIL cedi,
+00:11:44  33  			      PSPADM.PSP_COMPANY_EVENT cei
+00:11:44  34  			 WHERE cei.EVENT_TIME_STAMP between START_DATE and PARTITION_END_DATE
+00:11:44  35  			   AND cedi.COMPANY_EVENT_FK = cei.COMPANY_EVENT_SEQ
+00:11:44  36  			   AND cedi.COMPANY_FK is null
+00:11:44  37  			   and ROWNUM <= MAX_FETCH_RECORDS) ce
+00:11:44  38  		  on (ced.COMPANY_EVENT_DETAIL_SEQ = ce.COMPANY_EVENT_DETAIL_SEQ)
+00:11:44  39  		  when matched then
+00:11:44  40  		    update set ced.COMPANY_FK = ce.COMPANY_FK, ced.modified_date=sys_extract_utc(systimestamp);
+00:11:44  41  		  BATCH_COUNT := SQL%ROWCOUNT;
+00:11:44  42  		  COMMIT;
+00:11:44  43  
+00:11:44  44  		  PROCESSED_RECORDS := PROCESSED_RECORDS + BATCH_COUNT;
+00:11:44  45  
+00:11:44  46  		  DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+00:11:44  47  
+00:11:44  48  		EXCEPTION
+00:11:44  49  		  WHEN OTHERS THEN
+00:11:44  50  		    ERROR_RECORDS := ERROR_RECORDS + BATCH_COUNT;
+00:11:44  51  		    DBMS_OUTPUT.PUT_LINE('Failed ' || ERROR_RECORDS || ' records');
+00:11:44  52  		END;
+00:11:44  53  	      END LOOP;
+00:11:44  54  	    START_DATE := START_DATE + 1;
+00:11:44  55  	    PARTITION_END_DATE := START_DATE + 1;
+00:11:44  56  	    DBMS_OUTPUT.PUT_LINE('START-DATE : ' || TO_DATE(START_DATE, 'yyyy-mm-dd') || ' PARTITION-END-DATE : ' || TO_DATE(PARTITION_END_DATE, 'yyyy-mm-dd'));
+00:11:44  57  	  END LOOP;
+00:11:44  58  
+00:11:44  59  EXCEPTION
+00:11:44  60  
+00:11:44  61  	WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error in Procedure');
+00:11:44  62  
+00:11:44  63  END;
+00:11:44  64  /
+Found 1051484 Records                                                           
+OUTER LOOP                                                                      
+INNER LOOP                                                                      
+Processed 100 records successfully                                              
+INNER LOOP                                                                      
+Processed 200 records successfully                                              
+INNER LOOP                                                                      
+Processed 300 records successfully                                              
+INNER LOOP                                                                      
+Processed 400 records successfully                                              
+INNER LOOP                                                                      
+Processed 500 records successfully                                              
+INNER LOOP                                                                      
+Processed 536 records successfully                                              
+INNER LOOP                                                                      
+Processed 536 records successfully                                              
+START-DATE : 11-JUL-23 PARTITION-END-DATE : 11-JUL-24                           
+OUTER LOOP                                                                      
+INNER LOOP                                                                      
+Processed 536 records successfully                                              
+START-DATE : 11-JUL-24 PARTITION-END-DATE : 11-JUL-25                           
+OUTER LOOP                                                                      
+INNER LOOP                                                                      
+Processed 536 records successfully                                              
+START-DATE : 11-JUL-25 PARTITION-END-DATE : 11-JUL-26                           
+OUTER LOOP                                                                      
+INNER LOOP                                                                      
+Processed 636 records successfully                                              
+INNER LOOP                                                                      
+Processed 736 records successfully                                              
+INNER LOOP                                                                      
+Processed 836 records successfully                                              
+INNER LOOP                                                                      
+Processed 936 records successfully                                              
+INNER LOOP                                                                      
+Processed 1036 records successfully                                             
+INNER LOOP                                                                      
+Processed 1072 records successfully                                             
+INNER LOOP                                                                      
+Processed 1072 records successfully                                             
+START-DATE : 11-JUL-26 PARTITION-END-DATE : 11-JUL-27                           
+OUTER LOOP                                                                      
+INNER LOOP                                                                      
+Processed 1172 records successfully                                             
+INNER LOOP                                                                      
+Processed 1272 records successfully                                             
+INNER LOOP                                                                      
+Processed 1372 records successfully                                             
+INNER LOOP                                                                      
+Processed 1472 records successfully                                             
+INNER LOOP                                                                      
+Processed 1572 records successfully                                             
+INNER LOOP                                                                      
+Processed 1672 records successfully                                             
+INNER LOOP                                                                      
+Processed 1772 records successfully                                             
+INNER LOOP                                                                      
+Processed 1872 records successfully                                             
+INNER LOOP                                                                      
+Processed 1972 records successfully                                             
+INNER LOOP                                                                      
+Processed 2072 records successfully                                             
+INNER LOOP                                                                      
+Processed 2172 records successfully                                             
+INNER LOOP                                                                      
+Processed 2272 records successfully                                             
+INNER LOOP                                                                      
+Processed 2372 records successfully                                             
+INNER LOOP                                                                      
+Processed 2472 records successfully                                             
+INNER LOOP                                                                      
+Processed 2572 records successfully                                             
+INNER LOOP                                                                      
+Processed 2672 records successfully                                             
+INNER LOOP                                                                      
+Processed 2772 records successfully                                             
+INNER LOOP                                                                      
+Processed 2872 records successfully                                             
+INNER LOOP                                                                      
+Processed 2972 records successfully                                             
+INNER LOOP                                                                      
+Processed 3072 records successfully                                             
+INNER LOOP                                                                      
+Processed 3172 records successfully                                             
+INNER LOOP                                                                      
+Processed 3272 records successfully                                             
+INNER LOOP                                                                      
+Processed 3372 records successfully                                             
+INNER LOOP                                                                      
+Processed 3472 records successfully                                             
+INNER LOOP                                                                      
+Processed 3572 records successfully                                             
+INNER LOOP                                                                      
+Processed 3672 records successfully                                             
+INNER LOOP                                                                      
+Processed 3772 records successfully                                             
+INNER LOOP                                                                      
+Processed 3872 records successfully                                             
+INNER LOOP                                                                      
+Processed 3972 records successfully                                             
+INNER LOOP                                                                      
+Processed 4072 records successfully                                             
+INNER LOOP                                                                      
+Processed 4172 records successfully                                             
+INNER LOOP                                                                      
+Processed 4272 records successfully                                             
+INNER LOOP                                                                      
+Processed 4372 records successfully                                             
+INNER LOOP                                                                      
+Processed 4472 records successfully                                             
+INNER LOOP                                                                      
+Processed 4572 records successfully                                             
+INNER LOOP                                                                      
+Processed 4672 records successfully                                             
+INNER LOOP                                                                      
+Processed 4772 records successfully                                             
+INNER LOOP                                                                      
+Processed 4872 records successfully                                             
+INNER LOOP                                                                      
+Processed 4972 records successfully                                             
+INNER LOOP                                                                      
+Processed 5072 records successfully                                             
+INNER LOOP                                                                      
+Processed 5172 records successfully                                             
+INNER LOOP                                                                      
+Processed 5272 records successfully                                             
+INNER LOOP                                                                      
+Processed 5372 records successfully                                             
+INNER LOOP                                                                      
+Processed 5472 records successfully                                             
+INNER LOOP                                                                      
+Processed 5572 records successfully                                             
+INNER LOOP                                                                      
+Processed 5672 records successfully                                             
+INNER LOOP                                                                      
+Processed 5772 records successfully                                             
+INNER LOOP                                                                      
+Processed 5872 records successfully                                             
+INNER LOOP                                                                      
+Processed 5972 records successfully                                             
+INNER LOOP                                                                      
+Processed 6072 records successfully                                             
+INNER LOOP                                                                      
+Processed 6172 records successfully                                             
+INNER LOOP                                                                      
+Processed 6272 records successfully                                             
+INNER LOOP                                                                      
+Processed 6372 records successfully                                             
+INNER LOOP                                                                      
+Processed 6472 records successfully                                             
+INNER LOOP                                                                      
+Processed 6572 records successfully                                             
+INNER LOOP                                                                      
+Processed 6672 records successfully                                             
+INNER LOOP                                                                      
+Processed 6772 records successfully                                             
+INNER LOOP                                                                      
+Processed 6872 records successfully                                             
+INNER LOOP                                                                      
+Processed 6972 records successfully                                             
+INNER LOOP                                                                      
+Processed 7072 records successfully                                             
+INNER LOOP                                                                      
+Processed 7172 records successfully                                             
+INNER LOOP                                                                      
+Processed 7272 records successfully                                             
+INNER LOOP                                                                      
+Processed 7372 records successfully                                             
+INNER LOOP                                                                      
+Processed 7472 records successfully                                             
+INNER LOOP                                                                      
+Processed 7572 records successfully                                             
+INNER LOOP                                                                      
+Processed 7672 records successfully                                             
+INNER LOOP                                                                      
+Processed 7772 records successfully                                             
+INNER LOOP                                                                      
+Processed 7872 records successfully                                             
+INNER LOOP                                                                      
+Processed 7972 records successfully                                             
+INNER LOOP                                                                      
+Processed 8072 records successfully                                             
+INNER LOOP                                                                      
+Processed 8172 records successfully                                             
+INNER LOOP                                                                      
+Processed 8272 records successfully                                             
+INNER LOOP                                                                      
+Processed 8372 records successfully                                             
+INNER LOOP                                                                      
+Processed 8472 records successfully                                             
+INNER LOOP                                                                      
+Processed 8572 records successfully                                             
+INNER LOOP                                                                      
+Processed 8672 records successfully                                             
+INNER LOOP                                                                      
+Processed 8772 records successfully                                             
+INNER LOOP                                                                      
+Processed 8872 records successfully                                             
+INNER LOOP                                                                      
+Processed 8972 records successfully                                             
+INNER LOOP                                                                      
+Processed 9072 records successfully                                             
+INNER LOOP                                                                      
+Processed 9172 records successfully                                             
+INNER LOOP                                                                      
+Processed 9272 records successfully                                             
+INNER LOOP                                                                      
+Processed 9372 records successfully                                             
+INNER LOOP                                                                      
+Processed 9472 records successfully                                             
+INNER LOOP                                                                      
+Processed 9572 records successfully                                             
+INNER LOOP                                                                      
+Processed 9672 records successfully                                             
+INNER LOOP                                                                      
+Processed 9772 records successfully                                             
+INNER LOOP                                                                      
+Processed 9872 records successfully                                             
+INNER LOOP                                                                      
+Processed 9972 records successfully                                             
+INNER LOOP                                                                      
+Processed 10072 records successfully                                            
+START-DATE : 11-JUL-27 PARTITION-END-DATE : 11-JUL-28                           
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:37.67
+00:12:22 SQL> spool off

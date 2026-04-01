@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" creationComplete="syncEnableTo();" >
+    <mx:Script>
+        <![CDATA[
+
+        private var matrix:Array = [0.3, 0.59, 0.11, 0, 0,
+            0.3, 0.59, 0.11, 0, 0,
+            0.3, 0.59, 0.11, 0, 0,
+            0, 0, 0, 1, 0];
+        private var cmf:ColorMatrixFilter = new ColorMatrixFilter(matrix);
+
+
+
+        private var mEnableTo:int=0;
+
+        public function set enableTo(value:int):void {
+            mEnableTo = value;
+            syncEnableTo();
+        }
+
+        private function syncEnableTo():void {
+            var elements:Array = [
+                [estimateIcon, estimateText],
+                [reviewArrow, reviewIcon, reviewText],
+                [infoArrow, infoIcon, infoText],
+                [completeArrow, completeIcon, completeText]
+            ];
+
+            for (var i:int=0; i<elements.length; i++) {
+                for (var j:int=0; j<elements[i].length; j++) {
+                    if (elements[i][j] != null) {
+                     //there is absolutely zero reason to do this, except flex keeps dispatching creationComplete before children are created
+                        if (mEnableTo > i) {
+                            colorize(elements[i][j]);
+                        } else {
+                            unColorize(elements[i][j]);
+                        }
+                    }
+                }
+            }
+        }
+
+        private function unColorize(displayObject:DisplayObject):void {
+            displayObject.filters = [cmf];
+            if (displayObject.name != "arrow") {
+                displayObject.alpha = 0.55;
+            }
+        }
+
+        private function colorize(displayObject:DisplayObject):void {
+            displayObject.filters = [];
+            displayObject.alpha = 1;
+        }
+
+        ]]>
+    </mx:Script>    
+    <mx:Image id="estimateIcon" source="psp/taxcredits/view/assets/EstimateTaxCreditIcon.png"/>
+    <mx:HBox styleName="noPadding" verticalAlign="middle" paddingRight="20">
+        <mx:Text id="estimateText" selectable="false" styleName="largeBarText" width="90"
+                 htmlText="{resourceManager.getString('estimateSavings','bar_estimate')}"/>
+    </mx:HBox>
+    <mx:Image id="reviewArrow" source="psp/taxcredits/view/assets/LargeBlueArrow.png" name="arrow"/>
+    <mx:Spacer width="15"/>
+    <mx:Image id="reviewIcon" source="psp/taxcredits/view/assets/ReviewIcon.png"/>
+    <mx:HBox styleName="noPadding" verticalAlign="middle" paddingRight="20" paddingLeft="20">
+        <mx:Text id="reviewText" selectable="false" styleName="largeBarText" width="70"
+                 htmlText="{resourceManager.getString('estimateSavings','bar_pricing')}"/>
+    </mx:HBox>
+    <mx:Image id="infoArrow" source="psp/taxcredits/view/assets/LargeBlueArrow.png" name="arrow"/>
+    <mx:Spacer width="15"/>
+    <mx:Image id="infoIcon" source="psp/taxcredits/view/assets/CompanyInfoIcon.png"/>
+    <mx:HBox styleName="noPadding" verticalAlign="middle" paddingRight="20" paddingLeft="20">
+        <mx:Text id="infoText" selectable="false" styleName="largeBarText" width="110"
+                 htmlText="{resourceManager.getString('estimateSavings','bar_company_info')}"/>
+    </mx:HBox>
+    <mx:Image id="completeArrow" source="psp/taxcredits/view/assets/LargeBlueArrow.png" name="arrow"/>
+    <mx:Spacer width="15"/>
+    <mx:Image id="completeIcon" source="psp/taxcredits/view/assets/CompleteAppPackageIcon.png"/>
+    <mx:HBox styleName="noPadding" verticalAlign="middle" paddingLeft="20">
+        <mx:Text id="completeText" selectable="false" styleName="largeBarText" width="100"
+                 htmlText="{resourceManager.getString('estimateSavings','bar_complete')}"/>
+    </mx:HBox>
+</mx:HBox>

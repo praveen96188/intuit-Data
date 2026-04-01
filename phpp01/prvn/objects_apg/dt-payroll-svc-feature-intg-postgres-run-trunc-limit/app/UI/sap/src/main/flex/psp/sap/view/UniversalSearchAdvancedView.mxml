@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*" width="903" minHeight="440" paddingLeft="3">
+    <mx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.DataGridEvent;
+
+        import psp.sap.model.CompanySearchResult;
+        import psp.sap.model.EmployeeSearchResult;
+        import psp.sap.viewmodel.UniversalSearchAdvancedViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+
+        private var mViewModel:UniversalSearchAdvancedViewModel;
+        [Bindable]
+        private var searchResultRows:Number;
+        [Bindable]
+        private var employeeSearchResultRows:Number;
+
+        [Bindable]
+        public function get viewModel():UniversalSearchAdvancedViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:UniversalSearchAdvancedViewModel):void {
+            mViewModel = value;
+            viewModel.addEventListener(ViewModelEvent.ACTIVATED, onActivation, false, 0, true);
+        }
+
+        private function onActivation(e:ViewModelEvent):void {
+            searchFieldAdvanced.searchInput.setFocus();
+        }
+
+        public function onCompanyClick(e:DataGridEvent):void {
+            var searchResult:CompanySearchResult = CompanySearchResult(e.itemRenderer.data);
+            viewModel.displayCompany(searchResult.key);
+        }
+
+        public function sourceSystemLabel(item:Object, column:DataGridColumn):String {
+            return (item as CompanySearchResult).key.sourceSystemCd;
+        }
+
+        public function onVMPEmployeeClick(link:ActionLinkEvent):void {
+            viewModel.displayVMPEmployeeDetails(link.data as EmployeeSearchResult);
+        }
+
+        [Bindable("propertyChange")]
+        public function set resultRows(value:ArrayCollection):void {
+            // max number of rows for 1024x768 is 12
+            // we will make it 10 and adjust for rows that are variable height
+            if (viewModel.employeeSearchResults == null || viewModel.employeeSearchResults.length == 0) {
+                employeeSearchResultRows = 0;
+                if (viewModel.searchResults.length <= 10) {
+                    searchResultRows = viewModel.searchResults.length + 1;
+                }
+                else {
+                    searchResultRows = 10;
+                }
+            }
+            else if (viewModel.searchResults == null || viewModel.searchResults.length == 0) {
+                searchResultRows = 0;
+                employeeSearchResultRows = 10;
+            }
+            else if (viewModel.employeeSearchResults.length < 5) {
+                employeeSearchResultRows = viewModel.employeeSearchResults.length;
+                if (viewModel.searchResults.length <= 5) {
+                    searchResultRows = viewModel.searchResults.length + 1;
+                }
+                else {
+                    searchResultRows = 5;
+                }
+            }
+            else if (viewModel.searchResults.length < 5) {
+                employeeSearchResultRows = 10 - viewModel.searchResults.length;
+                searchResultRows = viewModel.searchResults.length + 1;
+            }
+            else {
+                searchResultRows = 5;
+                employeeSearchResultRows = 5;
+            }
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:Label text="Search" styleName="heading" id="headerLabel"/>
+
+    <controls:UniversalSearchField id="searchFieldAdvanced" horizontalAlign="center" width="100%" viewModel="{viewModel.searchFieldViewModel}"/>
+
+    <mx:VBox visible="{! viewModel.isDataLoading}" includeInLayout="{! viewModel.isDataLoading}">
+
+        <mx:VBox verticalGap="0" width="900" height="100%" id="mainSearchResults">
+
+            <mx:HBox width="100%" height="30" styleName="expanderBar" visible="{viewModel.employeeSearchResults.length == 0}" includeInLayout="{viewModel.employeeSearchResults.length == 0}">
+                <mx:Label text="PSP Search Results" fontSize="12" fontWeight="bold" width="50%"/>
+                <mx:Label id="searchResultsDisplayLabel"
+                          text="Displaying {viewModel.searchResults.length} records"
+                          textAlign="right"
+                          fontWeight="bold"
+                          width="50%"
+                          visible="{viewModel.searchResults.length != 100}"
+                          includeInLayout="{viewModel.searchResults.length != 100}"
+                        />
+                <!-- technically this will show up when exactly 100 records show up, but that isn't likely -->
+                <mx:Label id="updateSearchLabel"
+                          text="More that 100 records found. Update search criteria for better results."
+                          textAlign="right"
+                          fontWeight="bold"
+                          width="50%"
+                          visible="{viewModel.searchResults.length == 100}"
+                          includeInLayout="{viewModel.searchResults.length == 100}"
+                        />
+            </mx:HBox>
+
+            <mx:VBox verticalGap="0" visible="{! viewModel.isDataLoading}" width="100%">
+
+                <mx:VBox visible="{viewModel.searchResults.length == 0 &amp;&amp; viewModel.employeeSearchResults.length == 0}" includeInLayout="{viewModel.searchResults.length == 0 &amp;&amp; viewModel.employeeSearchResults.length == 0}" verticalGap="0" width="100%" height="30" id="noResultsPanel" verticalAlign="middle" horizontalAlign="center" backgroundColor="#b7b7b7" borderStyle="none" color="#000000" fontWeight="normal" dropShadowEnabled="false">
+                    <mx:Text id="noCompanyFoundText" text="No result found for the search criteria."/>
+                </mx:VBox>
+
+                <mx:VBox width="100%" id="searchResultsPanel" visible="{viewModel.searchResults.length > 0}" includeInLayout="{viewModel.searchResults.length > 0}">
+                    <pspui:CompanySearchResultsDataGrid
+                            focusAlpha="0"
+                            id="companySearchResultsGrid"
+                            width="100%"
+                            variableRowHeight="true"
+                            dataProvider="{viewModel.searchResults}"
+                            selectable="false"
+                            selectionColor="white"
+                            rowCount="{searchResultRows}"
+                            editable="true"
+                            focusOut="focusManager.defaultButtonEnabled = true;"
+                            focusIn="focusManager.defaultButtonEnabled = true;"
+                            itemEditBegin="focusManager.defaultButtonEnabled = true;"
+                            itemEditEnd="focusManager.defaultButtonEnabled = true;"
+                            maxHeight="{viewModel.employeeSearchResults.length > 0 ? 228 : 485}">
+                        <!-- TODO remove when they fix JIRA SDK-15512.
+                                                       If they fix it.
+                                                       F*** it, we're keeping it -->
+                        <!-- Sure selectable=false should make it so
+                                                      the dg isn't selectable, but it doesn't
+                                                      when you try scrolling with the tab key.
+                                                      So I made it white so users would be tricked
+                                                      into thinking the flex framework isn't stupid. -->
+
+                        <pspui:columns>
+                            <controls:CompanyDataGridColumn
+                                    editable="false"
+                                    minWidth="250"
+                                    width="250"
+                                    headerText="Company Legal Name"
+                                    textAlign="center"
+                                    dataField="legalName"
+                                    companyClick="onCompanyClick(event);"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    width="120"
+                                    resizable="false"
+                                    headerWordWrap="true"
+                                    headerText="Source{String('\n')}Payroll System"
+                                    textAlign="center"
+                                    sortable="false"
+                                    labelFunction="sourceSystemLabel"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    width="80"
+                                    resizable="false"
+                                    headerText="EIN"
+                                    textAlign="center"
+                                    dataField="fein"
+                                    itemRenderer="mx.controls.Text"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="PSID"
+                                    textAlign="center"
+                                    dataField="PSID"
+                                    minWidth="80"
+                                    itemRenderer="mx.controls.Text" />
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="EU Status"
+                                    textAlign="center"
+                                    sortable="false"
+                                    minWidth="80">
+                                <mx:itemRenderer>
+                                    <mx:Component>
+                                        <pspui:CompanySearchResultEUStatus data="{data}"/>    
+                                    </mx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="Service Status"
+                                    textAlign="left"
+                                    sortable="false"
+                                    paddingLeft="5">
+                                <mx:itemRenderer>
+                                    <mx:Component id="statusLabel">
+                                        <pspui:CompanySearchResultServiceStatus data="{data}"/>
+                                    </mx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+                        </pspui:columns>
+
+                    </pspui:CompanySearchResultsDataGrid>
+
+                </mx:VBox>
+                <mx:HBox width="100%" height="30" styleName="expanderBar" visible="{viewModel.employeeSearchResults.length > 0}" includeInLayout="{viewModel.employeeSearchResults.length > 0}">
+                    <mx:Label text="Employee Search Results" fontSize="12" fontWeight="bold" width="50%"/>
+                    <!--<mx:Label text="Displaying {viewModel.employeeSearchResults.length} records"-->
+                              <!--textAlign="right"-->
+                              <!--fontWeight="bold"-->
+                              <!--width="50%"-->
+                              <!--visible="{viewModel.employeeSearchResults.length != 100}"-->
+                              <!--includeInLayout="{viewModel.employeeSearchResults.length != 100}"-->
+                            <!--/>-->
+                    <!--&lt;!&ndash; technically this will show up when exactly 100 records show up, but that isn't likely &ndash;&gt;-->
+                    <!--<mx:Label text="More that 100 records found. Update search criteria for better results."-->
+                              <!--textAlign="right"-->
+                              <!--fontWeight="bold"-->
+                              <!--width="50%"-->
+                              <!--visible="{viewModel.employeeSearchResults.length == 100}"-->
+                              <!--includeInLayout="{viewModel.employeeSearchResults.length == 100}"-->
+                            <!--/>-->
+                </mx:HBox>
+                <mx:VBox width="100%" visible="{viewModel.employeeSearchResults.length > 0}" includeInLayout="{viewModel.employeeSearchResults.length > 0}">
+
+                    <pspui:VMPEmployeeSearchPagingDataGrid
+                            width="100%"
+                            dataProvider="{viewModel.employeeSearchResults}"
+                            totalCount="{viewModel.employeeCountResults}"
+                            maxRows="{employeeSearchResultRows}"
+                            maxHeight="{viewModel.searchResults.length > 0 ? 228 : 457}"
+                            isDataLoading="{viewModel.isDataLoading}"
+                            loadDataFunction="{viewModel.pageDataGridLoadDataFunction}">
+                        <!-- TODO remove when they fix JIRA SDK-15512.
+                   If they fix it.
+                   F*** it, we're keeping it -->
+                        <!-- Sure selectable=false should make it so
+                 the dg isn't selectable, but it doesn't
+                 when you try scrolling with the tab key.
+                 So I made it white so users would be tricked
+                 into thinking the flex framework isn't stupid. -->
+                <pspui:columns>
+                             <mx:DataGridColumn
+                                    editable="false"
+                                    minWidth="200"
+                                    headerText="Employee Name"
+                                    textAlign="left"
+                                    headerWordWrap="true"
+                                    dataField="employeeName">
+                                 <mx:itemRenderer>
+                                     <mx:Component>
+                                     <mx:VBox width="100%"
+                                              horizontalAlign="left"
+                                              verticalGap="0"
+                                              paddingTop="0"
+                                              paddingBottom="0"
+                                              verticalScrollPolicy="off"
+                                              horizontalScrollPolicy="off">
+                                         <pspui:ActionLink
+                                                 paddingTop="0"
+                                                 paddingBottom="0"
+                                                 label="{EmployeeSearchResult(data).employeeName}"
+                                                 action="{EmployeeSearchResult(data).employeeName}"
+                                                 actionClick="outerDocument.onVMPEmployeeClick"
+                                                 data="{data}"/>
+                                         <mx:Script><![CDATA[
+                                             import psp.sap.model.EmployeeSearchResult;
+                                             ]]></mx:Script>
+                                     </mx:VBox>
+                                     </mx:Component>
+                             </mx:itemRenderer>
+                            </mx:DataGridColumn>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="Company Name"
+                                    textAlign="center"
+                                    dataField="companyName"
+                                    minWidth="200"
+                                    itemRenderer="mx.controls.Text" />
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="SSN"
+                                    textAlign="center"
+                                    dataField="employeeSSN"
+                                    minWidth="80"
+                                    width="80"
+                                    itemRenderer="mx.controls.Text" />
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="Employee Email"
+                                    textAlign="center"
+                                    dataField="employeeEmail"
+                                    minWidth="100"
+                                    width="100"
+                                    itemRenderer="mx.controls.Text" />
+
+                        </pspui:columns>
+                    </pspui:VMPEmployeeSearchPagingDataGrid>
+                </mx:VBox>
+
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Binding source="viewModel.employeeSearchResults" destination="resultRows"/>
+    <mx:Binding source="viewModel.searchResults" destination="resultRows"/>
+
+</mx:VBox>

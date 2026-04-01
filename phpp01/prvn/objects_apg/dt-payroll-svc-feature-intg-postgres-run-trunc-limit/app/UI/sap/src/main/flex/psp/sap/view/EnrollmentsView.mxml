@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         width="100%"
+         height="100%"
+         verticalGap="0"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.EnrollmentsPageEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.EnrollmentDetail;
+        import psp.sap.viewmodel.EnrollmentsViewModel;
+
+        private var mViewModel:EnrollmentsViewModel;
+        private var mTempViewModel:EnrollmentsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EnrollmentsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EnrollmentsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function doResolve(data:EnrollmentDetail):void {
+            Alert.show("To resolve and re-enroll, change the EIN in CRIS or the legal name and legal zip code in AS400.");
+        }
+
+        public function showHistory(event:ActionLinkEvent):void {
+            viewModel.viewHistory(event.data as EnrollmentDetail);
+        }
+
+        public function goToTarget(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var enrollmentDetail:EnrollmentDetail = link.data as EnrollmentDetail;
+            viewModel.goToCompanyInfo(enrollmentDetail);
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+		]]>
+	</mx:Script>
+    <mx:Spacer height="25"/>
+
+    <mx:HBox styleName="ddGrayMiniBoxStyle"
+             width="100%"
+             horizontalAlign="center"
+             visible="{viewModel.totalRecords==0}"
+             includeInLayout="{viewModel.totalRecords==0}"
+             verticalGap="0"
+             height="30"
+             verticalAlign="middle"
+             backgroundColor="#F4F4F4"
+             borderStyle="solid"
+             cornerRadius="5"
+             borderColor="black"
+             color="#000000"
+             fontWeight="normal"
+             dropShadowEnabled="false">
+        <mx:Text id="noDataFoundText" text="No EFTPS Enrollment Rejections found."/>
+    </mx:HBox>
+
+    <controls:DataLoadFade target="{searchResults}" isLoading="{viewModel.isDataLoading}"/>
+    <mx:VBox width="100%" paddingBottom="0" visible="{viewModel.totalRecords>0}"
+             includeInLayout="{viewModel.totalRecords>0}">
+        <mx:HBox width="100%" height="30">
+            <mx:Image id="filterIcon" source="{SAP.instance.icons.magnifier}"/>
+            <mx:TextInput id="filterField" width="140" toolTip="Filter on EIN or PSID"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:VBox width="100%" id="searchResults" paddingTop="0"
+             styleName="backgroundGrey"
+             visible="{viewModel.totalRecords>0}"
+             includeInLayout="{viewModel.totalRecords>0}">
+        <controls:SAPDataGrid id="filterResults" width="100%"
+                              fixWidths="true"
+                              paddingRight="10"
+                              dataProvider="{viewModel.enrollmentsSearchResults}"
+                              maxHeight="500"
+                              selectable="false">
+            <controls:columns>
+                <controls:SAPDataGridColumn
+                        width="100"
+                        headerText=""
+                        draggable="false"
+                        resizable="false"
+                        sortable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="center"
+                                    verticalGap="0"
+                                    horizontalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:HBox horizontalGap="0">
+                                    <mx:Button id="resolveAction" label="Resolve"
+                                               skin="psp.sap.view.AdministrationButtonSkin"
+                                               click="{outerDocument.doResolve(data as EnrollmentDetail)}"
+                                               width="80"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.EnrollmentDetail;
+                                        ]]></mx:Script>
+                                    <pspui:ActionLink id="showHistoryAction" actionClick="{outerDocument.showHistory}"
+                                                      label="H"
+                                                      toolTip="View History" textAlign="center"
+                                                      data="{data}"/>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        width="200"
+                        dataField="companyName" headerText="Company Name">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.EnrollmentDetail;
+                                    ]]></mx:Script>
+                                <pspui:ActionLink
+                                        label="{EnrollmentDetail(data).companyName}"
+                                        actionClick="{outerDocument.goToTarget}"
+                                        data="{data}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        headerText="PSID"
+                        width="60"
+                        draggable="false"
+                        resizable="false"
+                        dataField="companyId"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="EIN"
+                        width="80"
+                        draggable="false"
+                        resizable="false"
+                        dataField="ein"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Reason"
+                        width="200"
+                        draggable="false"
+                        resizable="false"
+                        dataField="status"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Rejection Date"
+                        width="180"
+                        draggable="false"
+                        resizable="false"
+                        dataField="rejectionDate"
+                        labelFunction="formatDate"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+    </mx:VBox>
+    <mx:Binding source="filterField.text" destination="viewModel.filterString"/>
+    <mx:Binding source="viewModel.filterString" destination="filterField.text"/>
+    <controls:PopUpPart id="eftpsHistoryModal" label="{EnrollmentsPageEnum.EFTPS_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EFTPSHistoryPopUp id="eftpsHistoryView" label="{EnrollmentsPageEnum.EFTPS_HISTORY}"/>
+    </controls:PopUpPart>
+
+</mx:VBox>

@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="psp.taxcredits.view.*"
+           xmlns:controls="psp.taxcredits.view.controls.*" creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.events.ResizeEvent;
+
+        import psp.taxcredits.model.PageChangeEvent;
+        import psp.taxcredits.model.TaxCreditsEvent;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+        import psp.taxcredits.view.controls.InterviewPage;
+        import psp.taxcredits.view.controls.WindowManager;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private var questionsWindow:PrivacyQuestionsPopup;
+
+        [Bindable]
+        private var questionsTitle:String;
+
+        private function close(newPage:String = null):void {
+            //users seem to be closing with the button even when they're eligible, then dropping off
+            //making it so if they close when they're at the final screen, it will take them to next screen
+            if (model.pageManager.currentPage == TaxCreditsPageEnum.InterviewEligible) {
+                newPage = TaxCreditsPageEnum.ESTIMATE;
+            }
+
+            model.removeEventListener(TaxCreditsEvent.CATEGORIES_LOADED, onCategoriesLoaded);
+            model.pageManager.removeEventListener(PageChangeEvent.PAGE_CHANGE, onPageChanged);
+
+            if (newPage == null) {
+                newPage = TaxCreditsPageEnum.ELIGIBILITY;
+            }
+            model.pageManager.switchPage(newPage);
+
+            if (questionsWindow != null) {
+                WindowManager.remove(questionsWindow);
+                questionsWindow = null;
+            }
+
+            for each (var interviewPage:InterviewPage in viewStack.getChildren()) {
+                interviewPage.tearDown();
+            }
+
+            WindowManager.remove(this);
+        }
+
+        private function back():void {
+            var targetPage:InterviewPage = InterviewPage(viewStack.getChildAt(viewStack.selectedIndex + interviewPage.backOffset));
+            if (targetPage.label == interviewLocation.label && !model.employee.locationPageEnabled) {
+                targetPage = InterviewPage(viewStack.getChildAt(viewStack.selectedIndex + interviewPage.backOffset - 1));
+            }
+            model.pageManager.switchPage(targetPage.label);
+        }
+
+        private function next():void {
+            if (interviewPage.canContinue()) {
+                if (viewStack.selectedIndex + interviewPage.continueOffset >= viewStack.numChildren) {
+                    close(TaxCreditsPageEnum.ESTIMATE);
+                } else {
+                    var targetPage:InterviewPage = InterviewPage(viewStack.getChildAt(viewStack.selectedIndex + interviewPage.continueOffset));
+                    if (targetPage.label == interviewLocation.label && !model.employee.locationPageEnabled) {
+                        targetPage = InterviewPage(viewStack.getChildAt(viewStack.selectedIndex + interviewPage.continueOffset + 1));
+                    }
+
+                    model.pageManager.switchPage(targetPage.label);
+                }
+            }
+        }
+
+        [Bindable(event="interviewPageChange")]
+        public function get interviewPage():InterviewPage {
+            return InterviewPage(viewStack.selectedChild);
+        }
+
+        private function onCreationComplete():void {
+            onViewStackChange();
+            (this.parentApplication as TaxCredits).addEventListener(ResizeEvent.RESIZE, resizeViewStack, false, 0, true);
+            resizeViewStack();
+
+            model.addEventListener(TaxCreditsEvent.CATEGORIES_LOADED, onCategoriesLoaded, false, 0, true);
+            model.pageManager.addEventListener(PageChangeEvent.PAGE_CHANGE, onPageChanged, false, 0, true);
+
+            questionsTitle = "<a href='event:questions'>" + resourceManager.getString('interview', 'interview_questions_title') + "</a>";
+        }
+
+        private function onCategoriesLoaded(e:Event):void {
+            model.tracker.trackEvent("Eligibility", "HIRE Act eligibility", model.employee.unemployed60Set && model.employee.unemployed60 ? "yes" : "no");
+            if (model.eligibleCategories.length > 0) {
+                model.pageManager.switchPage(TaxCreditsPageEnum.InterviewEligible);
+            } else {
+                model.pageManager.switchPage(TaxCreditsPageEnum.InterviewIneligible);
+            }
+
+        }
+
+        private function resizeViewStack(e:Event = null):void {
+            viewStack.maxHeight = systemManager.screen.height - 200;
+            WindowManager.centerWindow(this);
+        }
+
+        private function onViewStackChange():void {
+            dispatchEvent(new Event("interviewPageChange"));
+            if (viewStack.selectedChild == interviewChecking) {
+                model.getCategories();
+            }
+        }
+
+
+        //this is used instead of a binding so I can remove it or else the page is never destroyed
+        private function onPageChanged(e:Event):void {
+            currentSubIndex = model.pageManager.currentSubIndex;
+        }
+
+        public function set currentSubIndex(subIndex:int):void {
+            viewStack.selectedIndex = subIndex;
+        }
+
+
+        private function onQuestionsLink():void {
+            if (questionsWindow == null) {
+                questionsWindow = new PrivacyQuestionsPopup();
+                questionsWindow.htmlText = resourceManager.getString('interview', 'interview_questions');
+                questionsWindow.title = resourceManager.getString('interview', 'interview_questions_title');
+                questionsWindow.addEventListener(Event.CLOSE, function(e:Event):void {
+                    questionsWindow = null;
+                }, false);
+                WindowManager.add(questionsWindow, DisplayObject(this.parentApplication), false);
+                questionsWindow.move(systemManager.screen.width - questionsWindow.width - 50, 50);
+            } 
+        }
+
+
+        ]]>
+    </mx:Script>
+    <mx:VBox styleName="popUpBorder" y="10" width="723" paddingBottom="10" verticalGap="0" paddingLeft="23"
+             paddingRight="0">
+
+        <mx:Text selectable="false" styleName="pageH3"
+                 text="{interviewPage.titleText ? interviewPage.titleText : resourceManager.getString('interview','title')}"/>
+
+        <controls:SupText selectable="true" styleName="pageText" width="640" paddingTop="4" paddingBottom="15"
+                          htmlText="{interviewPage.tagText}"
+                          visible="{interviewPage.showTag}"
+                          includeInLayout="{interviewPage.showTag}"/>
+
+        <mx:Image source="psp/taxcredits/view/assets/dotted_line_small.gif" visible="{interviewPage.showTag}"
+                  includeInLayout="{interviewPage.showTag}"/>
+
+        <!-- for scrolling -->
+        <mx:Canvas>
+            <mx:ViewStack id="viewStack"
+                          resizeToContent="true"
+                          historyManagementEnabled="false"
+                          paddingTop="10"
+                          change="onViewStackChange();"
+                          resize="resizeViewStack();"
+                          creationPolicy="all"
+                          width="680">
+                <view:InterviewPersonalInformation label="{TaxCreditsPageEnum.InterviewPersonalInformation}"/>
+                <view:InterviewSectionASNAP label="{TaxCreditsPageEnum.InterviewSectionASNAP}"/>
+                <view:InterviewSectionBTANF label="{TaxCreditsPageEnum.InterviewSectionBTANF}"/>
+                <view:InterviewSectionCReferral label="{TaxCreditsPageEnum.InterviewSectionCReferral}"/>
+                <view:InterviewSectionDVeteran label="{TaxCreditsPageEnum.InterviewSectionDVeteran}"/>
+                <view:InterviewSectionEDisconnectedYouth
+                        label="{TaxCreditsPageEnum.InterviewSectionEDisconnectedYouth}"/>
+                <view:InterviewSectionFFelon label="{TaxCreditsPageEnum.InterviewSectionFFelon}"/>
+                <view:InterviewSectionGOther label="{TaxCreditsPageEnum.InterviewSectionGOther}"/>
+                <view:InterviewDates label="{TaxCreditsPageEnum.InterviewDates}"/>
+                <view:InterviewLocation id="interviewLocation" label="{TaxCreditsPageEnum.InterviewLocation}"/>
+                <view:InterviewChecking id="interviewChecking" label="{TaxCreditsPageEnum.InterviewChecking}"/>
+                <view:InterviewIneligible label="{TaxCreditsPageEnum.InterviewIneligible}"/>
+                <view:InterviewEligible label="{TaxCreditsPageEnum.InterviewEligible}"/>
+            </mx:ViewStack>
+        </mx:Canvas>
+
+        <mx:Spacer height="10"/>
+        <mx:HRule styleName="divider" width="690"/>
+        <mx:HBox width="100%" styleName="noPadding" paddingTop="8" paddingBottom="14" verticalAlign="middle">
+            <mx:HBox width="100%" styleName="noPadding" paddingLeft="13">
+                <mx:Button styleName="buttonBack" useHandCursor="true" buttonMode="true"
+                           click="back();"
+                           visible="{interviewPage.backOffset != 0}"/>
+            </mx:HBox>
+            <controls:SupText htmlText="{resourceManager.getString('interview', 'interview_privacy')}" styleName="pageText"/>
+            <mx:HBox width="100%" styleName="noPadding" horizontalAlign="right" paddingRight="14">
+                <mx:Button styleName="buttonContinue" useHandCursor="true" buttonMode="true"
+                           click="next();"
+                           visible="{interviewPage.continueOffset != 0}"/>
+            </mx:HBox>
+        </mx:HBox>
+
+    </mx:VBox>
+    <controls:SupText y="35" x="638" selectable="true" styleName="pageText" width="100%"
+                      htmlText="{questionsTitle}" link="onQuestionsLink();"/>
+    <mx:Button useHandCursor="true" mouseChildren="false" buttonMode="true" x="706" styleName="closeButton"
+               click="close();"/>
+
+</mx:Canvas>

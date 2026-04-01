@@ -1,0 +1,424 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+         xmlns:view="psp.taxcredits.view.*" creationComplete="onCreationComplete();" paddingLeft="30" paddingTop="22">
+    <mx:Script>
+        <![CDATA[
+        import mx.formatters.DateFormatter;
+        import mx.utils.StringUtil;
+
+        import psp.taxcredits.model.Employee;
+        import psp.taxcredits.model.ModelUtils;
+        import psp.taxcredits.model.TaxCreditsEvent;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+        import psp.taxcredits.view.controls.WindowManager;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        [Bindable]
+        public var nonProfitIneligibleBoxVisible:Boolean = false;
+
+        [Bindable]
+        public var majorityOwnerEditable:Boolean = false;
+        [Bindable]
+        public var relativeEditable:Boolean = false;
+        [Bindable]
+        public var previouslyEmployedEditable:Boolean = false;
+        [Bindable]
+        public var hireDateEditable:Boolean = false;
+        [Bindable]
+        public var wotcEditable:Boolean = false;
+
+        [Bindable]
+        public var majorityOwnerIneligibleBoxVisible:Boolean = false;
+        [Bindable]
+        public var relativeIneligibleBoxVisible:Boolean = false;
+        [Bindable]
+        public var previouslyEmployedIneligibleBoxVisible:Boolean = false;
+        [Bindable]
+        public var tooLateIneligibleBoxVisible:Boolean = false;
+
+        [Bindable]
+        public var wotcIneligibleBoxVisible:Boolean = false;
+
+        [Bindable]
+        public var dontWaitText:String = null;
+
+        [Bindable]
+        public var afterPrintImportantText:String;
+
+        [Bindable]
+        public var continueVisible:Boolean = true;
+
+        [Bindable]
+        public var eligibleVisible:Boolean = false;
+        [Bindable]
+        public var ineligibleVisible:Boolean = true;
+
+        private var dateFormatter:DateFormatter;
+
+        private function onCreationComplete():void {
+            dateFormatter = new DateFormatter();
+            dateFormatter.formatString = "MMMM D, YYYY";
+
+            model.addEventListener(TaxCreditsEvent.ELIGIBILITY_CHANGE, onEligibilityChanged);
+        }
+
+        private function onEligibilityChanged(e:Event):void {
+            onFormChange();
+        }
+
+        private function onFormChange():void {
+            if (model.employee.hireDate != null) {
+                dontWaitText = resourceManager.getString('header', 'application_received_dont_wait') + ' ' + StringUtil.substitute(resourceManager.getString('header', 'application_received_date_short'), [model.employee.getPostmarkedByDate()]);
+                afterPrintImportantText = StringUtil.substitute(resourceManager.getString('eligibility', 'after_print_important'), ["by " + model.employee.getPostmarkedByDate()]);
+            } else {
+                dontWaitText = null;
+                afterPrintImportantText = StringUtil.substitute(resourceManager.getString('eligibility', 'after_print_important'), [resourceManager.getString('eligibility', 'after_print_important_no_hire_date')]);
+            }
+
+            model.company.determineCompanyEligibility();
+            model.employee.determineEmployeeEligibility();
+
+            //defaults
+            wotcEditable = false;
+            continueVisible = false;
+            eligibleVisible = false;
+            ineligibleVisible = false;
+
+            hireDateEditable = true;
+            majorityOwnerEditable = true;
+            relativeEditable = true;
+            previouslyEmployedEditable = true;
+
+            nonProfitIneligibleBoxVisible = false;
+            tooLateIneligibleBoxVisible = false;
+            majorityOwnerIneligibleBoxVisible = false;
+            relativeIneligibleBoxVisible = false;
+            previouslyEmployedIneligibleBoxVisible = false;
+
+
+            if ((model.company.companyEligibleSet && ! model.company.companyEligible)
+                    || (model.employee.employeePreEligibleSet && ! model.employee.employeePreEligible )) {
+                //if ineligible
+                dontWaitText = null;
+
+                //find which part ineligible, turn on message, disable all sections below
+                if (model.company.companyEligibleSet && !model.company.companyEligible) {
+                    hireDateEditable = false;
+                    majorityOwnerEditable = false;
+                    relativeEditable = false;
+                    previouslyEmployedEditable = false;
+                    nonProfitIneligibleBoxVisible = true;
+                } else if (model.employee.employeePreIneligibleType == Employee.INELIGIBLE_TOO_LATE) {
+                    majorityOwnerEditable = false;
+                    relativeEditable = false;
+                    previouslyEmployedEditable = false;
+                    tooLateIneligibleBoxVisible = true;
+                } else if (model.employee.employeePreIneligibleType == Employee.INELIGIBLE_MAJORITY_OWNER) {
+                    relativeEditable = false;
+                    previouslyEmployedEditable = false;
+                    majorityOwnerIneligibleBoxVisible = true;
+                } else if (model.employee.employeePreIneligibleType == Employee.INELIGIBLE_RELATIVE) {
+                    previouslyEmployedEditable = false;
+                    relativeIneligibleBoxVisible = true;
+                } else if (model.employee.employeePreIneligibleType == Employee.INELIGIBLE_PREVIOUSLY_EMPLOYED) {
+                    previouslyEmployedIneligibleBoxVisible = true;
+                }
+            } else if (! model.company.companyEligibleSet || ! model.employee.employeePreEligibleSet) {
+                //if not determined
+            } else if (model.eligibleCategories == null) {
+                //if pre-eligible but eligibility not determined
+                wotcEditable = true;
+            } else if (model.eligibleCategories.length > 0) {
+                //if eligible
+                wotcEditable = true;
+                eligibleVisible = true;
+                continueVisible = true;
+            } else {
+                //if ineligible
+                wotcEditable = true;
+                ineligibleVisible = true;
+            }
+                
+        }
+
+        private function formatLongDate(date:Date):String {
+            if (dateFormatter == null || date == null) {
+                return "";
+            }
+            return dateFormatter.format(date);
+        }
+
+        private function onBack():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.INTRO);
+        }
+
+        private function onContinue():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.ESTIMATE);
+        }
+
+        public function interview():void {
+            //pop-up
+            var window:EmployeeInterview = new EmployeeInterview();
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);
+            model.pageManager.switchPage(TaxCreditsPageEnum.InterviewPersonalInformation);
+        }
+
+        private function onBusinessTypeChanged():void {
+            model.tracker.trackEvent("Eligibility", "Change Business Type", businessTypeCombo.selectedItem as String);
+        }
+
+        private function onMajorityOwnerChange():void {
+            model.tracker.trackEvent("Eligibility", "Change Is Majority Owner", majorityOwnerRBG.selectedValue.toString());
+        }
+
+        private function onRelativeChange():void {
+            model.tracker.trackEvent("Eligibility", "Change Is Relative", relativeRBG.selectedValue.toString());
+        }
+
+        private function onPreviouslyEmployedChange():void {
+            model.tracker.trackEvent("Eligibility", "Change Is Previously Employed", previouslyEmployedRBG.selectedValue.toString());
+        }
+
+        private function onHireDateChanged():void {
+            if (hireDateField.selectedDate == null) {
+                return;
+            }
+            var days:int = ModelUtils.dayDifference(hireDateField.selectedDate, model.pspDate);
+            if (days <= TaxCreditsModel.DAY_LIMIT) {
+                model.tracker.trackEvent("Eligibility", "Change Hire Date", "Eligible", days);
+            } else {
+                model.tracker.trackEvent("Eligibility", "Change Hire Date", "Ineligible", days);
+            }
+        }
+
+        private function onPrintLink(e:TextEvent):void {
+            model.tracker.trackEvent("Eligibility", "Print Form", e.text + model.offerCode + ".pdf");
+            navigateToURL(new URLRequest(e.text + model.offerCode + ".pdf"), "_blank");
+        }
+
+        public function whyLimit():void {
+            model.tracker.trackEvent("Navigation","Click Time Limit","Eligibility");
+            //pop-up
+            var window:TimeLimit = new TimeLimit();
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);
+            window.move(window.x, window.y - 75);
+        }
+        
+        ]]>
+    </mx:Script>
+    <mx:Text selectable="false" styleName="pageH3Alt"
+             text="{resourceManager.getString('eligibility','page_tag_line')}"/>
+
+    <mx:VBox paddingLeft="7">
+
+        <mx:Box styleName="noPadding" paddingTop="5">
+            <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+        </mx:Box>
+        <mx:HBox paddingLeft="21" horizontalGap="0">
+            <mx:Image source="psp/taxcredits/view/assets/StepsCircle1.png"/>
+            <mx:VBox paddingTop="7" paddingLeft="2">
+                <controls:SupText selectable="true" styleName="pageText"
+                                  link="onPrintLink(event)"
+                                  htmlText="{resourceManager.getString('eligibility','print_form')}"/>
+            </mx:VBox>
+        </mx:HBox>
+        <mx:Box styleName="noPadding" paddingTop="5">
+            <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+        </mx:Box>        
+        <mx:HBox paddingLeft="21" horizontalGap="0">
+            <mx:Image source="psp/taxcredits/view/assets/StepsCircle2.png"/>
+            <mx:VBox paddingTop="7" paddingLeft="2">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                         text="{resourceManager.getString('eligibility','check_company')}"/>
+                <mx:HBox verticalAlign="middle">
+                    <mx:Text selectable="false" styleName="pageText"
+                             text="{resourceManager.getString('eligibility','type_of_business')}"/>
+                    <mx:ComboBox dataProvider="{model.company.businessTypes}" id="businessTypeCombo"
+                                 valueCommit="onFormChange();" change="onBusinessTypeChanged();"/>
+                    <controls:RequiredAsterisk/>
+                </mx:HBox>
+                <mx:VBox paddingTop="6" paddingLeft="0">
+                    <mx:VBox styleName="infoBox" width="733"
+                             visible="{nonProfitIneligibleBoxVisible}"
+                             includeInLayout="{nonProfitIneligibleBoxVisible}">
+                        <mx:VBox paddingLeft="13" width="713" paddingTop="10" paddingBottom="14">
+                            <mx:Text selectable="false" styleName="pageText" width="100%"
+                                     htmlText="{resourceManager.getString('eligibility','sorry_company')}"/>
+                            <mx:Text selectable="false" styleName="pageText" width="100%"
+                                     text="{resourceManager.getString('eligibility','non_profit_ineligible')}"/>
+                        </mx:VBox>
+                    </mx:VBox>
+                    <mx:HBox paddingTop="6">
+                        <mx:Text selectable="false" styleName="pageText"
+                                 text="{resourceManager.getString('eligibility','hire_date_question')}"/>
+                        <mx:DateField id="hireDateField"
+                                      labelFunction="formatLongDate"
+                                      width="150"
+                                      valueCommit="onFormChange();" change="onHireDateChanged();"
+                                      enabled="{hireDateEditable}"
+                                      selectableRange="{{rangeStart: new Date(2004,0,1), rangeEnd: model.pspDate}}"/>
+                        <controls:RequiredAsterisk/>
+                        <mx:Text selectable="false" styleName="pageText"
+                                 htmlText="{dontWaitText}" visible="{dontWaitText != null}"/>
+                    </mx:HBox>
+                    <controls:SorryBox
+                            included="{tooLateIneligibleBoxVisible}"
+                            sorryResource="sorry_time_limit"
+                            reasonResource="time_ineligible"/>
+                    <mx:VBox>
+                        <mx:HBox horizontalGap="2">
+                            <mx:Text selectable="false" styleName="pageText"
+                                     text="{resourceManager.getString('eligibility','majority_owner_question')}"/>
+                            <controls:RequiredAsterisk/>
+                            <controls:InlineHelp help="{resourceManager.getString('eligibility','majority_owner_help')}"/>
+                        </mx:HBox>
+                        <mx:HBox paddingLeft="30">
+                            <mx:RadioButtonGroup id="majorityOwnerRBG" change="onFormChange(); onMajorityOwnerChange();" enabled="{majorityOwnerEditable}"/>
+                            <mx:RadioButton styleName="pageText" group="{majorityOwnerRBG}" value="true" label="Yes"/>
+                            <mx:RadioButton styleName="pageText" group="{majorityOwnerRBG}" value="false" label="No"/>
+                        </mx:HBox>
+                        <controls:SorryBox
+                                included="{majorityOwnerIneligibleBoxVisible}"
+                                sorryResource="sorry_employee"
+                                reasonResource="majority_owners_ineligible"/>
+                    </mx:VBox>
+                    <mx:VBox horizontalGap="2">
+                        <mx:HBox>
+                            <mx:Text selectable="false" styleName="pageText"
+                                     text="{resourceManager.getString('eligibility','relative_question')}"/>
+                            <controls:RequiredAsterisk/>
+                            <controls:InlineHelp help="{resourceManager.getString('eligibility','relative_help')}"/>
+                        </mx:HBox>
+                        <mx:HBox paddingLeft="30">
+                            <mx:RadioButtonGroup id="relativeRBG" change="onFormChange(); onRelativeChange();" enabled="{relativeEditable}"/>
+                            <mx:RadioButton styleName="pageText" group="{relativeRBG}" value="true" label="Yes"/>
+                            <mx:RadioButton styleName="pageText" group="{relativeRBG}" value="false" label="No"/>
+                        </mx:HBox>
+                        <controls:SorryBox
+                                included="{relativeIneligibleBoxVisible}"
+                                sorryResource="sorry_employee"
+                                reasonResource="relative_ineligible"/>
+                    </mx:VBox>
+                    <mx:VBox>
+                        <mx:HBox horizontalGap="2">
+                            <mx:Text selectable="false" styleName="pageText"
+                                     text="{resourceManager.getString('eligibility','previously_employed_question')}"/>
+                            <controls:RequiredAsterisk/>
+                        </mx:HBox>
+                        <mx:HBox paddingLeft="30">
+                            <mx:RadioButtonGroup id="previouslyEmployedRBG" change="onFormChange(); onPreviouslyEmployedChange();" enabled="{previouslyEmployedEditable}"/>
+                            <mx:RadioButton styleName="pageText" group="{previouslyEmployedRBG}" value="true"
+                                            label="Yes"/>
+                            <mx:RadioButton styleName="pageText" group="{previouslyEmployedRBG}" value="false"
+                                            label="No"/>
+                        </mx:HBox>
+                        <controls:SorryBox
+                                included="{previouslyEmployedIneligibleBoxVisible}"
+                                sorryResource="sorry_employee"
+                                reasonResource="previously_employed_ineligible"/>
+                    </mx:VBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:HBox>
+
+        <mx:Box styleName="noPadding" paddingTop="5">
+            <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+        </mx:Box>
+        <mx:HBox paddingLeft="21" horizontalGap="0">
+            <mx:Image source="psp/taxcredits/view/assets/StepsCircle3.png"/>
+            <mx:VBox paddingTop="7" paddingLeft="2">
+                <controls:SupText selectable="true" styleName="pageEmphasis" alpha="{wotcEditable ? 1 : .5}"
+                                  link="if (wotcEditable) whyLimit();"
+                                  underline="{wotcEditable}"                                  
+                                  htmlText="{resourceManager.getString('eligibility','employee_fill_out')}"/>
+            </mx:VBox>
+        </mx:HBox>
+
+        <mx:Box styleName="noPadding" paddingTop="5">
+            <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+        </mx:Box>
+        <mx:HBox paddingLeft="21" horizontalGap="0">
+            <mx:Image source="psp/taxcredits/view/assets/StepsCircle4.png"/>
+            <mx:VBox paddingTop="7" paddingLeft="2">
+                <mx:Text selectable="false" styleName="pageEmphasis" alpha="{wotcEditable ? 1 : .5}"
+                         text="{resourceManager.getString('eligibility','complete_form')}"/>
+                <mx:Box styleName="noPadding">
+                    <mx:VBox paddingTop="2">
+                        <mx:Text selectable="false" styleName="pageText" alpha="{wotcEditable ? 1 : .5}"
+                         text="{resourceManager.getString('eligibility','after_print')}"/>
+                        <mx:Button styleName="buttonEligibility" useHandCursor="true" buttonMode="true"
+                                   click="interview();" enabled="{wotcEditable}"/>
+                        <mx:Text selectable="false" styleName="pageText" alpha="{wotcEditable ? 1 : .5}" width="700"
+                                 htmlText="{afterPrintImportantText}"/>
+                    </mx:VBox>
+                </mx:Box>
+            </mx:VBox>
+        </mx:HBox>
+
+        <mx:Box styleName="noPadding" paddingTop="5">
+            <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+        </mx:Box>
+
+        <mx:HBox paddingLeft="21" horizontalGap="0" visible="{eligibleVisible}" includeInLayout="{eligibleVisible}">
+            <controls:CheckImage checkType="complete"/>
+            <mx:VBox paddingTop="7" paddingLeft="2">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                         text="{resourceManager.getString('interview','ee_eligible')}"/>
+                <mx:HBox verticalAlign="middle">
+                    <mx:Text selectable="false" styleName="pageText" paddingLeft="2"
+                             text="{resourceManager.getString('eligibility','ee_eligibile_next')}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:HBox>
+        <mx:HBox paddingLeft="21" horizontalGap="0" visible="{ineligibleVisible}" includeInLayout="{ineligibleVisible}">
+            <controls:CheckImage checkType="error"/>
+            <mx:VBox paddingTop="7" paddingLeft="2">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                         text="{resourceManager.getString('interview','ee_ineligible')}"/>
+                <mx:HBox verticalAlign="middle">
+                    <mx:Text selectable="false" styleName="pageText" paddingLeft="2" width="800"
+                             text="{resourceManager.getString('interview','ee_try_again')}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:HBox>
+
+        <mx:Spacer height="45"/>
+        <mx:HRule styleName="divider" width="852"/>
+
+        <mx:HBox styleName="noPadding" paddingTop="8" paddingLeft="31" verticalAlign="middle">
+            <mx:Button styleName="buttonBack" useHandCursor="true" buttonMode="true"
+                       click="onBack();"/>
+            <mx:HBox width="100%" paddingLeft="620">
+                <mx:Button styleName="buttonContinue" useHandCursor="true" buttonMode="true"
+                           visible="{continueVisible}"
+                           click="onContinue();"/>
+            </mx:HBox>
+        </mx:HBox>
+
+        <controls:QASection width="860" paddingTop="20"
+                            title="{resourceManager.getString('eligibility','qa_subheader')}"
+                            items="{QAItemFactory.qaItems}"/>
+
+
+    </mx:VBox>
+
+    <mx:Binding source="String(businessTypeCombo.selectedItem)" destination="model.company.businessType"/>
+
+    <mx:Binding source="majorityOwnerRBG.selectedValue != null" destination="model.employee.majorityOwnerSet"/>
+    <mx:Binding source="majorityOwnerRBG.selectedValue" destination="model.employee.majorityOwner"/>
+
+    <mx:Binding source="relativeRBG.selectedValue != null" destination="model.employee.relativeSet"/>
+    <mx:Binding source="relativeRBG.selectedValue" destination="model.employee.relative"/>
+
+    <mx:Binding source="previouslyEmployedRBG.selectedValue != null" destination="model.employee.previouslyHiredSet"/>
+    <mx:Binding source="previouslyEmployedRBG.selectedValue" destination="model.employee.previouslyHired"/>
+
+    <mx:Binding source="hireDateField.selectedDate" destination="model.employee.hireDate"/>
+
+
+</mx:VBox>

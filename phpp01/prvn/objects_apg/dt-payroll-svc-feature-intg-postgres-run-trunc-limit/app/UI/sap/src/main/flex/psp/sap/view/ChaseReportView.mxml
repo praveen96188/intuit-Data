@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+           xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:pspui="psp.sap.view.*"
+           xmlns:controls="psp.sap.view.controls.*"
+           width="100%"
+           height="100%"                                        
+           creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        	import psp.sap.application.enums.OperationsEnum;
+            import mx.core.Application;
+            import mx.events.PropertyChangeEvent;
+            import psp.sap.model.ChaseReport;
+            import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+            import psp.sap.viewmodel.ChaseReportViewModel;
+            import psp.sap.viewmodel.CompanyConnectionLogTopicViewModel;
+            import psp.sap.application.enums.CompanyInspectorPageEnum;
+            import psp.sap.viewmodel.CompanyPayrollsTopicViewModel;
+            import mx.events.ValidationResultEvent;
+            import psp.sap.model.DateRangeEnum;
+            import mx.controls.Alert;
+            import mx.events.DataGridEvent;
+            import psp.sap.model.Transmission;
+            import psp.sap.application.SAP;
+            import psp.sap.viewmodel.ChaseReportViewModel;
+            import psp.app.util.CommonUtil;
+
+            private var mViewModel:ChaseReportViewModel;
+            private var mTempViewModel:ChaseReportViewModel;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            public function get viewModel():ChaseReportViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:ChaseReportViewModel):void {
+                if (value==null){
+                	removeEventListeners();
+                }
+                
+                if (mCreationComplete) {
+                    mViewModel = value;
+	                addEventListeners();
+                }                
+                else {
+                    mTempViewModel= value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+                dateSelection.dateRangeTypeCombo.selectedItem = dateSelection.defaultDateRange;                
+            }         
+
+            public function addEventListeners():void {
+                if(viewModel != null){                    
+                    viewModel.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange, false, 0, true);
+                }
+            }
+
+            public function removeEventListeners():void {
+                if(viewModel != null){                    
+                    viewModel.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onPropertyChange);
+                }
+            }
+
+            public function onPropertyChange(event:PropertyChangeEvent):void {
+                if(event.property == "reports"){
+                    searchResults.removeAllChildren();
+                    for each(var report:ChaseReport in viewModel.reports){
+                        var reportData:ChaseReportDataView = new ChaseReportDataView();
+                        reportData.report = report;
+                        searchResults.addChild(reportData);
+                    }
+                }
+            }
+
+            public function printResults():void {
+                var callString:String = "?report=chasereport&sourcesystem=" + viewModel.company.sourceSystemCd +
+                        "&companyid=" + viewModel.company.companyId +
+                        "&from=" + viewModel.dateSelectionViewModel.startDate +
+                        "&to=" + viewModel.dateSelectionViewModel.endDate +
+                        "&token=" + SAP.instance.session.user.authorizationToken;
+
+                if(CommonUtil.isDTApp()) {
+                    CommonUtil.showPrintWindow(callString, "ChaseReport.html");
+                } else {
+                    ExternalInterface.call("showPrintWindow", callString);
+                }
+            }
+	        
+		]]>        
+    </mx:Script>
+
+    <controls:DataLoadFade targets="{[searchResults, noResultsPanel]}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox styleName="ddGrayMiniBoxStyle">
+        <mx:HBox styleName="padderBox">
+
+            <!-- Row 1 -->
+            <mx:HBox verticalAlign="middle">
+                <mx:Label text="Search by Date:" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="dateSelection"
+                        viewModel="{viewModel.dateSelectionViewModel}"                                
+                        direction="horizontal"/>
+                <mx:Button
+                        id="searchButton"
+                        label="Search"
+                        enabled="{viewModel.canSave}"
+                        click="viewModel.searchForReports()"/>
+                <mx:Button
+                        id="printButton"
+                        label="Print"
+                        enabled="{viewModel.canPrint ? SAP.canPerformOperation(OperationsEnum.PRINT_CHASE_REPORT) : false}"
+                        click="printResults()"/>
+            </mx:HBox>
+
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Spacer height="10"/>
+
+    <mx:VBox visible="{viewModel.reports.length == 0}" includeInLayout="{viewModel.reports.length == 0}" verticalGap="0" width="70%" height="30" id="noResultsPanel" verticalAlign="middle" horizontalAlign="center" backgroundColor="#b7b7b7" borderStyle="none" color="#000000" fontWeight="normal" dropShadowEnabled="false">
+        <mx:Text id="noDataFoundText" text="No data found for the search criteria."/>
+    </mx:VBox>
+
+    <mx:VBox id="searchResults"
+             horizontalAlign="right"
+             verticalGap="10"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+
+    </mx:VBox>
+
+
+</mx:VBox>

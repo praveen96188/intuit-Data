@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- Z:\michaelp696\Perforce\dev\ems\psp\dev-2013R02\PSE\Domain\src\main\model\DBUpgrade_002.013.001.002.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

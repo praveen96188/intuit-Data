@@ -1,0 +1,63 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:esb="http://www.oracle.com/esb/"
+             xmlns:tns="http://www.intuit.com/iep/IntuitServiceUsage/V1"
+             targetNamespace="http://www.intuit.com/iep/IntuitServiceUsage/V1">
+    <import namespace="http://www.intuit.com/iep/IntuitServiceUsage/V1"
+            location="IntuitServiceUsage.wsdl"/>
+    <binding name="__esb_IntuitServiceUsage_IntuitServiceUsage" type="tns:IntuitServiceUsage">
+        <esb:binding/>
+        <operation name="CreateUsage">
+            <esb:operation event-name="IntuitSystem.IntuitServiceUsage.CreateUsage"/>
+            <input/>
+            <output/>
+        </operation>
+        <operation name="QueryUsageBalance">
+            <esb:operation event-name="IntuitSystem.IntuitServiceUsage.QueryUsageBalance"/>
+            <input/>
+            <output/>
+        </operation>
+    </binding>
+    <binding name="__soap_IntuitServiceUsage_IntuitServiceUsage" type="tns:IntuitServiceUsage">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="CreateUsage">
+            <soap:operation style="document" soapAction="CreateUsage"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault">
+                <soap:fault name="fault" use="literal" encodingStyle=""/>
+            </fault>
+        </operation>
+        <operation name="QueryUsageBalance">
+            <soap:operation style="document" soapAction="QueryUsageBalance"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault">
+                <soap:fault name="fault" use="literal" encodingStyle=""/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="ESB_IntuitServiceUsage_Service">
+        <port name="__esb_IntuitServiceUsage_IntuitServiceUsage"
+              binding="tns:__esb_IntuitServiceUsage_IntuitServiceUsage">
+        </port>
+        <port name="__soap_IntuitServiceUsage_IntuitServiceUsage"
+              binding="tns:__soap_IntuitServiceUsage_IntuitServiceUsage">
+            <soap:address location="http://syncpipsys.bosptc.intuit.net:80/event/IntuitSystem/IntuitServiceUsage"/>
+        </port>
+    </service>
+    <plt:partnerLinkType name="IntuitServiceUsageLT">
+        <plt:role name="IntuitServiceUsageProvider">
+            <plt:portType name="tns:IntuitServiceUsage"/>
+        </plt:role>
+    </plt:partnerLinkType>
+</definitions>

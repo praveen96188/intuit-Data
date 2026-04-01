@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         horizontalAlign="right"
+         visible="{viewModel.paychecksFound}"
+         includeInLayout="{viewModel.paychecksFound}"
+         horizontalGap="1"
+         verticalAlign="middle"
+         paddingTop="0">
+    <mx:Script><![CDATA[
+        import psp.sap.viewmodel.EmployeeInfoTabViewModel;
+
+        [Bindable] public var viewModel:EmployeeInfoTabViewModel
+
+        ]]></mx:Script>
+    <mx:LinkButton label="&lt;&lt;" styleName="inlineLinkButtonStyleBoldNoUnderlineNoFocus" toolTip="Previous page" click="viewModel.prevPage();" enabled="{viewModel.paycheckFirstVisibleColumn != 0}"/>
+    <mx:LinkButton label="&lt;" styleName="inlineLinkButtonStyleBoldNoUnderlineNoFocus" toolTip="Previous column" click="viewModel.prev()" enabled="{viewModel.paycheckFirstVisibleColumn != 0}"/>
+    <controls:SupText bbText="Showing [b]{viewModel.paycheckFirstVisibleColumn + 1}[/b] - [b]{viewModel.paycheckFirstVisibleColumn + viewModel.totalVisibleColumns}[/b] of [b]{viewModel.employeePaycheckCollection.paychecks.length + 1}[/b] Paycheck/Total columns"/>
+    <mx:LinkButton label="&gt;" styleName="inlineLinkButtonStyleBoldNoUnderlineNoFocus" toolTip="Next column" click="viewModel.next()" enabled="{viewModel.paycheckFirstVisibleColumn + viewModel.totalVisibleColumns &lt;= viewModel.employeePaycheckCollection.paychecks.length}"/>
+    <mx:LinkButton label="&gt;&gt;" styleName="inlineLinkButtonStyleBoldNoUnderlineNoFocus" toolTip="Next page" click="viewModel.nextPage()" enabled="{viewModel.paycheckFirstVisibleColumn + viewModel.totalVisibleColumns &lt;= viewModel.employeePaycheckCollection.paychecks.length}"/>
+</mx:HBox>

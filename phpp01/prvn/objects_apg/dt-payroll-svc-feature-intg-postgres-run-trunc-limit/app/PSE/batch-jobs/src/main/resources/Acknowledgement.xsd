@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.irs.gov/efile" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>IRS e-file - MeF Message Attachment Structures</Description>
+			<MaturityLevel>Final Release</MaturityLevel>
+			<IRSReleaseDate>February 4, 2008</IRSReleaseDate>
+			<FSETReleaseDate>October 19, 2009</FSETReleaseDate>
+		</xsd:documentation>
+	</xsd:annotation>
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="efileTypes.xsd"/>
+	<xsd:include schemaLocation="StateeFileTypes.xsd"/>
+	<xsd:element name="Acknowledgement">
+		<xsd:complexType>
+			<xsd:sequence>
+				<!-- Common Subsmission/Acknowledgement Elements -->
+				<xsd:group ref="CommonSubmissionAndAcknowledgementElements"/>
+				<!-- Submission Category - Identifies the submission category, for example EO or Corporate submission -->
+				<xsd:element name="SubmissionCategory" type="SubmissionCategoryType"/>
+				<!-- Electronic Postmark -->
+				<xsd:element name="ElectronicPostmark" type="TimestampType" minOccurs="0"/>
+				<!-- Filing Status - Filing status of the submission -->
+				<!-- Contained Alerts - (false or true, 0 or 1) - Indicates whether the submission contains any alerts from validation processing -->
+				<xsd:choice>
+					<xsd:element name="FilingStatus">
+						<xsd:simpleType>
+							<xsd:restriction base="StringType">
+								<xsd:enumeration value="A">
+									<xsd:annotation>
+										<xsd:documentation>Accepted</xsd:documentation>
+									</xsd:annotation>
+								</xsd:enumeration>
+								<xsd:enumeration value="R">
+									<xsd:annotation>
+										<xsd:documentation>Rejected</xsd:documentation>
+									</xsd:annotation>
+								</xsd:enumeration>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="AcceptanceStatus">
+						<xsd:simpleType>
+							<xsd:restriction base="StringType">
+								<xsd:enumeration value="A">
+									<xsd:annotation>
+										<xsd:documentation>Accepted</xsd:documentation>
+									</xsd:annotation>
+								</xsd:enumeration>
+								<xsd:enumeration value="R">
+									<xsd:annotation>
+										<xsd:documentation>Rejected</xsd:documentation>
+									</xsd:annotation>
+								</xsd:enumeration>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:element name="ContainedAlerts" type="BooleanType"/>
+				<!-- Status Date - The date the filing status was acknowledged -->
+				<xsd:element name="StatusDate" type="DateType"/>
+				<!-- IRS Submission ID - The submission ID of an IRS submission that the processing of this state submission depends on -->
+				<xsd:element name="IRSSubmissionId" type="SubmissionIdType" minOccurs="0"/>
+				<!-- State Submission Copy Count - The number of copies made of an IRS submission (only for EO currently) -->
+				<xsd:element name="StateSubmissionCopyCount" type="IntegerNNType" minOccurs="0"/>
+				<!-- EIN - The EIN of the filer -->
+				<!-- IRS Received Date -->
+				<xsd:choice>
+					<xsd:element name="EIN" type="EINType" minOccurs="0"/>
+					<xsd:element name="TIN" type="EINType" minOccurs="0"/>
+				</xsd:choice>
+				<xsd:element name="IRSReceivedDate" type="DateType" minOccurs="0"/>
+				<!-- Filing Type Description - For applications for extension, the type of return for which the filing time is being extended -->
+				<xsd:element name="FilingTypeDescription" type="StringType" minOccurs="0"/>
+				<!-- Tax Period End Date -->
+				<xsd:element name="TaxPeriodEndDate" type="DateType" minOccurs="0"/>
+				<!-- Payment Indicator -->
+				<xsd:element name="PaymentIndicator" minOccurs="0">
+					<xsd:simpleType>
+						<xsd:restriction base="StringType">
+							<xsd:enumeration value="Payment Request Received"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<!-- Completed Validation - (false or true, 0 or 1) - Indicates whether the submission went through all possible validation processing -->
+				<xsd:element name="CompletedValidation" type="BooleanType" minOccurs="0"/>
+				<!-- Embedded CRC32 -->
+				<xsd:element name="EmbeddedCRC32" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>
+							<Description>Embedded CRC32</Description>
+						</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:maxLength value="10"/>
+							<xsd:pattern value="0x[0-9A-Fa-f]{1,8}"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<!-- Computed Checksum -->
+				<xsd:element name="ComputedCRC32" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>
+							<Description>Computed CRC32</Description>
+						</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:maxLength value="10"/>
+							<xsd:pattern value="0x[0-9A-Fa-f]{1,8}"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<!-- Taxable Income -->
+				<xsd:element name="TaxableIncome" type="AmountType" minOccurs="0"/>
+				<!-- Total Tax -->
+				<xsd:element name="TotalTax" type="AmountType" minOccurs="0"/>
+				<!-- Error List -->
+				<xsd:element name="ErrorList" type="ValidationErrorListType" minOccurs="0"/>
+				<!-- Alert List -->
+				<xsd:element name="AlertList" type="ValidationAlertListType" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="submissionVersion" type="StringType" use="optional"/>
+			<xsd:attribute name="validatingSchemaVersion" type="StringType" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	<!-- ===================================  COMMON ELEMENT GROUPS AND TYPES  =================================== -->
+	<!-- Common Subsmission/Acknowledgement Elements -->
+	<xsd:group name="CommonSubmissionAndAcknowledgementElements">
+		<xsd:sequence>
+			<!-- Submission ID - The submission ID of the received submission -->
+			<xsd:element name="SubmissionId" type="SubmissionIdType"/>
+			<!-- EFIN - IRS-provided identifier for the originator of the submission -->
+			<xsd:element name="EFIN" type="EFINType"/>
+			<!-- Government Code - Identifies the government where the submission is to be filed -->
+			<xsd:element name="GovernmentCode" type="GovernmentCodeType"/>
+			<!-- Submission Type - Identifies the type of document being filed, using IRS form numbers or State form identifiers -->
+			<xsd:element name="SubmissionType">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="15"/>
+						<xsd:pattern value="[A-Za-z0-9\-]+"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<!-- Tax Year - The tax year the submission applies to -->
+			<xsd:element name="TaxYear" type="YearType"/>
+		</xsd:sequence>
+	</xsd:group>
+	<!-- Type for Validation Error List -->
+	<xsd:complexType name="ValidationErrorListType">
+		<xsd:sequence>
+			<!-- Error -->
+			<xsd:element name="Error" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<!-- DocumentID - The documentID of the form containing the error -->
+						<xsd:element name="DocumentID" type="IdType" minOccurs="0"/>
+						<!-- XPath - The location of the error in the XML data -->
+						<xsd:element name="XPath" type="StringType" minOccurs="0"/>
+						<!-- Error Category - The IRS-defined category for the reported error -->
+						<xsd:element name="ErrorCategory" type="StringType"/>
+						<!-- Error Message - Text describing the error, usually the rule text -->
+						<xsd:element name="ErrorMessage" type="StringType"/>
+						<!-- Rule Number - The IRS-assigned number for the rule creating the error -->
+						<xsd:element name="RuleNumber" type="StringType"/>
+						<!-- Severity - (Alert/Reject/Reject and Stop) Reject and Stop errors cause validation of the submission to stop before any remaining validation rules are executed -->
+						<xsd:element name="Severity" type="StringType"/>
+						<!-- Data Value - The value provided in the submission data for the element used in the validation rule -->
+						<xsd:element name="DataValue" type="StringType" minOccurs="0"/>
+					</xsd:sequence>
+					<xsd:attribute name="errorId" use="required">
+						<xsd:simpleType>
+							<xsd:restriction base="IntegerPosType">
+								<xsd:totalDigits value="6"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="errorCount" type="IntegerNNType" use="required"/>
+	</xsd:complexType>
+	<!-- Type for Validation Alert List -->
+	<xsd:complexType name="ValidationAlertListType">
+		<xsd:sequence>
+			<!-- Alert -->
+			<xsd:element name="Alert" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<!-- DocumentID - The documentID of the form containing the error -->
+						<xsd:element name="DocumentID" type="IdType" minOccurs="0"/>
+						<!-- XPath - The location of the alert in the XML data -->
+						<xsd:element name="XPath" type="StringType" minOccurs="0"/>
+						<!-- Alert Category - The IRS-defined category for the reported alert -->
+						<xsd:element name="AlertCategory" type="StringType"/>
+						<!-- Alert Message - Text describing the alert, usually the rule text -->
+						<xsd:element name="AlertMessage" type="StringType"/>
+						<!-- Rule Number - The IRS-assigned number for the rule creating the alert -->
+						<xsd:element name="RuleNumber" type="StringType"/>
+						<!-- Severity - (Alert/Reject/Reject and Stop) Reject and Stop errors cause validation of the submission to stop before any remaining validation rules are executed -->
+						<xsd:element name="Severity" type="StringType"/>
+						<!-- Data Value - The value provided in the submission data for the element used in the validation rule -->
+						<xsd:element name="DataValue" type="StringType" minOccurs="0"/>
+					</xsd:sequence>
+					<xsd:attribute name="alertId" use="required">
+						<xsd:simpleType>
+							<xsd:restriction base="IntegerPosType">
+								<xsd:totalDigits value="6"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="alertCount" type="IntegerNNType" use="required"/>
+	</xsd:complexType>
+	<!-- Submission ID Type - 20 digits (EFIN + ccyyddd + 7-character lower case alphanumeric)
+	<xsd:simpleType name="SubmissionIdType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-9]{13}[a-z0-9]{7}"/>
+		</xsd:restriction>
+	</xsd:simpleType>-->
+	<!-- Submission Category Type -->
+	<xsd:simpleType name="SubmissionCategoryType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="FSET"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- Exception Category Type -->
+	<xsd:simpleType name="ExceptionCategoryType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="SYSTEM_ERROR"/>
+			<xsd:enumeration value="RESOURCE_UNAVAILBLE"/>
+			<xsd:enumeration value="MESSAGE_FORMAT_ERROR"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

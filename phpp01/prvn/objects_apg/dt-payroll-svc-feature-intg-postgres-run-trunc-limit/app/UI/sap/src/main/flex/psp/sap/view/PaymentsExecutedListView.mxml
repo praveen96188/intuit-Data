@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns="*"
+           xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:pspui="psp.sap.view.*"
+           xmlns:controls="psp.sap.view.controls.*"
+           width="100%"
+           height="100%"
+           horizontalScrollPolicy="off"
+           creationComplete="onCreationComplete();">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.utils.ObjectUtil;
+        import psp.sap.service.AMFSerializer;
+        import psp.app.util.CommonUtil;
+        import psp.sap.application.SAP;
+
+
+        import psp.sap.application.enums.PaymentsPageEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.PaymentsExecutedListViewModel;
+
+        private var mViewModel:PaymentsExecutedListViewModel;
+        private var mTempViewModel:PaymentsExecutedListViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PaymentsExecutedListViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PaymentsExecutedListViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.settlementStartDateValidator.listener = startDateInput;
+                mViewModel.settlementEndDateValidator.listener = endDateInput;
+                mViewModel.settlementDateRangeValidator.startDateListener = startDateInput;
+                mViewModel.settlementDateRangeValidator.endDateListener = endDateInput;
+                mViewModel.initiationStartDateValidator.listener = setFromDate;
+                mViewModel.initiationEndDateValidator.listener = setToDate;
+                mViewModel.initiationDateRangeValidator.startDateListener = setFromDate;
+                mViewModel.initiationDateRangeValidator.endDateListener = setToDate;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function pageDataGridLoadDataFunction():void {
+            viewModel.refresh();
+        }
+
+        public function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+
+        private function doSearch():void {
+            viewModel.updatePageSizeToFitScreen(this);
+            viewModel.searchPayments();
+        }
+
+        public function isLatePayment(settlementDate:Date, dueDate:Date):Boolean {
+            return (ObjectUtil.dateCompare(dueDate, settlementDate) == -1);
+        }
+
+        public function exportResults():void {
+            var callString:String = "?report=taxPaymentsSearchReport" +
+                    "&paymentSearch=" + new AMFSerializer().serializeToString(viewModel.lastSearched) +
+                    "&token=" + blankIfNull(SAP.instance.session.user.authorizationToken) +
+                    "&export=true";
+            if(CommonUtil.isDTApp()) {
+                CommonUtil.showPrintWindow(callString, "Print.xls");
+            } else {
+                ExternalInterface.call("showPrintWindow", callString);
+            }
+        }
+
+        public function blankIfNull(c:*):* {
+            return (c == null) ? "" : c;
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox styleName="standardTabbedBody" height="100%" width="100%" verticalGap="0">
+
+        <!-- Top Box -->
+        <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="1200" id="mainSearchBox"
+                            openOnStartup="true"
+                            filterStringFunction="{viewModel.getFilterString}">
+            <mx:VBox verticalGap="12" paddingLeft="0">
+                <controls:RequiredLabel text="Agency: " validator="{viewModel.agencyRequiredValidator}" paddingLeft="0" fontWeight="bold"/>
+                <controls:RequiredLabel text="Payment Type: " validator="{viewModel.paymentTemplateRequiredValidator}" paddingLeft="0" fontWeight="bold"/>
+            </mx:VBox>
+
+            <mx:VBox verticalGap="8" paddingLeft="0">
+                <controls:SAPComboBox dataProvider="{viewModel.agencyList}" dataField="agency" paddingLeft="0" width="160" rowCount="20"/>
+                <controls:SAPComboBox dataProvider="{viewModel.paymentTemplateList}" dataField="paymentTemplate" paddingLeft="0" width="160"/>
+            </mx:VBox>
+
+            <mx:VBox verticalGap="0" paddingLeft="15">
+                <mx:HBox>
+                    <mx:VBox>
+                        <mx:Label text="Payment Method: " fontWeight="bold" paddingLeft="0"/>
+                        <mx:VBox verticalGap="0">
+                            <mx:Label text="Companies:" fontWeight="bold" paddingLeft="0"/>
+                            <mx:Label text="(PSIDs)" paddingLeft="0"/>
+                        </mx:VBox>
+                    </mx:VBox>
+                    <mx:VBox>
+                        <controls:SAPComboBox dataProvider="{viewModel.paymentMethodListExecuted}" dataField="paymentMethod" paddingLeft="0" width="150"/>
+                        <mx:TextArea id="companyIds" width="150" height="41" verticalScrollPolicy="auto" horizontalScrollPolicy="auto"/>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:VBox verticalGap="0" paddingLeft="10">
+                <mx:HBox paddingLeft="2">
+                    <mx:VBox >
+                        <mx:VBox>
+                            <mx:HBox>
+                                <mx:Label text="Start" fontWeight="bold" paddingLeft="135" width="40"/>
+                                <mx:Label text="End" fontWeight="bold" paddingLeft="220" width="40"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                        <mx:VBox>
+                            <mx:HBox>
+                                <mx:Label text="Settlement Date:" fontWeight="bold" width="120"/>
+                                <pspui:SAPDateField
+                                        id="startDateInput"
+                                        width="100"
+                                        editable="true"
+                                        tabIndex="1"/>
+                                <mx:Label paddingLeft="1"/>
+                                <pspui:SAPDateField
+                                        id="endDateInput"
+                                        width="100"
+                                        editable="true"
+                                        tabIndex="2"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                        <mx:VBox>
+                            <mx:HBox>
+                                <mx:Label text="Initiation Date:" fontWeight="bold" width="120" />
+                                <pspui:SAPDateField
+                                        id="setFromDate"
+                                        width="100"
+                                        editable="true"
+                                        tabIndex="3"/>
+                                <mx:Label paddingLeft="1"/>
+                                <pspui:SAPDateField
+                                        id="setToDate"
+                                        width="100"
+                                        editable="true"
+                                        tabIndex="4"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                    </mx:VBox>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:VBox verticalGap="0" paddingLeft="1">
+                <mx:HBox horizontalAlign="right" width="100%">
+                    <mx:Label text="Quarter:" textAlign="right" fontWeight="bold" width="100"/>
+                    <controls:SAPComboBox dataProvider="{viewModel.quarterList}" dataField="quarter" rowCount="{viewModel.quarterList.length}" width="102"/>
+                </mx:HBox>
+
+                <mx:HBox width="100%" horizontalAlign="right" paddingTop="30">
+                    <mx:Button label="Search" id="searchButton" click="mainSearchBox.collapse();doSearch()" tabIndex="5" width="102"
+                               enabled="{viewModel.canSave}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </controls:FilterBox>
+
+        <mx:Spacer height="10"/>
+
+        <pspui:PagingDataGrid id="searchResults"
+                              rowCount="{viewModel.payments.pageSize}"
+                              width="100%"
+                              paddingRight="10"
+                              horizontalAlign="right"
+                              verticalGap="0"
+                              fixWidths="true"
+                              isDataLoading="{viewModel.isDataLoading}"
+                              dataProvider="{viewModel.payments}"
+                              loadDataFunction="{pageDataGridLoadDataFunction}">
+            <pspui:columns>
+                <controls:SAPDataGridColumn
+                        headerText=""
+                        width="55"
+                        sortable="false" headerWordWrap="true">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+
+                                <mx:Script><![CDATA[
+                                    import psp.sap.application.SAP;
+                                    import psp.sap.application.enums.OperationsEnum;
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:LinkButton
+                                        label="Reject"
+                                        toolTip="Record this payment as Rejected"
+                                        click="outerDocument.viewModel.popUps.rejectPayment(Payment(data))"
+                                        enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_TAX_PAYMENTS)}"
+                                        styleName="inlineLinkButtonStyleBold"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        width="170"
+                        headerText="Status"
+                        dataField="status"
+                        sortable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     horizontalGap="1"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:HBox>
+                                    <mx:Text textAlign="left" text="{Payment(data).status}"
+                                             paddingLeft="0"
+                                             paddingRight="0"
+                                             paddingTop="0"
+                                             paddingBottom="0"/>
+                                    <mx:LinkButton
+                                            label="H"
+                                            toolTip="View status history"
+                                            click="outerDocument.viewModel.popUps.viewStatusHistory(Payment(data))"
+                                            styleName="inlineLinkButtonStyleBold"/>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Company"
+                        fixWidth="false"
+                        dataField="companyName">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:LinkButton
+                                        label="{Payment(data).companyName}"
+                                        click="outerDocument.viewModel.goToCompanyInfo(Payment(data))"
+                                        styleName="inlineLinkButtonStyleBold"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="PSID"
+                        width="80"
+                        dataField="psId"/>
+                <controls:SAPDataGridColumn
+                        headerText="FEIN"
+                        width="80"
+                        dataField="ein"/>
+                <controls:SAPDataGridColumn
+                        headerText="Agency ID"
+                        width="90"
+                        dataField="agencyId"/>
+                <controls:SAPDataGridColumn
+                        headerText="Init. Date"
+                        width="80"
+                        labelFunction="SAPDataGrid.formatDateShort"
+                        dataField="initiationDate"/>
+                <controls:SAPDataGridColumn
+                        headerText="Settlement Date"
+                        width="120"
+                        dataField="settlementDate">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:HBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.formatters.SAPDateFormatters;
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:Text textAlign="left"
+                                         text="{SAPDateFormatters.dateFormatShort.format(Payment(data).settlementDate)}"
+                                         paddingLeft="0"
+                                         paddingRight="0"
+                                         paddingTop="0"
+                                         paddingBottom="0"/>
+                                <mx:LinkButton
+                                        label="H"
+                                        toolTip="View settlement date history"
+                                        click="outerDocument.viewModel.popUps.viewPayDateHistory(Payment(data))"
+                                        styleName="inlineLinkButtonStyleBold"/>
+                            </mx:HBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Due Date"
+                        width="80"
+                        labelFunction="SAPDataGrid.formatDateMedium"
+                        dataField="dueDate">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:HBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.formatters.SAPDateFormatters;
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:Text
+                                        textAlign="left"
+                                        text="{SAPDateFormatters.dateFormatShort.format(Payment(data).dueDate)}"
+                                        color="{outerDocument.isLatePayment(data.settlementDate, data.dueDate) ? 0xFF0000 : 0x000000}"
+                                        toolTip="{outerDocument.isLatePayment(data.settlementDate, data.dueDate) ? 'Overdue' : null}"/>
+                            </mx:HBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Amount"
+                        width="100"
+                        dataField="amount">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.formatters.SAPCurrencyFormatters;
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:HBox>
+                                    <mx:LinkButton
+                                            label="{SAPCurrencyFormatters.defaultFormatter.format(Payment(data).amount)}"
+                                            toolTip="View payment details"
+                                            click="outerDocument.viewModel.popUps.viewPaymentDetails(Payment(data))"
+                                            styleName="inlineLinkButtonStyleBold"/>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Payment Method"
+                        width="120"
+                        dataField="paymentMethod"
+                        sortable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.Payment;
+                                    ]]></mx:Script>
+                                <mx:HBox>
+                                    <mx:Text textAlign="left" text="{Payment(data).paymentMethod}"
+                                             paddingLeft="0"
+                                             paddingRight="0"
+                                             paddingTop="0"
+                                             paddingBottom="0"/>
+
+                                    <mx:LinkButton
+                                            label="H"
+                                            toolTip="View payment method history"
+                                            click="outerDocument.viewModel.popUps.viewPaymentMethodHistory(Payment(data))"
+                                            styleName="inlineLinkButtonStyleBold"/>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+            </pspui:columns>
+        </pspui:PagingDataGrid>
+        <pspui:ActionLink click="exportResults();" icon="{SAP.instance.icons.exportIcon}" paddingTop="2"
+                          labelPlacement="right" label="Export Results"
+                          enabled="{viewModel.canExportResults}"/>
+
+    </mx:VBox>
+
+    <pspui:PaymentsPopUpView label="{PaymentsPageEnum.POP_UPS}"/>
+
+    <mx:Binding source="startDateInput.text" destination="viewModel.settlementStartDate"/>
+    <mx:Binding source="viewModel.settlementStartDate" destination="startDateInput.text"/>
+
+    <mx:Binding source="endDateInput.text" destination="viewModel.settlementEndDate"/>
+    <mx:Binding source="viewModel.settlementEndDate" destination="endDateInput.text"/>
+
+    <mx:Binding source="setFromDate.text" destination="viewModel.initiationStartDate"/>
+    <mx:Binding source="viewModel.initiationStartDate" destination="setFromDate.text"/>
+
+    <mx:Binding source="setToDate.text" destination="viewModel.initiationEndDate"/>
+    <mx:Binding source="viewModel.initiationEndDate" destination="setToDate.text"/>
+
+    <mx:Binding source="companyIds.text" destination="viewModel.companyIds"/>
+    <mx:Binding source="viewModel.companyIds" destination="companyIds.text"/>
+
+</mx:Canvas>

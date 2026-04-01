@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="mx.core.IToolTip"
+    styleName="grayDataGridVBox"
+    paddingBottom="2"
+    verticalScrollPolicy="off"
+    horizontalScrollPolicy="off"
+    horizontalAlign="center">
+
+    <mx:Script>
+    <![CDATA[
+        import mx.formatters.NumberFormatter;
+
+        [Bindable]
+        public var offering:Object;
+        private var numberFormatter:NumberFormatter = new NumberFormatter();
+
+        //required by interface
+        public function get text():String {
+            return "";
+        }
+        public function set text(value:String):void {
+        }
+
+        public function formatPrice(n:Number):String {
+            numberFormatter.precision = 2;
+            return "$" + numberFormatter.format(n);
+        }
+
+    ]]>
+    </mx:Script>
+
+       <mx:Grid verticalGap="0" horizontalGap="0">
+        <mx:GridRow>
+            <mx:GridItem horizontalAlign="center" minWidth="185" styleName="headerBorder">
+                <mx:Label text="Offering Name"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                <mx:Label text="SKU Description"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                <mx:Label text="SKU"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                <mx:Label text="Base Price/Unit Price"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow backgroundColor="{UIUtils.getRowColor(1)}">
+            <mx:GridItem horizontalAlign="left" minWidth="185" styleName="borderRightGrey" >
+                <mx:Label id="currentOfferingLabel" text="{offering.name}"
+                          paddingLeft="35"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="left" minWidth="150" styleName="borderRightGrey" >
+                <mx:Label id="currentSKULabel" text="{offering.SKU}"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center" minWidth="150" styleName="borderRightGrey" >
+                <mx:Label text=""/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center" minWidth="150" >
+                <mx:Label text=""/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:Repeater id="chargeRepeater" dataProvider="{offering.serviceCharges}" recycleChildren="false">
+            <mx:GridRow backgroundColor="{UIUtils.getRowColor(chargeRepeater.currentIndex)}">
+                <mx:GridItem horizontalAlign="left" minWidth="185" backgroundColor="{UIUtils.getRowColor(1)}" styleName="borderRightGrey">
+                    <mx:Label text=""/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="left" minWidth="150" styleName="borderRightGrey" >
+                    <mx:Label id="descriptionLabel" text="{chargeRepeater.currentItem.groupDescription}"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="borderRightGrey" >
+                    <mx:Label id="chargeSKULabel" text="{chargeRepeater.currentItem.SKU}"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" >
+                    <mx:Label id="chargePriceLabel" text="{formatPrice(chargeRepeater.currentItem.price)}/{formatPrice(chargeRepeater.currentItem.unitPrice)}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+        </mx:Repeater>
+    </mx:Grid>
+
+</mx:VBox>

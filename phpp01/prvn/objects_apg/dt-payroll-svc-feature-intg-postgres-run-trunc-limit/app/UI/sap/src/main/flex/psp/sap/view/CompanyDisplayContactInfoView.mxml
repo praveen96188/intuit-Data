@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+         horizontalGap="0"
+         creationComplete="onCreationComplete();"
+         height="100%"
+         width="100%">
+
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.CommunicationPrefEnum;
+        import psp.sap.model.Contact;
+        import psp.sap.viewmodel.CompanyDisplayContactInfoViewModel;
+
+        private const COLUMN_1_WIDTH:int = 110;
+        private const TRUNC_TEXT_HEIGHT:int = 20;
+        private const TRUNC_TEXT_WIDTH_EMAIL:int = 200;
+        private const TRUNC_TEXT_WIDTH_ADDRESS:int = 340;
+        private const BLANK_STRING:String = "";
+
+        private var mViewModel:CompanyDisplayContactInfoViewModel;
+        private var mTempViewModel:CompanyDisplayContactInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public var showAddContactLink:Boolean = true;
+
+        [Bindable]
+        public function get viewModel():CompanyDisplayContactInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyDisplayContactInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+
+        public function getCommunicationPreferenceIcon(value:String):Object {
+            if (value == "Phone") {
+                return SAP.instance.icons.communicationPrefIcon_Phone;
+            } else if (value == "Email") {
+                return SAP.instance.icons.communicationPrefIcon_Email;
+            } else {
+                return new Object();
+            }
+        }
+
+        private function onTabNavigatorChange():void {
+            viewModel.selectedContactIndex = contactTabs.selectedIndex;
+        }
+
+        private function confirmValidateEmail(event:Event):void {
+
+            var msgString:String = "Email address - " + String(LinkButton(event.target).data) + " is marked as invalid, are you sure you want to remove the invalid flag?";
+            Alert.show(msgString,
+                    "Remove invalid flag on email",
+                    Alert.YES | Alert.NO,
+                    this,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.removeInvalidFlagOnEmail(String(LinkButton(event.target).data));
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+
+        ]]>
+	</mx:Script>
+	<mx:Spacer height="8"/>
+	<mx:TabNavigator id="contactTabs" width="100%" height="185" tabEnabled="false" change="onTabNavigatorChange();">
+        <mx:Repeater id="contactsRepeater" dataProvider="{viewModel.companyContacts.contacts}" width="100%" height="100%" recycleChildren="false">
+            <mx:VBox id="roleNameVBox" automationName="{'tabBox_' + Contact(contactsRepeater.currentItem).contactRole.name}" horizontalGap="0" verticalGap="0" paddingLeft="5" width="100%" height="100%" label="{Contact(contactsRepeater.currentItem).contactRole.name}" toolTip="{contactsRepeater.currentItem.firstName} {contactsRepeater.currentItem.lastName}"> 
+				<mx:HBox>
+                	<mx:Label text="Name: "
+                		styleName="fieldLabel"
+                		width="{COLUMN_1_WIDTH}"/>
+					<mx:Text id="nameText" automationName="{'tabNameText_' + Contact(contactsRepeater.currentItem).contactRole.name}" text="{(contactsRepeater.currentItem.prefix != null) ? contactsRepeater.currentItem.prefix + ' ' : BLANK_STRING}{contactsRepeater.currentItem.firstName} {contactsRepeater.currentItem.lastName} {(contactsRepeater.currentItem.suffix != null) ? contactsRepeater.currentItem.suffix : BLANK_STRING}"/>					
+				</mx:HBox>
+				<mx:HBox>
+					<mx:VBox width="{COLUMN_1_WIDTH}" verticalGap="0">	                           
+                        <mx:Label text="Job Title: "
+                        	styleName="fieldLabel"
+                        	includeInLayout="{contactsRepeater.currentItem.jobTitle != null}"
+                        	visible="{contactsRepeater.currentItem.jobTitle != null}"
+                        	id="jobTitleLabel"
+                        	width="{COLUMN_1_WIDTH}"
+                        	/>
+
+						<mx:Label text=" "/> <!--one line of text break-->	
+							                            
+                        <mx:Label text="Fax: " 
+                            styleName="fieldLabel"
+                        	includeInLayout="{contactsRepeater.currentItem.faxNumber != null}"
+                        	visible="{contactsRepeater.currentItem.faxNumber != null}"
+                            id="faxLabel"
+                            width="{COLUMN_1_WIDTH}"
+                        	/>
+                        <mx:Label text="Phone: " 
+                        	styleName="fieldLabel"
+                        	includeInLayout="{contactsRepeater.currentItem.phoneNumber != null}"
+                        	visible="{contactsRepeater.currentItem.phoneNumber != null}"
+                            id="phoneLabel"
+                            width="{COLUMN_1_WIDTH}"    />
+                        <mx:Label text="Email: "
+                        	styleName="fieldLabel"
+                        	includeInLayout="{contactsRepeater.currentItem.email != null}" 
+                        	visible="{contactsRepeater.currentItem.email != null}"
+                        	id="emailLabel"
+                            width="{COLUMN_1_WIDTH}"
+                                />
+                        <mx:Label text="SSN: "
+                                  styleName="fieldLabel"
+                                  id="ssnLabel"
+                                  includeInLayout="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                                  visible="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                                  width="{COLUMN_1_WIDTH}"/>
+                        <mx:Label text="Date of Birth:"
+                                  styleName="fieldLabel"
+                                  id="dobLabel"
+                                  includeInLayout="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                                  visible="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                                  width="{COLUMN_1_WIDTH}"/>
+                    </mx:VBox>
+	                <mx:VBox verticalGap="0">                	 	
+                        <mx:Text id="jobTitleText" automationName="{'tabJobTitleText_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                            text="{contactsRepeater.currentItem.jobTitle}"
+                        	includeInLayout="{contactsRepeater.currentItem.jobTitle != null}"
+                        	visible="{contactsRepeater.currentItem.jobTitle != null}"
+                        	/>
+                        
+                        <mx:Label text=" "/> <!--one line of text break-->
+                        
+                        <mx:Text id="faxNumberText" automationName="{'tabFaxNumberText_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                            text="{contactsRepeater.currentItem.faxNumber}"
+                        	includeInLayout="{contactsRepeater.currentItem.faxNumber != null}" 
+                        	visible="{contactsRepeater.currentItem.faxNumber != null}"/>
+                        <mx:Text id="phoneNumberText" 
+                            text="{contactsRepeater.currentItem.phoneNumber}" automationName="{'tabPhoneNumberText_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                        	includeInLayout="{contactsRepeater.currentItem.phoneNumber != null}" 
+                        	visible="{contactsRepeater.currentItem.phoneNumber != null}"/>
+                        <mx:HBox horizontalGap="2">
+                            <pspui:TruncatedText id="emailText" automationName="{'tabEmailText_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                                text="{contactsRepeater.currentItem.email}"
+                                height="{TRUNC_TEXT_HEIGHT}"
+                                maxWidth="{TRUNC_TEXT_WIDTH_EMAIL}"
+                                includeInLayout="{Contact(contactsRepeater.currentItem).email != null}"
+                                visible="{Contact(contactsRepeater.currentItem).email != null}"
+                                color="{Contact(contactsRepeater.currentItem).hasInvalidEmail ? 0xff0000 : 0x000000}"/>
+                            <mx:LinkButton
+                                label="Validate"
+                                styleName="standardLinkButtonStyle"
+                                enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_COMPANY_CONTACT_INFORMATION)}"
+                                includeInLayout="{Contact(contactsRepeater.currentItem).email != null &amp;&amp; Contact(contactsRepeater.currentItem).hasInvalidEmail}"
+                                visible="{Contact(contactsRepeater.currentItem).email != null &amp;&amp; Contact(contactsRepeater.currentItem).hasInvalidEmail}"
+                                data = "{Contact(contactsRepeater.currentItem).email}"
+                                click="confirmValidateEmail(event)" toolTip="Remove invalid flag on email"/>
+                        </mx:HBox>
+                        <mx:Text id = "ssn"
+                                 text = "{Contact(contactsRepeater.currentItem).socialSecurityNumber}"
+                                 includeInLayout = "{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                                 visible="{ viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'&amp;&amp; Contact(contactsRepeater.currentItem).socialSecurityNumber != null}"
+                                />
+
+                        <mx:Text id = "dob"
+                                 text = "{SAPDateFormatters.dateFormatShort.format(Contact(contactsRepeater.currentItem).dateOfBirth)}"
+                                 includeInLayout = "{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal' &amp;&amp; Contact(contactsRepeater.currentItem).dateOfBirth != null}"
+                                 visible ="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal' &amp;&amp; Contact(contactsRepeater.currentItem).dateOfBirth != null}"
+                                />
+
+
+	                </mx:VBox>
+	                <mx:VBox>
+		                <mx:HBox>
+			                <mx:VBox verticalGap="0">
+		                        <mx:Label text="Address: " 
+		                        	styleName="fieldLabel"
+		                        	includeInLayout="{contactsRepeater.currentItem.address != null}"
+		                        	visible="{contactsRepeater.currentItem.address != null}"
+                                    id="addressLabel"/>   	                	
+			                </mx:VBox>
+			                <mx:VBox verticalGap="0">
+		                        <pspui:TruncatedText id="addressLine1Text" automationName="{'tabAddressLine1Text_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                                                  height="{TRUNC_TEXT_HEIGHT}"
+		                                          width="{TRUNC_TEXT_WIDTH_ADDRESS}"
+		                                          text="{contactsRepeater.currentItem.address.addressLine1}"
+		                                          includeInLayout="{contactsRepeater.currentItem.address.addressLine1 != null}"
+		                                          visible="{contactsRepeater.currentItem.address.addressLine1 != null}"/>
+		                        <pspui:TruncatedText id="addressLine2Text" automationName="{'tabAddressLine2Text_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                                                  height="{TRUNC_TEXT_HEIGHT}"
+		                                          width="{TRUNC_TEXT_WIDTH_ADDRESS}"
+		                                          text="{contactsRepeater.currentItem.address.addressLine2}"
+		                                          includeInLayout="{contactsRepeater.currentItem.address.addressLine2 != null}"
+		                                          visible="{contactsRepeater.currentItem.address.addressLine2 != null}"/>
+		                        <pspui:TruncatedText id="addressLine3Text" automationName="{'tabAddressLine3Text_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+                                                  height="{TRUNC_TEXT_HEIGHT}"
+		                                          width="{TRUNC_TEXT_WIDTH_ADDRESS}"
+		                                          text="{contactsRepeater.currentItem.address.addressLine3}"
+		                                          includeInLayout="{contactsRepeater.currentItem.address.addressLine3 != null}"
+		                                          visible="{contactsRepeater.currentItem.address.addressLine3 != null}"/>
+								<mx:HBox horizontalGap="-5">
+									<mx:Text automationName="{'tabCityStateAndZipText_' + Contact(contactsRepeater.currentItem).contactRole.name}"
+									 	id="cityStateAndZipText" text="{contactsRepeater.currentItem.address.city}, {contactsRepeater.currentItem.address.state} {contactsRepeater.currentItem.address.zipCode}"/>
+									<mx:HBox horizontalGap="-5" includeInLayout="{contactsRepeater.currentItem.address.zipCodeExtension != null}" visible="{contactsRepeater.currentItem.address.zipCodeExtension != null}">
+										<mx:Text text="-"/>
+										<mx:Text automationName="{'tabZipCodeExtensionText_' + Contact(contactsRepeater.currentItem).contactRole.name}" id="zipCodeExtensionText" text="{contactsRepeater.currentItem.address.zipCodeExtension}"/>
+									</mx:HBox>									
+								</mx:HBox>
+			                </mx:VBox>
+			            </mx:HBox>
+			            
+			            <mx:Label text=" "/> <!--one line of text break-->
+		                
+		                <mx:HBox verticalGap="0">
+		                	<mx:Label styleName="fieldLabel" text="Preferred Contact Method: "/>
+		                	<mx:Image id="communicationTypeImage" source="{getCommunicationPreferenceIcon(contactsRepeater.currentItem.communicationTypeCd)}"/>
+		                	<mx:Label automationName="{'tabCommunicationTypeLabel_' + Contact(contactsRepeater.currentItem).contactRole.name}" id="communicationTypeLabel" text="{CommunicationPrefEnum.getEnumForCode(contactsRepeater.currentItem.communicationTypeCd).name}"/>
+		                </mx:HBox>
+	                </mx:VBox>	                
+				</mx:HBox>				                
+            </mx:VBox>
+        </mx:Repeater>
+    </mx:TabNavigator>
+
+    <mx:Binding source="viewModel.actualSelectedIndex" destination="contactTabs.selectedIndex" />
+
+</mx:VBox>

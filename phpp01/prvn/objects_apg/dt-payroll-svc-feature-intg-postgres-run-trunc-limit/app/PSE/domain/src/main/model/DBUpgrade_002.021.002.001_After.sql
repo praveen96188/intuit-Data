@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\Users\rtbteam\dt-payroll-svc\app\PSE\domain\src\main\model\DBUpgrade_002.021.002.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

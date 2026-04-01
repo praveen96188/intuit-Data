@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+    <query name="findPaymentsForFsetFiling">
+        <![CDATA[
+                select mmt
+                   from com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction mmt
+                        left outer join com.intuit.sbd.payroll.psp.domain.FsetFilingDetail fset on fset.MoneyMovementTransaction=mmt 
+                        and fset.Company=mmt.Company
+                 where
+                   fset is null
+                   and mmt.PaymentTemplate.PaymentTemplateCd='MS-M89-PAYMENT'
+                   and mmt.TaxPaymentStatus = 'AcknowledgedByAgency'
+                   and mmt.Status = 'Executed'
+                   and mmt.InitiationDate = :InitDate
+                   and mmt.MoneyMovementPaymentMethod = 'ACHCredit'
+                ]]>
+    </query>
+</hibernate-mapping>

@@ -1,0 +1,27 @@
+SET SERVEROUTPUT ON
+SET HEADING      ON
+SET DEFINE       OFF
+
+SPOOL DIY_any_new_payrolls_during_migration_v2.log
+
+SELECT USER FROM DUAL;
+SELECT TO_CHAR(SYSDATE, 'MM.DD.YYYY HH24:MI') AS TIME_MARK FROM DUAL;
+
+PROMPT --
+PROMPT Determine if any payrolls came into the AS400 for companies just migrated. None expected.
+
+SELECT a.ach_userid    AS SOURCE_COMPANY_ID,
+       TO_CHAR(TO_DATE(a.ACH_TIMESTAMP, 'YYYYMMDDHH24MISS'), 'MM.DD.YY - HH:MI AM') AS SUBMIT_DTTM
+  FROM DIY_IQACH     a,
+       DIY_MIG_QUEUE b
+ WHERE a.ach_userid           = b.psp_userid
+   AND b.PSP_MIGRATIONS_STATE = 'C'
+   AND a.ACH_TIMESTAMP        > 20081213090000;
+
+     
+SELECT TO_CHAR(SYSDATE, 'MM.DD.YYYY HH24:MI') AS TIME_MARK FROM DUAL;
+
+PROMPT --
+PROMPT Done.
+
+SPOOL OFF

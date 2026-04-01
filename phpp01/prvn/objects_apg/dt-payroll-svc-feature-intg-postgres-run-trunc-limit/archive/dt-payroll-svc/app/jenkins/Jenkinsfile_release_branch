@@ -1,0 +1,402 @@
+def mavenImage = 'maven:3.5-jdk-8'
+def failureEmail = 'SBSEG-PDQBDTPSPAWS@intuit.com'
+repo = "payroll-services-platform/Payroll-Services"
+def dockerUrl = 'docker.intuit.com'
+def imageCorrettoPathMavenSql = 'payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc/pspmavensql'
+releaseTag = "v"
+jiraList = []
+currentVersion = ""
+contributorsEmail = ""
+latestReleaseTag = ""
+releaseVersion = ""
+releaseDiff = ""
+releaseDiffShortUrl = ""
+releaseInfo = ""
+pipeline {
+    agent {
+        kubernetes {
+            label "psp-build-pod-${UUID.randomUUID().toString()}"
+            defaultContainer "mavencorrettopspsqlplus"
+            yaml """
+                apiVersion: v1
+                kind: Pod
+                spec:
+                    containers:
+                    - name: mavencorrettopspsqlplus
+                      image: ${dockerUrl}/${imageCorrettoPathMavenSql}:latest
+                      command:
+                      - cat
+                      tty: true
+            """
+        }
+    }
+
+    environment {
+        NEXUS_RELEASE_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_SNAPSHOT_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_RELEASE_REPO_USERNAME = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_USR}"
+        NEXUS_RELEASE_REPO_PASSWORD = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_PSW}"
+        NEXUS_SNAPSHOT_REPO_USERNAME = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_USR}"
+        NEXUS_SNAPSHOT_REPO_PASSWORD = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_PSW}"
+	GITHUB_CREDENTIALS = credentials("SCM-GitHub-Token")
+        GITHUB_USER = "${env.GITHUB_CREDENTIALS_USR}"
+        GITHUB_TOKEN = "${env.GITHUB_CREDENTIALS_PSW}"
+	JIRA_CREDENTIALS = credentials("ibp-jira-service-user")
+        JIRA_USER = "${env.JIRA_CREDENTIALS_USR}"
+        JIRA_TOKEN = "${env.JIRA_CREDENTIALS_PSW}"
+
+   
+    }
+
+    parameters {
+        choice(name: 'BRANCH_TYPE', choices: ['PATCH', 'MINOR', 'MAJOR'], description: 'Specify the release type for the Branch')
+	    string(name: 'BRANCH', defaultValue: 'master', description: 'Specify the base branch to be used for release.')
+	    text(name: 'RELEASE_NOTES', description: 'Specify the release notes if any or wiki links')
+	}
+
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '15', numToKeepStr: '15', artifactNumToKeepStr: '30'))
+        timestamps()
+    }
+
+    stages {
+
+	stage('Tag') {
+       steps {
+    	    script {
+    		    def version = getVersion()
+    			def nextVersion = getNextVersion(version)
+    			latestReleaseTag = getLatestRelease()
+    			contributorsEmail=getContributors(latestReleaseTag,"HEAD")
+    			sh '''
+               	    echo "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.intuit.com" >> /tmp/gitcredfile
+                        git config --global user.name "${GITHUB_USER}"
+                    	git config --global user.email "svc-ibp@intuit.com"
+                    	git config --global credential.helper "store --file=/tmp/gitcredfile"
+    				echo "version is '''+version+'''"
+    			    git init
+
+
+              	'''
+    			updatePOMVersion(version,"updating version to ${version} for ${BRANCH_TYPE} release")
+    			createReleaseNotes(version)
+    			updatePOMVersion(nextVersion,"Version bump to ${nextVersion}")
+
+    		}
+
+        }
+    }
+    }
+    post {
+        success {
+            jacoco exclusionPattern: "**/*Test*", inclusionPattern: "**/*.class,**/*.java"
+
+            script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                        buildNumber: env.BUILD_NUMBER,
+                        buildStatus: 'Success',
+                        buildUrl: env.BUILD_URL,
+                        buildUser: env.BUILD_USER,
+                        buildUserId: env.BUILD_USER_ID,
+                        branch: params.BRANCH,
+                        buildDuration: currentBuild.durationString,
+			releaseVersion: "${releaseVersion}", 
+			releaseDiff: "${releaseDiff}",
+			releaseDiffShortUrl : "${releaseDiffShortUrl}", 
+                        statusColor: '#009933'
+                    )
+                }
+            }
+        }
+        failure {
+            echo "Build Pipeline Failure"
+
+            mail to: "${failureEmail}",
+                 subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "Something is wrong in ${env.BUILD_URL}"
+
+             script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                        buildNumber: env.BUILD_NUMBER,
+                        buildStatus: 'Failed',
+                        buildUrl: env.BUILD_URL,
+                        buildUser: env.BUILD_USER,
+                        buildUserId: env.BUILD_USER_ID,
+                        branch: params.BRANCH,
+                        buildDuration: currentBuild.durationString,
+			releaseVersion: "${releaseVersion}",
+			releaseDiff: "${releaseDiff}",
+			releaseDiffShortUrl : "${releaseDiffShortUrl}", 
+                        statusColor: '#b50911'
+                    )
+                 }
+             }
+        }
+    }
+
+}
+
+
+def getJiraNotes() {
+        def jiraNotes = ""
+        jiraNotes = jiraNotes + "<table>"
+        jiraNotes = jiraNotes + "<thead>"
+        jiraNotes = jiraNotes + "<tr>"
+        jiraNotes = jiraNotes + "<th>JIRA</th>"
+        jiraNotes = jiraNotes + "<th>Title</th>"
+        jiraNotes = jiraNotes + "<th>Type</th>"
+        jiraNotes = jiraNotes + "<th>Status</th>"
+        jiraNotes = jiraNotes + "<th>Assignee</th>"
+        jiraNotes = jiraNotes + "</tr>"
+        jiraNotes = jiraNotes + "</thead>"
+        jiraNotes = jiraNotes + "<tbody>"
+ 
+	for(String jiraID:jiraList){
+	try{
+		echo "get jir details for ${jiraID}"
+		jira_link="https://jira.intuit.com/browse/${jiraID}" 
+		withCredentials([usernamePassword(credentialsId: 'ibp-jira-service-user', passwordVariable: 'JIRA_PASSWORD', usernameVariable: 'JIRA_USERNAME')]){
+        	container('maven') {
+            		jiraRequest = """
+            			curl -X GET \
+                  		-u ${JIRA_USERNAME}:${JIRA_PASSWORD} \
+                  		https://jira.intuit.com/rest/api/latest/issue/${jiraID}?fields=summary,status,issuetype,assignee \
+		  		-H 'Content-Type: application/json' \
+            		"""
+            		def response = sh(returnStdout: true, script: "${jiraRequest}").trim()
+            		echo "Jira pre notes: ${response}"
+            		def responseJson = readJSON text: response
+            		echo "Jira notes: ${responseJson.fields.summary}"
+            		jira_title =  "${responseJson.fields.summary}"
+            		jira_type =  "${responseJson.fields.issuetype.name}"
+            	jira_status =  "${responseJson.fields.status.name}"
+            	jira_assignee =  "${responseJson.fields.assignee.displayName}"
+
+		jiraNotes = jiraNotes + "<tr>"
+        	jiraNotes = jiraNotes + "<td>"
+        	jiraNotes = jiraNotes + "<a href='"+jira_link+"'>"+jira_id+"</a>"
+        	jiraNotes = jiraNotes + "</td>"
+        	jiraNotes = jiraNotes + "<td>"
+        	jiraNotes = jiraNotes + jira_title
+        	jiraNotes = jiraNotes + "</td>"
+        	jiraNotes = jiraNotes + "<td>"
+        	jiraNotes = jiraNotes + jira_type
+        	jiraNotes = jiraNotes + "</td>"
+        	jiraNotes = jiraNotes + "<td>"
+        	jiraNotes = jiraNotes + jira_status
+        	jiraNotes = jiraNotes + "</td>"
+        	jiraNotes = jiraNotes + "<td>"
+        	jiraNotes = jiraNotes + jira_assignee
+        	jiraNotes = jiraNotes + "</td>"
+        	jiraNotes = jiraNotes + "</tr>"
+        	}
+
+    	}
+	}catch(all) {
+
+	}
+	}
+	jiraNotes = jiraNotes + "</tbody>"
+        jiraNotes = jiraNotes + "</table>"
+    	echo "Jira tickets: ${jiraNotes}"
+	return jiraNotes
+}
+def getJiraList(String previous_tag , String current_tag) {
+    	def commitLog=getDetailedMessage(previous_tag,current_tag)
+    	echo "jira are ${commitLog}"
+	def matcher = commitLog =~ /\w+-\d+/
+
+ 
+   	for(String it:matcher){
+		jira_id=it.substring(it.lastIndexOf(":") + 1, it.length())
+		jiraList.add(jira_id)
+	}
+    	echo "Jira tickets: ${jiraList}"
+    	return jiraList.unique()
+}
+def getDetailedMessage(String previous_tag , String current_tag){
+
+	sh '''
+                git log --pretty=\"%s (%an)\" '''+previous_tag+'''...'''+current_tag+''' --no-merges | sort --unique >/tmp/detaiedMessage
+        '''
+        return sh (script: "cat /tmp/detaiedMessage",returnStdout: true).trim()
+
+}
+
+def getCommitersEmail(String previous_tag , String current_tag){
+
+	sh '''
+                git log --pretty="%ae" '''+previous_tag+'''...'''+current_tag+''' --no-merges | sort --unique | grep -v svc-ibp@intuit.com >/tmp/commiterEmail
+        '''
+	return sh (script: "cat /tmp/commiterEmail",returnStdout: true).trim()
+}
+
+def getContributors(String previous_tag , String current_tag){
+
+        def commitLog=getCommitersEmail(previous_tag,current_tag)
+        def matcher = commitLog =~ /.*@.*/
+
+	def contributer = ""
+
+        for(String commiter:matcher){
+
+                contributer = contributer + commiter
+                contributer = contributer + "<br>"
+
+        }
+        echo "contributer: ${contributer}"
+        return contributer
+
+
+}
+def getReleaseInfo(){
+
+        for(String info:"${RELEASE_NOTES}".split("\n")){
+                releaseInfo = releaseInfo + info + "<br>"
+        }
+        echo "releaseInfo: ${releaseInfo}"
+        return releaseInfo
+
+}
+def getPreviousTag(){
+
+	sh '''
+                git describe --tags $(git rev-list --tags --max-count=1) > /tmp/previoustag
+        '''
+	return sh (script: "cat /tmp/previoustag",returnStdout: true).trim()
+}
+
+def getVersion() {
+        echo "branch type is ${BRANCH_TYPE}"
+	sh '''
+		mvn -Denvironment=build -s ./jenkins/settings.xml help:evaluate -Dexpression=project.version -q -DforceStdout > /tmp/version
+	'''
+	currentVersion = sh (script: "cat /tmp/version",returnStdout: true).trim()
+        
+	echo "current version of artifact was ${currentVersion}" 
+	def version = currentVersion.split('-SNAPSHOT')[0]
+        
+	def majorVersion = version.tokenize(".")[0] as int
+	def minorVersion = version.tokenize(".")[1] as int
+	def patchVersion = version.tokenize(".")[2] as int
+     
+        if (params.BRANCH_TYPE == 'MAJOR'){
+		majorVersion = majorVersion + 1
+		minorVersion = 0
+		patchVersion = 0
+	   
+	} 	
+        if (params.BRANCH_TYPE == 'MINOR'){
+		minorVersion = minorVersion + 1
+		patchVersion = 0
+	   
+	} 	
+
+	return "${majorVersion}.${minorVersion}.${patchVersion}"
+}
+
+def getNextVersion(String version) {
+
+        def majorVersion = version.tokenize(".")[0] as int
+        def minorVersion = version.tokenize(".")[1] as int
+        def patchVersion = version.tokenize(".")[2] as int
+        patchVersion = patchVersion + 1
+        return "${majorVersion}.${minorVersion}.${patchVersion}-SNAPSHOT"
+}
+
+def updatePOMVersion(String pomVersion,String commitMessage) {
+sh '''	
+	mvn -Denvironment=build -s ./jenkins/settings.xml versions:set -DnewVersion='''+pomVersion+'''
+	mvn -Denvironment=build -s ./jenkins/settings.xml versions:set-property -Dproperty=psp.project.version -DnewVersion='''+pomVersion+'''
+        
+	git add -u
+        git commit -m "'''+commitMessage+'''"
+        git push origin HEAD:${BRANCH}
+'''
+}
+def createReleaseNotes(String version) {
+        releaseVersion = "v${version}"
+	withCredentials([usernamePassword(credentialsId: 'SCM-GitHub-Token', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]){
+        container('maven') {
+	    jiraList = getJiraList(latestReleaseTag,"HEAD")
+            def jira_list =  getJiraNotes()
+	    releaseDiff = "https://github.intuit.com/${repo}/compare/${latestReleaseTag}...v${version}"
+	    releaseDiffShortUrl = "${latestReleaseTag}...v${version}"
+	    releaseInfo = getReleaseInfo()
+	    releaseNotes = """
+                curl -X POST \
+                  -u ${GIT_USERNAME}:${GIT_PASSWORD} \
+                  https://github.intuit.com/api/v3/repos/${repo}/releases \
+                  -H 'Content-Type: application/vnd.github.v3.html+json' \
+                  -H 'cache-control: no-cache' \
+                  -d '{
+                  "tag_name":"v${version}",
+                  "name":"v${version}",
+                  "body":"Changes between ${latestReleaseTag} and v${version}\\n \\n ${releaseDiff} \\n \\n Contributors \\n \\n ${contributorsEmail}  \\n \\n ${jira_list} \\n \\n Release Notes \\n \\n ${releaseInfo}",
+		  "target_commitish":"${BRANCH}",
+		  "draft":false,
+		  "prerelease":false
+                }
+                    '
+            """
+            def response = sh(returnStdout: true, script: "${releaseNotes}").trim()
+            def responseJson = readJSON text: response
+            echo "Release notes URL: ${responseJson.url}"  
+        }
+    }
+}
+def getLatestRelease(){
+    withCredentials([usernamePassword(credentialsId: 'SCM-GitHub-Token', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]){
+        container('maven') {
+            latestRelease = """
+                curl -X GET \
+                  -u ${GIT_USERNAME}:${GIT_PASSWORD} \
+                  https://github.intuit.com/api/v3/repos/${repo}/releases/latest \
+                  -H 'Content-Type: application/json' \
+                  -H 'cache-control: no-cache' \
+            """
+            def response = sh(returnStdout: true, script: "${latestRelease}").trim()
+            def responseJson = readJSON text: response
+            echo "response.tag_name: ${responseJson.tag_name}"                 
+            return responseJson.tag_name
+        }
+    }    
+}
+
+def sendSlackNotification(Map parameters) {
+    def attachments = [
+        [
+            "fallback": "Failed - Job '${parameters.jobName} [${parameters.buildNumber}]' (${parameters.buildUrl})",
+            "author_name": "Built by ${parameters.buildUser} [${parameters.buildUserId}]",
+            "author_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+            "title": "${parameters.buildStatus} - ${parameters.jobName} #${parameters.buildNumber}",
+            "title_link": "${parameters.buildUrl}",
+            "fields": [
+                [
+                    "title": "Branch",
+                    "value": "${parameters.branch}",
+                    "short": true
+                ],
+                [
+                    "title": "Build Duration",
+                    "value": "${parameters.buildDuration}",
+                    "short": true
+                ],
+                [
+                    "title": "Version",
+                    "value": "${parameters.releaseVersion}",
+                    "short": true
+                ],
+                [
+                    "title": "Release Diff",
+                    "value": "<${parameters.releaseDiff}| ${parameters.releaseDiffShortUrl}>",
+                    "short": true
+                ]
+            ],
+            "color": "${parameters.statusColor}"
+        ]
+    ]
+    slackSend (attachments: attachments)
+}

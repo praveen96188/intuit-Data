@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by Dustin Hunter (Intuit, Inc.) -->
+<!-- Release Notes - Jul 22, 2008
+    - Changed ClientApplicationType to string
+    - Created ApplicationType Complex Element
+    - Changed app version to VersionType
+    - Required the efeSchemaVersion and increased it
+    - Added Support for IP Address (IPv4 & IPv6)
+    - Added Customer Timezone - offset from GMT
+    - Made ClientFilingID Required
+    - Added AuthorizationCode
+    - Added FilingType to return message
+    - Faults will be returned as Status Messages - Failed Validation
+    - Added GetStatusByFilerId Operation
+    - Removed optional tag for FormsetType, Periods
+	 - Removed tokenId from BaseMsg. sync now returns the lastToken number to the user separately in the return object.
+ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:efe="http://www.intuit.com/engine/efp/efe/filer/wsdl/v2" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" targetNamespace="http://www.intuit.com/engine/efp/efe/filer/wsdl/v2" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0" jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.0">
+	<xs:include schemaLocation="common.xsd"/>
+	<xs:annotation>
+		<xs:appinfo>
+			<jaxb:globalBindings>
+				<jaxb:serializable uid="123456"/>
+			</jaxb:globalBindings>>
+        </xs:appinfo>
+	</xs:annotation>
+	<!-- Exceptions/Faults -->
+	<xs:complexType name="BaseFault" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Defines the base for all EFE faults</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="resolution" type="xs:string"/>
+			<xs:element name="code" type="xs:int" default="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="EfeSystemFault">
+		<xs:annotation>
+			<xs:documentation>Generated if an unexpected error is occurring in EFE. This should not occur in production, but is here just in case so that clients can handle the situation appropriately.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="efe:BaseFault"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EfeUnavailableFault">
+		<xs:annotation>
+			<xs:documentation>Generated if EFE is not accepting filings. In general, this will be returned when EFE is in FIP mode, and only for operations that EFE does not support in FIP mode.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:annotation>
+				<xs:documentation>Generated if EFE is not accepting filings. In general, this will be returned when EFE is in FIP mode, and only for operations that EFE does not support in FIP mode.</xs:documentation>
+			</xs:annotation>
+			<xs:complexContent>
+				<xs:extension base="efe:BaseFault"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<!-- Request/Response Messages -->
+	<xs:element name="submit">
+		<xs:annotation>
+			<xs:documentation>Submits a group of filing to EFE for processing.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sender" type="efe:SenderInfoType"/>
+				<xs:element name="filings" type="efe:FilingType" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="submitResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="return" type="efe:EfeMessageType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="sync">
+		<xs:annotation>
+			<xs:documentation>Asks EFE to return all new messages since the tokenid.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+                <xs:element name="requestVersion" type="efe:VersionType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>  Version of request. This value must be set manually to take advantage of any versioning  </xs:documentation>
+                        <xs:documentation>  changes. If value is not set, EFE will assume a request version of 5.12. For a list of   </xs:documentation>
+                        <xs:documentation>  versioning changes, see http://taxeswiki.intuit.com/index.php/EFE_Filer_Interface.       </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+				<xs:element name="senderId" type="efe:string255"/>
+				<xs:element name="app" type="efe:string255"/>
+				<xs:element name="tokenId" type="xs:long"/>
+				<xs:element name="clientIP" type="efe:IPAddressType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="syncResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fipMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Indicates whether EFE is in Filer Interface Mode. In this mode, EFE will continue to receive filings but will not be able to return status.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="efe:EfeMessageType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="lastTokenId" type="xs:long"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="syncByDate">
+		<xs:annotation>
+			<xs:documentation>Requests that EFE return all messages between two dates for a given user.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+                <xs:element name="requestVersion" type="efe:VersionType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>  Version of request. This value must be set manually to take advantage of any versioning  </xs:documentation>
+                        <xs:documentation>  changes. If value is not set, EFE will assume a request version of 5.12. For a list of   </xs:documentation>
+                        <xs:documentation>  versioning changes, see http://taxeswiki.intuit.com/index.php/EFE_Filer_Interface.       </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+				<xs:element name="senderId" type="efe:string255"/>
+				<xs:element name="app" type="efe:string255"/>
+				<xs:element name="start" type="xs:dateTime"/>
+				<xs:element name="end" type="xs:dateTime"/>
+				<xs:element name="clientIP" type="efe:IPAddressType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="syncByDateResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fipMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Indicates whether EFE is in Filer Interface Mode. In this mode, EFE will continue to receive filings but will not be able to return status.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="efe:EfeMessageType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getMessages">
+		<xs:annotation>
+			<xs:documentation>Requests status for a specific filing. Setting the showHistory flag to 
+                true will return the all status messages for the filing, otherwise only the latest 
+                status will be returned.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+                <xs:element name="requestVersion" type="efe:VersionType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>  Version of request. This value must be set manually to take advantage of any versioning  </xs:documentation>
+                        <xs:documentation>  changes. If value is not set, EFE will assume a request version of 5.12. For a list of   </xs:documentation>
+                        <xs:documentation>  versioning changes, see http://taxeswiki.intuit.com/index.php/EFE_Filer_Interface.       </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+				<xs:element name="senderId" type="efe:string255"/>
+				<xs:element name="app" type="efe:string255"/>
+				<xs:element name="clientFilingId" type="efe:ClientFilingIdType" maxOccurs="unbounded"/>
+				<xs:element name="showHistory" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="clientIP" type="efe:IPAddressType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getMessagesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fipMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Indicates whether EFE is in Filer Interface Mode. In this mode, EFE will continue to receive filings but will not be able to return status.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="efe:EfeMessageType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getMessagesByFilerId">
+		<xs:annotation>
+			<xs:documentation>
+                Requests status for all the filings for a specific filer. The user
+                must supply the authorization code that they supplied at the time
+                of filing to EFE. EFE will use this to validate the user. The year
+                may also be supplied in order to narrow the results.
+                Note that no sensitive information will be returned from this 
+                operation.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+                <xs:element name="requestVersion" type="efe:VersionType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>  Version of request. This value must be set manually to take advantage of any versioning  </xs:documentation>
+                        <xs:documentation>  changes. If value is not set, EFE will assume a request version of 5.12. For a list of   </xs:documentation>
+                        <xs:documentation>  versioning changes, see http://taxeswiki.intuit.com/index.php/EFE_Filer_Interface.       </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+				<xs:element name="filerId" type="efe:string255"/>
+				<xs:element name="authCode" type="efe:string255"/>
+				<xs:element name="year" type="efe:YearType" minOccurs="0"/>
+				<xs:element name="app" type="efe:string255" minOccurs="0"/>
+				<xs:element name="clientIP" type="efe:IPAddressType"/>
+				<xs:element name="test" type="xs:boolean" minOccurs="0" default="false"/>
+                <xs:element name="appFamily" type="efe:string255" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getMessagesByFilerIdResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fipMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Indicates whether EFE is in Filer Interface Mode. In this mode, EFE will continue to receive filings but will not be able to return status.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="efe:EfeMessageType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getMessagesByTrackingNumber">
+		<xs:annotation>
+			<xs:documentation>
+                Requests all the EFE messages (status, CSM, and error) for a given user based on their tracking number. The tracking number is generated by EFE and returned to the user via email.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+                <xs:element name="requestVersion" type="efe:VersionType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>  Version of request. This value must be set manually to take advantage of any versioning  </xs:documentation>
+                        <xs:documentation>  changes. If value is not set, EFE will assume a request version of 5.12. For a list of   </xs:documentation>
+                        <xs:documentation>  versioning changes, see http://taxeswiki.intuit.com/index.php/EFE_Filer_Interface.       </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+				<xs:element name="trackingNumber" type="efe:string255"/>
+				<xs:element name="year" type="efe:YearType" minOccurs="0"/>
+				<xs:element name="app" type="efe:string255" minOccurs="0"/>
+				<xs:element name="clientIP" type="efe:IPAddressType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getMessagesByTrackingNumberResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fipMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Indicates whether EFE is in Filer Interface Mode. In this mode, EFE will continue to receive filings but will not be able to return status.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="efe:EfeMessageType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="lookupFilingId">
+		<xs:annotation>
+			<xs:documentation>Looks up the EFE FilingId given a clientFilingId</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sender" type="efe:SenderInfoType"/>
+				<xs:element name="clientFilingId" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="lookupFilingIdResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fipMode" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Indicates whether EFE is in Filer Interface Mode. In this mode, EFE will continue to receive filings but will not be able to return status.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="xs:long" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="listAgencies">
+		<xs:annotation>
+			<xs:documentation>Lists all the agencies that EFE currently supports.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="listAgenciesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="listFormTypes">
+		<xs:annotation>
+			<xs:documentation>
+        List all the filing types/form sets that EFE currently supports.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="listFormTypesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="isRoutingNumberValid">
+		<xs:annotation>
+			<xs:documentation>Checks whether a given routing number is valid.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="routingNumber" type="efe:RoutingTransitNumberType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="isRoutingNumberValidResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="return" type="xs:boolean"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

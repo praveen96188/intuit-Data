@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Adapters</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>ade-adapter-tests</artifactId>
+    <name>ade-adapter-tests</name>
+
+    <dependencies>
+        <!-- Test dependencies Seperated as it causes cyclic dependencies with batch jobs-->
+        <!-- Module dependency --> 
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>testutils</artifactId>
+            <scope>test</scope>         
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>qbdt-adapter-tests</artifactId>
+            <type>test-jar</type>                         
+            <scope>test</scope>
+        </dependency>        
+        <!-- End of Module dependency --> 
+       
+        <!-- Dependencies Read from Maven Repository --> 
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>            
+            <scope>test</scope>
+        </dependency>
+        <!-- End of Dependencies Read from Maven Repository --> 
+    </dependencies>
+  
+    <build>
+        <plugins>
+            <!-- For tests only to access truncateTables.sql--> 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>domain</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.target.test.classes}</outputDirectory>
+                                    <includes>**/*.sql</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>domain-secondary</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.target.test.classes}</outputDirectory>
+                                    <includes>**/*.sql</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>ade-adapter</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>war</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                    <includes>**/com/intuit/sbd/payroll/psp/adapters/ade/**/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

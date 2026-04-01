@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.CompanyPayrollsTopicViewModel;
+			import psp.sap.application.SAP;
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+            import mx.controls.Alert;
+            import psp.sap.viewmodel.PayrollExpectedWireViewModel;
+            import psp.sap.viewmodel.CompanyInspectorViewModel;
+            import psp.sap.model.CollectionStageEnum;
+
+            private var mViewModel:PayrollExpectedWireViewModel;
+            private var mTempViewModel:PayrollExpectedWireViewModel;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            public function get viewModel():PayrollExpectedWireViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:PayrollExpectedWireViewModel):void {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                    mViewModel.expectedDateValidator.listener = this.expectedDate;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+                cboCollection.selectedItem = viewModel.getDefaultCollectionStage();
+            }
+
+            private function confirmSave():void
+            {
+                var tempDate:Date = viewModel.getFutureBankingDate();
+                var msgString:String = "Are you sure you want to save Wire Expectation data?";
+
+                if (viewModel.expectedDateValue > viewModel.getFutureBankingDate()) {
+                    msgString += "\n\nNOTE:  The selected date is MORE than 5 banking days in the future.";
+                }
+
+                Alert.show(	msgString,
+                        "Save Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        confirmVerifyHandler,
+                        null,
+                        Alert.OK);
+            }
+
+            private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+                if(evt_obj.detail == mx.controls.Alert.OK)
+                {
+                    viewModel.save();
+                }
+            }
+		]]>
+	</mx:Script>    
+    
+	<pspui:ActionLink 
+    	label="Change Pending Wire to Redebit?" 
+    	click="viewModel.goToAddRedebit()" 
+    	paddingTop="10" paddingLeft="0" 
+    	tabEnabled="false"
+    	visible="{viewModel.payrollRun.wireExpectedDate != null || viewModel.payrollRun.collectionStage != null}"
+    	includeInLayout="{viewModel.payrollRun.wireExpectedDate != null || viewModel.payrollRun.collectionStage != null}"/>
+    <mx:VBox>    	    
+	    <mx:VBox styleName="ddGrayMiniBoxStyle">
+	        <mx:VBox styleName="padderBox">
+	            <mx:HBox>
+	                <mx:Label text="Collection stage:" width="200"/>
+	                <mx:ComboBox id="cboCollection" dataProvider="{viewModel.collectionTypes}"/>
+	            </mx:HBox>
+	            <mx:HBox>
+	                <pspui:RequiredLabel id="dateLabel" text="Wire Expected Date:" validator="{viewModel.expectedDateRequiredValidator}" width="200"/>	                                   
+	                <pspui:SAPDateField width="100" id="expectedDate" editable="true"/>                            
+	            </mx:HBox>
+	            <mx:HBox>			                
+	                <mx:Label text="Send the Last Chance Email?" width="200"/>
+	                <mx:CheckBox id="chkLastEmail" selected="{viewModel.sendLastEmail}"/>
+	            </mx:HBox>
+	        </mx:VBox>
+	    </mx:VBox>                                        
+	
+	    <mx:HBox width="100%" horizontalAlign="right">
+	        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+	        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+	    </mx:HBox>    
+	</mx:VBox>
+    <mx:Binding source="cboCollection.selectedItem as CollectionStageEnum" destination="viewModel.coCollType" />
+    <mx:Binding source="viewModel.coCollType" destination="cboCollection.selectedItem"/>
+
+    <mx:Binding source="viewModel.expectedDate" destination="expectedDate.text" />
+    <mx:Binding source="expectedDate.text" destination="viewModel.expectedDate" />
+    <mx:Binding source="viewModel.expectedDateValidator.validDateRange" destination="expectedDate.selectableRange" />
+
+    <mx:Binding source="chkLastEmail.selected" destination="viewModel.sendLastEmail" />
+    <mx:Binding source="viewModel.sendLastEmail" destination="chkLastEmail.selected" />
+
+</mx:VBox>

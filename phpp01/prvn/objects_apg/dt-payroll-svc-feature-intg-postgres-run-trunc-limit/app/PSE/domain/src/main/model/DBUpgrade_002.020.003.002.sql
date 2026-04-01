@@ -1,0 +1,40 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column SESSION_ID;
+ALTER TABLE PSP_BANK_ACCOUNT
+MODIFY(SESSION_ID VARCHAR2(100 CHAR));
+
+
+Prompt Column SESSION_ID;
+ALTER TABLE PSP_COMPANY_BANK_ACCOUNT
+MODIFY(SESSION_ID VARCHAR2(100 CHAR));
+
+
+Prompt Column SESSION_ID;
+ALTER TABLE PSP_EMPLOYEE_BANK_ACCOUNT
+MODIFY(SESSION_ID VARCHAR2(100 CHAR));
+
+
+Prompt Column SESSION_ID;
+ALTER TABLE PSP_PAYEE_BANK_ACCOUNT
+MODIFY(SESSION_ID VARCHAR2(100 CHAR));
+
+
+Prompt Column SESSION_ID;
+ALTER TABLE PSP_BILL_PAYMENT
+MODIFY(SESSION_ID VARCHAR2(100 CHAR));
+
+
+Prompt Column SESSION_ID;
+ALTER TABLE PSP_PAYCHECK
+MODIFY(SESSION_ID VARCHAR2(100 CHAR));
+
+
+PROMPT finished DBUpgrade_002.020.003.002.sql

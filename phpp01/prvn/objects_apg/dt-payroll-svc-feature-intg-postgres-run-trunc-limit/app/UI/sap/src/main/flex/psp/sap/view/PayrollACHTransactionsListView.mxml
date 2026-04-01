@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*" 
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        height="100%"                  
+        creationComplete="onCreationComplete()"
+        show="resizeGrid()">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+        import mx.events.ResizeEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.MoneyMovementTransaction;
+        import psp.sap.view.controls.WindowManager;
+        import psp.sap.viewmodel.PayrollACHTransactionsListViewModel;
+
+        private var mViewModel:PayrollACHTransactionsListViewModel;
+        private var mTempViewModel:PayrollACHTransactionsListViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PayrollACHTransactionsListViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollACHTransactionsListViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function formatCurrency(item:Object):String {
+            if (item.achReason == "Bank Verification Debit" && !SAP.canPerformOperation(OperationsEnum.VIEW_VERIFICATION_DEBITS)) {
+                return "$x.xx";
+            }
+            return SAPCurrencyFormatters.defaultFormatter.format(item.achAmount);
+        }
+
+        private function formatDates(item:Object, dgc:DataGridColumn):String {
+            return dateFormatter.format(item.checkDate) + String('\n') + dateFormatter.format(item.settlementDate) + String('\n') + dateTimeFormatter.format(item.creationDate);
+        }
+
+        private function resizeGrid():void {
+            onGridResize(new ResizeEvent(ResizeEvent.RESIZE));
+        }
+
+        public function onGridResize(event:ResizeEvent):void {
+            var p:UIComponent = this as UIComponent;
+
+            var heightBuffer:int = 268;
+
+            while (p != null && p.parent != null)
+            {
+                if ((p.height - heightBuffer) > 0)
+                {
+                    transactionsDataGrid.height = p.height - heightBuffer;
+                } else if ((p.explicitHeight - heightBuffer) > 0) {
+                    transactionsDataGrid.height = p.explicitHeight - heightBuffer;
+                }
+
+                p = p.parent as UIComponent;
+            }
+        }
+
+        public function select(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var transaction:MoneyMovementTransaction = link.data as MoneyMovementTransaction;
+            transactionsDataGrid.selectRow(transaction);
+            viewModel.payrollACHDetailPopUpViewModel.selectedTransaction = transaction;
+            viewModel.showAchDetails();
+        }
+
+        private function onPopUpClose(e:CloseEvent):void {
+            transactionsDataGrid.clearSelections();
+        }
+
+        private function get isPoppedUp():Boolean {
+            return (achDetail != null && achDetail.fullModal != null && WindowManager.findWindow(achDetail.fullModal) != null);
+        }
+
+
+        ]]>
+    </mx:Script>
+	<mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+	<mx:DateFormatter id="dateTimeFormatter" formatString="{SAP.instance.configuration.dateTimeFormatMedium}"/>
+	<controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox
+    	id="dataContainer"
+    	visible="{!viewModel.isDataLoading}"
+    	includeInLayout="{!viewModel.isDataLoading}"
+    	width="100%"
+    	paddingRight="0"
+    	verticalGap="0">
+        <mx:HBox textAlign="left" verticalAlign="middle">
+            <pspui:ActionLink
+            	id="previous12MonthsLink"
+            	label="Previous 12 Months"
+            	enabled="{viewModel.showEntireHistory}"
+            	click="viewModel.showEntireHistory = false"
+            	tabEnabled="false"/>
+            <pspui:ActionLink
+            	id="showEntireHistoryLink"
+            	label="Show Entire History"
+            	enabled="{!viewModel.showEntireHistory}"
+            	click="viewModel.showEntireHistory = true"
+            	tabEnabled="false"/>
+        </mx:HBox>
+        <pspui:PayrollACHTransactionsDataGrid
+        	id="transactionsDataGrid"
+        	width="100%"
+        	minWidth="800"
+			dataProvider="{viewModel.transactions}"
+			selectable="false"
+        	variableRowHeight="true"
+        	draggableColumns="false"
+        	visible="{viewModel.hasTransactions}"
+        	includeInLayout="{viewModel.hasTransactions}"
+        	tabEnabled="false"
+        	selectionColor="#FFFFCC"
+        	allowMultipleSelection="true"
+        	dataChange="resizeGrid()">
+        	<pspui:columns>
+        		<mx:DataGridColumn
+        			headerText="ACH Reason"
+        			dataField="achReason"
+        			textAlign="left"
+        			minWidth="195"
+        			paddingLeft="5"
+        			itemRenderer="mx.controls.Text"/>
+        		<mx:DataGridColumn
+        			headerText="Check Date{String('\n')}Settlement Date{String('\n')}Creation Date"
+        			dataField="settlementDate"
+        			textAlign="left"
+        			minWidth="145"
+        			paddingLeft="5"
+        			itemRenderer="mx.controls.Text"
+        			labelFunction="formatDates"/>
+        		<mx:DataGridColumn
+        			headerText="ACH Amount"
+        			dataField="achAmount"
+        			textAlign="right"
+        			minWidth="150">
+        			<mx:itemRenderer>
+    					<mx:Component>    						
+    						<mx:HBox
+    							width="100%"
+    							horizontalScrollPolicy="off"
+    							verticalScrollPolicy="off"
+    							verticalAlign="middle"
+    							horizontalAlign="right"
+    							horizontalGap="0">
+    							<mx:Script>
+	    							<![CDATA[
+	    								import psp.sap.application.SAP;
+	    							]]>
+	    						</mx:Script>
+    							<mx:Spacer width="100%"
+    								visible="{data.showDetail}"
+    								includeInLayout="{data.showDetail}"/>
+    							<mx:Text
+                                    id="achAmountText"
+                                    automationName="achAmountText"
+    								text="{outerDocument.formatCurrency(data)}"
+    								textAlign="right"
+    								paddingRight="5"/>
+    							<mx:Spacer width="{detailLink.width}"
+    								visible="{!data.showDetail}"
+    								includeInLayout="{!data.showDetail}"/>
+    							<pspui:ActionLink
+                                    id="detailLink"
+                                    automationName="detailLink"    								
+    								paddingRight="5"    								
+    								icon="{SAP.instance.icons.magnifier}"
+    								toolTip="View Detail"
+    								tabEnabled="false"
+    								actionClick="outerDocument.select"
+    								data="{data}"
+    								visible="{data.showDetail}"
+    								includeInLayout="{data.showDetail}"/>
+    						</mx:HBox>
+    					</mx:Component>
+    				</mx:itemRenderer>
+    			</mx:DataGridColumn>
+        		<mx:DataGridColumn
+        			headerText="Bank Account"
+        			sortable="false"
+        			minWidth="100">
+        			<mx:itemRenderer>
+        				<mx:Component>
+            				<mx:VBox width="100%" paddingLeft="5" paddingRight="5" horizontalScrollPolicy="off">
+            					<pspui:PayrollBankAccountPopUpButton
+        							id="bankNameButton"
+        							automationName="bankNameButton"
+                                    bankAccount="{data.bankAccount}"
+        							label="{data.bankAccount.bankName}"
+        							width="100%"
+        							textAlign="left"
+        							fontWeight="normal"
+        							skin="{null}"/>
+            				</mx:VBox>
+        				</mx:Component>
+        			</mx:itemRenderer>
+        		</mx:DataGridColumn>
+        	</pspui:columns>
+        </pspui:PayrollACHTransactionsDataGrid>
+        <mx:Text
+        	id="noPayrollsText"
+            text="No payrolls were found for this company."
+        	width="100%"
+        	textAlign="center"
+        	visible="{!viewModel.hasTransactions}"
+        	includeInLayout="{!viewModel.hasTransactions}"
+        	fontWeight="bold"/>
+	</mx:VBox>
+
+	<controls:PopUpPart
+		id="achDetail"
+		verticalResizeEnabled="false"
+		horizontalResizeEnabled="false"
+		showCloseButton="true"
+		close="onPopUpClose(event)"
+		isModal="false"
+		resizeToContent="true"
+		visible="false"
+		includeInLayout="false"
+		accountForVerticalScrollBar="true"
+		label="{CompanyInspectorPageEnum.PAYROLL_ACH_DETAIL_POPUP+'_pup'}"
+		>
+		<pspui:PayrollACHDetailPopUpView id="payrollACHDetailPopUp" label="{CompanyInspectorPageEnum.PAYROLL_ACH_DETAIL_POPUP}"
+										 viewModel="{viewModel.payrollACHDetailPopUpViewModel}"/>
+	</controls:PopUpPart>
+    
+</mx:VBox>

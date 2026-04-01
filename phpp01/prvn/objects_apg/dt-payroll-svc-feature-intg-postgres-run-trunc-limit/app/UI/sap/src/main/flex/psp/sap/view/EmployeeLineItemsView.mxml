@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:formatters="psp.sap.formatters.*"
+	xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.viewmodel.EmployeeLineItemsViewModel;
+
+        private var mViewModel:EmployeeLineItemsViewModel;
+        private var mTempViewModel:EmployeeLineItemsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        [Bindable]
+        public function get viewModel():EmployeeLineItemsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeLineItemsViewModel):void {
+            if (!mCreationComplete) {
+                mTempViewModel = value;
+                return;
+            }
+            mViewModel = value;
+        }
+
+        private function formatCurrency(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item[dgc.dataField]);
+        }
+		]]>
+	</mx:Script>
+
+	<controls:DataLoadFade id="postLoadFadeIn" target="{lineItemsListVBox}" isLoading="{viewModel.isDataLoading}" />
+
+	<mx:VBox width="100%" id="lineItemsListVBox" horizontalGap="0" visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+
+		<mx:VBox visible="{viewModel.paycheckLineItems.length == 0}" includeInLayout="{viewModel.paycheckLineItems.length == 0}" verticalGap="0" width="100%" height="30" id="noResultsPanel" verticalAlign="middle" horizontalAlign="center" backgroundColor="#b7b7b7" borderStyle="none" color="#000000" fontWeight="normal" dropShadowEnabled="false">
+			<mx:Text id="noPaychecksFound" text="No line items found."/>
+		</mx:VBox>
+
+		<controls:SAPDataGrid id="paychecksGrid" dataProvider="{viewModel.paycheckLineItems}" selectable="false" backgroundColor="#ffffff"
+			autoResizeToFitContent="true"
+			focusAlpha="0" visible="{viewModel.paycheckLineItems.length > 0}" includeInLayout="{viewModel.paycheckLineItems.length > 0}"
+			width="100%" height="100%">
+			<controls:columns>
+			<mx:DataGridColumn
+					headerText="Payroll Item Category"
+                    headerWordWrap="true"
+					dataField="payrollItemCategory"
+					minWidth="150"/>
+            <mx:DataGridColumn
+					headerText="Payroll Item Type"
+					dataField="payrollItemType"
+					minWidth="150"/>
+			<mx:DataGridColumn
+					headerText="Source Payroll{String('\n')}Item Name"
+					dataField="sourcePayrollItemName"
+					minWidth="150"/>
+           <mx:DataGridColumn
+					headerText="Amount"
+					dataField="amount"
+                    labelFunction="formatCurrency"
+					minWidth="150"/>
+			</controls:columns>
+		</controls:SAPDataGrid>
+	</mx:VBox>
+
+</mx:VBox>

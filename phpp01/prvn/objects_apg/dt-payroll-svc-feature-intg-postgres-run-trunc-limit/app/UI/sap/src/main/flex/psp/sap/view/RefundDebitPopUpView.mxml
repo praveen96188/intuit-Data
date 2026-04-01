@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.formatters.SAPCurrencyFormatter;
+        import psp.sap.viewmodel.RefundDebitPopUpViewModel;
+
+        private var mViewModel:RefundDebitPopUpViewModel = null;
+
+        [Bindable]
+        public function get viewModel():RefundDebitPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:RefundDebitPopUpViewModel):void {
+            mViewModel = value;
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox width="100%">
+
+        <mx:VBox width="100%"
+                 styleName="grayDataGridVBox" >
+            <mx:Label text="Create Refund Debit" styleName="grayDataGridHeading"/>
+
+            <mx:HRule width="100%" height="13"/>
+
+            <mx:VBox verticalAlign="middle" width="70%" paddingLeft="25">
+                <mx:HBox >
+                    <mx:Label text="Original Credit Amt"></mx:Label>
+                    <mx:HBox horizontalGap="0" horizontalAlign="left">
+                        <mx:Label text="{SAPCurrencyFormatter.currencyFormatter.format(viewModel.transaction.amount)}" ></mx:Label>
+                    </mx:HBox>
+                </mx:HBox>
+                <mx:HBox >
+                    <mx:Label text="Original Credit Type"></mx:Label>
+                    <mx:HBox horizontalGap="0" horizontalAlign="left">
+                        <mx:Label text="{viewModel.transaction.transactionType}" ></mx:Label>
+                    </mx:HBox>
+                </mx:HBox>
+                <mx:HBox >
+                    <mx:Label text="Settlement Type" fontWeight="bold"/>
+                    <mx:HBox horizontalGap="0" horizontalAlign="left">
+                        <controls:SAPComboBox dataField="settlementType" width="100"
+                                              dataProvider="{viewModel.settlementTypes}"
+                                              visible="{viewModel.canSelectNonStandardSettlementTypes}"
+                                              includeInLayout="{viewModel.canSelectNonStandardSettlementTypes}"/>
+                        <mx:Label fontWeight="bold" textAlign="center" width="100"
+                                  text="{viewModel.settlementType}"
+                                  visible="{!(viewModel.canSelectNonStandardSettlementTypes)}"
+                                  includeInLayout="{!(viewModel.canSelectNonStandardSettlementTypes)}"/>
+                    </mx:HBox>
+                </mx:HBox>
+
+                <mx:HBox width="100%" paddingBottom="5" paddingLeft="10" paddingRight="10">
+                    <pspui:RequiredLabel text="Notes" validator="{viewModel.notesValidator}" fontWeight="bold"
+                                         width="105" horizontalAlign="right"/>
+                    <mx:TextArea id="notesInput" width="400" height="80"/>
+                </mx:HBox>
+            </mx:VBox>
+
+
+
+            <mx:HBox width="100%" paddingTop="5" paddingBottom="5" paddingLeft="10" paddingRight="25"
+                     horizontalAlign="right">
+                <mx:Button label="Create" enabled="{viewModel.canSave}" click="{viewModel.save()}"/>
+            </mx:HBox>
+
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Binding source="viewModel.notes" destination="notesInput.text"/>
+    <mx:Binding source="notesInput.text" destination="viewModel.notes"/>
+
+</mx:VBox>

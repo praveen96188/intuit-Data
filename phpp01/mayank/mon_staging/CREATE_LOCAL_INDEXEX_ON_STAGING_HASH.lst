@@ -1,0 +1,44 @@
+22:04:22 SQL> 
+22:04:22 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.16
+22:04:22 SQL> 
+22:04:22 SQL> CREATE INDEX PSPADM.IDX_FT_SETLLEMENT_DATE ON PSPADM.PSP_FINANCIAL_TRANSACTION (SETTLEMENT_DATE) local online parallel (degree 8) TABLESPACE PSP_IDX01;
+CREATE INDEX PSPADM.IDX_FT_SETLLEMENT_DATE ON PSPADM.PSP_FINANCIAL_TRANSACTION (SETTLEMENT_DATE) local online parallel (degree 8) TABLESPACE PSP_IDX01
+                                                     *
+ERROR at line 1:
+ORA-01089: immediate shutdown or close in progress - no operations are 
+permitted 
+Process ID: 40082 
+Session ID: 315 Serial number: 38972 
+
+
+Elapsed: 01:26:22.75
+23:30:45 SQL> CREATE INDEX PSPADM.IDX_PAYCHECK_SPLIT_CR_DATE ON PSPADM.PSP_PAYCHECK_SPLIT (CREATED_DATE) local online parallel (degree 8) TABLESPACE PSP_IDX03;
+ERROR:
+ORA-03114: not connected to ORACLE 
+
+
+Elapsed: 00:00:00.00
+23:30:45 SQL> alter index PSPADM.IDX_FT_SETLLEMENT_DATE NOPARALLEL;
+ERROR:
+ORA-03114: not connected to ORACLE 
+
+
+Elapsed: 00:00:00.00
+23:30:45 SQL> alter index IDX_PAYCHECK_SPLIT_CR_DATE NOPARALLEL;
+ERROR:
+ORA-03114: not connected to ORACLE 
+
+
+Elapsed: 00:00:00.00
+23:30:45 SQL> 
+23:30:45 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+ERROR:
+ORA-03114: not connected to ORACLE 
+
+
+Elapsed: 00:00:00.00
+23:30:45 SQL> spool off

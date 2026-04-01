@@ -1,0 +1,2419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by Gracie Elqura (Intuit) -->
+<!--
+** Intuit Inc.  **
+** AIA Enterprise Object Library **
+** Version: 1.00 **
+** Date: Nov 1, 2009 **
+ 
+Copyright (c) 2009, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name: \EnterpriseObjectsLibrary\Industry\Intuit\EBO\Communication\V1\IntuitCommunicationABO.xsd 
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====      Intuit ABO Communication ABO Schema Module               ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/DigiComms/IntuitCommunicationABO/xsd" targetNamespace="http://www.intuit.com/DigiComms/IntuitCommunicationABO/xsd" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00.00">
+	<!-- ====================================================================== -->
+	<!-- ==============       Intuit Communication ABO      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="IntuitCommunicationABO" type="IntuitCommunicationABOType">
+		<xsd:annotation>
+			<xsd:documentation>A commercial statement detailing a set of products and services to be purchased in a single transaction by one party from another for a defined price</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="IntuitCommunicationABOType">
+		<xsd:annotation>
+			<xsd:documentation>Intuit Communication ABO</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="CommunicationReferenceInfo" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Contains the offering information needed to identify the branding and template. This is optional b/c almost all message intents have an itemId at the Item level which is used for the same purpose.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="CommunicationReferenceId" type="CommunicationReferenceIdDataType" maxOccurs="100">
+							<xsd:annotation>
+								<xsd:documentation>This is the identifier used to drive the branding of the communication, and the pre-defined attributes that are applicable for that brand.  It could be a group code from GEMS (GroupID), an item identifier from BRM (Jasmine support), or an item identifier (ItemName) as itâ€™s defined in PIM.  If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CustomerInfo">
+				<xsd:annotation>
+					<xsd:documentation>Contains customer spefic information like customer id, name and contact information etc.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="CustomerId" type="CustomerIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>Needed for logging and to obtain privacy and preferences in the future.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="DeliveryChoice" type="DeliveryChoiceDataType" maxOccurs="10">
+							<xsd:annotation>
+								<xsd:documentation>In future, add ByPrerference choice so customer's can choose their contact preference.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Language" type="LanguageDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>ISO- 639-3 Language code.  e.g. "eng" for English, "hin" for Hindi.  We support ISO standard for 2, 3, or 4 char codes. Default is eng.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="ContactInfo" type="ContactNameDataType">
+							<xsd:annotation>
+								<xsd:documentation>This info is used to addess the communication and also Organization name might be used in other places in template.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="MessageIntentInfo">
+				<xsd:annotation>
+					<xsd:documentation>Contains the choice of message intent and attributes required for the specified message intent.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:choice>
+						<xsd:element name="AccountUpdate" type="AccountUpdateDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Account Update notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="CancellationImplemented" type="CancellationImplementedDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Canel Implemented notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="CreditCardExpiring" type="CreditCardExpiringDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Credit Card Expiry notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="MigratedSubscription" type="MigratedSubscriptionDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Migrated Subscription notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="NewSubscription" type="NewSubscriptionDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to the Jasmine Order confirmation notification. This is here to provide backwards compatibility for Jasmine. </xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="SubscriptionEnding" type="SubscriptionEndingDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to subscription ending notification type. This is here to provide backwards compatibility for Jasmine</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="PaymentFailure" type="PaymentFailureDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Billing Failure notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="PriceChange" type="PriceChangeDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Price CHange notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="RefundAcknowledgement">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Refund Status notification.</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:choice>
+									<xsd:element name="v1" type="RefundAcknowledgementv1DataType"/>
+									<xsd:element name="v2" type="RefundAcknowledgementv2DataType"/>
+								</xsd:choice>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="Chargeback" type="ChargebackDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Chargeback notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TrialEndingOptIn" type="TrialEndingOptInDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Trial Ending Optin notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TrialEndingOptOut" type="TrialEndingOptOutDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to Trial Ending Optout notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TerminationImplemented" type="TerminationImplementedDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to TerminationImplemented Subscription notification.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="CreditCardAuthDecline" type="CreditCardAuthDeclineDataType"/>
+						<xsd:element name="OrderConfirmation">
+							<xsd:complexType>
+								<xsd:choice>
+									<xsd:element name="v1" type="OrderConfirmationv1DataType"/>
+									<xsd:element name="v2" type="OrderConfirmationv2DataType"/>
+								</xsd:choice>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="ShipmentConfirmation">
+							<xsd:complexType>
+								<xsd:choice>
+									<xsd:element name="v1" type="ShipmentConfirmationv1DataType"/>
+									<xsd:element name="v2" type="ShipmentConfirmationv2DataType"/>
+								</xsd:choice>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="FTC">
+							<xsd:complexType>
+								<xsd:choice>
+									<xsd:element name="v1" type="FTCv1DataType"/>
+									<xsd:element name="v2" type="FTCv2DataType"/>
+								</xsd:choice>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="PastDueNetTerms" type="PastDueNetTermsDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to a Past Due Net Terms notification (past due balance on account)</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Invoice" type="InvoiceDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specifica to an invoice notification</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="HoldNotification" type="HoldNotificationDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specifica to a hold notification</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Collections" type="CollectionsDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to a collections notice</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="ServiceRequest" type="ServiceRequestDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to a Service Request notice. Most of the attributes will not be validated as they will be name value pairs that will need to be tightly couple with Exact Target attrbute names</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="EstablishOnlineAccountAccess" type="EstablishOnlineAccountAccessDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to a collections notice</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="VATRefund" type="VATRefundDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to the QBO VAT Refund</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="VATInvoice" type="VATInvoiceDataType">
+							<xsd:annotation>
+								<xsd:documentation>Contains information specific to the QBO VAT Invoice</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="ContentProfile">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType"/>
+									<xsd:element name="TemplateName" type="TemplateNameDataType"/>
+									<xsd:element name="MessageType" type="MessageTypeDataType" minOccurs="0"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:choice>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<!--<xsd:sequence>
+			<xsd:element name="CreateCommunicationHeader" type="CommunicationHeaderType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Header level information for the Communication</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CreateCommunication" type="CreateCommunicationRequestDataType">
+				<xsd:annotation>
+					<xsd:documentation>Details of the type of Communication</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>-->
+	</xsd:complexType>
+	<xsd:complexType name="CommunicationHeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Communication Header</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocumentId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The unique Identifier assigned to this business transaction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DocumentDateTime" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which this service request is created or recorded</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CreateCommunicationResponseDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data typa to represent DigiComm's response to CreateCommunicationRequest.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Result"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerIdDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent a customer id with the scheme name.			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" type="CustomerIdSchemeDataType" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="ProvsionalIdSchemeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the source system for the Provisional Id</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="IAM"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="SourceSystemDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the source system for the OfferingId.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="SBL"/>
+			<xsd:enumeration value="ESTORE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CommunicationReferenceIdSchemeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the source system for the OfferingId.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="GEMS"/>
+			<xsd:enumeration value="PIM"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="CommunicationReferenceIdDataType">
+		<xsd:annotation>
+			<xsd:documentation>An identifier that can be used to refer to the item within the scheme name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" type="CommunicationReferenceIdSchemeDataType" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Used to identify where the item originates. Possible values include GEMS, or PIM</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="CancelReasonDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents cutomer provided reason for cancelling.					</xsd:documentation>
+		</xsd:annotation>
+		<xsd:all>
+			<xsd:element name="Reason" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Brief reason for cancelling.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Comment" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Additional comment provided by the customer.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:simpleType name="CustomerIdSchemeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the source system for the customer id.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="BRM"/>
+			<xsd:enumeration value="GEMS"/>
+			<xsd:enumeration value="MDM"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="FailureReasonDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the reason for billing failure.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CCDecline"/>
+			<xsd:enumeration value="BadCustomerData"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="CancellationImplementedDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Cancel Implemented notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CancelledDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The date when the subscription state changed to Cancelled i.e effective cancellation date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PaymentFailureDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Billing Failurenotification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="AttemptedCollectionDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The date when the payment collection was attempted.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AttemptedCollectionAmount" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The amount that was attempted to  collect. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="PaymentMethod"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CreditCardExpiringDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Credit Card Expiration notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="CreditCardInfo" type="CreditCardInfoDataType"/>
+			<xsd:element name="NextBillingDate" type="xsd:date"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="VATInvoiceDataType">
+		<xsd:sequence>
+			<xsd:element name="InvoiceNumber" type="InvoiceNumberDataType"/>
+			<xsd:element ref="MarketOffering" minOccurs="0" maxOccurs="100"/>
+			<xsd:element name="InvoiceDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The invoice date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BillDateFrom" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The from bill date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BillDateTo" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The to bill date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="NetAmount" type="AmountDataType"/>
+			<xsd:element name="TaxAmount" type="AmountDataType"/>
+			<xsd:element name="TaxRate" type="xsd:string"/>
+			<xsd:element name="TotalAmount" type="AmountDataType"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element ref="BillToContact" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="VATRefundDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to VAT Refund notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="MarketOffering" minOccurs="0" maxOccurs="100"/>
+			<xsd:element name="NetRefundAmount" type="AmountDataType"/>
+			<xsd:element name="TaxRefundAmount" type="AmountDataType"/>
+			<xsd:element name="TaxRate" type="xsd:string"/>
+			<xsd:element name="RefundAmount" type="AmountDataType"/>
+			<xsd:element name="RefundDate" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date the refund is given to customer.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxPoint" type="TaxPointDataType" minOccurs="0"/>
+			<xsd:element name="RefundRequestedDate" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date when the customer requested for refund.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RMANumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element ref="BillToContact" minOccurs="0"/>
+			<xsd:element name="ShowItems" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Indicates whether the items are displyed in the email.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Name" type="ItemNameDataType" minOccurs="0"/>
+						<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+						<xsd:element name="BusinessUnit" type="BusinessUnitNameDataType" minOccurs="0"/>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TerminationImplementedDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to expired subscription notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="BilledDate" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The past bill date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TerminationReason" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="MigrationTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the migration type i.e. Upgrade or Downgrade.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Upgrade"/>
+			<xsd:enumeration value="Downgrade"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="Result" type="ResponseTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="HeaderDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the header information that can be supplied to DigiComms.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="CreationDateTime" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="CallerSystem" type="xsd:string"/>
+			<xsd:element name="SourceSystem" type="xsd:string"/>
+			<xsd:element name="Endpoint" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="ServiceVersion" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:element name="Header" type="HeaderDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the header information that can be supplied to DigiComms</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="MarketOfferingDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the Market Offering (offering sold to the customer) information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="MarketOfferingNameDataType"/>
+			<xsd:element name="Status" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ErrorDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the error information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Category">
+				<xsd:annotation>
+					<xsd:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:annotation>
+						<xsd:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xsd:documentation>
+					</xsd:annotation>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="SYSTEM"/>
+						<xsd:enumeration value="INPUT"/>
+						<xsd:enumeration value="TRANSITORY"/>
+						<xsd:enumeration value="BUSINESS_LOGIC"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Code" type="xsd:string"/>
+			<xsd:element name="Description" type="xsd:string"/>
+			<xsd:element name="Source" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Error" type="ErrorDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents error information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ResponseTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the response retruned by DigiComms.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element name="Success" type="xsd:string"/>
+			<xsd:element name="Error" type="ErrorDataType"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="NewSubscriptionDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to New Subscription notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Offering"/>
+			<xsd:element ref="MarketOffering" maxOccurs="unbounded"/>
+			<xsd:element name="ExpiryDate" type="xsd:date"/>
+			<xsd:element name="NextBillDate" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="SignupDate" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="SubscriptionPeriod" type="SubscriptionPeriodDataType" minOccurs="0"/>
+			<xsd:element name="ChargeAmount" type="AmountDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Subscription price (if applicable) excluding the tax.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxAmount" type="AmountDataType" minOccurs="0"/>
+			<xsd:element name="PaymentSource" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="MobileNumber" type="TelephoneDataType" minOccurs="0"/>
+			<xsd:element name="TotalAmount" type="AmountDataType" minOccurs="0"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="RefundAcknowledgementv1DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Refund Status notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="MarketOffering" minOccurs="0" maxOccurs="100"/>
+			<xsd:element name="RefundAmount" type="AmountDataType"/>
+			<xsd:element name="RefundDate" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date the refund is given to customer.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RefundRequestedDate" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date when the customer requested for refund.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RMANumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element ref="BillToContact" minOccurs="0"/>
+			<xsd:element name="ShowItems" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Indicates whether the items are displyed in the email.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Name" type="ItemNameDataType" minOccurs="0"/>
+						<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+						<xsd:element name="BusinessUnit" type="BusinessUnitNameDataType" minOccurs="0"/>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="RefundAcknowledgementv2DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Refund Status notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="MarketOffering" minOccurs="0" maxOccurs="100"/>
+			<xsd:element name="RefundAmount" type="AmountDataType"/>
+			<xsd:element name="RefundDate" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date the refund is given to customer.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RefundRequestedDate" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date when the customer requested for refund.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RMANumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element ref="BillToContact" minOccurs="0"/>
+			<xsd:element name="ShowItems" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Indicates whether the items are displyed in the email.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+						<xsd:element name="BusinessUnit" type="BusinessUnitNameDataType" minOccurs="0"/>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="MigratedSubscriptionDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Migrated Subscription notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="RequestedDate" type="xsd:date"/>
+			<xsd:element name="NextBillDate" type="xsd:date"/>
+			<xsd:element name="MigrationType" type="MigrationTypeDataType">
+				<xsd:annotation>
+					<xsd:documentation>Indicates Upgrade or Downgrade. Upgrade is applicable only for Migrated event.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="MigratedFrom" type="MarketOfferingDataType"/>
+			<xsd:element name="MigratedTo" type="MarketOfferingDataType"/>
+			<xsd:element name="ChargeAmount" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The cost of new subscription.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TrialEndingOptOutDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Trial Ending Optout notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ExpiryDate" type="xsd:date"/>
+			<xsd:element name="ChargeAmount" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The amount that will be charged for the subscription.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="PaymentMethod"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PriceChangeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Periodic Renewal notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+							If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="NextBillDate" type="xsd:date"/>
+			<xsd:element name="ChargeAmount" type="AmountDataType"/>
+			<xsd:element ref="PaymentMethod"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ChargebackDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Chargeback notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="AccountNumber" type="AccountNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The credit card account token (PCI Compliant).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="InvoiceNumber" type="InvoiceNumberDataType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Can have more than one invoice number</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ChargebackDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The date the chargeback was made</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AttemptedCollectionAmount" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The amount that was attempted to be collected</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TrialEndingOptInDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Trial Ending Optin notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+							If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ExpiryDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The date the subcription will expire.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AttributeType">
+		<xsd:annotation>
+			<xsd:documentation>A collection of attributes</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Attribute Name</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Value" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Attribute Value</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EmailDeliveryDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to request the delivery via email.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="EmailAddress" type="EmailAddressDataType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="MultipleDeliveryDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to request the delivery via multiple channels like email, SMS etc.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Email" type="EmailDeliveryDataType" minOccurs="0"/>
+			<xsd:element name="SMS" type="SMSDeliveryDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SMSDeliveryDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to request the delivery via SMS.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Telephone" type="TelephoneDataType"/>
+			<xsd:element name="CountryCode" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="DeliveryChoiceDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to request delivery via one or more delivery channels.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element name="Email" type="EmailDeliveryDataType">
+				<xsd:annotation>
+					<xsd:documentation>Request delviery via email.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SMS" type="SMSDeliveryDataType">
+				<xsd:annotation>
+					<xsd:documentation>Request delviery via SMS.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Multiple" type="MultipleDeliveryDataType">
+				<xsd:annotation>
+					<xsd:documentation>Request delivery via multiple channels.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="AccountUpdateDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Update Profile (contact, address and payment) notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ContactInfo" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Telephone" type="TelephoneDataType" minOccurs="0"/>
+						<xsd:element name="EmailAddress" type="EmailAddressDataType" minOccurs="0"/>
+						<xsd:element name="Address" type="AddressDataType" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element ref="BillToContact" minOccurs="0"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+			<xsd:element name="ActionType" type="AccountActionDataType">
+				<xsd:annotation>
+					<xsd:documentation>The type of action taken on the account. Enum value can either be "CREATE" or "UPDATE"</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="MarketOffering" type="MarketOfferingDataType">
+		<xsd:annotation>
+			<xsd:documentation> Contains information for service/product that's sold to the customer, for example, Quickbooks Pro 2009</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BilledAmount" type="AmountDataType"/>
+	<xsd:complexType name="ContactNameDataType">
+		<xsd:choice>
+			<xsd:element ref="PersonName"/>
+			<xsd:sequence>
+				<xsd:element ref="OrganizationName"/>
+				<xsd:element ref="PersonName" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:simpleType name="MarketOfferingNameDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ActionTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the action that was taken on the account. Enum value can be either "CREATE" if new online account was created or "EXISTING" when adding new contact to existing account</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="NEW"/>
+			<xsd:enumeration value="EXISTING"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AccountActionDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the action that was taken on the account. Enum value can be either "CREATE" or "UPDATE"</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CREATE"/>
+			<xsd:enumeration value="UPDATE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CurrencyCodeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the ISO currency code.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="StringType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AmountDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the amount of money.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="StringType">
+				<xsd:attribute name="CurrencyCode" type="CurrencyCodeDataType" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="OrderNumberDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the order number.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="QuoteNumberDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the order number.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="ShipToContactDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains Customer's ship-to contact and address information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="NameDataType">
+				<xsd:annotation>
+					<xsd:documentation>Name is optional as not all the order entry systems can provide it.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Telephone" type="TelephoneDataType" minOccurs="0"/>
+			<xsd:element name="Address" type="AddressDataType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CreditCardAuthDeclineDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Credit Card Decline notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element ref="ShipToContact" minOccurs="0"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="OrderDateDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the order date.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+	<xsd:complexType name="OrderConfirmationv1DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Order Confirmation notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element name="OrderType" type="OrderTypeDataType">
+				<xsd:annotation>
+					<xsd:documentation>OrderType is set only in certain cases, for e.g. Service Migrations, TAROrder, QBPayrollRenewal etc..</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" type="ItemDataType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="OrderDeliveryMethod" type="OrderDeliveryMethodDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Contains the delivery method for the items in the order. Shippable, Service or Download. Expected only from GEMS</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ShowFutureShipDates" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Indicates whether future promised ship dates need to be included in the email content.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element ref="BillToContact" minOccurs="0"/>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info. Only applicable for shippable orders.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrderAmount">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Subtotal" type="AmountDataType"/>
+						<xsd:element name="Tax" type="AmountDataType"/>
+						<xsd:element name="ShippingCharge" type="AmountDataType" minOccurs="0"/>
+						<xsd:element name="Total" type="AmountDataType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ShowShipDeliveryDisclaimer" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Indicates whether to show expected ship and delivery dates or urls. If set to true, urls needs to be included in the email instead of dates. Set to false for TAR orders.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ShowExpectedShipDeliveryDates" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>Indicates whether to show ExpectedDeliveryDates. Set to false for TAR orders. Set to false if ShowShipDliveryDisclaimer is true.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ShippingDetails" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Shipping details are included only if one or more items are available for shipping.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ExpectedShipDateRange" type="xsd:string" minOccurs="0"/>
+						<xsd:element name="ExpectedDeliveryDateRange" type="xsd:string" minOccurs="0"/>
+						<xsd:element name="ShipMethod" type="ShipMethodDataType" minOccurs="0"/>
+						<xsd:element name="ShipMethodMeaning" type="ShipMethodMeaningDataType" minOccurs="0"/>
+						<xsd:element name="ShipType" type="ShipTypeDataType" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OrderConfirmationv2DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Order Confirmation notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element name="OrderType" type="OrderTypeDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>OrderType is set only in certain cases, for e.g. Service Migrations, TAROrder, QBPayrollRenewal, VersionProtection</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" type="ItemSpecialDataType" maxOccurs="unbounded"/>
+			<xsd:element ref="PaymentMethod" minOccurs="0"/>
+			<xsd:element ref="BillToContact"/>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info. Only applicable for shippable orders.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrderAmount">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Subtotal" type="AmountDataType"/>
+						<xsd:element name="Tax" type="AmountDataType"/>
+						<xsd:element name="ShippingCharge" type="AmountDataType" minOccurs="0"/>
+						<xsd:element name="Total" type="AmountDataType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ShipmentConfirmationv1DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Shipment Confirmation notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Details" maxOccurs="3">
+				<xsd:annotation>
+					<xsd:documentation>An order can contain more than 1 or more Items; some of the Items may have already been shipped, some of them can be shipped in future and this Shipping Confirmation notice contains tracking information regarding the items which are just shipped. So there will be a seperate Details node for current, future and previous shipments.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Status" type="ShipConfirmationStatusDataType">
+							<xsd:annotation>
+								<xsd:documentation>Indicates the status of the shipment. Possible values are current, previous, future.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="WayBill" maxOccurs="100">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="TrackingNumber" type="TrackingNumberDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Tracking number for the current shipment.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShowDisclaimer" type="xsd:boolean" minOccurs="0"/>
+									<xsd:element name="ExpectedShipDate" type="xsd:string" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ExpectedShipDate for the current shipment.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ExpectedDeliveryDate" type="xsd:string" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ExpectedDeliveryDate for the current shipment.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipMethod" type="ShipMethodDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ShipMethod for the current shipment, it is actually a carrier code which is combination of carrier and shipping type. This code is mapped to a Carrier shipping desciption and tracking URL, which are shown on Shipping confirmation email. e.g. 000001_DHL_L_GND will be mapped to "DHL Lettter Ground" and "http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=TrackingNumber"</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipMethodMeaning" type="ShipMethodMeaningDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ShipMethodMeaning for the current shipment, used internally for mapping ShipMethod mapping</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipType" type="ShipTypeDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ShipType for the current shipment, used internally for mapping ShipMethod mapping</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+										<xsd:annotation>
+											<xsd:documentation>Item details, used for current, previous, future shipment.</xsd:documentation>
+										</xsd:annotation>
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="Name" type="ItemNameDataType" minOccurs="0"/>
+												<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+												<xsd:element name="BusinessUnit" type="BusinessUnitNameDataType" minOccurs="0"/>
+												<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+													<xsd:annotation>
+														<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+													</xsd:annotation>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ShipmentConfirmationv2DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Shipment Confirmation notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Details" maxOccurs="3">
+				<xsd:annotation>
+					<xsd:documentation>An order can contain more than 1 or more Items; some of the Items may have already been shipped, some of them can be shipped in future and this Shipping Confirmation notice contains tracking information regarding the items which are just shipped. So there will be a seperate Details node for current, future and previous shipments.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Status" type="ShipConfirmationStatusDataType">
+							<xsd:annotation>
+								<xsd:documentation>Indicates the status of the shipment. Possible values are current, previous, future.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="WayBill" maxOccurs="100">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="TrackingNumber" type="TrackingNumberDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Tracking number for the current shipment.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShowDisclaimer" type="xsd:boolean" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Determines if we show order status url or expected delivery dates in email</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipDate" type="xsd:date" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Date the current shipment was shipped to customer</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ExpectedDeliveryDateFrom" type="xsd:string" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ExpectedDeliveryDate From for the current shipment.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ExpectedDeliveryDateTo" type="xsd:string" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ExpectedDeliveryDate To for the current shipment.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipMethod" type="ShipMethodDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ShipMethod for the current shipment, it is actually a carrier code which is combination of carrier and shipping type. This code is mapped to a Carrier shipping desciption and tracking URL, which are shown on Shipping confirmation email. e.g. 000001_DHL_L_GND will be mapped to "DHL Lettter Ground" and "http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=TrackingNumber"</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipMethodMeaning" type="ShipMethodMeaningDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ShipMethodMeaning for the current shipment, used internally for mapping ShipMethod mapping</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="ShipType" type="ShipTypeDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>ShipType for the current shipment, used internally for mapping ShipMethod mapping</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+										<xsd:annotation>
+											<xsd:documentation>Item details, used for current, previous, future shipment.</xsd:documentation>
+										</xsd:annotation>
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+													<xsd:annotation>
+														<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+														If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+													</xsd:annotation>
+												</xsd:element>
+												<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+												<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+													<xsd:annotation>
+														<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+													</xsd:annotation>
+												</xsd:element>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FTCv1DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Shipment Confirmation notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Name" type="ItemNameDataType" minOccurs="0"/>
+						<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+						<xsd:element name="BusinessUnit" type="BusinessUnitNameDataType" minOccurs="0"/>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FTCv2DataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Shipment Confirmation notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+			<xsd:element name="OrderDate" type="OrderDateDataType"/>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PastDueNetTermsDataType">
+		<xsd:sequence>
+			<xsd:element name="AccountNumber" type="AccountNumberDataType"/>
+			<xsd:element name="AttemptedCollectionAmount" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The amount that was attempted to  collect. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="InvoiceNumber" type="InvoiceNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The number on the original invoice</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="InvoiceDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The bill date from the invoice</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="InvoiceDataType">
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+						<xsd:element name="Price" type="AmountDataType" minOccurs="0"/>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="AccountNumber" type="AccountNumberDataType"/>
+			<xsd:element name="InvoiceNumber" type="InvoiceNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The invoice number for the invoice</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="InvoiceDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The date for the invoice</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PurchaseOrderNumber" type="PurchaseOrderNumberDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The purchase order number</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PaymentType">
+				<xsd:annotation>
+					<xsd:documentation>Payment Type</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:minLength value="1"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="PaymentDueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The due date for the requested payment</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="ShipToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent ship-to contact info.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="BillToContact" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An element to represent bill-to contact info.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrderAmount">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Tax" type="AmountDataType"/>
+						<xsd:element name="Total" type="AmountDataType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="HoldNotificationDataType">
+		<xsd:sequence>
+			<xsd:element name="OrderInfo">
+				<xsd:complexType>
+					<xsd:choice>
+						<xsd:element name="OrderNumber" type="OrderNumberDataType"/>
+						<xsd:element name="QuoteNumber" type="QuoteNumberDataType"/>
+					</xsd:choice>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="PaymentAuthDate" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="PaymentAuthAmount" type="AmountDataType" minOccurs="0"/>
+			<xsd:element name="PaymentMethod" type="PaymentMethodDataType"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CollectionsDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Billing Failurenotification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="AttemptedCollectionDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>The date when the payment collection was attempted.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AttemptedCollectionAmount" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The amount that was attempted to  collect. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="PaymentMethod"/>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EstablishOnlineAccountAccessDataType">
+		<xsd:sequence>
+			<xsd:element name="SourceSystem" type="SourceSystemDataType">
+				<xsd:annotation>
+					<xsd:documentation>The source system this event is coming from. Enum possible values: SBL, ESTORE</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ProvisionalId" type="ProvisionalIdDataType">
+				<xsd:annotation>
+					<xsd:documentation>Provisional IAM Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Customer" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Customer account info</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="AccountId" type="IdDataType">
+							<xsd:annotation>
+								<xsd:documentation>customer MDM account id</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="ContactId" type="IdDataType">
+							<xsd:annotation>
+								<xsd:documentation>customer MDM contact Id</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+					<xsd:attribute name="SchemeName" type="CustomerSchemeDataType" use="required">
+						<xsd:annotation>
+							<xsd:documentation>possible enum values include: MDM</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="PIN" type="PINNumberDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The PIN number to access account</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ActionType" type="ActionTypeDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The action that was taken on the account. Enum value can be either "NEW" if new online account was created or "EXISTING" when adding new contact to existing account</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DomainContextUrl" type="DomainContextUrlDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The context domain from which the customer originated from. e.g. http://quickbooks.com. It must be in this form http://xxxx.com  DigiComms will concatenate the query parameters to this url.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ServiceRequestDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Billing Failurenotification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The item identifier (ItemName) as itâ€™s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+								If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ServiceRequestId" type="ServiceRequestIdDataType">
+				<xsd:annotation>
+					<xsd:documentation>The SR ID on the service request</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateName">
+				<xsd:annotation>
+					<xsd:documentation>This must be the exact template name as it is defined in Exact Target for the specific type of service request. Please work with DigiComms engineer to find out name for each service request tempalte name in ET. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Any additional attributes that you would like to appear in the email template. The names of these attributes MUST be exactly as they are defined in Exact Target. Please note that these attributes names and values will not be validated by digicomms </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ShipToContact" type="ShipToContactDataType">
+		<xsd:annotation>
+			<xsd:documentation>An element to represent ship-to info.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ItemDataType">
+		<xsd:sequence>
+			<xsd:element name="Name" type="ItemNameDataType" minOccurs="0"/>
+			<xsd:element name="Type" type="ItemTypeDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Expected only from GEMS/PIM. Specifies if shippable, download, etc.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BusinessUnit" type="BusinessUnitNameDataType" minOccurs="0"/>
+			<xsd:element name="Price" type="AmountDataType" minOccurs="0"/>
+			<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+			<xsd:element name="ShowFutureShipment" type="xsd:boolean" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Set to true if the item is not available yet for delivery.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Transactional attributes for each item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ItemSpecialDataType">
+		<xsd:sequence>
+			<xsd:element name="ItemId" type="ItemIdDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The item identifier (ItemName) as it’s defined in PIM.  This will drive the branding of the email and is used to derive the item display name.
+					If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ActionCode" type="ItemActionCodeDataType">
+				<xsd:annotation>
+					<xsd:documentation>The line item action code</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Price" type="PriceDataType" minOccurs="0"/>
+			<xsd:element name="Quantity" type="QuantityDataType" minOccurs="0"/>
+			<xsd:element name="FutureProcessing" type="xsd:boolean" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Set to true if the item is not available yet for delivery. First processing date is in the future</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DeliveryMethod" type="OrderDeliveryMethodDataType">
+				<xsd:annotation>
+					<xsd:documentation>Contains the delivery method for the items in the order. Shippable, Service or Download, Promotion</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ExpectedDeliveryDateFrom" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Promise Delivery Date To. Will be used to formulate a range From to To </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ExpectedDeliveryDateTo" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Promise Delivery Date To. Will be used to forumulate a range From to To. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ExpectedShipDateFrom" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Promise Ship Date From</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ExpectedShipDateTo" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Promise Ship Date To</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ShippingDetails" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Shipping details are included only if one or more items are available for shipping.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="ShipType" type="ShipTypeDataType" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TransactionAttributes" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Transactional attributes for each item. Will include Fulfillment Method if exists</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="ShipMethodDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the shipping method.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ShipMethodMeaningDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the shipping method meaning.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ShipTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the shipping type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="ProvisionalIdDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent a provisional id with the scheme name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" type="ProvsionalIdSchemeDataType" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Possible enum values include: IAM</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="CustomerSchemeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the source system for the Customer</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="MDM"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ContactIdSchemeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the source system for the contact Id</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="MDM"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="IdDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the auth id.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PINNumberDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the PIN Number</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="DomainContextUrlDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the Domain Context URL e.g. http://quickbooks.com</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ServiceRequestIdDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the service request id (SR ID).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TemplateNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the template name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ItemNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the item name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="ItemIdDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the item id.
+			This is the identifier used to drive the branding of the communication, and the pre-defined attributes that are applicable for that brand.  It could be a group code from GEMS (GroupID), an item identifier from BRM (Jasmine support), or an item identifier (ItemName) as it’s defined in PIM.  If the identifier is not recognized by DigiComms as a valid identifier, the default Intuit brand will be used.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" type="CommunicationReferenceIdSchemeDataType" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="ItemTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the item type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ItemActionCodeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the item action code</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ADD"/>
+			<xsd:enumeration value="UPDATE"/>
+			<xsd:enumeration value="DELETE"/>
+			<xsd:enumeration value="RESUME"/>
+			<xsd:enumeration value="NONE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="BusinessUnitNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the business unit name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="QuantityDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the quantity.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:integer"/>
+	</xsd:simpleType>
+	<xsd:simpleType name="ShipConfirmationStatusDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the ship confirmation status.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="current"/>
+			<xsd:enumeration value="previous"/>
+			<xsd:enumeration value="future"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TrackingNumberDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the tracking number.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OrderTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the order type for special cases.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="TAROrder"/>
+			<xsd:enumeration value="ServiceMigrations"/>
+			<xsd:enumeration value="QBPayrollRenewal"/>
+			<xsd:enumeration value="VersionProtection"/>
+			<xsd:enumeration value="N/A"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OrderDeliveryMethodDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains the delivery method for the items ordered. Shippable, Service or Download.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Shippable"/>
+			<xsd:enumeration value="Service"/>
+			<xsd:enumeration value="Download"/>
+			<xsd:enumeration value="Promotion"/>
+			<xsd:enumeration value="None"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="EmailAddressDataType">
+		<xsd:annotation>
+			<xsd:documentation>Email address data type with length validation. Max length is 320.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="320"/>
+			<xsd:whiteSpace value="collapse"/>
+			<!-- <xsd:pattern value=".+@.+\\.[a-z]+"/> -->
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AddressDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains mailing address information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="AddressLine" type="AddressLineDataType" maxOccurs="2">
+				<xsd:annotation>
+					<xsd:documentation>The lines of the address.  The first AddressLine is typically the number and street.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="City" type="CityDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The city of the address.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="StateOrProvince" type="StateOrProvinceDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The state or the province of the address, depending on which is pertinent.  Required for all US addresses.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Country" type="CountryDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The country of the address.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PostalCode" type="PostalCodeDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The postal code or zip code of the address, if applicable.  Required for all US addresses.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PostalCodeExtension" type="PostalCodeExtensionDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The postal code extension of the address, if applicable</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BillToContactDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains Customer's contact and address information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="NameDataType" minOccurs="0"/>
+			<xsd:element name="Telephone" type="TelephoneDataType" minOccurs="0"/>
+			<xsd:element name="Address" type="AddressDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PaymentMethodDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains informations about different Payment Methods like Credit Card, EFT etc.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element name="CreditCardInfo" type="CreditCardInfoDataType">
+				<xsd:annotation>
+					<xsd:documentation>The credit card account information provided for authorization and/or payment.  Required if Payment MethodId is Credit Card</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EFTInfo" type="EFTInfoDataType">
+				<xsd:annotation>
+					<xsd:documentation>The EFT account information provided for authorization and/or payment. Required if Payment MethodId is EFT.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ECheckInfo" type="ECheckInfoDataType">
+				<xsd:annotation>
+					<xsd:documentation>The ECheck account information provided for authorization and/or payment. Required if Payment MethodId is ECheck.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PaperCheckInfo" type="PaperCheckInfoDataType">
+				<xsd:annotation>
+					<xsd:documentation>The Paper Check information provided for payment. The CheckNumber is optional as GEMS doesn't provide this.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="CreditCardInfoDataType">
+		<xsd:annotation>
+			<xsd:documentation>The credit card information </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="AccountType" type="AccountTypeDataType">
+				<xsd:annotation>
+					<xsd:documentation>Credit card account type.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AccountNumber" type="AccountNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The credit card account token (PCI Compliant).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AccountName" type="AccountNameDataType">
+				<xsd:annotation>
+					<xsd:documentation>The full name of the cardcholder, as it appears on the card (Name on Card)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ExpirationMonth" type="xsd:positiveInteger">
+				<xsd:annotation>
+					<xsd:documentation>Expiration month.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ExpirationYear" type="xsd:positiveInteger">
+				<xsd:annotation>
+					<xsd:documentation>Expiration year.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ECheckInfoDataType">
+		<xsd:annotation>
+			<xsd:documentation>General bank account information that is used for eCheck payment method.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="AccountType" type="AccountTypeDataType" default="Checking">
+				<xsd:annotation>
+					<xsd:documentation>The bank account type. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AccountNumber" type="AccountNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The bank account number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RoutingNumber" type="RoutingNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The bank account's routing number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AccountName" type="AccountNameDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The full name of the account holder.  Is this required?</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BankName" type="BankNameDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The name of the bank.  Is this required?</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CheckNumber" type="CheckNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>A check number associated with the payment.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BranchLocation" type="BranchLocationDataType">
+				<xsd:annotation>
+					<xsd:documentation>The branch location of the bank providing this account.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EFTInfoDataType">
+		<xsd:annotation>
+			<xsd:documentation>General bank account information that is used for eCheck payment method.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="AccountNumber" type="AccountNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The bank account number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RoutingNumber" type="RoutingNumberDataType">
+				<xsd:annotation>
+					<xsd:documentation>The bank account's routing number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AccountName" type="AccountNameDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The full name of the account holder.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PaperCheckInfoDataType">
+		<xsd:annotation>
+			<xsd:documentation>Paper Check information that is used for payment method.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="CheckNumber" type="CheckNumberDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The bank account number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PersonNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains parts of  person's name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="FirstName" type="NameDataType">
+				<xsd:annotation>
+					<xsd:documentation>Person's given name or first name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="MiddleName" type="NameDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Person's middle name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FamilyName" type="NameDataType">
+				<xsd:annotation>
+					<xsd:documentation>Person's last name or family name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="NameDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="500"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="PersonName" type="PersonNameDataType"/>
+	<xsd:element name="OrganizationName" type="NameDataType"/>
+	<xsd:element name="PaymentMethod" type="PaymentMethodDataType"/>
+	<xsd:element name="BillToContact" type="BillToContactDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains BillTo contact information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:simpleType name="CityDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AddressLineDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="StateOrProvinceDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CountryDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PostalCodeDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PostalCodeExtensionDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TelephoneDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AccountTypeDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AccountNumberDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="InvoiceNumberDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PurchaseOrderNumberDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AccountNameDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="RoutingNumberDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="BankNameDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CheckNumberDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="BranchLocationDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="LanguageDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to request content to be displayed in various languages.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="2"/>
+			<xsd:maxLength value="4"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="SubscriptionPeriodDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent subscription period with the scheme name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="Unit" type="SubscriptionPeriodUnitDataType" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="SubscriptionPeriodUnitDataType">
+		<xsd:annotation>
+			<xsd:documentation>Contains the unit of the subscription period. Day, Month or Year.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Day"/>
+			<xsd:enumeration value="Month"/>
+			<xsd:enumeration value="Year"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="Offering" type="OfferingDataType">
+		<xsd:annotation>
+			<xsd:documentation> Represent the Offering  information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="OfferingDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the Offering information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="OfferingNameDataType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="OfferingNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>A datatype to represent the offering name.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="SubscriptionEndingDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the information specific to Subscription Ending notification.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="MarketOffering" maxOccurs="100"/>
+			<xsd:element ref="Offering"/>
+			<xsd:element name="NumberOfDaysLeft" type="xsd:integer">
+				<xsd:annotation>
+					<xsd:documentation>The number of days left to the expiry date</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TemplateProperties" type="TemplatePropertiesDataType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AttributeDataType">
+		<xsd:annotation>
+			<xsd:documentation>Name/Value pair data type</xsd:documentation>
+		</xsd:annotation>
+		<xsd:all>
+			<xsd:element name="Name" type="AttributeNameDataType">
+				<xsd:annotation>
+					<xsd:documentation>Data type for an attribute name. Attribute names must contain characters only from the character set A-Z, a-Z, 0-9, the period character (.), the underscore character (_), or the hyphen character (-) </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Value" type="AttributeValueDataType">
+				<xsd:annotation>
+					<xsd:documentation>Data type for an attribute value</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:complexType name="PriceDataType">
+		<xsd:all>
+			<xsd:element name="CurrentPrice" type="AmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>Current price of line item. This is a net price, not a regular list price.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RecurringPrice" type="AmountDataType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Recurring price of line item if it exists. This is a list price and not a regular price. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:simpleType name="AttributeNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>Data type for an attribute name. Attribute names must contain characters only from the character set A-Z, a-Z, 0-9, the period character (.), the underscore character (_), or the hyphen character (-) </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z\d\._\-]{1,100}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AttributeValueDataType">
+		<xsd:annotation>
+			<xsd:documentation>Data type for an attribute value</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="100000"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="TemplatePropertiesDataType">
+		<xsd:sequence>
+			<xsd:element name="Attributes" type="AttributeDataType" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="MessageTypeDataType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the type of message (default to business message)</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Solicited Marketing Message"/>
+			<xsd:enumeration value="Unsolicited Marketing Message"/>
+			<xsd:enumeration value="Product Message"/>
+			<xsd:enumeration value="Business Message"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="TransactionInfoType">
+		<xsd:annotation>
+			<xsd:documentation>Transaction Info</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionDatetime" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Datetime</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SalesOrganization" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Sales Organization requesting the service</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TaxPointDataType">
+		<xsd:annotation>
+			<xsd:documentation>The tax point from and to dates </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TaxPointFromDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>tax point from date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxPointToDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>tax point to date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

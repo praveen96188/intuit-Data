@@ -1,0 +1,183 @@
+// The library version is controled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+@Library('msaas-shared-lib') _
+
+node {
+  // setup the global static configuration
+  config = setupMsaasPipeline('msaas-config.yaml')
+}
+
+pipeline {
+  agent {
+      kubernetes {
+          label "${config.pod_label}"
+          yamlFile 'KubernetesPods.yaml'
+      }
+  }
+
+  parameters {
+      choice(name: 'ENVIRONMENT', choices: ['QAL-EKS', 'E2E-USW2-EKS','E2E-USE2-EKS', 'PRF-EKS', 'DS2-EKS'], description: 'Environment to Deploy')
+      //get db configuration before deployment
+      choice(name: 'MONOLITH', choices: ['oracle', 'postgres'], description: 'monolith db to connect to')
+      choice(name: 'AUDIT', choices: ['postgres'], description: 'audit db to connect to')
+      string(name: 'IMAGE', defaultValue: '', description: 'PSP image in format {branchName}-commitId. Ex: develop-81d78a6')
+  }
+
+  environment{
+    IMAGE_PATH = "docker.intuit.com/payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc:${params.IMAGE}"
+  }
+
+  stages {
+      stage ('Validate DB') {
+          when{
+              anyOf {
+                  expression {
+                      params.ENVIRONMENT =='QAL-EKS' &&
+                      (params.MONOLITH == 'postgres')
+                  }
+                  expression {
+                      params.ENVIRONMENT =='PRF-EKS' &&
+                      (params.MONOLITH == 'postgres' )
+                  }
+                  expression {
+                      params.ENVIRONMENT =='DS2-EKS' &&
+                      (params.MONOLITH == 'postgres' )
+                  }
+              }
+          }
+          steps {
+              error "Selected DB not supported.."
+          }
+      }
+      stage('QAL-EKS:') {
+          when {
+               expression { params.ENVIRONMENT =='QAL-EKS'}
+           }
+          options {
+              lock(resource: getEnv(config, 'qal-usw2-eks').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 10, label: 'Deploy-qal-usw2-eks-milestone')
+                         script {
+                             def dbConfig = load "DBConfig.groovy"
+                             //to generate and commit config map in deployment repo with selected db configuration before deployment
+                             dbConfig.commitDBConfigFile(config, 'qal-usw2-eks',1800, params.MONOLITH, params.AUDIT)
+                          }
+                          gitOpsDeploy(config, 'qal-usw2-eks', "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+
+      stage('E2E-USW2-EKS:') {
+          when {
+               expression { params.ENVIRONMENT =='E2E-USW2-EKS'}
+           }
+          options {
+              lock(resource: getEnv(config, 'e2e-usw2-eks').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-e2e-usw2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'e2e-usw2-eks',1800, params.MONOLITH, params.AUDIT)
+                          }
+                          gitOpsDeploy(config, 'e2e-usw2-eks', "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+      stage('E2E-USE2-EKS:') {
+          when {
+               expression { params.ENVIRONMENT =='E2E-USE2-EKS'}
+           }
+          options {
+              lock(resource: getEnv(config, 'e2e-use2-eks').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-e2e-use2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'e2e-use2-eks',1800, params.MONOLITH, params.AUDIT)
+                          }
+                          gitOpsDeploy(config, 'e2e-use2-eks', "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+      stage('PRF-EKS:') {
+          when {
+               expression { params.ENVIRONMENT =='PRF-EKS'}
+          }
+          options {
+              lock(resource: getEnv(config, 'prf-usw2-eks').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          sh "echo Before deploy"
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-prf-usw2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'prf-usw2-eks',1800, params.MONOLITH, params.AUDIT)
+                          }
+                          gitOpsDeploy(config, 'prf-usw2-eks', "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+      stage('DS2-EKS:') {
+          when {
+                expression { params.ENVIRONMENT =='DS2-EKS'}
+          }
+          options {
+              lock(resource: getEnv(config, 'ds2-usw2-eks').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          sh "echo Before deploy"
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-ds2-usw2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'ds2-usw2-eks',1800, params.MONOLITH, params.AUDIT)
+                          }
+                          gitOpsDeploy(config, 'ds2-usw2-eks', "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+  }
+}
+

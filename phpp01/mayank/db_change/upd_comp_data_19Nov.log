@@ -1,0 +1,53 @@
+02:43:55 SQL> 
+02:43:55 SQL> DECLARE
+02:43:55   2  	RECORD_COUNT	  INTEGER := 0;
+02:43:55   3  	MAX_RECORDS	  INTEGER := 500000;
+02:43:55   4  	PROCESSED_RECORDS INTEGER := 0;
+02:43:55   5  	MAX_FETCH_RECORDS INTEGER := 25000;
+02:43:55   6  BEGIN
+02:43:55   7  	SELECT count(*) INTO RECORD_COUNT FROM PSPADM.PSP_COMPANY WHERE PUBLISH_STATUS is not null AND PUBLISH_STATUS not like '_00000%';
+02:43:55   8  
+02:43:55   9  	DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+02:43:55  10  
+02:43:55  11  	WHILE RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS
+02:43:55  12  	  LOOP
+02:43:55  13  	    UPDATE PSPADM.PSP_COMPANY
+02:43:55  14  	    SET PUBLISH_STATUS = (substr(PUBLISH_STATUS, 1, 1) || '00000' || substr(PUBLISH_STATUS, 7))
+02:43:55  15  	    WHERE company_seq IN (SELECT company_seq
+02:43:55  16  				  FROM PSPADM.PSP_COMPANY
+02:43:55  17  				  WHERE PUBLISH_STATUS is not null AND PUBLISH_STATUS not like '_00000%' AND ROWNUM <= MAX_FETCH_RECORDS);
+02:43:55  18  	    COMMIT;
+02:43:55  19  	    PROCESSED_RECORDS := PROCESSED_RECORDS + MAX_FETCH_RECORDS;
+02:43:55  20  	    DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+02:43:55  21  	  END LOOP;
+02:43:55  22  EXCEPTION
+02:43:55  23  	WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error updating the record');
+02:43:55  24  END;
+02:43:55  25  /
+Found 451348 Records                                                            
+Processed 25000 records successfully                                            
+Processed 50000 records successfully                                            
+Processed 75000 records successfully                                            
+Processed 100000 records successfully                                           
+Processed 125000 records successfully                                           
+Processed 150000 records successfully                                           
+Processed 175000 records successfully                                           
+Processed 200000 records successfully                                           
+Processed 225000 records successfully                                           
+Processed 250000 records successfully                                           
+Processed 275000 records successfully                                           
+Processed 300000 records successfully                                           
+Processed 325000 records successfully                                           
+Processed 350000 records successfully                                           
+Processed 375000 records successfully                                           
+Processed 400000 records successfully                                           
+Processed 425000 records successfully                                           
+Processed 450000 records successfully                                           
+Processed 475000 records successfully                                           
+Processed 500000 records successfully                                           
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:03:18.77
+02:47:14 SQL> 
+02:47:14 SQL> spool off

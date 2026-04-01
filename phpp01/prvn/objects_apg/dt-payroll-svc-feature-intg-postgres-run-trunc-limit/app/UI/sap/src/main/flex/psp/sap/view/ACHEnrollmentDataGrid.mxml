@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<pspui:PagingDataGrid xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:pspui="psp.sap.view.*"
+                      xmlns:controls="psp.sap.view.controls.*"
+                      width="100%" height="100%"
+                      paddingRight="0"
+                      horizontalAlign="right"
+                      verticalGap="0"
+                      dataProvider="{viewModel.enrollmentsSearchResults}"
+                      loadDataFunction="{refreshGrid}"
+                      rowCount="{viewModel.enrollmentsSearchResults.pageSize}"
+                      sortableColumns="true">
+    <mx:Script><![CDATA[
+        import psp.sap.model.ACHEnrollmentDetail;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.ACHEnrollmentsTabViewModel;
+
+        [Bindable]
+        public var viewModel:ACHEnrollmentsTabViewModel;
+
+        [Bindable]
+        public var reEnrollFunction:Function;
+        [Bindable]
+        public var markEnrolledFunction:Function;
+        [Bindable]
+        public var cancelDeleteFunction:Function;
+
+        [Bindable]
+        public var column1Width:Number = 140;
+
+        [Bindable]
+        public var includeRejectionReason:Boolean = false;
+
+
+        public function goToCompany(enrollmentDetail:ACHEnrollmentDetail):void {
+            viewModel.goToCompanyInfo(enrollmentDetail);
+        }
+
+        private function refreshGrid():void {
+            viewModel.refresh();
+        }
+        ]]></mx:Script>
+
+    <pspui:columns>
+        <controls:SAPDataGridColumn
+                headerText=""
+                resizable="false"
+                sortable="false"
+                headerWordWrap="true"
+                width="{column1Width}">
+            <controls:itemRenderer>
+                <mx:Component>
+                    <mx:VBox
+                            horizontalAlign="center"
+                            verticalGap="0"
+                            horizontalGap="0"
+                            verticalScrollPolicy="off"
+                            horizontalScrollPolicy="off">
+                        <mx:HBox horizontalGap="0" verticalAlign="middle">
+                            <mx:Script><![CDATA[
+                                import psp.sap.application.SAP;
+                                import psp.sap.application.enums.OperationsEnum;
+                                import psp.sap.model.ACHEnrollmentDetail;
+                                ]]></mx:Script>
+                            <mx:Button label="Re-Enroll"
+                                       skin="psp.sap.view.AdministrationButtonSkin"
+                                       click="outerDocument.reEnrollFunction(ACHEnrollmentDetail(data))"
+                                       enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_RAF_ENROLLMENT)}"
+                                       height="19"
+                                       width="90"
+                                       visible="{outerDocument.reEnrollFunction != null}"
+                                       includeInLayout="{outerDocument.reEnrollFunction != null}"/>
+                            <mx:Button label="Cancel"
+                                       skin="psp.sap.view.AdministrationButtonSkin"
+                                       click="outerDocument.cancelDeleteFunction(ACHEnrollmentDetail(data))"
+                                       width="70"
+                                       height="19"
+                                       enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_RAF_ENROLLMENT)}"
+                                       visible="{outerDocument.cancelDeleteFunction != null}"
+                                       includeInLayout="{outerDocument.cancelDeleteFunction != null}"/>
+                            <pspui:ActionLink click="outerDocument.viewModel.viewACHHistory(ACHEnrollmentDetail(data))"
+                                              label="H"
+                                              toolTip="View History"
+                                              textAlign="center"
+                                              paddingBottom="1"
+                                              paddingTop="1"/>
+                        </mx:HBox>
+                        <mx:Button label="Mark as Enrolled"
+                                   skin="psp.sap.view.AdministrationButtonSkin"
+                                   click="outerDocument.markEnrolledFunction(ACHEnrollmentDetail(data))"
+                                   width="140"
+                                   height="19"
+                                   enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_RAF_ENROLLMENT)}"
+                                   visible="{outerDocument.markEnrolledFunction != null}"
+                                   includeInLayout="{outerDocument.markEnrolledFunction != null}"/>
+                    </mx:VBox>
+                </mx:Component>
+            </controls:itemRenderer>
+        </controls:SAPDataGridColumn>
+        <controls:SAPDataGridColumn
+                width="200"
+                resizable="false"
+                dataField="companyName" headerText="Company Name">
+            <controls:itemRenderer>
+                <mx:Component>
+                    <mx:VBox
+                            width="100%"
+                            horizontalAlign="left"
+                            verticalGap="0"
+                            verticalScrollPolicy="off"
+                            horizontalScrollPolicy="off">
+                        <mx:Script><![CDATA[
+                            import psp.sap.model.ACHEnrollmentDetail;
+                            ]]></mx:Script>
+                        <pspui:ActionLink
+                                label="{ACHEnrollmentDetail(data).companyName}"
+                                paddingBottom="1"
+                                paddingTop="1"
+                                click="outerDocument.goToCompany(ACHEnrollmentDetail(data))"/>
+                    </mx:VBox>
+                </mx:Component>
+            </controls:itemRenderer>
+        </controls:SAPDataGridColumn>
+
+        <controls:SAPDataGridColumn
+                headerText="PSID"
+                width="80"
+                resizable="false"
+                dataField="companyId"/>
+
+        <controls:SAPDataGridColumn
+                headerText="EIN"
+                width="80"
+                resizable="false"
+                dataField="ein"/>
+
+        <controls:SAPDataGridColumn
+                headerText="AID"
+                width="80"
+                resizable="false"
+                sortable="false"
+                dataField="aid"/>
+
+        <controls:SAPDataGridColumn
+                headerText="Effective Date"
+                width="140"
+                resizable="false"
+                dataField="effectiveDate"
+                labelFunction="SAPDataGrid.formatDateMedium"/>
+
+        <controls:SAPDataGridColumn
+                headerText="Creation Date"
+                width="140"
+                resizable="false"
+                dataField="creationDate"
+                labelFunction="SAPDataGrid.formatDateMedium"/>
+
+        <controls:SAPDataGridColumn
+                headerText="Rejection Reason"
+                width="{includeRejectionReason ? 200 : 0}"
+                itemRenderer="mx.controls.Label"
+                draggable="false"
+                resizable="false"
+                dataField="rejectionReason"/>
+
+        <controls:SAPDataGridColumn
+                headerText="Last Update"
+                width="150"
+                resizable="false"
+                dataField="modifiedDate"
+                labelFunction="SAPDataGrid.formatDateMedium"/>
+    </pspui:columns>
+</pspui:PagingDataGrid>
+

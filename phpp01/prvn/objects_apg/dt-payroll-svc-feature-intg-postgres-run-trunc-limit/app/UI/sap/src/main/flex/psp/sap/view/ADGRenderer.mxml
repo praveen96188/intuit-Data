@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" resize="scrollize();">
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.model.CompanyEventItemChild;
+
+
+        private var scrolling:Boolean = false;
+
+        override public function set data(value:Object):void
+        {
+            if (data != null && data is CompanyEventItemChild) {
+                text.removeEventListener(TextEvent.LINK, (data as CompanyEventItemChild).item.eventHandler.onLink);
+            }
+
+            var eventChild:CompanyEventItemChild = value as CompanyEventItemChild;
+
+            text.htmlText = eventChild.item.summaryText;
+            text.addEventListener(TextEvent.LINK, eventChild.item.eventHandler.onLink);
+
+            super.data = eventChild;
+            text.width = parent.width;
+
+            scrollize();
+        }
+
+        public function scrollize():void {
+            if (text.percentHeight != 100) {
+                text.percentHeight = 100;
+                text.invalidateSize();
+            }
+            callLater(function():void {
+                if (text.height > parent.height - 100) {
+                    enableScroll();
+                } else {
+                    disableScroll();
+                }
+            })
+        }
+
+        public function enableScroll():void {
+            scrolling = true;
+            textCanvas.height = parent.height - 100;
+        }
+
+        public function disableScroll():void {
+            scrolling = false;
+            textCanvas.percentHeight = 100;
+            textCanvas.invalidateSize();
+            text.percentHeight = 100;
+            text.invalidateSize();
+
+        }
+			
+		]]>
+	</mx:Script>
+    <mx:Canvas horizontalScrollPolicy="off" id="textCanvas">
+        <controls:LinkableText id="text" styleName="linkableText" height="100%"/>
+    </mx:Canvas>
+
+</mx:VBox>

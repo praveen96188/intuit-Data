@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:view="psp.sap.view.*" creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.viewmodel.OperatorExtractsViewModel;
+
+        private var mViewModel:OperatorExtractsViewModel;
+        private var mTempViewModel:OperatorExtractsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():OperatorExtractsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:OperatorExtractsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.quarterValidator.listener = quarterErrorBox;
+                mViewModel.scheduleDateValidator.listener = scheduledDate;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Schedule New Extract" styleName="subheading"/>
+    <mx:Form paddingTop="0">
+        <mx:FormItem label="Year:">
+            <controls:SAPTextInput dataField="selectedYear" maxChars="4"/>
+        </mx:FormItem>
+        <mx:FormItem label="Quarter:">
+            <view:ErrorBox id="quarterErrorBox" changeThemeColor="false">
+                <controls:SAPComboBox dataField="selectedQuarter" dataProvider="{viewModel.quarters}"/>
+            </view:ErrorBox>
+        </mx:FormItem>
+        <mx:FormItem direction="horizontal" label="Scheduled Time:">
+            <view:SAPDateField id="scheduledDate" width="100" editable="true"/>
+            <controls:SAPComboBox dataField="scheduledTimeText" dataProvider="{viewModel.times}"/>
+        </mx:FormItem>
+        <mx:Button label="Schedule" enabled="{viewModel.canSave}" click="viewModel.save();"/>
+
+    </mx:Form>
+
+    <mx:Binding source="viewModel.scheduledDateText" destination="scheduledDate.text"/>
+    <mx:Binding destination="viewModel.scheduledDateText" source="scheduledDate.text"/>
+
+</mx:VBox>

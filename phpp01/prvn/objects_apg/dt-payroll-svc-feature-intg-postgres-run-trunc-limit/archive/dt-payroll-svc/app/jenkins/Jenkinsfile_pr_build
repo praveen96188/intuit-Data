@@ -1,0 +1,192 @@
+def dockerRegistryCredsId = 'ibp-artifactory-creds'
+def dockerRegistryName = 'docker.intuit.com'
+def dockerUrl = 'docker.intuit.com'
+def mavenImage = 'maven:3.5.3-jdk-8'
+def dockerImage = 'dev/build/ibp/jnlp-slave-with-docker:latest'
+def imagePath = 'ecosystem/payroll/qbdt-payroll-service/service/psp'
+def dockerFilePath = './docker'
+def failureEmail = 'Venkateshwara_Dammur@intuit.com'
+def imageCorrettoPathMavenSql = 'payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc/pspmavensql'
+
+pipeline {
+    agent {
+        kubernetes {
+            label "psp-build-pod-${UUID.randomUUID().toString()}"
+            defaultContainer "mavencorrettopspsqlplus"
+            yaml """
+                apiVersion: v1
+                kind: Pod
+                spec:
+                    containers:
+                    - name: dbbuild
+                      image: ${dockerRegistryName}/${imagePath}:latest
+                    - name: mavencorrettopspsqlplus
+                      image: ${dockerUrl}/${imageCorrettoPathMavenSql}:latest
+                      command:
+                      - cat
+                      tty: true
+
+            """
+        }
+    }
+
+    environment {
+        NEXUS_RELEASE_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_SNAPSHOT_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_RELEASE_REPO_USERNAME = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_USR}"
+        NEXUS_RELEASE_REPO_PASSWORD = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_PSW}"
+        NEXUS_SNAPSHOT_REPO_USERNAME = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_USR}"
+        NEXUS_SNAPSHOT_REPO_PASSWORD = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_PSW}"
+    }
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master', description: 'Specify the branch name to be built.')
+        choice(name: 'BuildWithDB', choices: ['No', 'YES'], description: 'Choose Yes if you want to build with DB')
+    }
+
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '15', numToKeepStr: '15', artifactNumToKeepStr: '30'))
+        timestamps()
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                container('mavencorrettopspsqlplus') {
+                    script {
+                        pom = readMavenPom file: 'pom.xml'
+                        version = pom.version
+                        sh """
+                            chmod 775 ./app/jenkins/buildhelper.sh
+                            ./app/jenkins/buildhelper.sh ${version}
+                        """
+                    }
+                }
+
+                nexusPolicyEvaluation iqApplication: '1730525749114265769', iqStage: 'build'
+            }
+        }
+
+    stage('Building DB docker image') {
+            agent {
+                kubernetes {
+                    label "psp-dbbuild-pod-${UUID.randomUUID().toString()}"
+                    defaultContainer "dbbuild"
+                    yaml """
+                    apiVersion: v1
+                    kind: Pod
+                    spec:
+                        containers:
+                        - name: dbbuild
+                          image: ${dockerUrl}/${dockerImage}
+                          command:
+                          - cat
+                          tty: true
+                          volumeMounts:
+                          - name: docker-volume
+                            mountPath: /var/run/docker.sock
+                        volumes:
+                        - name: docker-volume
+                          hostPath:
+                            path: /var/run/dind/docker.sock
+                    """
+                }
+            }
+
+            steps {
+                container('dbbuild') {
+                    script {
+                        if ("${params.BuildWithDB}" == "YES") {
+                        pom = readMavenPom file: 'pom.xml'
+                        version = pom.version
+                        currentTimestamp = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+                        buildNumber = "${env.BUILD_NUMBER}"
+                        dockerTagTimeStamp = "${dockerRegistryName}/${imagePath}:latest"
+                        pspDBImage = "${imagePath}:latest"
+
+                        docker.withRegistry("https://${dockerRegistryName}", "${dockerRegistryCredsId}") {
+                            echo 'Build and Push image to registry..'
+                            sh """
+                                docker build --build-arg PROJECT_VERSION=${version} --no-cache -t ${pspDBImage} -f app/docker/Dockerfile .
+                                docker tag ${pspDBImage} ${dockerTagTimeStamp}
+                                docker push ${dockerTagTimeStamp}
+                            """
+                        }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            jacoco exclusionPattern: "**/*Test*", inclusionPattern: "**/*.class,**/*.java"
+
+            script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                        buildNumber: env.BUILD_NUMBER,
+                        buildStatus: 'Success',
+                        buildUrl: env.BUILD_URL,
+                        buildUser: 'SCM',
+                        buildUserId: 'SCM',
+                        prUrl: params.ghprbPullLink,
+			prPullId: params.ghprbPullId,
+                        buildDuration: currentBuild.durationString,
+                        statusColor: '#009933'
+                    )
+                }
+            }
+        }
+        failure {
+            echo "Build Pipeline Failure"
+
+            mail to: "${failureEmail}",
+                 subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "Something is wrong in ${env.BUILD_URL}"
+
+             script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                        buildNumber: env.BUILD_NUMBER,
+                        buildStatus: 'Failed',
+                        buildUrl: env.BUILD_URL,
+                        buildUser: 'SCM',
+                        buildUserId: 'SCM',
+                        prUrl: params.ghprbPullLink,
+                        prPullId: params.ghprbPullId,
+			buildDuration: currentBuild.durationString,
+                        statusColor: '#b50911'
+                    )
+                 }
+             }
+        }
+    }
+}
+
+def sendSlackNotification(Map parameters) {
+    def attachments = [
+        [
+            "fallback": "Failed - Job '${parameters.jobName} [${parameters.buildNumber}]' (${parameters.buildUrl})",
+            "author_name": "Built by ${parameters.buildUser} [${parameters.buildUserId}]",
+            "author_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+            "title": "${parameters.buildStatus} - ${parameters.jobName} #${parameters.buildNumber}",
+            "title_link": "${parameters.buildUrl}",
+            "fields": [
+                [
+                    "title": "PR URL",
+                    "value": "<${parameters.prUrl}| PR#${parameters.prPullId}>",
+                    "short": true
+                ],
+		[
+                    "title": "Build Duration",
+                    "value": "${parameters.buildDuration}",
+                    "short": true
+                ]
+            ],
+            "color": "${parameters.statusColor}"
+        ]
+    ]
+    slackSend (attachments: attachments)
+}

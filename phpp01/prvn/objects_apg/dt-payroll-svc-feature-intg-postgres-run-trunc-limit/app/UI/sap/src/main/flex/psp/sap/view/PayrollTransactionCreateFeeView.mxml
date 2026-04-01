@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        creationComplete="onCreationComplete()"
+        width="100%" height="100%">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.TextInput;
+        import mx.events.CloseEvent;
+        import mx.events.PropertyChangeEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.model.OfferingServiceChargePrice;
+        import psp.sap.model.SettlementTypeEnum;
+        import psp.sap.viewmodel.PayrollTransactionCreateFeeViewModel;
+
+        [Bindable]
+        public var viewModel:PayrollTransactionCreateFeeViewModel;
+
+        private function onCreationComplete():void {
+            if (viewModel != null) {
+                viewModel.settlementDateRangeValidator.listener = initiationDate;
+            } else {
+                this.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, function(e:PropertyChangeEvent):void {
+                    if (e.property == "viewModel") {
+                        onCreationComplete();
+                        this.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, arguments.callee);
+                    }
+                }, false, 0, false)
+            }
+        }
+
+
+        /**
+         * Confirmation dialog
+         */
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to add ";
+            var i:int = 0;
+            for each (var offeringServiceChargePrice:OfferingServiceChargePrice in viewModel.fees) {
+                if (offeringServiceChargePrice.checked) {
+                    i++;
+                }
+            }
+            if (i > 1) {
+                msgString += "fees?";
+            }
+            else {
+                msgString += "a fee?";
+
+            }
+            Alert.show(msgString, "Confirmation", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+                if (e.detail == Alert.OK) {
+                    viewModel.save();
+                }
+            } , null, Alert.OK);
+        }
+
+
+
+        private function checkFocus(event:FocusEvent):void {
+            if (!(event.currentTarget as ComboBox).visible) {
+                focusManager.getNextFocusManagerComponent().setFocus();
+                focusManager.showFocus();
+            }
+        }
+        ]]>
+	</mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}"/>
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+
+    <pspui:ActionLink label="Go to Company Payroll Transactions" click="viewModel.goToPayrollTransactions()"
+                      paddingTop="10" paddingLeft="0" visible="{viewModel.payrollRun != null}" includeInLayout="{viewModel.payrollRun != null}"/>
+
+    <mx:Text id="achNotAvailableText"
+             text="ACH is not available.  The company does not have an active bank account."
+             styleName="errorMessageStyle"
+             includeInLayout="{viewModel.activeBankAccount == null &amp;&amp; !viewModel.isDataLoading}"
+             visible="{viewModel.activeBankAccount == null &amp;&amp; !viewModel.isDataLoading}"/>
+
+    <mx:VBox id="dataContainer" verticalGap="0" width="450">
+
+        <mx:VBox styleName="ddGrayMiniBoxStyle" width="100%">
+            <mx:VBox styleName="padderBox" width="100%">
+                <mx:HBox verticalAlign="middle" width="100%">
+                    <mx:Label text="Settlement Type" fontWeight="bold" width="290"/>
+                    <mx:HBox horizontalGap="0" width="100%" horizontalAlign="right">
+                        <mx:ComboBox id="settlementTypeCombo" width="100" dataProvider="{viewModel.settlementTypes}"
+                                     focusIn="checkFocus(event)"
+                                     visible="{viewModel.canSelectNonStandardSettlementTypes}"
+                                     includeInLayout="{viewModel.canSelectNonStandardSettlementTypes}"/>
+                        <mx:Label id="settlementLabel" fontWeight="bold" textAlign="center" width="100"
+                                  text="{viewModel.settlementType}"
+                                  visible="{!(viewModel.canSelectNonStandardSettlementTypes)}"
+                                  includeInLayout="{!(viewModel.canSelectNonStandardSettlementTypes)}"/>
+                    </mx:HBox>
+                </mx:HBox>
+
+                <mx:HBox
+                        horizontalGap="0"
+                        verticalAlign="middle"
+                        width="100%"
+                        visible="{viewModel.settlementType == SettlementTypeEnum.ACH}"
+                        includeInLayout="{viewModel.settlementType == SettlementTypeEnum.ACH}">
+                    <mx:Label text="Company Bank Account" fontWeight="bold"/>
+                    <mx:HBox horizontalGap="0" width="100%" horizontalAlign="right">
+                        <mx:Text id="companyBankAccount"/>
+                    </mx:HBox>
+                </mx:HBox>
+
+                <mx:HBox verticalAlign="middle" width="100%"
+                         visible="{viewModel.settlementType == SettlementTypeEnum.ACH}"
+                         includeInLayout="{viewModel.settlementType == SettlementTypeEnum.ACH}">
+                    <controls:RequiredLabel fontWeight="bold" text="Initiation Date" dataField="settlementDate"
+                                            width="290"/>
+                    <mx:HBox horizontalGap="0" width="100%" horizontalAlign="right">
+                        <pspui:SAPDateField width="100" id="initiationDate" editable="true"/>
+                    </mx:HBox>
+                </mx:HBox>
+
+                <mx:HBox verticalAlign="middle" width="100%"
+                         visible="{viewModel.settlementType != SettlementTypeEnum.ACH}"
+                         includeInLayout="{viewModel.settlementType != SettlementTypeEnum.ACH}">
+                    <mx:Label id="dateLabel" text="Date" fontWeight="bold" width="290"/>
+                    <mx:HBox horizontalGap="0" width="100%" horizontalAlign="right">
+                        <mx:Text width="100" id="settlementDate"
+                                 text="{dateFormatter.format(viewModel.settlementDate)}"/>
+                    </mx:HBox>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+
+        <mx:Spacer height="10"/>
+
+        <mx:VBox styleName="ddGrayMiniBoxStyle" width="100%">
+            <mx:VBox styleName="padderBox" width="100%">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox width="100%">
+                        <mx:Label text="Fees" width="335"/>
+                        <mx:Label text="Amount" width="50"/>
+                    </mx:HBox>
+
+                    <mx:Repeater dataProvider="{viewModel.fees}" id="feeRepeater">
+                        <mx:Spacer height="5"/>
+                        <mx:HBox verticalAlign="middle" width="100%">
+                            <mx:Spacer width="5"/>
+                            <mx:CheckBox width="40"
+                                         selected="{OfferingServiceChargePrice(feeRepeater.currentItem).checked}"
+                                         change="OfferingServiceChargePrice(CheckBox(event.currentTarget).getRepeaterItem()).checked = (CheckBox(event.currentTarget).selected)"/>
+                            <mx:Label text="{OfferingServiceChargePrice(feeRepeater.currentItem).displayName}" width="100%"
+                                      enabled="{OfferingServiceChargePrice(feeRepeater.currentItem).checked}"/>
+                            <mx:HBox horizontalGap="0">
+                                <mx:Label textAlign="right" text="$"/>
+                                <controls:SAPTextInput
+                                        restrict="0-9."
+                                        width="100"
+                                        textAlign="right"
+                                        isCurrency="true"
+                                        text="{OfferingServiceChargePrice(feeRepeater.currentItem).chargedPriceString}"
+                                        change="OfferingServiceChargePrice(TextInput(event.currentTarget).getRepeaterItem()).chargedPriceString = (TextInput(event.currentTarget).text)"
+                                        enabled="{OfferingServiceChargePrice(feeRepeater.currentItem).checked}"/>
+                            </mx:HBox>
+                        </mx:HBox>
+                        <mx:HBox visible="{OfferingServiceChargePrice(feeRepeater.currentItem).requiresMemo &amp;&amp; OfferingServiceChargePrice(feeRepeater.currentItem).checked}"
+                                 includeInLayout="{OfferingServiceChargePrice(feeRepeater.currentItem).requiresMemo &amp;&amp; OfferingServiceChargePrice(feeRepeater.currentItem).checked}"
+                                 paddingLeft="90">
+                            <controls:RequiredLabel text="Memo:" validator="{OfferingServiceChargePrice(feeRepeater.currentItem).memoValidator}"/>
+                            <controls:SAPTextInput
+                                    width="100"
+                                    text="{OfferingServiceChargePrice(feeRepeater.currentItem).memo}"
+                                    change="OfferingServiceChargePrice(TextInput(event.currentTarget).getRepeaterItem()).memo = (TextInput(event.currentTarget).text)"
+                                    creationComplete="if (OfferingServiceChargePrice(viewModel.fees.getItemAt(TextInput(event.currentTarget).repeaterIndex)).memoValidator != null) OfferingServiceChargePrice(viewModel.fees.getItemAt(TextInput(event.currentTarget).repeaterIndex)).memoValidator.listener = TextInput(event.currentTarget)"/>
+                        </mx:HBox>
+                    </mx:Repeater>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+
+        <mx:HBox paddingTop="10" width="100%" horizontalAlign="right">
+            <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button id="saveButton" label="Save" click="confirmSave();" enabled="{viewModel.canSave}"
+                       width="{cancelButton.width}"/>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Binding source="settlementTypeCombo.selectedItem as SettlementTypeEnum" destination="viewModel.settlementType"/>
+    <mx:Binding source="viewModel.settlementType" destination="settlementTypeCombo.selectedItem"/>
+
+    <mx:Binding source="viewModel.settlementDate" destination="initiationDate.text"/>
+    <mx:Binding source="initiationDate.text" destination="viewModel.settlementDate"/>
+    <mx:Binding source="viewModel.settlementDateRangeValidator.validDateRange"
+                destination="initiationDate.selectableRange"/>
+
+    <mx:Binding source="viewModel.bankAccountLabel" destination="companyBankAccount.text"/>
+
+</mx:VBox>

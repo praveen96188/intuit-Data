@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*" creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.collections.ArrayCollection;
+
+        import mx.events.ValidationResultEvent;
+
+        import psp.taxcredits.model.ModelUtils;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private var validators:ArrayCollection = new ArrayCollection();
+        private function onCreationComplete():void {
+            validators.addItem(legalNameValidator);
+            validators.addItem(einValidator);
+            validators.addItem(address1Validator);
+            validators.addItem(cityValidator);
+            validators.addItem(stateValidator);
+            validators.addItem(zipValidator);
+            validators.addItem(phone1Validator);
+            validators.addItem(phone2Validator);
+            validators.addItem(phone3Validator);
+            validators.addItem(contactNameValidator);
+            validators.addItem(emailValidator);
+            validators.addItem(companyTypeValidator);
+            validators.addItem(authSignerEmailValidator);
+            validators.addItem(isAuthorizedValidator);
+            validators.addItem(employeeEmailValidator);
+            validators.addItem(fiscalYearStartValidator);
+        }
+
+        private function onBack():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.PRICING);
+        }
+
+        private function onContinue():void {
+            var invalid:Boolean = false;
+            for each (var validator:Validator in validators) {
+                if (validator.enabled) {
+                    var resultEvent:ValidationResultEvent = validator.validate();
+                    if (resultEvent.type != ValidationResultEvent.VALID) {
+                        invalid = true;
+                    }
+                }
+            }
+
+            if (!invalid) {
+                model.pageManager.switchPage(TaxCreditsPageEnum.FINAL_STEPS);
+            }
+
+        }
+
+        public function onChange():void {
+            model.company.legalName = legalName.text;
+            model.company.ein = ein.text;
+            model.company.address1 = address1.text;
+            model.company.address2 = address2.text;
+            model.company.city = city.text;
+            model.company.state = state.selectedItem as String;
+            model.company.zip = zip.text;
+            model.company.contactName = contactName.text;
+            model.company.phone1 = phone1.text;
+            model.company.phone2 = phone2.text;
+            model.company.phone3 = phone3.text;
+            model.company.phoneX = phoneX.text;
+            model.company.contactEmail = contactEmail.text;
+            model.company.companyType = companyTypeCombo.selectedItem as String;
+            model.company.authorizedSignerEmail = authSignerEmail.text;
+            model.company.isAuthorized = isAuthorized.selected;
+            model.employee.email = employeeEmail.text;
+            model.company.fiscalYearStartDateMonth = fiscalYearMonth.text;
+            model.company.fiscalYearStartDateDay = fiscalYearDay.text;
+        }
+
+        [Bindable] public var fiscalYearStartDateYear:String = "2010";
+
+        ]]>
+    </mx:Script>
+
+    <mx:Validator id="legalNameValidator" source="{legalName}" property="text" required="true" triggerEvent="none"/>
+    <controls:EINValidator id="einValidator" source="{ein}" property="text" required="true" triggerEvent="none"/>
+
+    <mx:Validator id="address1Validator" source="{address1}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="cityValidator" source="{city}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="stateValidator" source="{state}" property="selectedItem" required="true" triggerEvent="none"/>
+    <mx:StringValidator id="zipValidator" source="{zip}" property="text" required="true" triggerEvent="none" minLength="5"/>
+
+    <mx:Validator id="contactNameValidator" source="{contactName}" property="text" required="true" triggerEvent="none"/>
+
+    <mx:StringValidator id="phone1Validator" source="{phone1}" property="text" required="true" triggerEvent="none" minLength="3"/>
+    <mx:StringValidator id="phone2Validator" source="{phone2}" property="text" required="true" triggerEvent="none" minLength="3"/>
+    <mx:StringValidator id="phone3Validator" source="{phone3}" property="text" required="true" triggerEvent="none" minLength="4"/>
+
+    <mx:EmailValidator id="emailValidator" source="{contactEmail}" property="text" required="true" triggerEvent="none"/>
+
+    <mx:Validator id="companyTypeValidator" source="{companyTypeCombo}" property="selectedItem" required="true" triggerEvent="none"/>
+    <mx:EmailValidator id="authSignerEmailValidator" source="{authSignerEmail}" property="text" required="true" triggerEvent="none"/>
+    <mx:StringValidator id="isAuthorizedValidator" source="{isAuthorized}" property="selected" maxLength="4" required="true" triggerEvent="none"
+                        requiredFieldError="{resourceManager.getString('companyInfo','authorized_signer_required_error')}"
+                        tooLongError="{resourceManager.getString('companyInfo','authorized_signer_required_error')}"/>
+    <controls:EmailNotSameValidator id="employeeEmailValidator" source="{employeeEmail}" property="text" required="true" triggerEvent="none"
+                                    otherValue="{authSignerEmail.text}" sameEmailError="{resourceManager.getString('companyInfo','employee_email_same_error')}"/>
+
+
+    <mx:DateValidator id="fiscalYearStartValidator"
+                      monthSource="{fiscalYearMonth}" monthProperty="text"
+                      daySource="{fiscalYearDay}" dayProperty="text"
+                      yearSource="{this}" yearProperty="fiscalYearStartDateYear"
+                      enabled="{fiscalYearMonth.text.length > 0 || fiscalYearDay.text.length > 0}"
+                      required="true" triggerEvent="none"/> <!-- required true but only enabled if any fields are entered-very silly behaviour in this component-->
+
+    <mx:VBox paddingLeft="31">
+
+        <controls:GreyscaleBox paddingTop="24" enableTo="3"/>
+
+        <mx:Text selectable="false" styleName="pageH3Alt" paddingTop="3" paddingLeft="-1"
+                 text="{resourceManager.getString('companyInfo','page_tag_line')}"/>
+
+        <controls:SupText selectable="true" styleName="pageText" paddingTop="10" width="858"
+                          htmlText="{resourceManager.getString('companyInfo','body')}"/>
+
+
+        <mx:Form id="form" paddingLeft="32" paddingTop="12" verticalGap="11">
+            <mx:FormItem label="{resourceManager.getString('companyInfo','legal_name')}"
+                         labelStyleName="formLabel"
+                         required="true">
+                <mx:TextInput id="legalName" width="182" maxChars="50" text="{model.company.legalName}" change="onChange();"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','ein')}"
+                         labelStyleName="formLabel"
+                         required="true">
+                <mx:TextInput id="ein" width="182" restrict="0-9\-" maxChars="10" text="{model.company.ein}" change="onChange();"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','address')}"
+                         labelStyleName="formLabel"
+                         required="true"
+                         direction="vertical">
+                <mx:TextInput id="address1" width="246" maxChars="100" text="{model.company.address1}" change="onChange();"/>
+                <mx:TextInput id="address2" width="246" maxChars="100" text="{model.company.address2}" change="onChange();"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','city')}"
+                         labelStyleName="formLabel"
+                         required="true">
+                <mx:TextInput id="city" width="182" maxChars="50" text="{model.company.city}" change="onChange();"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','state')}"
+                         labelStyleName="formLabel"
+                         required="true"
+                         direction="horizontal">
+                <controls:ComboBoxExt id="state" dataProvider="{ModelUtils.states}" selectedItem="{model.company.state}" change="onChange();"/>
+                <mx:FormItem label="{resourceManager.getString('companyInfo','zip')}"
+                             labelStyleName="formLabel"
+                             required="true"
+                             paddingLeft="84">
+                    <mx:TextInput id="zip" width="50" maxChars="5" restrict="0-9" text="{model.company.zip}" change="onChange();"/>
+                </mx:FormItem>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','contact_name')}"
+                         labelStyleName="formLabel"
+                         required="true">
+                <mx:TextInput id="contactName" width="182" maxChars="50" text="{model.company.contactName}" change="onChange();"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','contact_phone')}"
+                         labelStyleName="formLabel"
+                         required="true"
+                         direction="horizontal"
+                         horizontalGap="0">
+                <mx:Text text="(" styleName="formLabel" selectable="false"/>
+                <mx:TextInput id="phone1" width="35" maxChars="3" restrict="0-9" text="{model.company.phone1}" change="onChange();"/>
+                <mx:Text text=") " styleName="formLabel" selectable="false"/>
+                <mx:TextInput id="phone2" width="35" maxChars="3" restrict="0-9" text="{model.company.phone2}" change="onChange();"/>
+                <mx:Text text="-" styleName="formLabel" selectable="false"/>
+                <mx:TextInput id="phone3" width="40" maxChars="4" restrict="0-9" text="{model.company.phone3}" change="onChange();"/>
+                <mx:FormItem label="{resourceManager.getString('interview','ext')}"
+                             labelStyleName="formLabel"
+                             required="false"
+                             paddingLeft="11">
+                    <mx:TextInput id="phoneX" width="55" maxChars="6" restrict="0-9" text="{model.company.phoneX}" change="onChange();"/>
+                </mx:FormItem>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','contact_email')}"
+                         labelStyleName="formLabel"
+                         required="true">
+                <mx:TextInput id="contactEmail" width="182" maxChars="50" text="{model.company.contactEmail}" change="onChange();"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','company_type')}"
+                         labelStyleName="formLabel"
+                         required="true">
+                <mx:ComboBox dataProvider="{model.company.companyTypes}" id="companyTypeCombo"
+                             change="onChange();" selectedItem="{model.company.companyType}"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','authorized_signer_email')}"
+                         labelStyleName="formLabel"
+                         required="true"
+                         horizontalGap="2"
+                         direction="horizontal">
+                <mx:TextInput id="authSignerEmail" width="182" maxChars="50" text="{model.company.authorizedSignerEmail}" change="onChange();"/>
+                <mx:Text selectable="false" styleName="pageText" text="{model.company.authSignerLabel}"/>
+                <controls:InlineHelp paddingTop="3" help="{model.company.authSignerHelp}"
+                        visible="{model.company.authSignerHelp != ''}"
+                        includeInLayout="{model.company.authSignerHelp != ''}"/>
+            </mx:FormItem>
+            <mx:FormItem required="true" visible="{model.company.isAuthorizedText != ''}" includeInLayout="{model.company.isAuthorizedText != ''}">
+                <mx:HBox verticalAlign="middle" styleName="noPadding" horizontalGap="0">
+                    <mx:CheckBox id="isAuthorized" styleName="noPadding" selected="{model.company.isAuthorized}" change="onChange();"/>
+                    <mx:Text selectable="false" styleName="pageText" text="{model.company.isAuthorizedText}" paddingLeft="2" paddingTop="3"/>   
+                </mx:HBox>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','employee_email')}"
+                         labelStyleName="formLabel"
+                         required="true"
+                         direction="horizontal">
+                <mx:TextInput id="employeeEmail" width="182" maxChars="50" text="{model.employee.email}" change="onChange();"/>
+                <controls:InlineHelp paddingTop="4"
+                        help="{resourceManager.getString('companyInfo','employee_email_help')}"/>
+            </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString('companyInfo','fiscal_year')}"
+                         labelStyleName="formLabel"
+                         required="false"
+                         direction="horizontal"
+                         horizontalGap="0">
+                <mx:TextInput id="fiscalYearMonth" width="30" maxChars="2" restrict="0-9" text="{model.company.fiscalYearStartDateMonth}" change="onChange();"/>
+                <mx:Text text="/" styleName="formLabel" selectable="false"/>
+                <mx:TextInput id="fiscalYearDay" width="30" maxChars="2" restrict="0-9" text="{model.company.fiscalYearStartDateDay}" change="onChange();"/>
+                <controls:InlineHelp paddingLeft="4" paddingTop="4" 
+                        help="{resourceManager.getString('companyInfo','fiscal_year_help')}"/>
+            </mx:FormItem>
+        </mx:Form>
+        
+
+        <mx:Spacer height="20"/>
+        <mx:HRule styleName="divider" width="852"/>
+
+        <mx:HBox styleName="noPadding" paddingTop="8" paddingLeft="31" verticalAlign="middle">
+            <mx:Button styleName="buttonBack" useHandCursor="true" buttonMode="true"
+                       click="onBack();"/>
+            <mx:HBox width="100%" paddingLeft="620">
+                <mx:Button styleName="buttonContinue" useHandCursor="true" buttonMode="true"
+                           click="onContinue();"/>
+            </mx:HBox>
+        </mx:HBox>
+
+        <controls:QASection width="860" paddingTop="20"
+                            title="{resourceManager.getString('eligibility','qa_subheader')}"
+                            items="{QAItemFactory.qaItems}"/>
+
+    </mx:VBox>
+</mx:VBox>

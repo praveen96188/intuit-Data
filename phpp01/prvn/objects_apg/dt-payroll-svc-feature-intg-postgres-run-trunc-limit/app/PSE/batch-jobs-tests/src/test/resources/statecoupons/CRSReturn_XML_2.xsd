@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--Last updated 05/05/2014-->
+<xs:schema xmlns="https://tap.state.nm.us/WebFiles/CombinedReportingSystem_2.0" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="https://tap.state.nm.us/WebFiles/CombinedReportingSystem_2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="File">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="FilerInformation">
+					<xs:annotation>
+						<xs:documentation>Preparer is the entity submitting the bulk file.</xs:documentation>
+					</xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ReturnType" type="xs:string" fixed="Combined Reporting System" />
+                            <xs:element name="PreparerId">
+								<xs:annotation>
+									<xs:documentation>Submitted document must contain either PreparerFEIN, PreparerSSN, or PreparerITIN element.</xs:documentation>
+								</xs:annotation>
+                                <xs:complexType>
+                                    <xs:choice>
+                                        <xs:element name="PreparerFEIN" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the preparer FEIN. Must be 9 digits.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value="\d{9}" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="PreparerSSN" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the preparer SSN. Must be 9 digits.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value="\d{9}" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+										<xs:element name="PreparerITIN" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the preparer ITIN. Must be 9 digits.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value="9(\d{8})" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="PreparerName">
+                                <xs:annotation>
+                                    <xs:documentation>Enter the preparer name. From 1 to 50 characters allowed.</xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:token">
+                                        <xs:minLength value="1" />
+                                        <xs:maxLength value="50" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="PreparerPhone" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>Enter the preparer phone number. Must be 10 digits. Optional.</xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:minLength value="10" />
+                                        <xs:maxLength value="10" />
+                                        <xs:pattern value="\d{10}" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+							<xs:element name="PreparerEmail" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>Enter the preparer email. Fron 6 to 50 characters allowed. Optional.</xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:minLength value="6" />
+                                        <xs:maxLength value="50" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Reports" minOccurs="1" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Report is per taxpayer and must contain a TaxpayerInformation section and ReturnInformation and/or PaymentInformation sections.</xs:documentation>
+					</xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="TaxpayerInformation">
+								<xs:annotation>
+									<xs:documentation>The taxpayer that the report is being filed for.</xs:documentation>
+								</xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="TaxpayerID">
+											<xs:annotation>
+												<xs:documentation>Submitted document must contain either TaxpayerFEIN, TaxpayerSSN, or TaxpayerITIN element.</xs:documentation>
+											</xs:annotation>
+                                            <xs:complexType>
+                                                <xs:choice>
+                                                    <xs:element name="TaxpayerFEIN" minOccurs="0" maxOccurs="1">
+                                                        <xs:annotation>
+                                                            <xs:documentation>Enter the taxpayer FEIN. Must be 9 digits.</xs:documentation>
+                                                        </xs:annotation>
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:string">
+                                                                <xs:pattern value="\d{9}" />
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                    <xs:element name="TaxpayerSSN" minOccurs="0" maxOccurs="1">
+                                                        <xs:annotation>
+                                                            <xs:documentation>Enter the taxpayer SSN. Must be 9 digits.</xs:documentation>
+                                                        </xs:annotation>
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:string">
+                                                                <xs:pattern value="\d{9}" />
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+													<xs:element name="TaxpayerITIN" minOccurs="0" maxOccurs="1">
+                                                        <xs:annotation>
+                                                            <xs:documentation>Enter the taxpayer ITIN. Must be 9 digits.</xs:documentation>
+                                                        </xs:annotation>
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:string">
+                                                                <xs:pattern value="9(\d{8})" />
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerCRS">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer CRS account ID number. Must be 11 digits.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value="\d{11}" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerName">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer Name. From 1 to 50 characters allowed.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:minLength value="1" />
+                                                    <xs:maxLength value="50" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerAddress">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer address. From 1 to 255 characters allowed.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:minLength value="1" />
+                                                    <xs:maxLength value="255" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerCity">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer city. From 1 to 100 characters allowed.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:minLength value="1" />
+                                                    <xs:maxLength value="100" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerState">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer state abbreviation code. From 1 to 4 characters allowed.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:minLength value="1" />
+                                                    <xs:maxLength value="4" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerZipCode">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer zip code. Must be at least 5 characters and no more than 9 characters, with no special characters or spaces.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:token">
+                                                    <xs:minLength value="5" />
+                                                    <xs:maxLength value="9" />
+													<xs:pattern value="\w+" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerCountry">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer country. Must be 3 characters.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:minLength value="3" />
+                                                    <xs:maxLength value="3" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+										<xs:element name="TaxpayerPhone" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer phone number. Must be 10 digits. Optional.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value="\d{10}" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TaxpayerEmail" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the taxpayer email. From 6 to 50 characters allowed. Optional.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:minLength value="6" />
+                                                    <xs:maxLength value="50" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>                              
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="ReturnInformation" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="ReturnPeriodEndDate">
+											<xs:annotation>
+                                                <xs:documentation>For each reporting period the day element should be the last day of the month. Date 
+												                  format is YYYY-MM-DD. Year must be 1993 or later.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:date">
+													<xs:minInclusive value="1993-03-31"/>
+                                                </xs:restriction>   
+                                            </xs:simpleType>
+                                        </xs:element>
+										<xs:element name="AmendedFlag">
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:token">
+                                                    <xs:minLength value="1" />
+                                                    <xs:maxLength value="1" />
+                                                    <xs:enumeration value="Y"></xs:enumeration>
+                                                    <xs:enumeration value="N"></xs:enumeration>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                         				<xs:element name="GrossTax" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+                                                <xs:documentation>Total amount of money recieved. Maximum amount is 99,999,999.99</xs:documentation>
+                                            </xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:decimal">
+													<xs:fractionDigits value="2" />
+													<xs:maxInclusive value="99999999.99" />
+													<xs:minInclusive value="0.00" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="CompensatingTax" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+                                                <xs:documentation>Total amount of use tax. Maximum amount is 99,999,999.99</xs:documentation>
+                                            </xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:decimal">
+													<xs:fractionDigits value="2" />
+													<xs:maxInclusive value="99999999.99" />
+													<xs:minInclusive value="0.00" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="WithholdingTax" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+                                                <xs:documentation>Total amount withheld. Maximum amount is 99,999,999.99</xs:documentation>
+                                            </xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:decimal">
+													<xs:fractionDigits value="2" />
+													<xs:maxInclusive value="99999999.99" />
+													<xs:minInclusive value="0.00" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+                                        <xs:element name="TotalTax">
+											<xs:annotation>
+                                                <xs:documentation>Total of tax (Gross Tax, Compensating Tax, Withholding Tax) before any applicable penalty and interest. Maximum amount is 99,999,999.99</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:fractionDigits value="2" />
+                                                    <xs:maxInclusive value="99999999.99" />
+                                                    <xs:minInclusive value="0.00" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="Penalty" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+                                                <xs:documentation>Enter applicable penalty. Maximum amount is 99,999,999.99. Optional.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:fractionDigits value="2" />
+                                                    <xs:maxInclusive value="99999999.99" />
+                                                    <xs:minInclusive value="0.00" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="Interest" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+                                                <xs:documentation>Enter applicable interest. Maximum amount is 99,999,999.99. Optional.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:fractionDigits value="2" />
+                                                    <xs:maxInclusive value="99999999.99" />
+                                                    <xs:minInclusive value="0.00" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="TotalDue">
+											<xs:annotation>
+                                                <xs:documentation>Total amount due. Total tax plus penalty and/or interest. Maximum amount is 99,999,999.99</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:fractionDigits value="2" />
+                                                    <xs:maxInclusive value="99999999.99" />
+                                                    <xs:minInclusive value="0.00" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+										<xs:element name="tblCRSReturnDetail" minOccurs="0" maxOccurs="1" id="table">
+											<xs:annotation>
+												<xs:documentation>Detail of Gross Receipts Information</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="rowCRSGrossReceipts" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+																<xs:element name="County">
+																	<xs:annotation>
+																		<xs:documentation>Submitted document must contain either the county name or "Y" for special codes.</xs:documentation>
+																	</xs:annotation>
+																	<xs:complexType>
+																		<xs:choice>
+																			<xs:element name="CountyName">
+																				<xs:annotation>
+																					<xs:documentation>Name of county as listed in TAP FAQs Bulk CRS section.</xs:documentation>
+																				</xs:annotation>														
+																				<xs:simpleType>
+																					<xs:restriction base="xs:string" />
+																				</xs:simpleType>
+																			</xs:element>
+																			<xs:element name="SpecialCodes" type="xs:string" fixed="Y"/>
+																		</xs:choice>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="LocationCode">
+																	<xs:annotation>
+																		<xs:documentation>Location codes as listed from the CRS location code search on the TAP home screen. Must be 5 characters with leading zeros.</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:token">
+																			<xs:minLength value="5" />
+																			<xs:maxLength value="5" />
+																			<xs:pattern value="\w+" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="RateType">
+																	<xs:annotation>
+																		<xs:documentation>Rate types as listed in TAP FAQs Bulk CRS section. From 1 to 2 characters allowed.</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">
+																			<xs:minLength value="1" />
+																			<xs:maxLength value="2" />	
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GrossReceipts">
+																	<xs:annotation>
+																		<xs:documentation>Total amount of money recieved (excluding tax). Maximum amount is 99,999,999.99</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal">
+																			<xs:fractionDigits value="2" />
+																			<xs:maxInclusive value="99999999.99" />
+																			<xs:minInclusive value="0.00" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Deduction">
+																	<xs:annotation>
+																		<xs:documentation>Total deduction. Maximum amount is 99,999,999.99</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal">
+																			<xs:fractionDigits value="2" />
+																			<xs:maxInclusive value="99999999.99" />
+																			<xs:minInclusive value="0.00" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TaxableGrossReceipts">
+																	<xs:annotation>
+																		<xs:documentation>Total Gross Receipts after deductions. Maximum amount is 99,999,999.99</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal">
+																			<xs:fractionDigits value="2" />
+																			<xs:maxInclusive value="99999999.99" />
+																			<xs:minInclusive value="0.00" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TaxRate">
+																	<xs:annotation>
+																		<xs:documentation>Applicable tax rate. Maximum value is 100%.</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal">
+																			<xs:fractionDigits value="7" />
+																			<xs:maxInclusive value="100.0000000" />
+																			<xs:minInclusive value="0.0000000" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GrossTax">
+																	<xs:annotation>
+																		<xs:documentation>Total amount of tax due. Maximum amount is 99,999,999.99</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:decimal">
+																			<xs:fractionDigits value="2" />
+																			<xs:maxInclusive value="99999999.99" />
+																			<xs:minInclusive value="0.00" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>			
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="PaymentInformation" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="PaymentPeriodEndDate">
+											<xs:annotation>
+                                                <xs:documentation>For each reporting period the day element should be the last day of the month. Date 
+												                  format is YYYY-MM-DD. Year must be 1993 or later.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:date">
+													<xs:minInclusive value="1993-03-31"/>
+                                                </xs:restriction>  
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="PaymentType" type="xs:string" fixed="Return Payment"/>
+                                       <xs:element name="IsInternational">
+                                            <xs:annotation>
+                                                <xs:documentation>This field must answer the question, "Is this payment coming from or through an account located at a financial institution outside the territorial jurisdiction of the United States?"</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:token">
+                                                    <xs:minLength value="1" />
+                                                    <xs:maxLength value="1" />
+                                                    <xs:enumeration value="Y"></xs:enumeration>
+                                                    <xs:enumeration value="N"></xs:enumeration>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="PaymentAmount">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter amount of payment. From 0.01 to 99,999,999.99 allowed.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:decimal">
+                                                    <xs:fractionDigits value="2" />
+                                                    <xs:maxInclusive value="99999999.99" />
+                                                    <xs:minInclusive value="0.01" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="RoutingNumber">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter the bank routing number. Must be 9 digits.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+													<xs:pattern value="\d{9}" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="AccountNumber">
+											 <xs:annotation>
+                                                <xs:documentation>Enter the bank account number. From 6 to 17 digits allowed.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+													<xs:pattern value="\d{6,17}" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="DebitDate">
+                                            <xs:annotation>
+                                                <xs:documentation>Enter debit date. Date format is YYYY-MM-DD. Date should not be less than today and should not 
+												                  be greater than 180 days from today.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:date" />
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="MemoField" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+                                                <xs:documentation>Enter memo. Max size is 50 characters.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:maxLength value="50" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

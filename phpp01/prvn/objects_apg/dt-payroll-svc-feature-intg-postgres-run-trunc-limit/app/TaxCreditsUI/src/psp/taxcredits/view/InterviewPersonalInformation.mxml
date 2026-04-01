@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+        tagText="{resourceManager.getString('interview','page_1_tag')}"
+        backOffset="0"
+        creationPolicy="all"
+        creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+
+        import psp.taxcredits.model.ModelUtils;
+
+        public function onChange():void {
+            //this.initialzed is true despite form.initialized being false--who knows why
+            if (initialized && form && form.initialized) {
+                model.employee.firstName = firstName.text;
+                model.employee.middleInitial = middleInitial.text;
+                model.employee.lastName = lastName.text;
+
+                model.employee.dobMonth = dobMonth.text;
+                model.employee.dobDay = dobDay.text;
+                model.employee.dobYear = dobYear.text;
+
+                model.employee.address = address.text;
+                model.employee.city = city.text;
+                model.employee.state = state.selectedItem as String;
+                model.employee.zip = zip.text;
+                model.employee.county = county.text;
+
+                model.employee.phone1 = phone1.text;
+                model.employee.phone2 = phone2.text;
+                model.employee.phone3 = phone3.text;
+                model.employee.phoneX = phoneX.text;
+
+                model.employee.email = email.text;
+
+                //turn on warning message:
+                if (firstName.text != "" || middleInitial.text != "" || lastName.text != ""
+                        || dobMonth.text != "" || dobDay.text != "" || dobYear.text != ""
+                        || address.text != "" || city.text != "" || state.selectedItem != "" || zip.text != "" || county.text != ""
+                        || phone1.text != "" || phone2.text != "" || phone3.text != "" || phoneX.text != "" || email.text != ""){
+                    ExternalInterface.call("setPageDirty", resourceManager.getString('interview','leave_page_message'));
+                }
+
+            }
+        }
+
+
+        private function onCreationComplete():void {
+            validators.addItem(firstNameValidator);
+            validators.addItem(lastNameValidator);
+            validators.addItem(dobValidator);
+            validators.addItem(dobYearValidator);
+            validators.addItem(addressValidator);
+            validators.addItem(cityValidator);
+            validators.addItem(stateValidator);
+            validators.addItem(zipValidator);
+            validators.addItem(countyValidator);
+            validators.addItem(phone1Validator);
+            validators.addItem(phone2Validator);
+            validators.addItem(phone3Validator);
+            validators.addItem(employeeEmailValidator);
+
+            //sync the combo box before flex has a chance to screw it up
+            state.selectedItem = model.employee.state;
+
+            onChange(); //this is just to replace nulls with ""
+        }
+
+        override public function canContinue():Boolean {
+            var canContinue:Boolean = super.canContinue();
+            if (canContinue) {
+                //once we have gotten this information (or when it changes), we can see if the address is in HUD
+                //this remote call can go on while the employer fills out the rest of the form
+                model.checkEZRC();
+            }
+            return canContinue;
+        }
+
+      
+        ]]>
+    </mx:Script>
+
+    <mx:Validator id="firstNameValidator" source="{firstName}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="lastNameValidator" source="{lastName}" property="text" required="true" triggerEvent="none"/>
+
+
+    <mx:DateValidator id="dobValidator"
+                      monthSource="{dobMonth}" monthProperty="text"
+                      daySource="{dobDay}" dayProperty="text"
+                      yearSource="{dobYear}" yearProperty="text"
+                      required="true" triggerEvent="none"/>
+    <mx:NumberValidator id="dobYearValidator" source="{dobYear}" property="text" required="true" triggerEvent="none" minValue="1900" maxValue="2100"
+            listener="{dobErrorText}"/>
+
+    <mx:Validator id="addressValidator" source="{address}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="cityValidator" source="{city}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="stateValidator" source="{state}" property="selectedItem" required="true" triggerEvent="none"/>    
+    <mx:StringValidator id="zipValidator" source="{zip}" property="text" required="true" triggerEvent="none" minLength="5"/>
+    <mx:Validator id="countyValidator" source="{county}" property="text" required="true" triggerEvent="none"/>
+
+    <mx:StringValidator id="phone1Validator" source="{phone1}" property="text" required="true" triggerEvent="none" minLength="3"/>
+    <mx:StringValidator id="phone2Validator" source="{phone2}" property="text" required="true" triggerEvent="none" minLength="3"/>
+    <mx:StringValidator id="phone3Validator" source="{phone3}" property="text" required="true" triggerEvent="none" minLength="4"/>
+
+    <mx:EmailValidator id="employeeEmailValidator" source="{email}" property="text" required="false" triggerEvent="none"/>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','page_1_subheader')}"/>
+
+    <mx:Form id="form" paddingLeft="32" paddingTop="12" verticalGap="11">
+        <mx:FormItem label="{resourceManager.getString('interview','first_name')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="firstName" width="182" maxChars="50" change="onChange();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','middle_iniial')}"
+                     labelStyleName="formLabel"
+                     required="false">
+            <mx:TextInput id="middleInitial" width="30" maxChars="1" change="onChange();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','last_name')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="lastName" width="182" maxChars="50" change="onChange();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','dob')}"
+                     labelStyleName="formLabel"
+                     required="true"
+                     direction="horizontal"                     
+                     horizontalGap="0">
+            <mx:TextInput id="dobMonth" width="30" maxChars="2" restrict="0-9" change="onChange();"/>
+            <mx:Text text="/" styleName="formLabel" selectable="false"/>
+            <mx:TextInput id="dobDay" width="30" maxChars="2" restrict="0-9" change="onChange();"/>
+            <mx:Text text="/" styleName="formLabel" selectable="false"/>
+            <mx:TextInput id="dobYear" width="45" maxChars="4" restrict="0-9" change="onChange();"/>
+            <controls:ErrorText id="dobErrorText" styleName="errorText" selectable="false"
+                                paddingLeft="10"
+                                text="{resourceManager.getString('interview','year_too_small')}"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','street_address')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="address" width="246" maxChars="100" change="onChange();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','city')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="city" width="182" maxChars="50" change="onChange();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','state')}"
+                     labelStyleName="formLabel"
+                     required="true"
+                     direction="horizontal">
+            <controls:ComboBoxExt id="state" dataProvider="{ModelUtils.states}" change="onChange();"/>
+            <mx:FormItem label="{resourceManager.getString('interview','zip')}"
+                         labelStyleName="formLabel"
+                         required="true"
+                         paddingLeft="84">
+                <mx:TextInput id="zip" width="50" maxChars="5" restrict="0-9" change="onChange();"/>
+            </mx:FormItem>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','county')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="county" width="182" maxChars="50" change="onChange();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','phone_number')}"
+                     labelStyleName="formLabel"
+                     required="true"
+                     direction="horizontal"
+                     horizontalGap="0">
+            <mx:Text text="(" styleName="formLabel" selectable="false"/>
+            <mx:TextInput id="phone1" width="35" maxChars="3" restrict="0-9" change="onChange();"/>
+            <mx:Text text=") " styleName="formLabel" selectable="false"/>
+            <mx:TextInput id="phone2" width="35" maxChars="3" restrict="0-9" change="onChange();"/>
+            <mx:Text text="-" styleName="formLabel" selectable="false"/>
+            <mx:TextInput id="phone3" width="40" maxChars="4" restrict="0-9" change="onChange();"/>
+            <mx:FormItem label="{resourceManager.getString('interview','ext')}"
+                         labelStyleName="formLabel"
+                         required="false"
+                         paddingLeft="11">
+                <mx:TextInput id="phoneX" width="55" maxChars="6" restrict="0-9" change="onChange();"/>
+            </mx:FormItem>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','email')}"
+                     labelStyleName="formLabel"
+                     required="false">
+            <mx:TextInput id="email" width="182" maxChars="50" change="onChange();"/>
+        </mx:FormItem>
+    </mx:Form>
+
+
+    <mx:Binding destination="firstName.text" source="model.employee.firstName"/>
+    <mx:Binding destination="middleInitial.text" source="model.employee.middleInitial"/>
+    <mx:Binding destination="lastName.text" source="model.employee.lastName"/>
+
+    <mx:Binding destination="dobDay.text" source="model.employee.dobDay"/>
+    <mx:Binding destination="dobMonth.text" source="model.employee.dobMonth"/>
+    <mx:Binding destination="dobYear.text" source="model.employee.dobYear"/>
+
+    <mx:Binding destination="address.text" source="model.employee.address"/>
+    <mx:Binding destination="city.text" source="model.employee.city"/>
+    <mx:Binding destination="state.selectedItem" source="model.employee.state"/>
+    <mx:Binding destination="zip.text" source="model.employee.zip"/>
+    <mx:Binding destination="county.text" source="model.employee.county"/>
+
+    <mx:Binding destination="phone1.text" source="model.employee.phone1"/>
+    <mx:Binding destination="phone2.text" source="model.employee.phone2"/>
+    <mx:Binding destination="phone3.text" source="model.employee.phone3"/>
+    <mx:Binding destination="phoneX.text" source="model.employee.phoneX"/>
+
+    <mx:Binding destination="email.text" source="model.employee.email"/>
+
+
+
+</controls:InterviewPage>

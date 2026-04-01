@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Metadata>
+        [Event(name="change", type="flash.events.Event")]
+    </mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+        import mx.events.FlexEvent;
+
+        import psp.taxcredits.model.ModelUtils;
+
+        private function onChange():void {
+            dispatchEvent(new Event("change"));
+        }
+
+        [Bindable(event="change")]
+        public function get nameValue():String {
+            return benefitsName.text;
+        }
+
+        public function set nameValue(value:String):void {
+            benefitsName.text = value;
+        }
+
+        [Bindable(event="change")]
+        public function get cityValue():String {
+            return city.text;
+        }
+
+        public function set cityValue(value:String):void {
+            city.text = value;
+        }
+
+        [Bindable(event="change")]
+        public function get stateValue():String {
+            return state.selectedItem as String;
+        }
+
+        public function set stateValue(value:String):void {
+            state.selectedItem = value;
+        }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Validator id="nameValidator" source="{benefitsName}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="cityValidator" source="{city}" property="text" required="true" triggerEvent="none" />
+    <mx:Validator id="stateValidator" source="{state}" property="text" required="true" triggerEvent="none" />
+
+    <mx:FormItem label="{resourceManager.getString('interview','benefits_primary_name')}"
+                 labelStyleName="formLabel"
+                 required="true">
+        <mx:TextInput id="benefitsName" width="182" change="onChange();"/>
+    </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString('interview','benefits_primary_city')}"
+                 labelStyleName="formLabel"
+                 required="true">
+        <mx:TextInput id="city" width="182" change="onChange();"/>
+    </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString('interview','benefits_primary_state')}"
+                 labelStyleName="formLabel"
+                 required="true">
+        <mx:ComboBox id="state" dataProvider="{ModelUtils.states}" change="onChange();"/>
+    </mx:FormItem>
+</mx:Form>

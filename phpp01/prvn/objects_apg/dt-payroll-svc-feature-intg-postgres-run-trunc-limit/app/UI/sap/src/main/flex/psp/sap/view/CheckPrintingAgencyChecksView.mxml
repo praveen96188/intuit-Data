@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         height="100%"
+         width="100%"
+         verticalGap="0"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.application.enums.CheckPrintBatchStatusEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.AgencyCheckBatch;
+        import psp.sap.model.CheckPrintingBatch;
+        import psp.sap.model.PaymentTemplate;
+        import psp.sap.viewmodel.CheckPrintingAgencyChecksViewModel;
+
+        private var mViewModel:CheckPrintingAgencyChecksViewModel;
+        private var mTempViewModel:CheckPrintingAgencyChecksViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CheckPrintingAgencyChecksViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CheckPrintingAgencyChecksViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+            initiationDateSelection.dateRangeTypeCombo.selectedItem = initiationDateSelection.defaultDateRange;
+            printDateSelection.dateRangeTypeCombo.selectedItem = printDateSelection.defaultDateRange;
+        }
+
+        public function pageDataGridLoadDataFunction():void {
+            viewModel.refresh();
+        }
+
+        private function formatDateOverTime(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatDateOverTime.format(item[dgc.dataField]);
+        }
+
+        private function paycheckCount(item:Object, dgc:DataGridColumn):String {
+            var agencyCheckBatch:AgencyCheckBatch = AgencyCheckBatch(item);
+            return agencyCheckBatch.paycheckCount.toString() + (agencyCheckBatch.isSuperCheck ? " (SuperCheck)" : "");
+        }
+
+        public function onReprintClick(e:MouseEvent):void {
+            var button:Button = e.currentTarget as Button;
+            viewModel.savePrintBatchStatus(button.data as CheckPrintingBatch, CheckPrintBatchStatusEnum.PENDING);
+        }
+        ]]>
+	</mx:Script>
+    <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="750" id="mainFilterBox"
+                        filterStringFunction="{viewModel.getFilterString}"
+                        openOnStartup="true"
+                        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+        <mx:VBox verticalAlign="bottom" paddingLeft="5">
+            <mx:HBox>
+                <mx:FormItem label="Payment Template" labelStyleName="boldText" defaultButton="{filterButton}">
+                    <controls:SAPComboBox id="paymentTemplatesCombo" dataProvider="{viewModel.paymentTemplates}"
+                                          dataField="selectedTemplate"
+                                          enabled="{viewModel.paymentTemplates.length != 0}"/>
+                </mx:FormItem>
+                <mx:FormItem label="Status:" labelStyleName="boldText" defaultButton="{filterButton}">
+                    <controls:SAPComboBox dataField="filterStatus"
+                                          dataProvider="{CheckPrintBatchStatusEnum.filterValues}"/>
+                </mx:FormItem>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Initiation Date:" width="150" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="initiationDateSelection"
+                        viewModel="{viewModel.initiationDateSelectionViewModel}"
+                        direction="horizontal"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Print Date:" width="150" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="printDateSelection"
+                        viewModel="{viewModel.printDateSelectionViewModel}"
+                        direction="horizontal"/>
+                <mx:Spacer width="10"/>
+                <mx:Button id="filterButton" label="Filter" enabled="{viewModel.canSave}"
+                           click="viewModel.search();
+                           mainFilterBox.collapse();"/>
+            </mx:HBox>
+        </mx:VBox>
+    </controls:FilterBox>
+
+    <mx:Spacer height="10"/>
+
+    <pspui:PagingDataGrid
+            id="searchResultsGrid"
+            width="100%"
+            horizontalAlign="right"
+            dataProvider="{viewModel.searchResults}"
+            height="100%"
+            isDataLoading="{viewModel.isDataLoading}"
+            loadDataFunction="{pageDataGridLoadDataFunction}"
+            paddingBottom="0"
+            tabEnabled="false"
+            tabChildren="false"
+            autoResizeToFitContent="true"
+            autoResizeHeightBuffer="{mainFilterBox.currentState == 'searchCollapsed' ? 290 : 385}"
+            resizeSwitch="{mainFilterBox.currentState == 'searchCollapsed'}">
+        <pspui:columns>
+            <mx:DataGridColumn
+                    minWidth="250"
+                    headerText="Template Name"
+                    textAlign="left">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.AgencyCheckBatch;
+                                ]]></mx:Script>
+                            <mx:Label text="{AgencyCheckBatch(data).templateNameLine1}"/>
+                            <mx:Label text="{AgencyCheckBatch(data).templateNameLine2}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <mx:DataGridColumn
+                    minWidth="110"
+                    width="110"
+                    headerWordWrap="true"
+                    headerText="Initiation Date{String('\n')}Time"
+                    labelFunction="formatDateOverTime"
+                    dataField="initiationDate"
+                    textAlign="center"
+                    itemRenderer="mx.controls.Text"/>
+            <mx:DataGridColumn
+                    minWidth="110"
+                    width="110"
+                    headerWordWrap="true"
+                    headerText="Print Date{String('\n')}Time"
+                    labelFunction="formatDateOverTime"
+                    dataField="sentToPrinterDate"
+                    textAlign="center"
+                    itemRenderer="mx.controls.Text"/>
+            <mx:DataGridColumn
+                    minWidth="120"
+                    width="120"
+                    headerText="# of Checks"
+                    labelFunction="paycheckCount"
+                    textAlign="right"
+                    paddingRight="5"/>
+            <mx:DataGridColumn
+                    minWidth="160"
+                    width="160"
+                    dataTipField="printStatus"
+                    showDataTips="true"
+                    headerText="Status"
+                    textAlign="center">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:HBox horizontalAlign="center">
+                            <mx:Script><![CDATA[
+                                import psp.sap.application.SAP;
+                                import psp.sap.application.enums.CheckPrintBatchStatusEnum;
+                                import psp.sap.model.AgencyCheckBatch;
+                                ]]></mx:Script>
+                            <mx:Text
+                                    text="{AgencyCheckBatch(data).printStatus}"
+                                    color="{AgencyCheckBatch(data).printStatusEnum != CheckPrintBatchStatusEnum.ERROR ? 0x008000 : 0xFF0000}"
+                                    toolTip="{AgencyCheckBatch(data).printMessage != '' ? AgencyCheckBatch(data).printMessage : null}"/>
+                            <mx:Button
+                                    textAlign="right"
+                                    icon="{SAP.instance.icons.printIcon}"
+                                    skin="{null}"
+                                    useHandCursor="true"
+                                    buttonMode="true"
+                                    paddingLeft="0" paddingRight="0"
+                                    tabEnabled="false"
+                                    visible="{AgencyCheckBatch(data).printStatusEnum != CheckPrintBatchStatusEnum.PENDING &amp;&amp; outerDocument.viewModel.canUpdateBatchStatus}"
+                                    includeInLayout="{AgencyCheckBatch(data).printStatusEnum != CheckPrintBatchStatusEnum.PENDING &amp;&amp; outerDocument.viewModel.canUpdateBatchStatus}"
+                                    data="{AgencyCheckBatch(data)}"
+                                    click="outerDocument.onReprintClick(event)"
+                                    toolTip="{AgencyCheckBatch(data).printStatusEnum == CheckPrintBatchStatusEnum.ERROR ? 'Retry printing batch' : AgencyCheckBatch(data).printStatusEnum == CheckPrintBatchStatusEnum.SENT_TO_PRINTER ? 'Reprint batch' : ''}"/>
+                        </mx:HBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+        </pspui:columns>
+    </pspui:PagingDataGrid>
+
+    <mx:Binding source="viewModel.selectedTemplate" destination="paymentTemplatesCombo.selectedItem"/>
+    <mx:Binding source="paymentTemplatesCombo.selectedItem as PaymentTemplate"
+                destination="viewModel.selectedTemplate"/>
+
+</mx:VBox>

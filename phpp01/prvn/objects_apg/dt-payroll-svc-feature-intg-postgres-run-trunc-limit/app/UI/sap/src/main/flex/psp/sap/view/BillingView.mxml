@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         height="100%"
+         width="100%"
+         verticalGap="0"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.enums.PartsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.UsageBillingInvoice;
+        import psp.sap.model.UsageBillingInvoiceDetail;
+        import psp.sap.viewmodel.BillingViewModel;
+
+        private var mViewModel:BillingViewModel;
+        private var mTempViewModel:BillingViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():BillingViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:BillingViewModel):void {
+
+            if (mViewModel != null) {
+                mViewModel.startDateValidator.listener = null;
+                mViewModel.endDateValidator.listener = null;
+                mViewModel.dateRangeValidator.startDateListener = null;
+                mViewModel.dateRangeValidator.endDateListener = null;
+            }
+
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+
+            if (mViewModel != null) {
+                mViewModel.startDateValidator.listener = startDateInput;
+                mViewModel.endDateValidator.listener = endDateInput;
+                mViewModel.dateRangeValidator.startDateListener = startDateInput;
+                mViewModel.dateRangeValidator.endDateListener = endDateInput;
+
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function displayUsageCount(item:Object):String {
+            var invoiceDetail:UsageBillingInvoiceDetail = UsageBillingInvoice(item).invoiceDetail;
+            if (hasPayrollDetails(UsageBillingInvoice(item))) {
+                return String(invoiceDetail.numEmployessPaidPrevMonth);
+            } else {
+                return "";
+            }
+        }
+
+        public function displayEmployeeFee(item:Object):String {
+            var invoiceDetail:UsageBillingInvoiceDetail = UsageBillingInvoice(item).invoiceDetail;
+            if (hasPayrollDetails(UsageBillingInvoice(item))) {
+                return SAPCurrencyFormatters.defaultFormatter.format(invoiceDetail.employeeFee);
+            } else {
+                return "";
+            }
+        }
+
+        private function formatCurrency(item:Object, dgc:DataGridColumn):String {
+            var invoiceDetail:UsageBillingInvoiceDetail = UsageBillingInvoice(item).invoiceDetail;
+            if (hasPayrollDetails(UsageBillingInvoice(item))) {
+                return  SAPCurrencyFormatters.defaultFormatter.format(invoiceDetail.employeeFee);
+            } else {
+                return "";
+            }
+        }
+
+        public function displaySubscriptionFee(item:Object):String {
+            var invoiceDetail:UsageBillingInvoiceDetail = UsageBillingInvoice(item).invoiceDetail;
+            if (hasPayrollDetails(UsageBillingInvoice(item))) {
+                return  SAPCurrencyFormatters.defaultFormatter.format(invoiceDetail.subscriptionFee);
+            } else if (hasNoPayrollDetails(UsageBillingInvoice(item))) {
+                return "No Payroll For This Billing Date";
+            } else {
+                return "";
+            }
+        }
+
+        public function displayStatementDate(item:Object):String {
+            var billHistory:UsageBillingInvoice = UsageBillingInvoice(item);
+            var index:int = viewModel.billingHistory.getItemIndex(billHistory);
+            if (index > 0 && viewModel.billingHistory.length > 1) {
+                var prevBillHistory:UsageBillingInvoice = UsageBillingInvoice(viewModel.billingHistory.getItemAt(index - 1));
+                viewModel.updateDateSuffix(billHistory,prevBillHistory);
+            }
+            var statementDateSuffix:String =  (billHistory.statementDateCounter>0) ?  (" ("+String(billHistory.statementDateCounter)+")") : "";
+            return SAPDateFormatters.dateFormatMedium.format(billHistory.statementDate) + statementDateSuffix;
+        }
+
+        public function hasPayrollDetails(invoice:UsageBillingInvoice):Boolean {
+            return (invoice.invoiceDetail != null && invoice.invoiceDetail.isPayrollItem == true);
+        }
+
+        public function hasNoPayrollDetails(invoice:UsageBillingInvoice):Boolean {
+            return (invoice.invoiceDetail != null && invoice.invoiceDetail.isPayrollItem == false);
+        }
+
+        public function showUsageCountLink(item:Object):Boolean {
+            var invoice:UsageBillingInvoice = UsageBillingInvoice(item);
+            return (invoice.invoiceDetail != null && invoice.invoiceDetail.numEmployessPaidPrevMonth > 0);
+        }
+
+        public function displayItemCharges(invoice:UsageBillingInvoice):void {
+            var index:int = viewModel.billingHistory.getItemIndex(invoice);
+            viewModel.displayItemCharges(index);
+        }
+
+        ]]>
+    </mx:Script>
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}"/>
+    <mx:VBox
+        id="titleBox"
+        visible="{!viewModel.isDataLoading}"
+        includeInLayout="{!viewModel.isDataLoading}"
+        width="90%"
+        height="20%"
+        paddingRight="0"
+        verticalGap="5">
+        <mx:HBox paddingLeft="0">
+            <mx:Label
+                text="DIY Monthly Billing Details"
+                width="100%"
+                textAlign="left"
+                fontSize="16"
+                fontWeight="bold"/>
+
+            <mx:VBox horizontalGap="0">
+                <mx:HBox paddingLeft="0">
+                    <mx:Label text="Symphony Subscription: " styleName="fieldLabel" paddingLeft="10"/>
+                    <controls:SAPComboBox dataProvider="{viewModel.subscriptionNumberCollection}" dataField="subscriptionNumberSelected"/>
+                </mx:HBox>
+
+                <mx:Button paddingLeft="50" paddingRight="50" label="Filter" click="viewModel.getBillingDetailsByDateAndSubscription();"/>
+            </mx:VBox>
+
+            <mx:Label text="" fontWeight="bold" paddingLeft="0"/>
+            <mx:VBox horizontalGap="0" width="400">
+                <mx:FormItem id="fromItem" label="From Date" labelStyleName="boldText" labelWidth="90">
+                    <pspui:SAPDateField
+                        id="startDateInput"
+                        width="100"
+                        editable="true"
+                        tabIndex="1"/>
+                </mx:FormItem>
+                <mx:FormItem id="toItem" label="To Date" labelStyleName="boldText" labelWidth="90">
+                    <pspui:SAPDateField
+                        id="endDateInput"
+                        width="100"
+                        editable="true"
+                        tabIndex="2"/>
+                </mx:FormItem>
+            </mx:VBox>
+
+        </mx:HBox>
+    </mx:VBox>
+    <mx:VBox
+        id="dataContainer"
+        visible="{!viewModel.isDataLoading}"
+        includeInLayout="{!viewModel.isDataLoading}"
+        width="70%"
+        height="80%"
+        paddingRight="0"
+        verticalGap="0">
+
+        <mx:DataGrid
+            id="billingHistoryDataGrid"
+            width="100%"
+            minWidth="500"
+            dataProvider="{viewModel.billingHistory}"
+            selectable="false"
+            variableRowHeight="true"
+            draggableColumns="false"
+            height="80%"
+            visible="{viewModel.hasBillingHistory}"
+            tabEnabled="false">
+            <mx:columns>
+                <mx:DataGridColumn
+                    headerText="Billing Date*"
+                    dataField="statementDate"
+                    textAlign="left"
+                    minWidth="100">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%" paddingLeft="5">
+                                <mx:LinkButton label="{outerDocument.displayStatementDate(data)}"
+                                               visible="true"
+                                               toolTip="Click for details"
+                                               styleName="standardLinkButtonStyle"
+                                               click="outerDocument.displayItemCharges(UsageBillingInvoice(data));"
+                                               data="{data}"
+                                />
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.UsageBillingInvoice;
+                                    ]]></mx:Script>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                    headerText="Subscription Fee**"
+                    minWidth="50"
+                    visible="true">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%" paddingLeft="5" paddingRight="5" horizontalScrollPolicy="off">
+                                <mx:Text text="{outerDocument.displaySubscriptionFee(data)}"
+                                         width="100%" textAlign="right"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                    headerText="Employees Paid {String('\n')}Prev Month+"
+                    dataField="invoiceDetail.numEmployessPaidPrevMonth"
+                    textAlign="right"
+                    minWidth="50">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%" height="100%" textAlign="right">
+                                <mx:LinkButton id="usageCountLinkButton"
+                                               label="{outerDocument.displayUsageCount(data)}"
+                                               styleName="standardLinkButtonStyle"
+                                               click="outerDocument.viewModel.displayBillingDetails(UsageBillingInvoice(data))"
+                                               visible="{outerDocument.showUsageCountLink(data)}"
+                                               includeInLayout="{outerDocument.showUsageCountLink(data)}"
+                                               data="{data}"
+                                               width="100%"
+                                               textAlign="right"/>
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.UsageBillingInvoice;
+                                    ]]></mx:Script>
+                                <mx:Text text="{outerDocument.displayUsageCount(data)}" textAlign="right"
+                                         includeInLayout="{!outerDocument.showUsageCountLink(data)}"
+                                         width="100%"
+                                         visible="{!outerDocument.showUsageCountLink(data)}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                    headerText="Employee Fee"
+                    labelFunction="formatCurrency"
+                    textAlign="right"
+                    minWidth="50"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:Text textAlign="left" width="70%" visible="{viewModel.hasBillingHistory}" text="*The day of the month the customer will be charged for their recurring subscription. The billing date is established when the Billing Profile is first created for an Intuit subscription.{String('\n')} All recurring product/service subscriptions associated with that Billing Profile will have the same billing date."/>
+        <mx:Text textAlign="left" width="70%" visible="{viewModel.hasBillingHistory}"
+                 text="**Fixed monthly/annual cost in advance.  Fees may be prorated based on the billing date."/>
+        <mx:Text textAlign="left" width="70%" visible="{viewModel.hasBillingHistory}"
+                 text="+ The number of employees paid at least once in the prior month for this subscription (all EINs), regardless of any free trial or other promotion."/>
+
+        <mx:Text
+            text="No bills were found for this company."
+            width="100%"
+            textAlign="center"
+            visible="{!viewModel.hasBillingHistory}"
+            includeInLayout="{!viewModel.hasBillingHistory}"
+            fontWeight="bold"/>
+    </mx:VBox>
+
+
+    <controls:PopUpPart id="billingDetailsPopup" showCloseButton="true" horizontalResizeEnabled="false"
+                        resizeToContent="true"
+                        label="{PartsEnum.BILLING_DETAILS +'_pup'}" deferAdd="false">
+        <pspui:BillingDetailsView label="{PartsEnum.BILLING_DETAILS}"/>
+    </controls:PopUpPart>
+
+    <!-- start date bindings -->
+    <mx:Binding source="startDateInput.text" destination="viewModel.startDate" />
+    <mx:Binding source="viewModel.startDate" destination="startDateInput.text" />
+
+    <!-- end date bindings -->
+    <mx:Binding source="endDateInput.text" destination="viewModel.endDate" />
+    <mx:Binding source="viewModel.endDate" destination="endDateInput.text" />
+
+</mx:VBox>

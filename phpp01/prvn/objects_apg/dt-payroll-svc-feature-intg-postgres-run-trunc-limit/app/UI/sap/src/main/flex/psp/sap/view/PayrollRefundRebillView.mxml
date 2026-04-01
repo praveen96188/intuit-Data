@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%" height="100%"
+         creationComplete="onCreationComplete()">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.viewmodel.PayrollRefundRebillViewModel;
+
+
+        private var mViewModel:PayrollRefundRebillViewModel;
+        private var mTempViewModel:PayrollRefundRebillViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PayrollRefundRebillViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollRefundRebillViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+
+                if (mViewModel != null) {
+                    mViewModel.rebillPriceValidator.listener = unitPriceInput;
+                    mViewModel.rebillQuantityValidator.listener = unitQuantityInput;
+                }
+            } else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        /**
+         * Confirmation dialog
+         */
+        private function confirm():void {
+            var msg:String = viewModel.isRebill ? "refund/rebill" : "refund";
+            var msgString:String = "Are you sure you want to " + msg + " this transaction?";
+            Alert.show(msgString, "Confirmation",
+                    Alert.YES | Alert.CANCEL,
+                    this,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{panel}" isLoading="{viewModel.isDataLoading}" />
+    
+    <mx:Resize id="r1" duration="750"/>
+    <mx:CurrencyFormatter id="currancyFormatter" currencySymbol="$" useNegativeSign="false" precision="2" />
+
+    <mx:VBox
+            id="panel"
+            height="100%"
+            verticalGap="0"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+
+        <mx:VBox styleName="grayDataGridVBox" verticalScrollPolicy="off" horizontalScrollPolicy="off" width="100%" resizeEffect="r1">
+            <!-- Refund -->
+            <mx:VBox verticalGap="0">
+                <mx:HBox width="100%" textAlign="left" verticalAlign="middle" horizontalGap="0">
+                    <mx:Label text="Refund" styleName="grayDataGridHeading" width="100%"/>
+                    <mx:CheckBox id="rebillCheckbox" label="Refund/Rebill" labelPlacement="left" paddingRight="10"/>
+                </mx:HBox>
+                <mx:Grid verticalGap="0" horizontalGap="0">
+                    <mx:GridRow>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorder">
+                            <mx:Label text="Transaction Type"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                            <mx:Label text="Units"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                            <mx:Label text="Unit Price"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                            <mx:Label text="Total Refund"/>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                    <mx:GridRow backgroundColor="{UIUtils.getRowColor(1)}">
+                        <mx:GridItem
+                                horizontalAlign="left"
+                                verticalAlign="middle"
+                                styleName="borderBottomLeftRight"
+                                paddingTop="5"
+                                paddingBottom="5"
+                                paddingLeft="5"
+                                paddingRight="5">
+                            <mx:Text id="feeNameText" text="Fee Debit -{viewModel.feeDetail.isPayrollFee ? '\n Service Fee -' : ''} {viewModel.feeDetail.feeName}" />
+                        </mx:GridItem>
+                        <mx:GridItem
+                                horizontalAlign="center"
+                                verticalAlign="middle"
+                                styleName="borderBottomRight">
+                            <mx:Label id="unitsLabel" text="-{viewModel.feeDetail.units}"/>
+                        </mx:GridItem>
+                        <mx:GridItem
+                                horizontalAlign="center"
+                                verticalAlign="middle"
+                                minWidth="100"
+                                styleName="borderBottomRight">
+                            <mx:Label id="unitPriceLabel" text="{currancyFormatter.format(viewModel.feeDetail.unitPrice)}" color="{(viewModel.feeDetail.unitPrice >= 0) ? 0x0000000 : 0xFF0000}"/>
+                        </mx:GridItem>
+                        <mx:GridItem
+                                horizontalAlign="center"
+                                verticalAlign="middle"
+                                minWidth="100"
+                                styleName="borderBottomRight">
+                            <mx:Label id="totalPriceLabel" text="{currancyFormatter.format(viewModel.feeDetail.totalPrice*-1)}" color="{(viewModel.feeDetail.totalPrice*-1 >= 0) ? 0x0000000 : 0xFF0000}"/>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                </mx:Grid>
+            </mx:VBox>
+
+            <!-- rebill -->
+            <mx:VBox verticalGap="0" visible="{viewModel.isRebill}" includeInLayout="{viewModel.isRebill}" resizeEffect="r1">
+                <mx:HBox width="100%" textAlign="left" verticalAlign="middle" horizontalGap="0">
+                    <mx:Label text="Rebill" styleName="grayDataGridHeading" width="100%"/>
+                </mx:HBox>
+                <mx:Grid verticalGap="0" horizontalGap="0">
+                    <mx:GridRow>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorder">
+                            <mx:Label text="Transaction Type"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                            <mx:Label text="Units"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                            <mx:Label text="Unit Price"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                            <mx:Label text="Total Rebill"/>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                    <mx:GridRow
+                            backgroundColor="{UIUtils.getRowColor(1)}">
+                        <mx:GridItem
+                                horizontalAlign="left"
+                                verticalAlign="middle"
+                                styleName="borderBottomLeftRight"
+                                paddingTop="5"
+                                paddingBottom="5"
+                                paddingLeft="5"
+                                paddingRight="5">
+                            <mx:Text id="feeDebitText" text="Fee Debit -{viewModel.feeDetail.isPayrollFee ? '\n Service Fee -' : ''} {viewModel.feeDetail.feeName}" />
+                        </mx:GridItem>
+                        <mx:GridItem
+                                horizontalAlign="center"
+                                verticalAlign="middle"
+                                styleName="borderBottomRight">
+                            <mx:TextInput
+                                    id="unitQuantityInput"
+                                    textAlign="right"
+                                    width="75"/>
+                        </mx:GridItem>
+                        <mx:GridItem
+                                horizontalAlign="center"
+                                verticalAlign="middle"
+                                minWidth="100"
+                                styleName="borderBottomRight">
+                            <mx:Label id="feeDollarLabel" text="$" width="10" textAlign="right"/>
+                            <mx:TextInput
+                                    id="unitPriceInput"
+                                    textAlign="right"
+                                    width="75"/>
+                        </mx:GridItem>
+                        <mx:GridItem
+                                horizontalAlign="center"
+                                verticalAlign="middle"
+                                minWidth="100"
+                                styleName="borderBottomRight">
+                            <mx:Label id="rebillTotalPriceLabel" text="{currancyFormatter.format(viewModel.rebillTotalPrice)}" color="{(viewModel.rebillTotalPrice >= 0) ? 0x0000000 : 0xFF0000}"/>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                </mx:Grid>
+            </mx:VBox>
+            <mx:HBox
+                    backgroundColor="{UIUtils.getRowColor(1)}"
+                    horizontalAlign="right"
+                    verticalAlign="middle"
+                    paddingTop="5"
+                    paddingBottom="5"
+                    width="100%"
+                    visible="{!viewModel.isRebill}"
+                    includeInLayout="{!viewModel.isRebill}">
+                <mx:Label id="netRefundLabel" text="Net Refund:" fontWeight="bold" width="100%" textAlign="right" />
+                <mx:Text id="refundTotalText" textAlign="center" text="{currancyFormatter.format(viewModel.refundTotal*-1)}" color="{(viewModel.refundTotal*-1 >= 0) ? 0x0000000 : 0xFF0000}" minWidth="100"/>
+            </mx:HBox>
+            <mx:HBox
+                    backgroundColor="{UIUtils.getRowColor(1)}"
+                    horizontalAlign="right"
+                    verticalAlign="middle"
+                    paddingTop="5"
+                    paddingBottom="5"
+                    width="100%"
+                    visible="{viewModel.isRebill}"
+                    includeInLayout="{viewModel.isRebill}">
+                <mx:Label id="netRebillRefundLabel" text="Net (Refund)/Rebill:" fontWeight="bold" width="100%" textAlign="right"/>
+                <mx:Text id="rebillRefundTotalText" textAlign="center" text="{currancyFormatter.format(viewModel.rebillRefundTotal)}" color="{(viewModel.rebillRefundTotal >= 0) ? 0x0000000 : 0xFF0000}" minWidth="100"/>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:Spacer height="10"/>
+
+        <mx:HBox horizontalAlign="right" width="100%">
+            <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button id="saveButton" label="Save" click="confirm()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Binding source="rebillCheckbox.selected" destination="viewModel.isRebill" />
+    <mx:Binding source="viewModel.isRebill" destination="rebillCheckbox.selected" />
+
+    <mx:Binding source="unitPriceInput.text" destination="viewModel.rebillUnitPrice" />
+    <mx:Binding source="viewModel.rebillUnitPrice" destination="unitPriceInput.text" />
+
+    <mx:Binding source="unitQuantityInput.text" destination="viewModel.rebillUnitQuantity" />
+    <mx:Binding source="viewModel.rebillUnitQuantity" destination="unitQuantityInput.text" />
+
+</mx:VBox>

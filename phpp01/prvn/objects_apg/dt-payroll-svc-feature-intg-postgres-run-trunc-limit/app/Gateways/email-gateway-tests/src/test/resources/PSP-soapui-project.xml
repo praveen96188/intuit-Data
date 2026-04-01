@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="PSP" soapui-version="2.0.2" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="ProjectSettings@projectRoot">C:\dev\PSP\release\Gateways\Email\test</con:setting></con:settings><con:interface name="NotificationSoapBinding" bindingName="{http://www.intuit.com/ias/notification/pub/wsdl}NotificationSoapBinding" soapVersion="1_1" definition="file:C:\projects\perforce\bob\notificationservice\WSDLs\notification.wsdl"><con:settings/><con:endpoints><con:endpoint>${#Project#env.url}</con:endpoint></con:endpoints><con:operation isOneWay="false" action="Send" name="Send" bindingOperationName="Send" inputName="" receivesAttachments="false" sendsAttachments="false"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#env.url}</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.intuit.com/ias/common/xsd" xmlns:xsd1="http://www.intuit.com/ias/notification/pub/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <soapenv:Header>
+      <xsd:Header ServiceVersion="?">
+         <!--Optional:-->
+         <xsd:TransactionId>test123</xsd:TransactionId>
+         <xsd:CallerSystem>SOAPUI_DEVTEST</xsd:CallerSystem>
+         <xsd:SourceSystem>SOAPUI_DEVTEST</xsd:SourceSystem>
+      </xsd:Header>
+   </soapenv:Header>
+   <soapenv:Body>
+      <xsd1:SendRequest Version="1.0">
+         <Notification>
+            <!--You may enter the following 5 items in any order-->
+            <NotificationType>EMAIL</NotificationType>
+            <DeliveryType>
+               <Immediate/>
+            </DeliveryType>
+            <SenderProfile>
+               <SenderId>${#Project#senderID}</SenderId>
+            </SenderProfile>
+            <ContentProfile>
+               <Content xsi:type="xsd1:BasicContentDataType">
+                  <ContentId>PSP_DEV_TEST_EMAIL</ContentId>
+               </Content>
+               <TemplateProperties>
+                  <Attribute>
+                     <Name>OfferingName</Name>
+                     <Value>Test Payroll Service Offering</Value>
+                  </Attribute>
+               </TemplateProperties>
+            </ContentProfile>
+            <Destinations>
+               <Destination>
+                  <RecipientId>recp_1</RecipientId>
+                  <Recipient xsi:type="xsd1:BasicRecipientDataType">
+                     <Address>ken_paul@intuit.com</Address>
+                  </Recipient>
+                  <Format>HTML</Format>
+                  <TemplateProperties>
+                     <Attribute>
+                        <Name>PSPTestParam</Name>
+                        <Value>This is a valid test parameter.</Value>
+                     </Attribute>
+                  </TemplateProperties>
+               </Destination>
+            </Destinations>
+         </Notification>
+      </xsd1:SendRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request></con:call></con:operation><con:definitionCache rootPart="file:C:\projects\perforce\bob\notificationservice\WSDLs\notification.wsdl" type="TEXT"><con:part><con:url>file:C:\projects\perforce\bob\notificationservice\WSDLs\notification.wsdl</con:url><con:content><![CDATA[<!--edited with XMLSpy v2007 sp1 (http://www.altova.com) by Fred Chen (Intuit)-->
+<wsdl:definitions targetNamespace="http://www.intuit.com/ias/notification/pub/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:nts="http://www.intuit.com/ias/notification/pub/xsd" xmlns:tns="http://www.intuit.com/ias/notification/pub/wsdl" xmlns:ns1="http://www.intuit.com/ias/common/xsd">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.intuit.com/ias/notification/pub/xsd" elementFormDefault="qualified">
+      <xsd:include schemaLocation="notification.xsd"/>
+    </xsd:schema>
+    <xsd:schema targetNamespace="http://www.intuit.com/ias/common/xsd" elementFormDefault="qualified">
+      <xsd:include schemaLocation="common.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="SendRequest">
+    <wsdl:part name="header" element="ns1:Header"/>
+    <wsdl:part name="body" element="nts:SendRequest"/>
+  </wsdl:message>
+  <wsdl:message name="SendResponse">
+    <wsdl:part name="header" element="ns1:Header"/>
+    <wsdl:part name="body" element="nts:SendResponse"/>
+  </wsdl:message>
+  <wsdl:message name="Fault">
+    <wsdl:part name="fault" element="ns1:Error"/>
+  </wsdl:message>
+  <wsdl:portType name="NotificationPort">
+    <wsdl:operation name="Send">
+      <wsdl:input message="tns:SendRequest"/>
+      <wsdl:output message="tns:SendResponse"/>
+      <wsdl:fault name="Fault" message="tns:Fault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NotificationSoapBinding" type="tns:NotificationPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="Send">
+      <soap:operation soapAction="Send"/>
+      <wsdl:input>
+        <soap:body parts="body" use="literal"/>
+        <soap:header message="tns:SendRequest" part="header" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body parts="body" use="literal"/>
+        <soap:header message="tns:SendResponse" part="header" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="Fault">
+        <soap:fault name="Fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="NotificationService">
+    <wsdl:port name="NotificationPort" binding="tns:NotificationSoapBinding">
+      <soap:address location="http://www.intuit.com/notificationservice"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:C:\projects\perforce\bob\notificationservice\WSDLs\common.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2007 sp1 (http://www.altova.com) by Fred Chen (Intuit)-->
+<xs:schema targetNamespace="http://www.intuit.com/ias/common/xsd" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xmlns="http://www.intuit.com/ias/common/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Error" type="ErrorDataType"/>
+  <xs:complexType name="ErrorDataType">
+    <xs:sequence>
+      <xs:element name="Category">
+        <xs:annotation>
+          <xs:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:annotation>
+            <xs:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xs:documentation>
+          </xs:annotation>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="SYSTEM"/>
+            <xs:enumeration value="INPUT"/>
+            <xs:enumeration value="TRANSITORY"/>
+            <xs:enumeration value="BUSINESS_LOGIC"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Code" type="IDDataType">
+        <xs:annotation>
+          <xs:documentation>The code that identifies the error that occurs</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Description" type="DescriptionDataType">
+        <xs:annotation>
+          <xs:documentation>Human readeable description of the error. This field should not be used in error handling logic and should not be returned directly to the customer</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Source" type="SystemIDDataType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>if present, describe where in the system the error occured</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Header" type="HeaderDataType"/>
+  <xs:complexType name="HeaderDataType">
+    <xs:sequence>
+      <xs:element name="TransactionId" type="IDDataType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Optional: An optional identifier client applications can set to indicate this request is part of a transaction. If set, the Notification Service retrieves the TransactionId sent in the request and returns the value in the response Header/TransactionId field. If the client application does not set this field, the Notification Service internally generates a unique identifier and returns that value in the responose Header/TransactionId field.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="InternalRequestId" type="IDDataType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>(Not Used For Request) This field contains a unique identifier generated by the Notification Service to represent the specific request/response. It is used by the response message. Client applications do not set this field in the request. The Notification Service ignores any value set in the request.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CreationDateTime" type="xs:dateTime" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The date/time of the request in ISO8601 format: YYYY-MM-DDThh:mm:ss{tz} where tz is the timezone designation +-hh:mm or Z for UTC time.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallerSystem" type="SystemIDDataType">
+        <xs:annotation>
+          <xs:documentation>Identifier for the entity calling the Notification Service.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SourceSystem" type="SystemIDDataType">
+        <xs:annotation>
+          <xs:documentation>Identifier for system originating the request to the Notification Service.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Endpoint" type="SystemIDDataType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>(Not Used For Request) This field is set by the Notification Service in the Response header to indicate which system serviced the request.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="ServiceVersion" type="VersionDataType" use="required">
+      <xs:annotation>
+        <xs:documentation>The version of the service to call. This attribute is currently not used by the service,  but the value should be set to 1.0.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="VersionDataType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+      <xs:maxLength value="10"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SystemIDDataType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="IDDataType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DescriptionDataType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="1000"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:C:\projects\perforce\bob\notificationservice\WSDLs\notification.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2007 sp1 (http://www.altova.com) by Fred Chen (Intuit)-->
+<xsd:schema targetNamespace="http://www.intuit.com/ias/notification/pub/xsd" elementFormDefault="unqualified" attributeFormDefault="unqualified" xmlns:ias="http://www.intuit.com/ias/common/xsd" xmlns="http://www.intuit.com/ias/notification/pub/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.intuit.com/ias/common/xsd" schemaLocation="common.xsd"/>
+  <xsd:simpleType name="AddressDataType">
+    <xsd:annotation>
+      <xsd:documentation>Data type for an address value</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AttributeDataType">
+    <xsd:annotation>
+      <xsd:documentation>Name/Value pair data type</xsd:documentation>
+    </xsd:annotation>
+    <xsd:all>
+      <xsd:element name="Name" type="AttributeNameDataType">
+        <xsd:annotation>
+          <xsd:documentation>Data type for an attribute name. Attribute names must contain characters only from the character set A-Z, a-Z, 0-9, the period character (.), the space character ( ), the underscore character (_), or the hyphen character (-)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Value" type="AttributeValueDataType">
+        <xsd:annotation>
+          <xsd:documentation>Data type for an attribute value</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:simpleType name="AttributeNameDataType">
+    <xsd:annotation>
+      <xsd:documentation>Data type for an attribute name. Attribute names must contain characters only from the character set A-Z, a-Z, 0-9, the period character (.), the underscore character (_), or the hyphen character (-)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Za-z][ A-Za-z\d\._\-]{0,99}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="AttributeValueDataType">
+    <xsd:annotation>
+      <xsd:documentation>Data type for an attribute value</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="100000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="BasicContentDataType">
+    <xsd:complexContent>
+      <xsd:extension base="ContentDataType">
+        <xsd:all>
+          <xsd:element name="ContentProviderId" type="ias:IDDataType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>If specified, identifies the source of the content. Currently, this element is not used.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="ContentId" type="ias:IDDataType">
+            <xsd:annotation>
+              <xsd:documentation>Unique identifier for the content</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Subject" type="ias:DescriptionDataType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Subject/purpose of this notification</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:all>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="BasicRecipientDataType">
+    <xsd:complexContent>
+      <xsd:extension base="RecipientDataType">
+        <xsd:all>
+          <xsd:element name="Address" type="AddressDataType">
+            <xsd:annotation>
+              <xsd:documentation>Address of recipient</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Name" type="NameDataType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Name of recipient</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:all>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="BasicSenderDataType">
+    <xsd:complexContent>
+      <xsd:extension base="SenderDataType">
+        <xsd:all>
+          <xsd:element name="Address" type="AddressDataType">
+            <xsd:annotation>
+              <xsd:documentation>Email Address of sender</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="Name" type="NameDataType">
+            <xsd:annotation>
+              <xsd:documentation>Name of sender</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:all>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ContentDataType"/>
+  <xsd:simpleType name="NameDataType">
+    <xsd:annotation>
+      <xsd:documentation>Data type for an name</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="NotificationDataType">
+    <xsd:all>
+      <xsd:element name="NotificationType" type="NotificationTypeDataType">
+        <xsd:annotation>
+          <xsd:documentation>Type of notification. Currently, only EMAIL is supported</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DeliveryType">
+        <xsd:annotation>
+          <xsd:documentation>Specifies the type of delivery. Currently, only Immediate is supported</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element name="Immediate">
+              <xsd:annotation>
+                <xsd:documentation>Specifies the notification should be sent immediately</xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType/>
+            </xsd:element>
+            <xsd:element name="Scheduled" type="xsd:dateTime">
+              <xsd:annotation>
+                <xsd:documentation>Specifies the notification should be sent at a later date/time</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Delayed" type="TimeIntervalDataType">
+              <xsd:annotation>
+                <xsd:documentation>Specifies the notification should be sent by time offset from now.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SenderProfile">
+        <xsd:annotation>
+          <xsd:documentation>Describes the sender of the notification. if not specified, the default sender configured in the provider is assumed</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="SenderId" type="ias:IDDataType">
+              <xsd:annotation>
+                <xsd:documentation>A unique identifier is assigned to each offering team using the Notification Service.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Sender" type="SenderDataType" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>Describes the sender of the notification. Caller must pass in a derived element of this type</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ContentProfile">
+        <xsd:annotation>
+          <xsd:documentation>Specifies the content and it's properties</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="Content" type="ContentDataType">
+              <xsd:annotation>
+                <xsd:documentation>Describes the content of the notification. Caller must pass in a derived element of this type</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="TemplateProperties" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>Content scoped properties used for notification template substitutions</xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="Attribute" type="AttributeDataType" maxOccurs="100"/>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Destinations">
+        <xsd:annotation>
+          <xsd:documentation>Describes the recipient(s) of the notification</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Destination" maxOccurs="1000">
+              <xsd:annotation>
+                <xsd:documentation>One or more recipients of the notification</xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:all>
+                  <xsd:element name="RecipientId" type="ias:IDDataType" minOccurs="0">
+                    <xsd:annotation>
+                      <xsd:documentation>Uniquely identifies the receiver for this request, as specified by the client.</xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element name="Recipient" type="RecipientDataType">
+                    <xsd:annotation>
+                      <xsd:documentation>Describes the recipient of the notification message. Caller must pass in a derived element of this type</xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element name="Format" type="ContentFormatDataType">
+                    <xsd:annotation>
+                      <xsd:documentation>The format that the recipient will receive the message in. Currently supported are HTML or Text</xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element name="TemplateProperties" minOccurs="0">
+                    <xsd:annotation>
+                      <xsd:documentation>Per recipient scoped properties used for notification template substiutions</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                      <xsd:sequence>
+                        <xsd:element name="Attribute" type="AttributeDataType" maxOccurs="100"/>
+                      </xsd:sequence>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:all>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:simpleType name="NotificationTypeDataType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="EMAIL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="RecipientDataType"/>
+  <xsd:attributeGroup name="RequestAttributeGroup">
+    <xsd:attribute name="Version" type="ias:VersionDataType">
+      <xsd:annotation>
+        <xsd:documentation>The version of the request. If not set, the most current version is assumed.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="ResponseAttributeGroup">
+    <xsd:attribute name="Version" type="ias:VersionDataType">
+      <xsd:annotation>
+        <xsd:documentation>The version of the response. If not set, the most current version is assumed.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <!--Success data type-->
+  <xsd:complexType name="SuccessDataType">
+    <xsd:annotation>
+      <xsd:documentation>Success data type</xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+  <xsd:complexType name="SenderDataType"/>
+  <!--SendNotification-->
+  <xsd:element name="SendRequest">
+    <xsd:complexType>
+      <xsd:all>
+        <xsd:element name="Notification" type="NotificationDataType"/>
+      </xsd:all>
+      <xsd:attributeGroup ref="RequestAttributeGroup"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!--SendResponse-->
+  <xsd:element name="SendResponse">
+    <xsd:annotation>
+      <xsd:documentation>Response to SendRequest</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Error" type="ias:ErrorDataType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>If an unexpected system error or an input error occurred while processing the entire request, this element will be set detailing the error. If one more more BUSINESS_LOGIC errors occured in the request, this error will be set to summarize a BUSINESS_LOGIC error occured. The Result element(s) will also be set to to describe the details of the BUSINESS_LOGIC error(s) that occured.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="Result" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="RecipientId" type="ias:IDDataType" minOccurs="0">
+                <xsd:annotation>
+                  <xsd:documentation>The unique identifier of the recipient as specified in the request</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:choice>
+                <xsd:element name="Success" type="SuccessDataType">
+                  <xsd:annotation>
+                    <xsd:documentation>Indicates the request for notification to the specified receiver was received and achknowledged</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="Error" type="ias:ErrorDataType">
+                  <xsd:annotation>
+                    <xsd:documentation>The error that occured specifically on the receiver</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+              </xsd:choice>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ResponseAttributeGroup"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:simpleType name="TimeUnitDataType">
+    <xsd:annotation>
+      <xsd:documentation>The unit of time. MONTH, YEAR, ETC.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MINUTE"/>
+      <xsd:enumeration value="HOUR"/>
+      <xsd:enumeration value="DAY"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="TimeIntervalDataType">
+    <xsd:annotation>
+      <xsd:documentation>Represents an interval of time interval."</xsd:documentation>
+    </xsd:annotation>
+    <xsd:all>
+      <xsd:element name="TimeUnit" type="TimeUnitDataType">
+        <xsd:annotation>
+          <xsd:documentation>The time interval's unit of time.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TimeAmount" type="TimeAmountDataType">
+        <xsd:annotation>
+          <xsd:documentation>The time interval amount. For example, if TimeUnit is MONTH and this is set to"1", this means 1month..</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:all>
+  </xsd:complexType>
+  <xsd:simpleType name="TimeAmountDataType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minExclusive value="0"/>
+      <xsd:maxExclusive value="100000"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ContentFormatDataType">
+    <xsd:annotation>
+      <xsd:documentation>The format of the content that the content should be sent in.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Text"/>
+      <xsd:enumeration value="HTML"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache></con:interface><con:properties><con:property><con:name>env.url</con:name><con:value>https://ntfsvce2e.ptc.intuit.com/ias/notification/public</con:value></con:property><con:property><con:name>senderID</con:name><con:value>PSP</con:value></con:property></con:properties><con:wssContainer/></con:soapui-project>

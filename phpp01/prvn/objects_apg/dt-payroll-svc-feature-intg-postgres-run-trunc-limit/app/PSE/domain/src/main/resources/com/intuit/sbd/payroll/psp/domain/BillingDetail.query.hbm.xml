@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findOffloadedBillingDetails">
+        <![CDATA[
+		Select billingDetail
+			from com.intuit.sbd.payroll.psp.domain.BillingDetail as billingDetail,
+			     com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTxn,
+			     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+		    where billingDetail.Id= finTxn.BillingDetail.Id
+		        and finTxn.MoneyMovementTransaction.Id=mmTxn.Id
+		        and finTxn.Company.Id=mmTxn.Company.Id
+		        and mmTxn.InitiationDate = :currentDate
+		        and finTxn.SettlementDate >= :currentDate
+		        and finTxn.CurrentTransactionState.TransactionStateCd = :txnStateCd
+		        and (billingDetail.TaxExceptionInd != 0
+		             or billingDetail.TaxComputedDate != null
+		                and billingDetail.TaxComputedDate < :vertexUpdateDate)
+		        order by billingDetail.PayrollRun
+			]]>
+    </query>
+
+    <query name="findLastNonZeroSalesTaxRate">
+        <![CDATA[
+		Select d
+			from com.intuit.sbd.payroll.psp.domain.BillingDetail as d
+		    where d.PayrollRun.Company = :company
+		        and d.ItemSku = :sku
+		        and d.TaxAmount > 0.0
+		        order by d.ModifiedDate desc
+			]]>
+    </query>
+
+</hibernate-mapping>
+

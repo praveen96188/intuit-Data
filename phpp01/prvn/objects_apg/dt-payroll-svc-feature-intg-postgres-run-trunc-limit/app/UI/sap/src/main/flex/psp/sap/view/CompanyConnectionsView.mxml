@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.viewmodel.CompanyConnectionsViewModel;
+
+        private var mViewModel:CompanyConnectionsViewModel;
+        private var mTempViewModel:CompanyConnectionsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyConnectionsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyConnectionsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+	]]>
+    </mx:Script>
+    	<controls:PartsTabNavigator
+		label="{CompanyInspectorPageEnum.PAYROLL_CONNECTION_LOG + '_ptn'}">
+            <pspui:PayrollConnectionLogView label="{CompanyInspectorPageEnum.PAYROLL_CONNECTION_LOG}"/>
+            <pspui:DataSyncToolsView label="{CompanyInspectorPageEnum.DATA_SYNC_TOOLS}"/>
+	</controls:PartsTabNavigator>
+</mx:VBox>

@@ -1,0 +1,76 @@
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="550"
+         verticalScrollPolicy="auto"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.AdditionalIdHistoryPopUpViewModel;
+
+        private var mViewModel:AdditionalIdHistoryPopUpViewModel;
+        private var mTempViewModel:AdditionalIdHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():AdditionalIdHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:AdditionalIdHistoryPopUpViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getFormattedDate(item:Object, column:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatShort.format(item[column.dataField]);
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Label text="{viewModel.templateCode} Agency IDs History" styleName="heading" id="headerLabel" paddingLeft="2"
+              paddingBottom="3"
+              paddingTop="5"/>
+    <controls:SAPDataGrid id="paymentMethodsHistoryGrid"
+                          dataProvider="{viewModel.additionalIdsHistory}"
+                          width="100%" maxRows="6"
+                          selectable="false" draggableColumns="false">
+        <controls:columns>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Date Changed"
+                               width="170"
+                               dataField="modifiedDate"
+                               labelFunction="getFormattedDate"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Name"
+                               width="120"
+                               dataField="name"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Value"
+                               width="120"
+                               dataField="id"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Modified By"
+                               width="120"
+                               dataField="modifiedBy"
+                               paddingLeft="5"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

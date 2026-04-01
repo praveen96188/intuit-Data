@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+    <![CDATA[
+        import mx.controls.Alert;
+
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.model.User;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+        import psp.sap.viewmodel.UserSettingsViewModel;
+
+        private var mViewModel:UserSettingsViewModel;
+        private var mTempViewModel:UserSettingsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():UserSettingsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:UserSettingsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function confirmReset():void
+        {
+            Alert.show("Are you sure you want to reset all of your settings to default values?\nThis includes inline settings not shown on this page.",
+                    "Execute Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK)
+                        {
+                            viewModel.resetDefaults();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+
+
+    ]]>
+    </mx:Script>
+    <mx:HBox>
+        <controls:SAPCheckBox label="Display inline settings" dataField="displayInlineSettings"/>
+        <mx:Image source="{SAP.instance.icons.unLock}"
+                  visible="{viewModel.displayInlineSettings}"
+                  toolTip="With this option enabled, clicking these icons on certain pages will make the page show up the same way the next time you view it."/> 
+    </mx:HBox>
+    <controls:SAPCheckBox label="Include tax years for which processing was not initially done on PSP"
+                          dataField="includePossibleBackdateYears"
+                          visible="{CompanyInspectorViewModel.canViewTaxesTopic()}"
+                          includeInLayout="{CompanyInspectorViewModel.canViewTaxesTopic()}"/>
+    <mx:HBox>
+        <mx:Label text="Start-up page: "/>
+        <controls:SAPComboBox id="initialPage" dataProvider="{viewModel.possibleInitialPages}" dataField="initialPage"/>
+    </mx:HBox>
+    <mx:HBox horizontalAlign="center">
+        <mx:Button id="cancelButton" label="Clear" click="viewModel.refresh()"/>
+        <mx:Button id="saveButton" label="Save" click="viewModel.save();" enabled="{viewModel.canSave}"
+                   width="{cancelButton.width}"/>
+    </mx:HBox>
+
+    <mx:Spacer height="10"/>
+    <mx:HRule width="100%"/>
+    <mx:Spacer height="10"/>
+
+    <mx:Button label="Reset to Defaults" click="confirmReset();"/>
+
+
+</mx:VBox>

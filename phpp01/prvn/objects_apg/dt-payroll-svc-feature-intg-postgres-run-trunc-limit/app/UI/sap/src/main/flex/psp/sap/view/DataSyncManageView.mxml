@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         height="100%"
+         verticalGap="1"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.managers.PopUpManager;
+        import mx.utils.StringUtil;
+
+        import psp.sap.viewmodel.DataSyncManageViewModel;
+
+        private var mViewModel:DataSyncManageViewModel;
+        private var mTempViewModel:DataSyncManageViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():DataSyncManageViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:DataSyncManageViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                if (mViewModel != null) {
+                    mViewModel.memoRequiredValidator.listener = memoInput;
+                }
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private var popup:CaseIdSave;
+
+        private function processSave():void {
+            openPopUpWindow();
+        }
+
+        // method to open the PopUp Window on creationComplete
+        private function openPopUpWindow():void {
+            // open the PopUp Window as a modal popup window
+            // and store it in a variable for later use
+            popup = PopUpManager.createPopUp(this, CaseIdSave, true) as CaseIdSave;
+            popup.heading.label="Please provide Case Id";
+            popup.addEventListener("close", removeMe);
+            popup.cancel.addEventListener("click", removeMe);
+            popup.save.addEventListener("click", submitData);
+            PopUpManager.centerPopUp(popup);
+
+        }
+
+        private function removeMe(event:Event):void {
+            PopUpManager.removePopUp(popup);
+        }
+
+        private function submitData(event:Event):void {
+            if (popup.caseIdInput.text == null || StringUtil.trim(popup.caseIdInput.text) == "") {
+                popup.caseIdMandatoryItem.visible = true;
+            } else {
+                viewModel.caseId = popup.caseIdInput.text;
+                PopUpManager.removePopUp(popup);
+                viewModel.save();
+            }
+        }
+
+		]]>
+    </mx:Script>
+    <mx:RadioButtonGroup id="processType"/>
+    <mx:HBox paddingLeft="10" paddingTop="10" width="100%" horizontalAlign="right">
+        <mx:VBox borderStyle="solid" borderColor="#444444" verticalGap="1">
+            <mx:Label text="QB High Token = {viewModel.tokens.highToken}"/>
+            <mx:Label text="Payroll Txn Next ID = {viewModel.tokens.payrollTxNextId}"/>
+            <mx:Label text="Paycheck Next ID = {viewModel.tokens.paycheckNextId}"/>
+            <mx:Label text="Employee Next ID = {viewModel.tokens.employeeNextId}"/>
+            <mx:Label text="Payroll Item Next ID = {viewModel.tokens.payrollItemNextId}"/>
+        </mx:VBox>
+    </mx:HBox>
+    <pspui:RequiredLabel fontWeight="bold" text="Action(s):"
+                         validator="{viewModel.actionRequiredValidator}"/>
+    <mx:HBox horizontalGap="20" paddingLeft="10" paddingTop="0">
+        <mx:Canvas>
+            <mx:VBox y="12"
+                     label="Stop Items" width="300" enabled="{stopItems.selected}" borderColor="#444444" borderStyle="solid" borderThickness="1"
+                     paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+                <mx:CheckBox label="All Payroll Items" id="stopAllPayrollItems"/>
+                <mx:CheckBox label="All Employees" id="stopAllEmployeesCheckBox"/>
+                <mx:CheckBox label="All Payroll Txns" id="stopAllPayrollTxnsCheckBox"/>
+                <mx:CheckBox label="All Paychecks" id="stopAllPaychecksCheckBox"/>
+                <mx:Spacer height="10"/>
+                <mx:CheckBox label="All Data" id="stopAllData"/>
+                <mx:CheckBox label="All Prior Year Txns and Paychecks" id="stopAllPriorYearTxnsPaychecks"/>
+                <mx:CheckBox label="All EEs without current year Paychecks" id="stopAllEEsWithoutCurrentYearPaychecks"/>
+            </mx:VBox>
+            <mx:RadioButton opaqueBackground="#FFFFFF" x="11"
+                            id="stopItems" label="Stop Items" group="{processType}" value="0" selected="true"/>
+        </mx:Canvas>
+
+        <mx:Canvas>
+            <mx:VBox y="12"
+                     label="Push Items" width="250" enabled="{pushItems.selected}" borderColor="#444444" borderStyle="solid" borderThickness="1"
+                     paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+                <mx:CheckBox label="Payroll Items" id="pushPayrollItems"/>
+                <mx:CheckBox label="Employees" id="pushEmployees"/>
+                <mx:CheckBox label="Payroll Txns (Current Year)" id="pushPayrollTxnsCheckBox"/>
+                <mx:CheckBox label="Paychecks (Current Year)" id="pushPaychecksCheckBox"/>
+                <mx:Spacer height="10"/>
+                <mx:CheckBox label="All Prior Year Txns and Paychecks" id="pushAllPriorYearTxnsPaychecks"/>
+            </mx:VBox>
+            <mx:RadioButton opaqueBackground="#FFFFFF" x="11"
+                            id="pushItems" label="Push Items" group="{processType}" value="1"/>
+        </mx:Canvas>
+    </mx:HBox>
+    <mx:HBox paddingTop="10">
+        <pspui:RequiredLabel fontWeight="bold" text="Comment:"
+                             validator="{viewModel.memoRequiredValidator}"/>
+        <controls:SAPTextInput id="memoInput" width="400" height="60" toolTip="Memo to be applied to all items"
+                               dataField="memoString"/>
+        <mx:HBox width="100%" horizontalAlign="right">
+            <mx:Button label="Process" enabled="{viewModel.canSave}" click="processSave()"/>
+        </mx:HBox>
+    </mx:HBox>
+
+    <mx:Binding source="int(processType.selectedValue)" destination="viewModel.selectedAction"/>
+    <mx:Binding source="viewModel.selectedAction" destination="processType.selectedValue"/>
+
+    <mx:Binding source="stopAllEmployeesCheckBox.selected" destination="viewModel.stopAllEmployeesSelected"/>
+    <mx:Binding destination="stopAllEmployeesCheckBox.selected" source="viewModel.stopAllEmployeesSelected"/>
+
+    <mx:Binding source="stopAllPayrollItems.selected" destination="viewModel.stopAllPayrollItemsSelected"/>
+    <mx:Binding destination="stopAllPayrollItems.selected" source="viewModel.stopAllPayrollItemsSelected"/>
+
+    <mx:Binding source="stopAllPayrollTxnsCheckBox.selected" destination="viewModel.stopAllPayrollTxnsSelected"/>
+    <mx:Binding destination="stopAllPayrollTxnsCheckBox.selected" source="viewModel.stopAllPayrollTxnsSelected"/>
+
+    <mx:Binding source="stopAllPaychecksCheckBox.selected" destination="viewModel.stopAllPaychecksSelected"/>
+    <mx:Binding destination="stopAllPaychecksCheckBox.selected" source="viewModel.stopAllPaychecksSelected"/>
+
+    <mx:Binding source="stopAllData.selected" destination="viewModel.stopAllDataSelected"/>
+    <mx:Binding destination="stopAllData.selected" source="viewModel.stopAllDataSelected"/>
+
+    <mx:Binding source="stopAllPriorYearTxnsPaychecks.selected"
+                destination="viewModel.stopAllPriorYearTxnsPaychecksSelected"/>
+    <mx:Binding destination="stopAllPriorYearTxnsPaychecks.selected"
+                source="viewModel.stopAllPriorYearTxnsPaychecksSelected"/>
+
+    <mx:Binding source="stopAllEEsWithoutCurrentYearPaychecks.selected"
+                destination="viewModel.stopAllEEsWithoutCurrentYearPayrollSelected"/>
+    <mx:Binding destination="stopAllEEsWithoutCurrentYearPaychecks.selected"
+                source="viewModel.stopAllEEsWithoutCurrentYearPayrollSelected"/>
+
+    <mx:Binding source="pushEmployees.selected" destination="viewModel.pushEmployeesSelected"/>
+    <mx:Binding destination="pushEmployees.selected" source="viewModel.pushEmployeesSelected"/>
+
+    <mx:Binding source="pushPayrollItems.selected" destination="viewModel.pushPayrollItemsSelected"/>
+    <mx:Binding destination="pushPayrollItems.selected" source="viewModel.pushPayrollItemsSelected"/>
+
+    <mx:Binding source="pushPayrollTxnsCheckBox.selected" destination="viewModel.pushCurrentYearPayrollTxnsSelected"/>
+    <mx:Binding destination="pushPayrollTxnsCheckBox.selected" source="viewModel.pushCurrentYearPayrollTxnsSelected"/>
+
+    <mx:Binding source="pushPaychecksCheckBox.selected" destination="viewModel.pushCurrentYearPaychecksSelected"/>
+    <mx:Binding destination="pushPaychecksCheckBox.selected" source="viewModel.pushCurrentYearPaychecksSelected"/>
+
+    <mx:Binding source="pushPayrollItems.selected" destination="viewModel.pushPayrollItemsSelected"/>
+    <mx:Binding destination="pushPayrollItems.selected" source="viewModel.pushPayrollItemsSelected"/>
+
+    <mx:Binding source="pushAllPriorYearTxnsPaychecks.selected"
+                destination="viewModel.pushAllPriorYearTxnsPaychecksSelected"/>
+    <mx:Binding destination="pushAllPriorYearTxnsPaychecks.selected"
+                source="viewModel.pushAllPriorYearTxnsPaychecksSelected"/>
+</mx:VBox>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="layout">%d{yyyy-MM-dd'T'HH:mm:ss,SSSZ} %-5p [%t] %X{intuit_tid} %c{1} - %m%n</Property>
+        <Property name="logFilePattern">${sys:catalina.home}/logs/$${date:yyyy-MM}/psp-%d{MM-dd-yyyy}-%i.log.zip
+        </Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Async Loggers will auto-flush in batches, so switch off immediateFlush. -->
+        <RollingRandomAccessFile name="RollingRandomAccessFile"
+                                 fileName="@psplogging.psplogfilename@" filePattern="${logFilePattern}" append="true">
+            <PatternLayout pattern="${layout}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+            <RegexFilter regex=".*HHH90000022: Hibernate's legacy org.hibernate.Criteria API is deprecated.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+        </RollingRandomAccessFile>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${layout}"/>
+            <RegexFilter regex=".*HHH90000022: Hibernate's legacy org.hibernate.Criteria API is deprecated.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+        </Console>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="RollingRandomAccessFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+
+        <Logger name="com.intuit.sbd.payroll.psp.adapters.gemini.handler" level="debug"/>
+
+        <Logger name="com.mchange.v2.c3p0" level="INFO"/>
+        <Logger name="org.hibernate.cache.EhCacheProvider" level="error"/>
+        <Logger name="com.intuit.sbd.payroll.psp" level="@psplogging.priorityLevel@"/>
+        <Logger name="com.intuit.ems.psp" level="@psplogging.priorityLevel@"/>
+        <Logger name="com.intuit.ems.payroll.psp.gateway.brm" level="info"/>
+        <Logger name="com.intuit.ems.payroll" level="info"/>
+        <Logger name="com.intuit.sbd.payroll.psp.gateways.iam" level="warn"/>
+        <Logger name="com.intuit.sbd.payroll.psp.gateways.iam.IUSRealmClientWrapper" level="info"/>
+        <Logger name="com.intuit.sbd.payroll.psp.gateways.iam.IUSClientWrapper" level="info"/>
+        <Logger name="com.intuit.sbg.recrypt" level="info"/>
+
+        <!-- cdm adapter logging for resources in PayrollDataService -->
+        <Logger name="com.intuit.ems.dataservice.v1" level="info"/>
+        <Logger name="com.intuit.ems.dataservice.v1.filter.PayrollDataServiceLoggingFilter" level="error"/>
+        <!-- Filter logging -->
+        <Logger name="com.intuit.sbg.psp.filter" level="info"/>
+        <Logger name="com.intuit.sbg.psp.soap" level="info"/>
+
+        <Logger name="com.intuit.ems.cep.filters.LoggingFilter" level="warn"/>
+
+        <!-- cdm adapter - v4 sdk log level -->
+        <Logger name="com.intuit.v4" level="warn"/>
+        <Logger name="com.intuit.v4.domain.providers.InteractionExecutionProvider" level="info"/>
+        <Logger name="com.intuit.v4.interaction.InteractionRequest" level="debug"/>
+        <Logger name="com.intuit.v4.util.RequestMetricsLogger" level="info"/>
+        <Logger name="com.intuit.v4.providers.ProviderInvocationContext" level="off"/>
+        <Logger name="com.intuit.ems.dataservice.v1.resource.PDSRestExceptionMapper" level="warn"/>
+        <Logger name="com.intuit.ems.dataservice.v1.resource.UserResource" level="warn"/>
+
+        <!-- Increasing logging level for specific classes after making common log4j.properties -->
+        <Logger name="com.intuit.sbg.shared.batchjob.BatchJobManager" level="info"/>
+        <Logger name="com.intuit.ems.shared.restclient.RestCommandClient" level="info"/>
+        <Logger name="com.intuit.sbg.payroll.application.context" level="info"/>
+        <Logger name="com.intuit.sbg.payroll.authorization" level="info"/>
+
+        <Logger name="org.springframework" level="info"/>
+        <Logger name="com.intuit.identity.exptplatform" level="error"/>
+
+        <!--Hibernate package log level-->
+        <Logger name="org.hibernate" level="warn"/>
+        <!--<Logger name="org.hibernate" level="debug"/> -->
+
+        <!-- Disable logging of Hibernate warning about fail-safe cleanup -->
+        <Logger name="org.hibernate.engine.loading.LoadContexts" level="error"/>
+
+        <!-- Enabling detailed logging to assess the cache fix -->
+        <Logger name="org.springframework.cache.interceptor.CacheInterceptor" level="error"/>
+
+        <!--log HQL query parser activity -->
+        <!--<Logger name="org.hibernate.hql.ast.AST" level="debug"/> -->
+
+        <!--log just the SQL -->
+        <!--<Logger name="org.hibernate.SQL" level="debug"/> -->
+
+        <!--log JDBC bind parameters ### -->
+        <!--<Logger name="org.hibernate.type" level="info"/> -->
+        <!--<Logger name="org.hibernate.type" level="debug"/> -->
+
+        <!--log schema export/update ### -->
+        <!--<Logger name="org.hibernate.tool.hbm2ddl" level="debug"/> -->
+
+        <!--log HQL parse trees -->
+        <!--<Logger name="org.hibernate.hql" level="debug"/> -->
+
+        <!--log cache activity ### -->
+        <!--<Logger name="org.hibernate.cache" level="debug"/> -->
+
+        <!--log transaction activity -->
+        <!--<Logger name="org.hibernate.transaction" level="debug"/> -->
+
+        <!--log JDBC resource acquisition -->
+        <!--<Logger name="org.hibernate.jdbc" level="debug"/> -->
+
+        <!--enable the following line if you want to track down connection ### -->
+        <!--leakages when using DriverManagerConnectionProvider ### -->
+        <!--<Logger name="org.hibernate.connection.DriverManagerConnectionProvider" level="trace"/> -->
+    </Loggers>
+</Configuration>

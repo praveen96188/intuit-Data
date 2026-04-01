@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        xmlns:pspui="psp.sap.view.*"
+        width="100%" height="100%">
+
+    <mx:Script>
+        <![CDATA[
+        	import psp.sap.model.PropertyAudit;
+            import mx.utils.ObjectUtil;
+            import psp.sap.application.SAP;
+            import psp.sap.viewmodel.PayrollTransactionHistoryViewModel;
+
+            private var mViewModel:PayrollTransactionHistoryViewModel = null;
+
+            [Bindable]
+            public function get viewModel():PayrollTransactionHistoryViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:PayrollTransactionHistoryViewModel):void {
+                mViewModel = value;
+            }
+
+            private function formatDate(item:Object, dgc:DataGridColumn):String {
+                return dateFormatter.format(item.auditDate);
+            }
+
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataGrid}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateTimeFormatDateOverTime}"/>
+    <mx:DateFormatter id="mediumDateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox width="100%">
+
+        <mx:VBox width="100%"
+                 styleName="grayDataGridVBox"
+                 id="dataGrid"
+                 visible="{!viewModel.isDataLoading}"
+                 includeInLayout="{!viewModel.isDataLoading}">
+            <mx:Label id="txnStateHistoryLabel" text="Transaction State Change History" styleName="grayDataGridHeading"/>
+            <mx:Label id="txnTypeLabel" text="{SAP.instance.lookupService.transactionTypes.getItemByKey(viewModel.payrollTransaction.txnType).name}, {mediumDateFormatter.format(viewModel.payrollTransaction.createdDate)}" />
+            <mx:Label id="allHistoryLabel" text="(all history)" styleName="grayDataGridSubText"/>
+
+            <mx:DataGrid
+                    id="prpertyAuditData"
+                    dataProvider="{viewModel.propertyAudit}"
+                    variableRowHeight="true"
+                    selectable="false"
+                    width="100%"
+                    backgroundColor="#ffffff">
+
+                <mx:columns>
+                    <mx:DataGridColumn
+                            headerText="Change Date{String('\n')}Time"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            labelFunction="formatDate"
+                            dataField="auditDate"/>
+                    <mx:DataGridColumn
+                            headerText="Changed By"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            color="green"
+                            dataField="userId"/>
+                    <mx:DataGridColumn
+                            headerText="State"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            dataField="newPropertyValue"/>
+                </mx:columns>
+            </mx:DataGrid>
+
+
+        </mx:VBox>
+    </mx:VBox>
+
+</mx:VBox>

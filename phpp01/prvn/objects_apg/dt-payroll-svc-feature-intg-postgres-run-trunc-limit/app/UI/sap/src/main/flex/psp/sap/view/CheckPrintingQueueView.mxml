@@ -1,0 +1,225 @@
+<?xml version="1.0" ?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:view="intuit.sbd.flex.framework.view.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.PopUpMenuButton;
+        import mx.core.UIComponent;
+
+        import mx.events.MenuEvent;
+
+        import psp.sap.application.enums.CheckPrintBatchStatusEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.CheckPrintingBatch;
+        import psp.sap.viewmodel.CheckPrintingQueueViewModel;       
+
+        private var mViewModel:CheckPrintingQueueViewModel;
+        private var mTempViewModel:CheckPrintingQueueViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CheckPrintingQueueViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CheckPrintingQueueViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+            paycheckDateSelection.dateRangeTypeCombo.selectedItem = paycheckDateSelection.defaultDateRange;
+            printDateSelection.dateRangeTypeCombo.selectedItem = printDateSelection.defaultDateRange;
+        }
+
+        public function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item.paycheckDate);
+        }
+
+        private function formatDateOverTime(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatDateOverTime.format(item.sentToPrinterDate);
+        }
+
+        public function pageDataGridLoadDataFunction():void {
+            viewModel.refresh();
+        }
+
+        public function onReprintClick(e:MouseEvent):void {
+            var button:Button = e.currentTarget as Button;
+            viewModel.savePrintBatchStatus(button.data as CheckPrintingBatch, CheckPrintBatchStatusEnum.PENDING);
+        }
+
+        private function formatEinPsid(item:Object, dgc:DataGridColumn):String {
+            return item.ein + "\n" + item.psid;
+        }
+
+        public function formatPaycheckIds(item:Object):String {
+            var toolTip:String = (item.minPaycheckId != null) ? item.minPaycheckId : '';
+            toolTip += (item.minPaycheckId != null && item.maxPaycheckId != null) ? '-' : '';
+            toolTip += (item.maxPaycheckId != null) ? item.maxPaycheckId : '';
+            if(toolTip.length > 0) {
+                toolTip = 'Paycheck Ids: ' + toolTip;
+            }
+            return toolTip;
+        }
+
+		]]>
+	</mx:Script>
+
+    <!-- width set for 1024x768 -->
+    <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="700" id="mainFilterBox"
+                        filterStringFunction="{viewModel.getFilterString}"
+                        openOnStartup="true"
+                        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+        <mx:VBox verticalAlign="bottom" paddingLeft="5">
+            <mx:HBox>
+                <mx:FormItem label="FEIN or PSID:" labelStyleName="boldText" defaultButton="{filterButton}">
+                    <controls:SAPTextInput id="einInput" dataField="einPsid" width="100" restrict="0-9\-" maxChars="10"/>
+                </mx:FormItem>
+                <mx:FormItem label="Status:" labelStyleName="boldText" defaultButton="{filterButton}">
+                    <controls:SAPComboBox dataField="filterStatus" dataProvider="{CheckPrintBatchStatusEnum.filterValues}"/>
+                </mx:FormItem>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Paycheck Date:" width="150" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="paycheckDateSelection"
+                        viewModel="{viewModel.checkDateSelectionViewModel}"
+                        direction="horizontal"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Print Date:" width="150" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="printDateSelection"
+                        viewModel="{viewModel.printDateSelectionViewModel}"
+                        direction="horizontal"/>
+                <mx:Spacer width="10"/>
+                <mx:Button id="filterButton" label="Filter" enabled="{viewModel.canSave}"
+                           click="viewModel.search(); mainFilterBox.collapse();"/>
+            </mx:HBox>
+        </mx:VBox>
+    </controls:FilterBox>
+
+    <mx:Spacer height="10"/>
+
+    <pspui:PagingDataGrid
+            id="searchResultsGrid"
+            width="100%"
+            horizontalAlign="right"
+            dataProvider="{viewModel.searchResults}"
+            height="100%"
+            isDataLoading="{viewModel.isDataLoading}"
+            loadDataFunction="{pageDataGridLoadDataFunction}"
+            paddingBottom="0"
+            tabEnabled="false"
+            tabChildren="false"
+            autoResizeToFitContent="true"
+            autoResizeHeightBuffer="{mainFilterBox.currentState == 'searchCollapsed' ? 290 : 385}"
+            resizeSwitch="{mainFilterBox.currentState == 'searchCollapsed'}">
+        <pspui:columns>
+            <mx:DataGridColumn
+                    minWidth="100"
+                    width="100"
+                    headerText="FEIN{String('\n')}PSID"
+                    dataField="ein"
+                    textAlign="center"
+                    labelFunction="formatEinPsid"
+                    itemRenderer="mx.controls.Text"/>
+            <mx:DataGridColumn
+                    minWidth="250"
+                    headerText="Legal Name"
+                    dataField="legalName"
+                    textAlign="left">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <pspui:ActionLink
+                                label="{data.legalName}"
+                                click="data.companyKey.display()"
+                                data="{data}"/>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <mx:DataGridColumn
+                    minWidth="110"
+                    width="110"
+                    headerText="Paycheck Date"
+                    labelFunction="formatDate"
+                    dataField="paycheckDate"
+                    textAlign="center"
+                    itemRenderer="mx.controls.Text"/>
+            <mx:DataGridColumn
+                    minWidth="110"
+                    width="110"
+                    headerWordWrap="true"
+                    headerText="Print Date{String('\n')}Time"
+                    labelFunction="formatDateOverTime"
+                    dataField="sentToPrinterDate"
+                    textAlign="center"
+                    itemRenderer="mx.controls.Text"/>
+            <mx:DataGridColumn
+                    minWidth="100"
+                    width="100"
+                    headerText="# of Paychecks"
+                    dataField="paycheckCount"
+                    textAlign="right"
+                    paddingRight="5">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:Text
+                                text="{data.paycheckCount}"
+                                toolTip="{outerDocument.formatPaycheckIds(data)}"/>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <mx:DataGridColumn
+                    minWidth="160"
+                    width="160"
+                    headerText="Status"
+                    dataField="printStatus"
+                    textAlign="center">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:HBox horizontalAlign="center">
+                            <mx:Script>
+                                <![CDATA[
+                                import psp.sap.application.SAP;
+                                import psp.sap.application.enums.CheckPrintBatchStatusEnum;
+                                ]]>
+                            </mx:Script>
+                            <mx:Text
+                                    text="{data.printStatusEnum.label}"
+                                    color="{data.printStatusEnum != CheckPrintBatchStatusEnum.ERROR ? 0x008000 : 0xFF0000}"
+                                    toolTip="{data.printMessage != '' ? data.printMessage : null}"/>
+                            <mx:Button
+                                    textAlign="right"
+                                    icon="{SAP.instance.icons.printIcon}"
+                                    skin="{null}"
+                                    useHandCursor="true"
+                                    buttonMode="true"
+                                    paddingLeft="0" paddingRight="0"
+                                    tabEnabled="false"
+                                    visible="{data.printStatusEnum != CheckPrintBatchStatusEnum.PENDING &amp;&amp; outerDocument.viewModel.canUpdateBatchStatus}"
+                                    includeInLayout="{data.printStatusEnum != CheckPrintBatchStatusEnum.PENDING &amp;&amp; outerDocument.viewModel.canUpdateBatchStatus}"
+                                    data="{data}"
+                                    click="outerDocument.onReprintClick(event)"
+                                    toolTip="{data.printStatusEnum == CheckPrintBatchStatusEnum.ERROR ? 'Retry printing batch' : data.printStatusEnum == CheckPrintBatchStatusEnum.SENT_TO_PRINTER ? 'Reprint batch' : ''}"/>                            
+                        </mx:HBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+        </pspui:columns>
+    </pspui:PagingDataGrid>
+
+</mx:VBox>
+    

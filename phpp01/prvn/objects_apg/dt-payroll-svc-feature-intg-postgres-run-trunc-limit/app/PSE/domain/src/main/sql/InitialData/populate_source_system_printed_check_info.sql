@@ -1,0 +1,81 @@
+DECLARE
+
+	table_exists PLS_INTEGER;
+
+BEGIN
+
+
+	SELECT COUNT(*) INTO table_exists
+	FROM "USER_TABLES"
+	WHERE TABLE_NAME = 'TEMP_SOURCESYS_PRINTEDCHKINFO';
+
+	IF table_exists = 1 THEN
+		EXECUTE IMMEDIATE 'DROP TABLE "TEMP_SOURCESYS_PRINTEDCHKINFO" CASCADE CONSTRAINTS';
+	END IF;
+
+END;
+/
+
+--------------------------------------------------------
+-- Create temp table                                  --
+--------------------------------------------------------
+CREATE TABLE TEMP_SOURCESYS_PRINTEDCHKINFO
+(
+  SOURCESYS_PRINTEDCHK_INFO_SEQ  VARCHAR2(255 CHAR) NOT NULL,
+  VERSION                        NUMBER(19)     NOT NULL,
+  CREATOR_ID                     VARCHAR2(30 CHAR),
+  CREATED_DATE                   TIMESTAMP(6)   NOT NULL,
+  MODIFIER_ID                    VARCHAR2(30 CHAR),
+  MODIFIED_DATE                  TIMESTAMP(6)   NOT NULL,
+  REALM_ID                       NUMBER(19)     DEFAULT -1                    NOT NULL,
+  NAME_LINE1                     VARCHAR2(40 CHAR),
+  NAME_LINE2                     VARCHAR2(40 CHAR),
+  NEXT_CHECK_NUMBER              NUMBER(19),
+  SOURCE_SYSTEM_CODE             VARCHAR2(255 CHAR),
+  ADDRESS_FK                     VARCHAR2(255 CHAR) NOT NULL
+)
+/
+
+
+--------------------------------------------------------
+-- Insert into temp table                             --
+--------------------------------------------------------
+INSERT INTO TEMP_SOURCESYS_PRINTEDCHKINFO
+(SOURCESYS_PRINTEDCHK_INFO_SEQ, VERSION, CREATED_DATE, MODIFIED_DATE, REALM_ID, NAME_LINE1, NAME_LINE2, NEXT_CHECK_NUMBER, SOURCE_SYSTEM_CODE, ADDRESS_FK)
+VALUES ('10000000-0000-0000-0000-000000000000', -1, SYS_EXTRACT_UTC(SYSTIMESTAMP), SYS_EXTRACT_UTC(SYSTIMESTAMP), -1, 'Intuit Payments, Inc', null, 1, 'QBDT', 'a1544b13-7095-4e77-89c3-7253cdeb7ac6')
+/
+
+--------------------------------------------------------
+-- Sychronize temp table and real table by            --
+-- inserting, deleting, and updating as necessary     --
+--------------------------------------------------------
+
+INSERT INTO PSP_SOURCESYS_PRINTEDCHK_INFO
+    (SOURCESYS_PRINTEDCHK_INFO_SEQ, VERSION, CREATED_DATE, MODIFIED_DATE, REALM_ID, NAME_LINE1, NAME_LINE2, NEXT_CHECK_NUMBER, SOURCE_SYSTEM_CODE, ADDRESS_FK)
+SELECT
+     SOURCESYS_PRINTEDCHK_INFO_SEQ, VERSION, CREATED_DATE, MODIFIED_DATE, REALM_ID, NAME_LINE1, NAME_LINE2, NEXT_CHECK_NUMBER, SOURCE_SYSTEM_CODE, ADDRESS_FK
+FROM
+   TEMP_SOURCESYS_PRINTEDCHKINFO tt
+WHERE
+   tt.SOURCESYS_PRINTEDCHK_INFO_SEQ NOT IN (SELECT SOURCESYS_PRINTEDCHK_INFO_SEQ FROM PSP_SOURCESYS_PRINTEDCHK_INFO)
+/
+
+-- no update to next check number, or any images
+UPDATE PSP_SOURCESYS_PRINTEDCHK_INFO rt
+SET (rt.MODIFIED_DATE, rt.VERSION, rt.REALM_ID, rt.NAME_LINE1, rt.NAME_LINE2, rt.SOURCE_SYSTEM_CODE, rt.ADDRESS_FK) =
+(SELECT SYS_EXTRACT_UTC(SYSTIMESTAMP), tt.VERSION,  tt.REALM_ID, tt.NAME_LINE1, tt.NAME_LINE2, tt.SOURCE_SYSTEM_CODE, tt.ADDRESS_FK
+ FROM TEMP_SOURCESYS_PRINTEDCHKINFO tt WHERE tt.SOURCESYS_PRINTEDCHK_INFO_SEQ = rt.SOURCESYS_PRINTEDCHK_INFO_SEQ)
+/
+
+DELETE FROM PSP_SOURCESYS_PRINTEDCHK_INFO
+WHERE SOURCESYS_PRINTEDCHK_INFO_SEQ NOT IN (SELECT SOURCESYS_PRINTEDCHK_INFO_SEQ FROM TEMP_SOURCESYS_PRINTEDCHKINFO)
+/
+
+--------------------------------------------------------
+-- Drop temp table                                    --
+--------------------------------------------------------
+DROP TABLE TEMP_SOURCESYS_PRINTEDCHKINFO
+/
+
+COMMIT
+/

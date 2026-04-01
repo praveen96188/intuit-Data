@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+    <display-name>PTC Web Services</display-name>
+
+    <listener>
+        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+    </listener>
+    <servlet>
+        <description>JAX-WS endpoint</description>
+        <display-name>WSServlet</display-name>
+        <servlet-name>WSServlet</servlet-name>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WSServlet</servlet-name>
+        <url-pattern>/services/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InitSpcfServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.web.InitSpcfServlet</servlet-class>
+        <load-on-startup>100</load-on-startup>
+    </servlet>
+
+    <filter>
+        <filter-name>PSPPrincipalFilter</filter-name>
+        <filter-class>com.intuit.sbd.payroll.psp.adapters.ptc.PSPPrincipalFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>PSPPrincipalFilter</filter-name>
+        <url-pattern>/services/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Log Enhancing Filter start-->
+    <filter>
+        <filter-name>LogEnhancingFilter</filter-name>
+        <filter-class>com.intuit.sbg.psp.filter.LogEnhancingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LogEnhancingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- end Log Enhancing Filter -->
+
+    <filter>
+		<filter-name>LMAFilter</filter-name>
+		<filter-class>com.intuit.sbg.psp.filter.LastMileAuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>LMAFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+</web-app>

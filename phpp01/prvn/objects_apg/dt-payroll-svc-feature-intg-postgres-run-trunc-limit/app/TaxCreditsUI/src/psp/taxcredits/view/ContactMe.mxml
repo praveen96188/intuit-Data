@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" paddingLeft="0" paddingTop="0" defaultButton="{contactMeButton}">
+    <mx:Script>
+        <![CDATA[
+        import mx.events.ValidationResultEvent;
+        import mx.rpc.Responder;
+        import mx.rpc.events.ResultEvent;
+        import mx.utils.StringUtil;
+
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.view.controls.WindowManager;
+
+        private var isSubmitting:Boolean = false;
+
+        private var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private function contactMe():void {
+            //validate
+            if (nameValidator.validate().type != ValidationResultEvent.VALID ||
+                    phoneValidator.validate().type != ValidationResultEvent.VALID ||
+                    emailValidator.validate().type != ValidationResultEvent.VALID) {
+                model.tracker.trackEvent("Navigation", "Contact Me", "Form validation error");
+                invalidLabel.text = "Please correct the above errors";
+            } else if (StringUtil.trim(contactPhone.text).length == 0 && StringUtil.trim(contactEmail.text).length == 0) {
+                model.tracker.trackEvent("Navigation", "Contact Me", "Missing required field");
+                invalidLabel.text = "A phone number or email address is required.";
+            } else {
+                model.tracker.trackEvent("Navigation", "Contact Me", "Submit");
+                invalidLabel.text = "";
+
+                //and submit...
+                if (!isSubmitting) {
+                    isSubmitting = true;
+                    cursorManager.setBusyCursor();
+                    model.taxCreditsService.submitContactRequest(contactName.text, contactPhone.text, contactEmail.text, new mx.rpc.Responder(onContactRequestSuccess, model.onFail));
+                }
+
+            }
+
+        }
+
+        private function onContactRequestSuccess(e:ResultEvent):void {
+            isSubmitting = false;
+            cursorManager.removeBusyCursor();
+            //pop-up
+            var window:ContactMeSuccess = new ContactMeSuccess();
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);
+            window.move(window.x, window.y - 75);
+        }
+
+
+        ]]>
+    </mx:Script>
+    <mx:Validator id="nameValidator" source="{contactName}" property="text" required="true"/>
+    <mx:StringValidator id="phoneValidator" source="{contactPhone}" property="text" required="false" minLength="10" tooShortError="Please enter your 10+-digit phone number"/>
+    <mx:EmailValidator id="emailValidator" source="{contactEmail}" property="text" required="false"/>
+
+    <mx:FormItem label="{resourceManager.getString('intro','us_contact_name')}" labelStyleName="contactFormLabel">
+        <mx:TextInput id="contactName" width="160"/>
+    </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString('intro','us_contact_phone')}" labelStyleName="contactFormLabel">
+        <mx:TextInput id="contactPhone" width="160" restrict="0-9\-() "/>
+    </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString('intro','us_contact_email')}" labelStyleName="contactFormLabel">
+        <mx:TextInput id="contactEmail" width="160"/>
+    </mx:FormItem>
+    <mx:Label id="invalidLabel" paddingLeft="-40" width="235" textAlign="center" text="" styleName="errorText"
+              visible="{invalidLabel.text.length > 0}" includeInLayout="{invalidLabel.text.length > 0}"/>
+    <mx:FormItem>
+        <mx:Button id="contactMeButton" click="contactMe()" styleName="buttonContactMe" useHandCursor="true" buttonMode="true"/>
+    </mx:FormItem>
+</mx:Form>

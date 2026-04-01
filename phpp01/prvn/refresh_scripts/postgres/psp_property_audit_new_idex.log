@@ -1,0 +1,22 @@
+Timing is on.
+set session work_mem='64MB';
+SET
+Time: 0.450 ms
+set session maintenance_work_mem='25098MB';
+SET
+Time: 0.286 ms
+set search_path to pspadm;
+SET
+Time: 0.299 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-28 21:53:29.842188-07
+(1 row)
+
+Time: 0.445 ms
+create index concurrently psp_property_audit_i1_p0 on pspadm.psp_property_audit_p0 USING BTREE (company_fk, class_name, property_name);
+CREATE INDEX
+Time: 337045.477 ms (05:37.045)
+create index concurrently psp_property_audit_i1_p1 on pspadm.psp_property_audit_p1 USING BTREE (company_fk, class_name, property_name);
+./run_on_ppsp-stg-pitparmo-pspadm_owner.sh: line 2: 66205 Killed                  psql -h ppsp-stg-pitparmo.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com -U pspadm_owner -p 5432 -d pitparmo -f $1 -a -b -e

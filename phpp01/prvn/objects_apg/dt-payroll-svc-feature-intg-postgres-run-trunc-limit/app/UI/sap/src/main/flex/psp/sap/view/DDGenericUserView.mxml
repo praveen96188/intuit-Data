@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%"
+        verticalGap="0">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.User;
+        import psp.sap.viewmodel.DDGenericUserViewModel;
+
+        private var mViewModel:DDGenericUserViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():DDGenericUserViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:DDGenericUserViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+                mViewModel.firstNameValidator.listener = this.firstNameInput;
+                mViewModel.lastNameValidator.listener = this.lastNameInput;
+                mViewModel.corpIdValidator.listener = this.corpIdInput;
+            }
+        }
+
+        public function goToEditDDMUserData(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            viewModel.goToEditDDMUserData(link.data as User);
+        }
+
+        public function goToRemoveDDMUserData(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            viewModel.goToRemoveDDMUserData(link.data as User);
+        }
+
+        public function unlockUser(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            viewModel.unlockUser(link.data as User);
+        }
+
+        public static function sortLocked(obj1:Object, obj2:Object):int {
+            return ObjectUtil.dateCompare(User(obj1).accountLockedUntil, User(obj2).accountLockedUntil);
+        }
+
+        //noinspection JSUnusedLocalSymbols
+        public static function lockedText(item:Object, column:DataGridColumn):String {
+            if (User(item).accountLockedUntil == null)
+                return "";
+
+            if (User(item).accountLockedUntil < SAP.instance.PSPDate)
+                return "(lock expired)";
+
+            return SAPDateFormatters.timeFormat.format(User(item).accountLockedUntil) +
+                    " (" + User(item).numberOfFailedLoginAttempts + " tries)";
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:LinkButton id="linkManageUsers"
+                   label="Manage PSP Authorization Tool Users "
+                   click="{viewModel.onUsersClick()}"
+                   visible="{viewModel.DDAuthEnabled}"
+                   includeInLayout="{viewModel.DDAuthEnabled}"
+                   styleName="standardLinkButtonStyle"
+                   paddingLeft="0"/>
+    <mx:LinkButton id="linkAuthEnabled"
+                   label="Manage Payroll Services Platform Users "
+                   click="viewModel.onDDMClick()"
+                   visible="{viewModel.DDMEnabled}"
+                   includeInLayout="{viewModel.DDMEnabled}"
+                   styleName="standardLinkButtonStyle"
+                   paddingLeft="0"/>
+
+    <mx:Spacer height="20"/>
+
+
+    <mx:Label opaqueBackground="#FFFFFF" x="11" text="Add New User" fontWeight="bold"/>
+    <mx:Spacer height="1"/>
+    <mx:VBox styleName="ddGrayMiniBoxStyle">
+        <mx:HBox styleName="padderBox">
+            <!-- Corp ID -->
+            <mx:VBox width="20%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="Corp Id" fontWeight="bold" width="79"/>
+                <mx:TextInput id="corpIdInput" tabIndex="1"/>
+            </mx:VBox>
+            <!-- First Name -->
+            <mx:VBox width="20%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="First Name" fontWeight="bold" width="79"/>
+                <mx:TextInput id="firstNameInput" tabIndex="2"/>
+            </mx:VBox>
+            <!-- Last Name -->
+            <mx:VBox width="20%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="Last Name" fontWeight="bold" width="79"/>
+                <mx:TextInput id="lastNameInput" tabIndex="3"/>
+            </mx:VBox>
+            <!-- Role -->
+            <mx:VBox width="25%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="Role" fontWeight="bold" width="79"/>
+                <mx:ComboBox id="role" width="{lastNameInput.width}" tabIndex="4"
+                             dataProvider="{viewModel.allRoles}"
+                             labelField="{data}"/>
+            </mx:VBox>
+
+            <!-- Add New User -->
+            <mx:VBox width="15%" verticalGap="0" horizontalAlign="left">
+                <mx:Label width="79"/>
+                <mx:Button id="addNewUser" click="{viewModel.onAddNewUser()}" enabled="{viewModel.canSave}"
+                           label="Add New User" tabIndex="5"/>
+            </mx:VBox>
+        </mx:HBox>
+    </mx:VBox>
+
+
+    <mx:Spacer height="10"/>
+
+
+    <mx:Label opaqueBackground="#FFFFFF" x="11" text="Search Users" fontWeight="bold"/>
+    <mx:Spacer height="1"/>
+    <mx:VBox styleName="ddGrayMiniBoxStyle">
+        <mx:HBox styleName="padderBox">
+
+            <!-- Corp ID -->
+            <mx:VBox width="20%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="Corp Id" fontWeight="bold" width="79"/>
+                <mx:TextInput id="searchCorpId" tabIndex="1"/>
+            </mx:VBox>
+            <!-- First Name -->
+            <mx:VBox width="20%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="First Name" fontWeight="bold" width="79"/>
+                <mx:TextInput id="searchFirstName" tabIndex="2"/>
+            </mx:VBox>
+            <!-- Last Name -->
+            <mx:VBox width="20%" verticalGap="0" horizontalAlign="left">
+                <mx:Label text="Last Name" fontWeight="bold" width="79"/>
+                <mx:TextInput id="searchLastName" tabIndex="3"/>
+            </mx:VBox>
+            <mx:VBox width="15%" verticalGap="0" horizontalAlign="left">
+                <mx:Label width="79"/>
+                <mx:Button label="Search" click="viewModel.pageDataGridLoadDataFunction();"/>
+            </mx:VBox>
+
+        </mx:HBox>
+    </mx:VBox>
+
+
+    <mx:Spacer height="10"/>
+
+    <mx:Style>
+        .overrideToMakeHeaderBlack {
+            color: "0x000000";
+        }
+    </mx:Style>
+
+    <pspui:PagingDataGrid width="840"
+                          horizontalAlign="right"
+                          verticalGap="0"
+                          rowCount="{viewModel.DEFAULT_PAGE_SIZE}"
+                          isDataLoading="{viewModel.isDataLoading}"
+                          loadDataFunction="{viewModel.pageDataGridLoadDataFunction}"
+                          dataProvider="{viewModel.searchResults}">
+        <pspui:columns>
+            <!--LAST NAME -->
+            <controls:SAPDataGridColumn
+                    headerText="Last Name"
+                    minWidth="60"
+                    paddingLeft="0"
+                    dataField="lastName"
+                    headerWordWrap="true">
+            </controls:SAPDataGridColumn>
+            <!--FIRST NAME -->
+            <controls:SAPDataGridColumn
+                    headerText="First Name"
+                    minWidth="60" textAlign="left"
+                    paddingLeft="0"
+                    dataField="firstName">
+            </controls:SAPDataGridColumn>
+
+            <!--CORP ID -->
+            <controls:SAPDataGridColumn
+                    headerText="Intuit Corp Id"
+                    minWidth="50"
+                    paddingLeft="0"
+                    dataField="corpId">
+            </controls:SAPDataGridColumn>
+            <!--ROLE -->
+            <controls:SAPDataGridColumn
+                    headerText="Role"
+                    minWidth="60"
+                    paddingLeft="0"
+                    sortable="false"
+                    dataField="roleId">
+            </controls:SAPDataGridColumn>
+            <!--LOCKED UNTIL -->
+            <controls:SAPDataGridColumn
+                    headerText="Locked Until"
+                    minWidth="80"
+                    paddingLeft="0"
+                    color="0xFF0000"
+                    fontWeight="bold"
+                    headerStyleName="overrideToMakeHeaderBlack"
+                    dataField="accountLockedUntil"
+                    labelFunction="lockedText"
+                    sortCompareFunction="sortLocked">
+            </controls:SAPDataGridColumn>
+            <!--ACTION -->
+            <controls:SAPDataGridColumn
+                    minWidth="120"
+                    sortable="false">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:HBox width="100%"
+                                 horizontalAlign="left"
+                                 verticalGap="0"
+                                 verticalScrollPolicy="off"
+                                 horizontalScrollPolicy="off">
+                            <mx:Script>
+										 	<![CDATA[
+                                import psp.sap.model.User;
+                                import psp.sap.viewmodel.DDGenericUserViewModel;
+                                ]]>
+										 </mx:Script>
+                            <pspui:ActionLink
+                                    id="editlink"
+                                    label="Edit"
+                                    visible="true"
+                                    enabled="{DDGenericUserViewModel.canEditUser(data as User)}"
+                                    actionClick="outerDocument.goToEditDDMUserData"
+                                    data="{data}"/>
+                            <pspui:ActionLink
+                                    id="removeLink"
+                                    label="Remove"
+                                    visible="true"
+                                    enabled="{DDGenericUserViewModel.canRemoveUser(data as User)}"
+                                    actionClick="outerDocument.goToRemoveDDMUserData"
+                                    data="{data}"/>
+                            <pspui:ActionLink
+                                    label="Unlock"
+                                    visible="{User(data).accountLockedUntil != null}"
+                                    includeInLayout="{User(data).accountLockedUntil != null}"
+                                    enabled="{DDGenericUserViewModel.canEditUser(data as User)}"
+                                    actionClick="outerDocument.unlockUser"
+                                    data="{data}"/>
+                        </mx:HBox>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+        </pspui:columns>
+    </pspui:PagingDataGrid>
+
+    <!-- Bindings for the components -->
+
+    <mx:Binding source="firstNameInput.text" destination="viewModel.firstName"/>
+    <mx:Binding source="viewModel.firstName" destination="firstNameInput.text"/>
+
+    <mx:Binding source="lastNameInput.text" destination="viewModel.lastName"/>
+    <mx:Binding source="viewModel.lastName" destination="lastNameInput.text"/>
+
+    <mx:Binding source="corpIdInput.text" destination="viewModel.corpId"/>
+    <mx:Binding source="viewModel.corpId" destination="corpIdInput.text"/>
+
+    <mx:Binding source="searchFirstName.text" destination="viewModel.searchFirstName"/>
+    <mx:Binding source="viewModel.searchFirstName" destination="searchFirstName.text"/>
+
+    <mx:Binding source="searchLastName.text" destination="viewModel.searchLastName"/>
+    <mx:Binding source="viewModel.searchLastName" destination="searchLastName.text"/>
+
+    <mx:Binding source="searchCorpId.text" destination="viewModel.searchCorpId"/>
+    <mx:Binding source="viewModel.searchCorpId" destination="searchCorpId.text"/>
+
+    <mx:Binding source="role.selectedItem.toString()" destination="viewModel.roleId"/>
+
+</mx:VBox>
+
+

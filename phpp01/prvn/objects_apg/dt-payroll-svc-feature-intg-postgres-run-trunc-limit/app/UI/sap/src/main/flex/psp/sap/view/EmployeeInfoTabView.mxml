@@ -1,0 +1,293 @@
+<?xml version="1.0"?>
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();"
+         width="100%"
+         verticalScrollPolicy="off"
+         verticalGap="0"
+         styleName="noPadding">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.events.PropertyChangeEvent;
+
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.model.EmployeeLineItemPaycheck;
+        import psp.sap.model.EmployeeLineItemYear;
+        import psp.sap.viewmodel.EmployeeInfoTabViewModel;
+
+        private var mViewModel:EmployeeInfoTabViewModel;
+        private var mTempViewModel:EmployeeInfoTabViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EmployeeInfoTabViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeInfoTabViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.fromDateValidator.listener = fromDateInput;
+                mViewModel.toDateValidator.listener = toDateInput;
+
+                mViewModel.startEndDateValidator.startDateListener = fromDateInput;
+                mViewModel.startEndDateValidator.endDateListener = toDateInput;
+
+                mViewModel.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, function (e:PropertyChangeEvent):void {
+                    if (e.property == "rotatedPaychecks") {
+                        addColumns();
+                    }
+                    if (e.property == "employeeProfileQTDYTDYears") {
+                        addQtdColumns();
+                    }
+                });
+                addColumns();
+                addQtdColumns();
+                setVisibleColumns();
+
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function addColumns():void {
+            var cols:Array = paycheckDataGrid.columns;
+            cols.length = 1;
+            if (viewModel.employeePaycheckCollection != null) {
+                for (var i:int = 0; i < viewModel.employeePaycheckCollection.paychecks.length + 1; i++) { //1 per paycheck + total
+                    var dgc:SAPDataGridColumn = new SAPDataGridColumn();
+                    var itemRendererFactory:ClassFactory = new ClassFactory(PaycheckColumnItemRenderer);
+                    itemRendererFactory.properties = {paycheckIndex:i};
+                    dgc.itemRenderer = itemRendererFactory;
+                    dgc.width = 90;
+
+                    var headerFactory:ClassFactory = new ClassFactory(PaycheckColumnHeaderRenderer);
+                    if (i < viewModel.employeePaycheckCollection.paychecks.length) {
+                        var employeeProfileLineItem:EmployeeLineItemPaycheck = EmployeeLineItemPaycheck(viewModel.employeePaycheckCollection.paychecks.getItemAt(i));
+                        headerFactory.properties = {
+                            viewModel:viewModel,
+                            paycheckDate:employeeProfileLineItem.paycheckDate,
+                            isVoided:employeeProfileLineItem.isPaycheckVoid,
+                            sourcePayrollRunId:employeeProfileLineItem.sourcePayrollRunId,
+                            isELA:employeeProfileLineItem.isELA,
+                            isTotal:false
+                        };
+                    } else {
+                        headerFactory.properties = { isTotal:true };
+                    }
+
+                    dgc.headerRenderer = headerFactory;
+                    cols.push(dgc);
+                }
+            }
+            paycheckDataGrid.columns = cols;
+
+        }
+
+        private function addQtdColumns():void {
+            for (var i:int = 0; i < viewModel.employeeProfileQTDYTDYears.length; i++) {
+                var cols:Array = yearDataGrid[i].columns;
+                cols.length = 1;
+                for (var j:int = 0; j < 5; j++) {
+                    var dgc:SAPDataGridColumn = new SAPDataGridColumn();
+                    var itemRendererFactory:ClassFactory = new ClassFactory(PaycheckColumnItemRenderer);
+                    itemRendererFactory.properties = {paycheckIndex:j};
+                    dgc.itemRenderer = itemRendererFactory;
+                    dgc.width = 90;
+                    dgc.headerText = j < 4 ? "Q" + (j + 1) : "YTD";
+                    cols.push(dgc);
+                }
+                yearDataGrid[i].columns = cols;
+
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function setVisibleColumns():void {
+            if (viewModel != null && paycheckDataGrid != null) {
+                viewModel.totalVisibleColumns = int((paycheckDataGrid.width - 250) / 90)
+            }
+        }
+
+        public function goToPayrollTransactionList(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var lineItem:EmployeeLineItemPaycheck = link.data as EmployeeLineItemPaycheck;
+            viewModel.goToPayrollTransactions(lineItem.sourcePayrollRunId, lineItem.paycheckDate);
+        }
+
+        public function doSearch():void {
+            viewModel.search();
+        }
+
+        ]]>
+        </mx:Script>
+
+    <controls:Expander title="{viewModel.employeeInfo.fullName} - Profile"
+                       width="100%"
+                       label="{CompanyInspectorPageEnum.EMPLOYEE_PROFILE_TABS +'_expander'}"
+                       paddingTop="0"
+                       paddingBottom="0">
+        <controls:PartsTabNavigator label="{CompanyInspectorPageEnum.EMPLOYEE_PROFILE_TABS + '_ptn'}">
+
+            <controls:DisplayEditHistoryViewStack
+                    skipEdit="true"
+                    viewModel="{viewModel.employeeProfileDEH}"
+                    label="{CompanyInspectorPageEnum.EMPLOYEE_PROFILE}"
+                    historyLabelText="Employee Profile History"
+                    paddingRight="10"
+                    paddingBottom="10">
+                <pspui:EmployeeProfileInfoView id="employeeProfile" viewModel="{viewModel.employeeProfileInfoViewModel}" />
+                <pspui:EmployeeProfileHistoryView id="employeeProfileHistory" viewModel="{viewModel.employeeProfileInfoHistoryViewModel}"/>
+            </controls:DisplayEditHistoryViewStack>
+
+            <pspui:EmployeeTaxabilityView viewModel="{viewModel.employeeTaxabilityInfoViewModel}" label="{CompanyInspectorPageEnum.EMPLOYEE_TAXABILITY}"/>
+            <pspui:EmployeeComplianceView width="100%" viewModel="{viewModel.employeeComplianceInfoViewModel}" label="{CompanyInspectorPageEnum.EMPLOYEE_COMPLIANCE}"/>
+
+        </controls:PartsTabNavigator>
+    </controls:Expander>
+
+    <mx:HBox verticalAlign="middle" paddingLeft="10" paddingTop="1">
+
+        <mx:RadioButtonGroup id="searchType"/>
+
+        <mx:RadioButton value="PAYCHECK" label="Paychecks" group="{searchType}"/>
+        <mx:RadioButton value="QTDYTD"   label="QTD/YTD"   group="{searchType}"/>
+
+        <controls:SAPCheckBox label="Wages" dataField="includeWages" paddingRight="5"/>
+
+        <mx:HBox visible="{viewModel.searchType == 'PAYCHECK'}"
+                 includeInLayout="{viewModel.searchType == 'PAYCHECK'}"
+                 verticalAlign="middle"
+                 paddingTop="2"
+                 paddingRight="5">
+            <mx:Label text="From: " textAlign="right" fontWeight="bold"/>
+            <pspui:SAPDateField id="fromDateInput" editable="true"/>
+            <mx:Label text="To: " textAlign="right" fontWeight="bold"/>
+            <pspui:SAPDateField id="toDateInput" editable="true"/>
+        </mx:HBox>
+
+        <mx:Button label="Search" tabIndex="1" enabled="{viewModel.canSave}" click="doSearch()"/>
+    </mx:HBox>
+
+
+    <mx:ViewStack selectedIndex="{viewModel.searchType == 'PAYCHECK' ? 0 : 1}"
+                  visible="{!viewModel.isDataLoading}"
+                  includeInLayout="{!viewModel.isDataLoading}"
+                  resizeToContent="true"
+                  paddingTop="0">
+
+        <mx:VBox styleName="standardTabbedBody" paddingTop="0">
+
+            <mx:Text text="No paychecks found for the requested period."
+                     visible="{!viewModel.paychecksFound &amp;&amp; viewModel.searchRequested}" includeInLayout="{!viewModel.paychecksFound &amp;&amp; viewModel.searchRequested}"/>
+
+
+            <pspui:EmployeeInfoTabViewNavButtons viewModel="{viewModel}"/>
+            <controls:SAPDataGrid
+                    id="paycheckDataGrid"
+                    visible="{viewModel.paychecksFound}"
+                    includeInLayout="{viewModel.paychecksFound}"
+                    dataProvider="{viewModel.rotatedPaychecks}"
+                    selectable="false"
+                    draggableColumns="false"
+                    variableRowHeight="true"
+                    sortableColumns="false"
+                    resizableColumns="false"
+                    lockedColumnCount="1"
+                    horizontalScrollPolicy="auto"
+                    verticalScrollPolicy="on"
+                    autoResizeWidthToFitContent="true"
+                    autoResizeWidthBuffer="258"
+                    maxResizeWidth="{250 + 90 * (viewModel.employeePaycheckCollection.paychecks.length + 1)}"
+                    autoResizeToFitContent="true"
+                    autoResizeHeightBuffer="375"
+                    resize="setVisibleColumns();">
+                <controls:columns>
+                    <controls:SAPDataGridColumn width="250" headerWordWrap="true">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox>
+                                    <mx:Label text="{RotatedPaycheck(data).columnHeader}"
+                                              toolTip="{RotatedPaycheck(data).columnTooltip}"
+                                              fontWeight="{RotatedPaycheck(data).isColumnHeader ? 'bold' : 'normal'}"
+                                              fontStyle="{RotatedPaycheck(data).isSubTotal ? 'italic' : 'normal'}"
+                                              width="250"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.RotatedPaycheck;
+                                        ]]></mx:Script>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                </controls:columns>
+            </controls:SAPDataGrid>
+            <pspui:EmployeeInfoTabViewNavButtons viewModel="{viewModel}"/>
+
+
+        </mx:VBox>
+        <mx:VBox styleName="standardTabbedBody">
+            <controls:TabNavigatorEx id="qtdTabNavigator" resizeToContent="true" visible="{viewModel.employeeProfileQTDYTDYears.length > 0}" includeInLayout="{viewModel.employeeProfileQTDYTDYears.length > 0}">
+                <mx:Repeater id="yearRepeater" dataProvider="{viewModel.employeeProfileQTDYTDYears}" repeatEnd="qtdTabNavigator.selectedIndex = qtdTabNavigator.numChildren - 1;">
+                    <mx:VBox label="{EmployeeLineItemYear(yearRepeater.currentItem).year}">
+                        <controls:SAPDataGrid
+                                id="yearDataGrid"
+                                dataProvider="{EmployeeLineItemYear(yearRepeater.currentItem).rotatedPaychecks}"
+                                selectable="false"
+                                draggableColumns="false"
+                                variableRowHeight="true"
+                                sortableColumns="false"
+                                resizableColumns="false"
+                                lockedColumnCount="1"
+                                autoResizeToFitContent="true"
+                                autoResizeHeightBuffer="375"
+                                width="{250 + 90 * 5}"
+                                headerStyleName="rightAlignBoldLabel">
+                            <controls:columns>
+                                <controls:SAPDataGridColumn width="280" headerWordWrap="true">
+                                    <controls:itemRenderer>
+                                        <mx:Component>
+                                            <mx:VBox>
+                                                <mx:Label text="{RotatedPaycheck(data).columnHeader}"
+                                                          toolTip="{RotatedPaycheck(data).columnTooltip}"
+                                                          fontWeight="{RotatedPaycheck(data).isColumnHeader ? 'bold' : 'normal'}"
+                                                          fontStyle="{RotatedPaycheck(data).isSubTotal ? 'italic' : 'normal'}"
+                                                          width="255"/>
+                                                <mx:Script><![CDATA[
+                                                    import psp.sap.model.RotatedPaycheck;
+                                                    ]]></mx:Script>
+                                            </mx:VBox>
+                                        </mx:Component>
+                                    </controls:itemRenderer>
+                                </controls:SAPDataGridColumn>
+                            </controls:columns>
+                        </controls:SAPDataGrid>
+                    </mx:VBox>
+                </mx:Repeater>
+            </controls:TabNavigatorEx>
+
+        </mx:VBox>
+
+
+    </mx:ViewStack>
+
+    <mx:Binding source="String(searchType.selectedValue)" destination="viewModel.searchType"/>
+    <mx:Binding source="viewModel.searchType" destination="searchType.selectedValue"/>
+
+    <mx:Binding source="fromDateInput.text" destination="viewModel.fromDateString" />
+    <mx:Binding source="viewModel.fromDateString" destination="fromDateInput.text" />
+
+    <mx:Binding source="toDateInput.text" destination="viewModel.toDateString" />
+    <mx:Binding source="viewModel.toDateString" destination="toDateInput.text" />
+
+    <mx:Binding source="viewModel.paycheckFirstVisibleColumn" destination="paycheckDataGrid.horizontalScrollPosition" />
+    <mx:Binding source="paycheckDataGrid.horizontalScrollPosition" destination="viewModel.paycheckFirstVisibleColumn"/>
+
+</mx:VBox>

@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+    <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+            xmlns:pspui="psp.sap.view.*"
+            xmlns:controls="psp.sap.view.controls.*"
+            width="100%" verticalGap="0" paddingTop="0" paddingBottom="0" verticalScrollPolicy="off"  height="100%"
+            creationComplete="onCreationComplete();">
+            <mx:Script>
+
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.controls.DataGrid;
+            import mx.controls.Menu;
+                import mx.events.MenuEvent;
+
+                import mx.events.DataGridEvent;
+
+                import psp.sap.application.SAP;
+                import psp.sap.model.TaxPaymentMethodEnum;
+                import psp.sap.model.TaxTransaction;
+                import psp.sap.viewmodel.TaxLedgerTabViewModel;
+                import psp.app.util.CommonUtil;
+
+                private var mViewModel:TaxLedgerTabViewModel;
+                private var mTempViewModel:TaxLedgerTabViewModel;
+                private var mCreationComplete:Boolean = false;
+
+                [Bindable]
+                public function get viewModel():TaxLedgerTabViewModel {
+                    return mViewModel;
+                }
+
+                public function set viewModel(value:TaxLedgerTabViewModel):void {
+                    if (mCreationComplete) {
+                        mViewModel = value;
+                    }
+                    else {
+                        mTempViewModel = value;
+                    }
+                }
+
+                public function onCreationComplete():void {
+                    mCreationComplete = true;
+                    viewModel = mTempViewModel;
+                }
+
+
+                private function formatDate(item:Object, dgc:SAPDataGridColumn):String {
+                    return dateFormatter.format(item[dgc.dataField]);
+                }
+
+                private function formatDateTime(item:Object, dgc:SAPDataGridColumn):String {
+                    return dateTimeFormatter.format(item[dgc.dataField]);
+                }
+                public function currencyFormatNumber(item:Object, dataField:String, show:Boolean):String {
+                    return show ? currencyFormatter.format(item[dataField]) : "";
+                }
+
+                public function formatPaymentMethod(transaction:Object):String {
+                    var paymentMethod:TaxPaymentMethodEnum = TaxPaymentMethodEnum.fromCode((transaction.paymentMethod));
+                    return paymentMethod != null ? paymentMethod.label : transaction.paymentMethod;
+                }
+
+                public function onPayrollDescriptionClicked(e:MouseEvent):void {
+                    viewModel.taxLedgerViewModel..showPayrollTransactions((e.target as ActionLink).data as TaxTransaction);
+                }
+
+                public function onPaymentStatusClicked(e:MouseEvent):void {
+                    var menu:Menu = Menu.createMenu(this, ["Status History", "Hold History", "Paid Date History"], false);
+                    menu.addEventListener("itemClick", function(menuEvent:Event):void {
+                        if (MenuEvent(menuEvent).item == "Status History") {
+                            viewModel.taxLedgerViewModel.viewStatusHistory(TaxTransaction(ActionLink(e.target).data));
+                        } else if (MenuEvent(menuEvent).item == "Hold History") {
+                            viewModel.taxLedgerViewModel.viewHoldsHistory(TaxTransaction(ActionLink(e.target).data));
+                        } else {
+                            viewModel.taxLedgerViewModel.viewPayDateHistory(TaxTransaction(ActionLink(e.target).data));
+                        }
+                    }, false, 0, true);
+
+                    var pt:Point = new Point(e.localX, e.localY);
+                    pt = e.target.localToGlobal(pt);
+
+                    menu.show(pt.x, pt.y);
+
+
+                }
+
+                public function onWageItemClicked(e:MouseEvent, isQTD:Boolean, isYTD:Boolean):void {
+                    viewModel.taxLedgerViewModel.showDetail((e.target as ActionLink).data as TaxTransaction, isQTD, isYTD);
+                }
+
+
+                private function headerReleaseHandler(event:DataGridEvent):void {
+                    var dataGrid:DataGrid = DataGrid(event.target);
+                    if (dataGrid.columns[event.columnIndex].dataField == "checkPaymentDate") {
+                        viewModel.taxLedgerViewModel.setDefaultSort(ArrayCollection(dataGrid.dataProvider));
+                        event.preventDefault();
+                    }
+                }
+
+                public function getManualLedgerToolTip(item:TaxTransaction):String {
+                    var userFullName:String = item.manualLedgerCreator;
+
+                    var toolTip:String = "";
+
+                    if (item.txnDescription == "Refund") {
+                        toolTip = "Refund Created by <b>" + userFullName + "</b><br>" + item.manualLedgerMemo
+                    } else {
+                        toolTip = "Manual entry by <b>" + userFullName + "</b><br>" + item.manualLedgerMemo;
+                    }
+                    return toolTip;
+                }
+
+                public function printResults(agencyId:String, lawId:String, isForExport:Boolean = false):void {
+                    var reportType:String = "";
+                    var agencyStr:String = viewModel.taxLedgerViewModel.selectedAgency != null ? "&agencyId=" + blankIfNull(viewModel.taxLedgerViewModel.selectedAgency.agencyId) : "";
+                    var paymentTypeStr:String = viewModel.taxLedgerViewModel.selectedPaymentMethod != null ? "&paymentTemplate=" + blankIfNull(viewModel.taxLedgerViewModel.selectedPaymentTemplate.paymentTemplateCd) : "";
+                    var lawItemStr:String = viewModel.taxLedgerViewModel.selectedLawItem != null ? "&taxType=" + blankIfNull(viewModel.taxLedgerViewModel.selectedLawItem.lawId) : "";
+                    var paymentMethodStr:String = viewModel.taxLedgerViewModel.selectedPaymentMethod.code != null ? "&paymentMethod=" + blankIfNull(viewModel.taxLedgerViewModel.selectedPaymentMethod.code) : "";
+
+                    var callString:String = "?report=taxLedgerSearchReport&" +
+                            "&companyCd=" + blankIfNull(viewModel.taxLedgerViewModel.company.sourceSystemCd) +
+                            "&companyId=" + blankIfNull(viewModel.taxLedgerViewModel.company.companyId) +
+                            agencyStr +
+                            "&type=" + blankIfNull(viewModel.taxLedgerViewModel.selectedTransactionDescription) +
+                            paymentTypeStr +
+                            lawItemStr +
+                            paymentMethodStr +
+                            "&startDate=" + blankIfNull(viewModel.taxLedgerViewModel.yearQuarterDateStart) +
+                            "&endDate=" + blankIfNull(viewModel.taxLedgerViewModel.yearQuarterDateEnd) +
+                            "&includePending=" + blankIfNull(viewModel.taxLedgerViewModel.includeNotPostedPayments) +
+                            "&selectedAgencyId=" + blankIfNull(agencyId) +
+                            "&selectedLawId=" + blankIfNull(lawId) +
+                            "&token=" + blankIfNull(SAP.instance.session.user.authorizationToken) +
+                            "&reportType=" + blankIfNull(reportType) +
+                            "&export=" + isForExport;
+
+                    if(CommonUtil.isDTApp()) {
+                        CommonUtil.showPrintWindow(callString, "Print.xls");
+                    } else {
+                        ExternalInterface.call("showPrintWindow", callString);
+                    }
+                }
+
+                public function exportResults(e:ActionLinkEvent):void {
+                    var selectedItem:LawTransactions = e.data as LawTransactions;
+                    printResults(selectedItem.agency.agencyId, selectedItem.law.lawId, true);
+                }
+
+                public function blankIfNull(c:*):* {
+                    return (c == null) ? "" : c;
+                }
+
+        ]]>
+        </mx:Script>
+
+        <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+        <mx:DateFormatter id="dateTimeFormatter" formatString="{SAP.instance.configuration.dateTimeFormatShort}"/>
+        <mx:CurrencyFormatter id="currencyFormatter" currencySymbol="" useThousandsSeparator="true" decimalSeparatorFrom="." decimalSeparatorTo="." precision="2" useNegativeSign="false"/>
+
+        <mx:VBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="100%" horizontalGap="10" height="100%">
+
+            <controls:SAPDataGrid
+                    dataProvider="{LawTransactions(viewModel.lawTransactions).taxTransactions}"
+                    draggableColumns="false"
+                    selectable="false"
+                    variableRowHeight="true"
+                    width="100%"
+                    borderSides="top"
+                    styleName="taxDataGrid"
+                    tabEnabled="false" autoResizeHeightBuffer="375" autoResizeToFitContent="true">
+                <controls:columns>
+                    <controls:SAPDataGridColumn
+                            headerText="Type"
+                            dataField="txnDescription"
+                            minWidth="55" >
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:HBox verticalAlign="middle" horizontalAlign="center" horizontalScrollPolicy="off" horizontalGap="1">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.model.TaxTransaction;
+                                        import psp.sap.view.controls.HTMLToolTip;
+                                        ]]></mx:Script>
+                                    <mx:Label text="{TaxTransaction(data).txnDescription}"
+                                              visible="{TaxTransaction(data).payrollRunId == null}" includeInLayout="{TaxTransaction(data).payrollRunId == null}"/>
+                                    <pspui:TaxLedgerActionLink
+                                            label="{TaxTransaction(data).txnDescription}"
+                                            visible="{TaxTransaction(data).payrollRunId != null}" includeInLayout="{TaxTransaction(data).payrollRunId != null}"
+                                            data="{data}"
+                                            click="outerDocument.onPayrollDescriptionClicked(event)"
+                                            fontWeight="normal"/>
+                                    <mx:Image visible="{TaxTransaction(data).manualLedgerCreator != null}" includeInLayout="{TaxTransaction(data).manualLedgerCreator != null}"
+                                              source="{SAP.instance.icons.userComment}"
+                                              toolTipCreate="event.toolTip = new HTMLToolTip();"
+                                              toolTip="{outerDocument.getManualLedgerToolTip(TaxTransaction(data))}"/>
+                                </mx:HBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Status"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            dataField="paymentStatus"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="center" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        ]]></mx:Script>
+                                    <mx:Label text="{TaxTransaction(data).paymentStatus}"
+                                              visible="{TaxTransaction(data).moneyMovementTransactionId == null}" includeInLayout="{TaxTransaction(data).moneyMovementTransactionId == null}"/>
+                                    <pspui:TaxLedgerActionLink
+                                            label="{TaxTransaction(data).paymentStatus}"
+                                            visible="{TaxTransaction(data).moneyMovementTransactionId != null}" includeInLayout="{TaxTransaction(data).moneyMovementTransactionId != null}"
+                                            data="{data}"
+                                            click="outerDocument.onPaymentStatusClicked(event)"
+                                            fontWeight="normal"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Submission Date"
+                            dataField="submissionDate"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            labelFunction="formatDateTime"
+                            minWidth="120"
+                            textAlign="center"/>
+                    <controls:SAPDataGridColumn
+                            headerText="Check/Payment Date"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            dataField="checkPaymentDate"
+                            labelFunction="formatDate"
+                            minWidth="90"
+                            textAlign="center">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        horizontalAlign="center" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        import psp.sap.view.controls.HTMLToolTip;
+
+                                        private function getToolTip(transaction:TaxTransaction):String {
+                                            if (transaction.payment == null) {
+                                                return "";
+                                            } else {
+                                                var crossesQuarters:String = transaction.payment.crossesQuarters ? "<b>Payment Crosses Quarters</b><br/>" : "";
+
+                                                return crossesQuarters +
+                                                        "<b>Period Begin Date: </b>" + outerDocument.dateFormatter.format(transaction.payment.periodBegin)
+                                                        + "<br/><b>Period End Date: </b>" + outerDocument.dateFormatter.format(transaction.payment.periodEnd)
+                                                        + "<br/><b>Due Date: </b>" + outerDocument.dateFormatter.format(transaction.payment.dueDate)
+                                                        + "<br/><b>Payment Frequency: </b>" + transaction.payment.paymentFrequency;
+                                            }
+                                        }
+                                        ]]></mx:Script>
+                                    <mx:Label text="{outerDocument.dateFormatter.format(TaxTransaction(data).checkPaymentDate)}"
+                                              color="{TaxTransaction(data).payment != null &amp;&amp; TaxTransaction(data).payment.crossesQuarters ? 0xFF0000 : 0x0B333C}"
+                                              toolTipCreate="event.toolTip = new HTMLToolTip();"
+                                              toolTip="{getToolTip(TaxTransaction(data))}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                            </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Payment Method"
+                            dataField="paymentMethod"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            minWidth="70"
+                            textAlign="center">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        horizontalAlign="center" horizontalScrollPolicy="off">
+                                    <mx:Label
+                                            text="{outerDocument.formatPaymentMethod(data)}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Current Taxes"
+                            dataField="currentTaxes"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            textAlign="right"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="right" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        ]]></mx:Script>
+                                    <mx:Text text="{outerDocument.currencyFormatNumber(data, 'currentTaxes', true)}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Current Wages"
+                            dataField="currentWages"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            textAlign="right"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="right" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        ]]></mx:Script>
+                                    <pspui:TaxLedgerActionLink
+                                            label="{outerDocument.currencyFormatNumber(data, 'currentWages', TaxTransaction(data).showCurrentWages)}"
+                                            data="{data}"
+                                            click="outerDocument.onWageItemClicked(event, false, false)"
+                                            fontWeight="normal"
+                                            paddingRight="3"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="QTD Taxes"
+                            dataField="QTDTaxes"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            textAlign="right"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="right" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        ]]></mx:Script>
+                                    <mx:Text text="{outerDocument.currencyFormatNumber(data, 'QTDTaxes', TaxTransaction(data).showQTDYTDTaxes)}"
+                                             fontWeight="{TaxTransaction(data).isLastLineInQuarter ? 'bold' : 'normal'}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="QTDWages"
+                            dataField="QTDWages"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            textAlign="right"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="right" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        ]]></mx:Script>
+                                    <mx:Label text="{outerDocument.currencyFormatNumber(data, 'QTDWages', TaxTransaction(data).showQTDYTDWages)}"
+                                              fontWeight="{TaxTransaction(data).isLastLineInQuarter ? 'bold' : 'normal'}"
+                                              visible="{!TaxTransaction(data).showEmployeeDetailLink}" includeInLayout="{!TaxTransaction(data).showEmployeeDetailLink}"/>
+                                    <pspui:TaxLedgerActionLink
+                                            label="{outerDocument.currencyFormatNumber(data, 'QTDWages', TaxTransaction(data).showQTDYTDWages)}"
+                                            data="{data}"
+                                            click="outerDocument.onWageItemClicked(event, true, false)"
+                                            fontWeight="{TaxTransaction(data).isLastLineInQuarter ? 'bold' : 'normal'}"
+                                            paddingRight="3"
+                                            visible="{TaxTransaction(data).showEmployeeDetailLink}" includeInLayout="{TaxTransaction(data).showEmployeeDetailLink}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="YTD Taxes"
+                            dataField="YTDTaxes"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            textAlign="right"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalScrollPolicy="off" horizontalAlign="right">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        ]]></mx:Script>
+                                    <mx:Text text="{outerDocument.currencyFormatNumber(data, 'YTDTaxes', TaxTransaction(data).showQTDYTDTaxes)}"
+                                             fontWeight="{TaxTransaction(data).isLastLineInQuarter ? 'bold' : 'normal'}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="YTD Wages"
+                            dataField="YTDWages"
+                            headerWordWrap="true"
+                            wordWrap="true"
+                            textAlign="right"
+                            minWidth="80">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="right" horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.TaxTransaction;
+                                        ]]></mx:Script>
+                                    <mx:Label text="{outerDocument.currencyFormatNumber(data, 'YTDWages', TaxTransaction(data).showQTDYTDWages)}"
+                                              fontWeight="{TaxTransaction(data).isLastLineInQuarter ? 'bold' : 'normal'}"
+                                              visible="{!TaxTransaction(data).showEmployeeDetailLink}" includeInLayout="{!TaxTransaction(data).showEmployeeDetailLink}"/>
+                                    <pspui:TaxLedgerActionLink
+                                            label="{outerDocument.currencyFormatNumber(data, 'YTDWages', TaxTransaction(data).showQTDYTDWages)}"
+                                            data="{data}"
+                                            click="outerDocument.onWageItemClicked(event, false, true)"
+                                            fontWeight="{TaxTransaction(data).isLastLineInQuarter ? 'bold' : 'normal'}"
+                                            paddingRight="3"
+                                            visible="{TaxTransaction(data).showEmployeeDetailLink}" includeInLayout="{TaxTransaction(data).showEmployeeDetailLink}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                </controls:columns>
+            </controls:SAPDataGrid>
+            <pspui:ActionLink actionClick="exportResults" icon="{SAP.instance.icons.exportIcon}" paddingTop="2"
+                                  labelPlacement="right" label="Export Results" enabled="{LawTransactions(viewModel.lawTransactions).taxTransactions.length > 0}" data="{LawTransactions(viewModel.lawTransactions)}"/>
+        </mx:VBox>
+    <mx:Script><![CDATA[
+        import psp.sap.model.LawTransactions;
+        ]]></mx:Script>
+</mx:VBox>

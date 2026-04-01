@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+    <query name="findCompaniesForRealTimePublish">
+        <![CDATA[
+            SELECT distinct c.SourceCompanyId, c.id
+                FROM com.intuit.sbd.payroll.psp.domain.Company as c ,
+                    com.intuit.sbd.payroll.psp.domain.CompanyEvent as ce ,
+                    com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+                WHERE c.id = ce.Company.id
+                  AND c.id = cs.Company.id
+                  AND c.IAMRealmId IS NOT NULL
+                  AND ce.EventTypeCd IN ('FirstPayrollReceived', 'EntitlementStateChanged', 'EntitlementUnitAdded', 'EntitlementUnitStatusChanged', 'CustomerSignedUp', 'ServiceStatusChange')
+                  AND ce.EventTimeStamp between :lastProcessedTime and :batchStartTime
+         ]]>
+    </query>
+</hibernate-mapping>

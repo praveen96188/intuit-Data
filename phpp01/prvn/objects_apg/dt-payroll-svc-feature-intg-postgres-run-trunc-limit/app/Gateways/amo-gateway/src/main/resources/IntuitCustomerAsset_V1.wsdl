@@ -1,0 +1,39 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<definitions targetNamespace="http://www.intuit.com/iep/IntuitCustomerAsset/V1" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.intuit.com/iep/IntuitCustomerAsset/V1" xmlns:ws="http://www.example.com/webservice" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:esb="http://www.oracle.com/esb/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:import="http://www.intuit.com/iep/IntuitCustomerAsset/V1">
+    <import namespace="http://www.intuit.com/iep/IntuitCustomerAsset/V1" location="IntuitCustomerAsset.wsdl"/>
+    <binding name="__soap_IntuitCustomerAsset_CustomerAssetPort" type="tns:CustomerAssetPort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="GetCustomerAsset">
+            <soap:operation style="document" soapAction="GetCustomerAsset"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault">
+                <soap:fault name="fault" use="literal" encodingStyle=""/>
+            </fault>
+        </operation>
+    </binding>
+    <binding name="__esb_IntuitCustomerAsset_CustomerAssetPort" type="tns:CustomerAssetPort">
+      <esb:binding/>
+        <operation name="GetCustomerAsset">
+      <esb:operation event-name="IntuitSystem.IntuitCustomerAsset.GetCustomerAsset"/>
+            <input/>
+            <output/>
+        </operation>
+    </binding>
+    <service name="ESB_IntuitCustomerAsset_Service">
+        <port name="__esb_IntuitCustomerAsset_CustomerAssetPort" binding="tns:__esb_IntuitCustomerAsset_CustomerAssetPort">
+        </port>
+        <port name="__soap_IntuitCustomerAsset_CustomerAssetPort" binding="tns:__soap_IntuitCustomerAsset_CustomerAssetPort">
+            <soap:address location="http://syncpippds.bosptc.intuit.net:80/event/IntuitSystem/IntuitCustomerAsset"/>
+        </port>
+    </service>
+    <plt:partnerLinkType name="CustomerAssetPortLT">
+        <plt:role name="CustomerAssetPortProvider">
+            <plt:portType name="tns:CustomerAssetPort"/>
+        </plt:role>
+    </plt:partnerLinkType>
+</definitions>

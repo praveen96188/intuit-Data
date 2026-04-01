@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         height="100%" width="100%">
+
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.model.OfferingServiceChargeTypeEnum;
+            import psp.sap.viewmodel.PayrollLedgerFeeTransferViewModel;
+            import mx.events.CloseEvent;
+            import mx.controls.Alert;
+            import psp.sap.model.SettlementTypeEnum;
+            import psp.sap.model.SettlementType;
+            import psp.sap.application.SAP;
+
+
+            private var mViewModel:PayrollLedgerFeeTransferViewModel;
+
+            [Bindable]
+            public function get viewModel():PayrollLedgerFeeTransferViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:PayrollLedgerFeeTransferViewModel):void {
+                if(value != null) {
+                    mViewModel = value;
+                }
+            }
+
+            public function save():void {
+                viewModel.save();
+            }
+	        			
+		]]>
+	</mx:Script>
+
+    <pspui:ActionLink 
+			    	label="Go to Company Payroll Transactions" 
+			    	click="viewModel.goToPayrollTransactions()" 
+			    	paddingTop="10" paddingLeft="0" 
+			    	tabEnabled="false"/>
+
+    <mx:VBox verticalGap="0">
+        <mx:VBox styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox horizontalGap="0" verticalAlign="middle" width="100%" styleName="padderBox">
+                        <mx:HBox width="275">
+                            <mx:Label text="Fee Type" width="100%"/>
+                        </mx:HBox>
+                        <mx:VBox verticalGap="0">
+                            <mx:RadioButtonGroup id="radioGroup"/>
+                            <mx:RadioButton
+                                    id="radioGroup1"
+                                    groupName="radioGroup"
+                                    width="100"
+                                    value="{OfferingServiceChargeTypeEnum.NSF.code}"
+                                    label="{OfferingServiceChargeTypeEnum.NSF.label}" />
+                            <mx:RadioButton
+                                    id="reversalButton"
+                                    groupName="radioGroup"
+                                    width="100"
+                                    value="{OfferingServiceChargeTypeEnum.Reversal.code}"
+                                    label="{OfferingServiceChargeTypeEnum.Reversal.label}" />
+                        </mx:VBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+
+        <pspui:PayrollSettlementView
+                id="payrollSettlementView"
+                width="100%"
+                showSettlementType="false"
+                showSettlementDate="false"
+                viewModel="{this.viewModel}" />
+
+        <mx:Spacer height="5"/>
+
+        <mx:HBox horizontalAlign="right" width="400">
+            <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button id="saveButton" label="Save" click="save()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Binding source="radioGroup.selectedValue.toString()" destination="viewModel.offeringServiceChargeTypeCd" />
+    <mx:Binding source="viewModel.offeringServiceChargeTypeCd" destination="radioGroup.selectedValue" />
+
+</mx:VBox>

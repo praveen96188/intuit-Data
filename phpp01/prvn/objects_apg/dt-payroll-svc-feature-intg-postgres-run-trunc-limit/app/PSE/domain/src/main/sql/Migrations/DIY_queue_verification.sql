@@ -1,0 +1,33 @@
+-- 11.18.2008 EMR
+-- This script is intended to verify the DIY migration throughout the process.
+
+SET SERVEROUTPUT ON
+SET HEADING      ON
+
+SELECT USER FROM DUAL;
+SELECT TO_CHAR(SYSDATE, 'MM.DD.YYYY HH24:MI') AS "RUN DATETIME" FROM DUAL;
+
+
+PROMPT -
+PROMPT Number of companies in AS400 already migrated (eg equals MI)
+SELECT COUNT(*)
+  FROM DIY_IQCLIENT
+ WHERE CLI_ACTIV_STATUS = 'MI';
+
+ 
+PROMPT -   
+PROMPT AS400 migration queue state chart
+SELECT PSP_MIGRATIONS_STATE AS "AS400 STATE",
+       COUNT(*)             AS "NUMBER OF"
+  FROM DIY_MIG_QUEUE
+ GROUP
+    BY PSP_MIGRATIONS_STATE;
+    
+    
+PROMPT -  
+PROMPT PSP migration queue state chart
+SELECT MIGRATION_STATE_CD AS "PSP STATE",
+       COUNT(*)           AS "NUMBER OF"
+  FROM COMPANY_MIGRATION
+ GROUP
+    BY MIGRATION_STATE_CD;

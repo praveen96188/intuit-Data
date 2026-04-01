@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%"	
+	verticalGap="0" 	
+	creationComplete="onCreationComplete();">
+
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.viewmodel.CompanyInformationViewModel;
+
+        private var mViewModel:CompanyInformationViewModel;
+        private var mTempViewModel:CompanyInformationViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyInformationViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyInformationViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+			
+		]]>
+	</mx:Script>
+
+    <mx:HBox width="100%" horizontalAlign="right" paddingTop="5" paddingRight="5">
+        <mx:Button label="Expand All"
+                   click="viewModel.expandAll();"/>
+        <mx:Button label="Close All"
+                   click="viewModel.collapseAll();"/>
+        <mx:Button label="Save View"
+                   click="viewModel.saveAllPreferences();"
+                   visible="{SAP.instance.session.user.inlineSettingsEnabled}"
+                   includeInLayout="{SAP.instance.session.user.inlineSettingsEnabled}"
+                   icon="{SAP.instance.icons.lock}"/>
+    </mx:HBox>
+
+    <mx:VBox styleName="standardTabbedBody" height="100%" width="100%" verticalGap="0">
+        <controls:Expander title="Recent Events" width="100%" label="{CompanyInspectorPageEnum.COMPANY_RECENT_EVENTS+'_expander'}">
+            <pspui:RecentEventsView label="{CompanyInspectorPageEnum.COMPANY_RECENT_EVENTS}"/>
+        </controls:Expander>
+
+        <controls:Expander title="Legal Information" width="100%" label="{CompanyInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander'}">
+            <controls:DisplayEditHistoryViewStack label="{CompanyInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_deh'}"
+                editEnabled="{viewModel.mayEditLegalInformation()}"
+                editVisible="{viewModel.company.isEditable}" historyLabelText="Entity Change History">
+                <pspui:CompanyDisplayLegalInfoView id="companyLegalInfoView" label="{CompanyInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_deh_display'}"/>
+                <pspui:CompanyEditLegalInfoPartView id="editCompanyLegalInfoView" label="{CompanyInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_deh_edit'}"/>
+                <pspui:EntityChangeHistoryPopUpView id="companyLegalInfoHistory" label="{CompanyInspectorPageEnum.COMPANY_LEGAL_INFO+ '_expander_deh_history'}" showHeading="false"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="Contact Information" width="100%" label="{CompanyInspectorPageEnum.COMPANY_CONTACT_INFO+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                label="{CompanyInspectorPageEnum.COMPANY_CONTACT_INFO+'_expander_deh'}"
+                editEnabled="{viewModel.mayEditContacts()}"
+                editVisible="{viewModel.company.isEditable}">
+                <pspui:CompanyDisplayContactInfoView id="companyContactInfoView" label="{CompanyInspectorPageEnum.COMPANY_CONTACT_INFO+'_expander_deh_display'}"/>
+                <pspui:CompanyEditContactInfoView id="editCompanyContactInfoView" label="{CompanyInspectorPageEnum.COMPANY_CONTACT_INFO+'_expander_deh_edit'}"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="Services" width="100%" label="{CompanyInspectorPageEnum.DISPLAY_SUBSCRIPTION_STATUS+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                editEnabled="{(viewModel.canPerformOperation(OperationsEnum.STATUS_UPDATE) || viewModel.canPerformOperation(OperationsEnum.LIMITS_UPDATE)) &amp;&amp;
+                                subscriptionStatus.viewModel.companyStatus.serviceStatusCollection.length > 0}"
+                label="{CompanyInspectorPageEnum.DISPLAY_SUBSCRIPTION_STATUS + '_expander_deh'}"
+                historyLabelText="Service Status History">
+                <pspui:CompanyDisplaySubscriptionStatus id="subscriptionStatus" label="{CompanyInspectorPageEnum.DISPLAY_SUBSCRIPTION_STATUS + '_expander_deh_display'}"/>
+                <pspui:CompanyEditSubscriptionStatusView id="editSubscriptionView" label="{CompanyInspectorPageEnum.DISPLAY_SUBSCRIPTION_STATUS + '_expander_deh_edit'}" width="100%"/>
+                <pspui:CompanySubscriptionStatusHistory id="subscriptionStatusHistory" label="{CompanyInspectorPageEnum.DISPLAY_SUBSCRIPTION_STATUS + '_expander_deh_history'}"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="Cancellation Info" width="100%" visible="{viewModel.company.isAssistedServiceCancelled}" includeInLayout="{viewModel.company.isAssistedServiceCancelled}" label="{CompanyInspectorPageEnum.CANCELLATION_INFO+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                    editEnabled="{SAP.canPerformOperation(OperationsEnum.EDIT_CANCELLATION_INFO)}"
+                    label="{CompanyInspectorPageEnum.CANCELLATION_INFO + '_expander_deh'}">
+                <pspui:CompanyDisplayCancellationInfo id="cancellationInfo" label="{CompanyInspectorPageEnum.CANCELLATION_INFO + '_expander_deh_display'}"/>
+                <pspui:CompanyEditCancellationInfo id="editCancellationInfo" label="{CompanyInspectorPageEnum.CANCELLATION_INFO + '_expander_deh_edit'}" width="100%"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+       <controls:Expander title="Assisted Price Type and Discount" width="100%" label="{CompanyInspectorPageEnum.PRICE_TYPE+'_expander'}" visible="{viewModel.company.canChangePriceType}" includeInLayout="{viewModel.company.canChangePriceType}">
+            <controls:DisplayEditHistoryViewStack
+                editEnabled="{viewModel.canPerformOperation(OperationsEnum.UPDATE_PRICE_TYPE)}"
+                label="{CompanyInspectorPageEnum.PRICE_TYPE + '_expander_deh'}">
+                <pspui:CompanyDisplayPriceType label="{CompanyInspectorPageEnum.PRICE_TYPE + '_expander_deh_display'}"/>
+                <pspui:CompanyEditPriceType label="{CompanyInspectorPageEnum.PRICE_TYPE + '_expander_deh_edit'}" width="100%"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="Default Company Funding Model" width="100%" label="{CompanyInspectorPageEnum.FUNDING_MODEL+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                    editEnabled="{viewModel.canPerformOperation(OperationsEnum.FUNDING_MODEL_UPDATE)}"
+                    editVisible="{!viewModel.company.isAssisted}"
+                    label="{CompanyInspectorPageEnum.FUNDING_MODEL+'_expander_deh'}"
+                    historyLabelText="ACH Funding Model History">
+                <pspui:CompanyDisplayACHFundingModel id="fundingModel" label="{CompanyInspectorPageEnum.FUNDING_MODEL+'_expander_deh_display'}"/>
+                <pspui:CompanyEditFundingModelView id="editFundingModelView" label="{CompanyInspectorPageEnum.FUNDING_MODEL+'_expander_deh_edit'}"/>
+                <pspui:CompanyFundingModelHistory id="fundingModelHistory" label="{CompanyInspectorPageEnum.FUNDING_MODEL+'_expander_deh_history'}"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="Strikes" width="100%" label="{CompanyInspectorPageEnum.STRIKES_SUMMARY + '_expander'}">
+            <pspui:CompanyStrikeSummary
+                id="strikesSummary"
+                width="100%"
+                paddingLeft="15"
+                label="{CompanyInspectorPageEnum.STRIKES_SUMMARY}"/>
+        </controls:Expander>
+
+        <controls:Expander title="Quickbooks Information" width="100%"
+                           deferToVisible="true"
+                           includeInLayout="{viewModel.company.isQBDTCompany()}"
+                           visible="{viewModel.company.isQBDTCompany()}"
+                           label="{CompanyInspectorPageEnum.QUICKBOOKS_INFORMATION+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                    editEnabled="{viewModel.canPerformOperation(OperationsEnum.EDIT_CHART_OF_ACCOUNTS) || viewModel.canPerformOperation(OperationsEnum.EDIT_QB_FILE_ID)}"
+                    editVisible="{viewModel.company.isEditable}"
+                    label="{CompanyInspectorPageEnum.QUICKBOOKS_INFORMATION+'_expander_deh'}"
+                    historyLabelText="Quickbooks Information History">
+                <pspui:CompanyQuickbooksInformation id="qbInformation" label="{CompanyInspectorPageEnum.QUICKBOOKS_INFORMATION+'_expander_deh_display'}"/>
+                <pspui:CompanyQuickBooksInfoEditView id="editCOAView" label="{CompanyInspectorPageEnum.QUICKBOOKS_INFORMATION+'_expander_deh_edit'}"/>
+                <pspui:CompanyQuickBooksHistoryView label="{CompanyInspectorPageEnum.QUICKBOOKS_INFORMATION+'_expander_deh_history'}"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="Entitlements" width="100%"
+            deferToVisible="true"
+            includeInLayout="{viewModel.company.isQBDTCompany()}"
+            visible="{viewModel.company.isQBDTCompany()}"
+            label="{CompanyInspectorPageEnum.COMPANY_AGREEMENTS+'_expander'}">
+            <pspui:CompanyAgreementsSummary
+                id="companyAgreements"
+                label="{CompanyInspectorPageEnum.COMPANY_AGREEMENTS}"
+                width="100%"
+                paddingLeft="15"/>
+        </controls:Expander>
+
+        <controls:Expander title="Sales Tax Information" width="100%" label="{CompanyInspectorPageEnum.COMPANY_SALES_TAX+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                    editEnabled="{viewModel.canPerformOperation(OperationsEnum.EDIT_TAX_EXEMPT_FLAG)}"
+                    label="{CompanyInspectorPageEnum.COMPANY_SALES_TAX+'_expander_deh'}">
+                <pspui:CompanySalesTaxSummary label="{CompanyInspectorPageEnum.COMPANY_SALES_TAX+'_expander_deh_display'}"/>
+                <pspui:CompanySalesTaxEditView label="{CompanyInspectorPageEnum.COMPANY_SALES_TAX+'_expander_deh_edit'}"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander title="PIN" width="100%"
+            deferToVisible="true"
+            includeInLayout="{viewModel.company.isQBDTCompany()}"
+            visible="{viewModel.company.isQBDTCompany()}"
+            label="{CompanyInspectorPageEnum.COMPANY_PIN+'_expander'}">
+            <pspui:CompanyPINSummary
+                id="companyPin"
+                label="{CompanyInspectorPageEnum.COMPANY_PIN}"
+                width="100%"
+                paddingLeft="15"/>
+        </controls:Expander>
+
+        <controls:Expander title="Token and IDs" width="100%" label="{CompanyInspectorPageEnum.COMPANY_TOKEN+'_expander'}">
+            <controls:DisplayEditHistoryViewStack
+                editEnabled="{viewModel.canPerformOperation(OperationsEnum.EDIT_TOKENS)}"
+                editVisible="{viewModel.company.isEditable}"
+                label="{CompanyInspectorPageEnum.COMPANY_TOKEN+'_expander_deh'}">
+                <pspui:CompanyTransactionResponseTokenSummary id="companyToken" label="{CompanyInspectorPageEnum.COMPANY_TOKEN+'_expander_deh_display'}"/>
+                <pspui:CompanyEditTokenView id="editCompanyTokenView" label="{CompanyInspectorPageEnum.COMPANY_TOKEN+'_expander_deh_edit'}"/>
+            </controls:DisplayEditHistoryViewStack>
+        </controls:Expander>
+
+        <controls:Expander
+            title="Transmission Controls"
+            width="100%"
+            deferToVisible="true"
+            includeInLayout="{viewModel.company.isQBDTCompany()}"
+            visible="{viewModel.company.isQBDTCompany()}"
+            label="{CompanyInspectorPageEnum.COMPANY_DEBUGGING+'_expander'}">
+            <pspui:CompanyDebugView
+                id="companyDebugView"
+                label="{CompanyInspectorPageEnum.COMPANY_DEBUGGING}"
+                width="100%"
+                paddingLeft="15"/>
+        </controls:Expander>
+    </mx:VBox>
+    
+
+</mx:VBox>

@@ -1,0 +1,2406 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuit.sb.tool.build.parent-pom</groupId>
+        <artifactId>sb-parent-pom</artifactId>
+        <version>5.0.5</version>
+    </parent>
+
+
+    <groupId>com.intuit.sbg.psp</groupId>
+    <artifactId>PSP</artifactId>
+    <version>2.2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <description>Payroll Services Platform</description>
+
+    <modules>
+        <module>PSE</module>
+        <module>filter</module>
+        <module>Gateways</module>
+        <module>Common</module>
+        <module>Adapters</module>
+        <module>UI</module>
+    </modules>
+
+    <properties>
+        <database.monolith>oracle</database.monolith>
+        <database.audit>oracle</database.audit>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.source.dir>${project.basedir}/src/main/java</project.source.dir>
+        <project.resources.dir>${project.basedir}/src/main/resources</project.resources.dir>
+        <project.test.resources.dir>${project.basedir}/src/test/resources</project.test.resources.dir>
+        <project.target.generated.sources>${project.basedir}/target/generated-sources</project.target.generated.sources>
+        <project.target.test.classes>${project.basedir}/target/test-classes</project.target.test.classes>
+        <project.target.classes.dir>${project.basedir}/target/classes</project.target.classes.dir>
+
+        <project.zips.dir>${project.basedir}/../../artifacts/zips</project.zips.dir>
+        <project.wars.dir>${project.basedir}/../../artifacts/wars</project.wars.dir>
+        <project.jars.dir>${project.basedir}/../../artifacts/jars</project.jars.dir>
+        <project.config.dir>${project.basedir}/../../artifacts/config</project.config.dir>
+        <main.dir>${user.dir}</main.dir>
+        <local.config.path>PSE/configuration/src/main/resources/env</local.config.path>
+        <spring.version>5.2.22.RELEASE</spring.version>
+
+        <desktop-payroll-services-client.version>0.1.22</desktop-payroll-services-client.version>
+        <desktop-payroll-spring-support.version>0.1.0</desktop-payroll-spring-support.version>
+
+        <psp.project.version>2.2.0-SNAPSHOT</psp.project.version>
+        <web-services-client.version>0.0.32</web-services-client.version>
+        <!-- The jackson is being downgraded from 2.11 to 2.9 because earlier there were
+        multiple versions of jackson and v4-sdk 1.18.25 is only compatible with jackson 2.9-->
+        <jackson.version>2.9.10.20210106</jackson.version>
+        <v4-sdk.version>1.18.25</v4-sdk.version>
+        <v4.schema.version>1.10.445</v4.schema.version>
+        <orika-core.version>1.4.3</orika-core.version>
+        <payroll-api-models.version>2021R13-2947</payroll-api-models.version>
+        <events-publisher.version>0.1.2</events-publisher.version>
+        <events-consumer.version>0.1.2</events-consumer.version>
+        <ixp-java-sdk.version>6.4.6</ixp-java-sdk.version>
+
+        <platform-schema-ebpi-billing.version>1.1.358.0</platform-schema-ebpi-billing.version>
+        <log4j.version>2.17.2</log4j.version>
+        <slf4j.version>1.7.35</slf4j.version>
+        <disruptor.version>3.4.4</disruptor.version>
+        <activemq-spring.version>5.16.4</activemq-spring.version>
+        <db-telemetry.version>1.2.0</db-telemetry.version>
+        <postgres.version>42.3.2</postgres.version>
+        <proxy-injector.version>0.0.5</proxy-injector.version>
+        <payroll-data-service.version>2.0.17</payroll-data-service.version>
+        <net-minidev-json-smart>2.4.8</net-minidev-json-smart>
+        <!-- Spring core and security do not follow the release cycle hence the versions are different-->
+        <spring-security-bom.version>5.2.15.RELEASE</spring-security-bom.version>
+        <netty-bom.version>4.1.74.Final</netty-bom.version>
+        <iamticket-client.version>1.8.32</iamticket-client.version>
+        <apache-poi.version>5.2.2</apache-poi.version>
+        <pulsar-jms-client.version>1.5.36.26</pulsar-jms-client.version>
+        <junit.version>4.11</junit.version>
+        <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
+        <dom4j.version>2.1.3</dom4j.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-codec.version>1.13</commons-codec.version>
+        <okhttp-bom.version>4.9.1</okhttp-bom.version>
+        <okio.version>2.8.0</okio.version>
+        <messaging-crypto-client.version>release-2.8</messaging-crypto-client.version>
+        <!-- Hibernate Start -->
+        <hibernate-commons-annotations.version>5.1.2.Final</hibernate-commons-annotations.version>
+        <hibernate.version>5.6.11.Final</hibernate.version>
+        <hibernate-validator.version>6.2.4.Final</hibernate-validator.version>
+        <ehcache.version>3.5.2</ehcache.version>
+        <!-- Hibernate End -->
+        <!-- c3p0 version is also maintained separately, please upgrade c3p0 version as per the hibernate version -->
+        <c3p0.version>0.9.5.5</c3p0.version>
+        <jboss-logging.version>3.4.3.Final</jboss-logging.version>
+        <jboss-logmanager.version>2.1.18.Final</jboss-logmanager.version>
+        <swagger-jersey-jaxrs.version>1.5.16</swagger-jersey-jaxrs.version>
+        <mail-client.version>1901.A-SNAPSHOT</mail-client.version>
+        <commons-text.version>1.10.0</commons-text.version>
+        <commons-configuration2.version>2.8.0</commons-configuration2.version>
+        <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
+        <filter-validator.version>0.0.9</filter-validator.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>scm.dev.snap.repo</id>
+            <url>${url.snapshots}</url>
+        </repository>
+        <repository>
+            <id>scm.int.rel.repo</id>
+            <url>${url.releases}</url>
+        </repository>
+        <repository>
+            <id>localRepo</id>
+            <name>localRepo</name>
+            <url>file://${main.dir}</url>
+        </repository>
+        <repository>
+            <id>intuit-central-repo</id>
+            <url>http://artifact.intuit.com/artifactory/nexus-public/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>scm.int.rel.repo</id>
+            <name>Central Nexus repo</name>
+            <url>${url.releases}</url>
+        </repository>
+        <snapshotRepository>
+            <id>scm.dev.snap.repo</id>
+            <uniqueVersion>false</uniqueVersion>
+            <name>Central Nexus repo</name>
+            <url>${url.snapshots}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <!-- Dependencies read from maven/nexus repository -->
+        <dependencies>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>filter-validator</artifactId>
+                <version>${filter-validator.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-csv</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>javax.annotation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-ext-jdk15on</artifactId>
+                <version>1.60</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.identity.authn.spring</groupId>
+                <artifactId>authn-springboot-java-sdk</artifactId>
+                <version>0.0.6</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.github.resilience4j</groupId>
+                        <artifactId>resilience4j-circuitbreaker</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.github.resilience4j</groupId>
+                        <artifactId>resilience4j-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.github.resilience4j</groupId>
+                        <artifactId>resilience4j-retry</artifactId>
+                    </exclusion>
+
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.identity.idlm.spring</groupId>
+                <artifactId>idlm-springboot-java-sdk</artifactId>
+                <version>1.0.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.graphql-java</groupId>
+                        <artifactId>graphql-java</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.json</groupId>
+                        <artifactId>json</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>0.10.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.msgpack</groupId>
+                <artifactId>msgpack-core</artifactId>
+                <version>0.8.18</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jnr</groupId>
+                <artifactId>jnr-unixsocket</artifactId>
+                <version>0.25</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>${c3p0.version}</version>
+            </dependency>
+
+
+            <!-- itext.jar :transitive dependency
+            bouncycastle:bcmail-jdk14:138
+            bouncycastle:bcprov-jdk14:138
+            bouncycastle:bctsp-jdk14 -->
+            <dependency>
+                <groupId>com.lowagie</groupId>
+                <artifactId>itext</artifactId>
+                <version>2.1.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+
+            <!-- commons-httpClient.jar:transitive dependency
+            commons-codec(1.2) and commons-logging(1.0.4), logkit:logkit, avalon-framework which is not needed-->
+
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1.0.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+            </dependency>
+
+            <!-- commons-logging:transitive dependency
+            avalon-framework:avalon-framework:4.1.3
+            javax.servlet:servlet-api:2.3
+            log4j:log4j:1.2.12
+            logkit:logkit:1.0.1-->
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+
+            <!-- bcpg-jdk15on:transitive dependency
+            org.bouncycastle:bcprov-jdk15on:1.60-->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpg-jdk15on</artifactId>
+                <version>1.60</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.3.3</version>
+            </dependency>
+
+            <!-- commons-validator:transitive dependency
+            commons-beanutils:commons-beanutils:1.7.0
+            commons-digester:commons-digester:1.6
+            commons-logging:commons-logging:1.0.4
+            oro:oro (optional):2.0.8-->
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+
+            <!-- commons-digester:transitive dependency
+            commons-beanutils:commons-beanutils:1.7.0
+            commons-logging:commons-logging:1.1-->
+            <dependency>
+                <groupId>commons-digester</groupId>
+                <artifactId>commons-digester</artifactId>
+                <version>1.8</version>
+            </dependency>
+
+            <!-- commons-beanutils:transitive dependency
+            commons-logging:commons-logging:1.0.3-->
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>1.9.3</version>
+            </dependency>
+
+            <!-- commons-discovery:transitive dependency
+            commons-logging:commons-logging:1.0.4-->
+            <dependency>
+                <groupId>commons-discovery</groupId>
+                <artifactId>commons-discovery</artifactId>
+                <version>0.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xml-resolver</groupId>
+                <artifactId>xml-resolver</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xmlbeans</groupId>
+                <artifactId>xmlpublic</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xmlbeans</groupId>
+                <artifactId>xbean_xpath</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xmlbeans</groupId>
+                <artifactId>xbean</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss-logging.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logmanager</groupId>
+                <artifactId>jboss-logmanager</artifactId>
+                <version>${jboss-logmanager.version}</version>
+            </dependency>
+
+            <!-- axis:transitive dependecies
+            commons-discovery:commons-discovery:0.2:0.5
+            commons-logging:commons-logging:1.0.4:1.2
+            javax.activation:activation:1.0.2:1.1.1
+            javax.mail:mail:1.3.2:1.5.5
+            wsdl4j:wsdl4j:1.5.1:1.6.3-->
+
+            <dependency>
+                <groupId>axis</groupId>
+                <artifactId>axis</artifactId>
+                <version>1.2.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>axis</groupId>
+                <artifactId>axis-saaj</artifactId>
+                <version>1.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>axis</groupId>
+                <artifactId>axis-jaxrpc</artifactId>
+                <version>1.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xmlParserAPIs</artifactId>
+                <version>2.6.0</version>
+            </dependency>
+
+            <!-- poi-ooxml:transitive dependency
+            dom4j:dom4j:1.6.1
+            org.apache.poi:poi:3.9:3.14
+            org.apache.poi:poi-ooxml-schemas:3.9-->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-schemas</artifactId>
+                <version>4.1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+
+            <!-- poi-examples:transitive dependency
+            org.apache.poi:poi:3.9:3.14
+            org.apache.poi:poi-ooxml:3.9:3.14
+            org.apache.poi:poi-scratchpad:3.9:3.14-->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-examples</artifactId>
+                <version>${apache-poi.version}</version>
+            </dependency>
+
+            <!--poi-excelant:transitive dependency
+            org.apache.ant:ant:1.8.2:1.9.7
+            org.apache.poi:poi:3.9:3.14
+            org.apache.poi:poi-ooxml:3.9:3.14-->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-excelant</artifactId>
+                <version>${apache-poi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.swinglabs</groupId>
+                <artifactId>pdf-renderer</artifactId>
+                <version>1.0.5</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.55</version>
+            </dependency>
+
+            <!-- xdoclet:transitive dependency
+            commons-collections:commons-collections:2.1:4.1
+            commons-logging:commons-logging:1.0.4:1.2 -->
+            <!-- The correct version of commons-collections and commons-logging is defined in the dependency management.
+            Maven will use it and we dont have to explicitly exclude it -->
+            <dependency>
+                <groupId>xdoclet</groupId>
+                <artifactId>xdoclet</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
+            <!-- xjavadoc:transitive dependency
+            ant:ant:1.5.2:1.9.7
+            commons-collections:commons-collections:2.1:4.1-->
+            <dependency>
+                <groupId>xjavadoc</groupId>
+                <artifactId>xjavadoc</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <!-- easymock:transitive dependencies
+            cglib:cglib-nodep:2.2.2:3.2.2
+            org.objenesis:objenesis:1.2:2.2-->
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>3.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>oro</groupId>
+                <artifactId>oro</artifactId>
+                <version>2.0.8</version>
+            </dependency>
+
+            <!--JAXWS 2.2.7-->
+            <dependency>
+                <groupId>com.sun.xml.fastinfoset</groupId>
+                <artifactId>FastInfoset</artifactId>
+                <version>1.2.12</version>
+                <exclusions>
+                    <!--
+                        Excluding jsr173_api as the MD5 doesnt match with checked-in version (IPR/teamcity).
+                        To have an MD5 match jsr173_api is installed and checked in under thirdparty
+                    -->
+                    <exclusion>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jsr173_api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- gmbal:transitive dependency
+            org.glassfish.external : management-api 3.0.0-b012-->
+            <dependency>
+                <groupId>org.glassfish.gmbal</groupId>
+                <artifactId>gmbal-api-only</artifactId>
+                <version>3.1.0-b001</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.ha</groupId>
+                <artifactId>ha-api</artifactId>
+                <version>3.1.8</version>
+            </dependency>
+
+            <!-- jaxws-api:transitive dependency
+            javax.xml.bind:jaxb-api:2.2.4:2.2.12
+            javax.xml.soap:saaj-api:1.3.4:1.3.5
+            Runtime Dependencies (2)
+            javax.jws:jsr181-api:1.0-MR1
+            org.glassfish:javax.annotation:3.1.1 -->
+            <!-- Teamcity and IPR built WARS has jaxb-api as 2.2.7 and so explicitly
+            defined jaxb-api(2.2.7) so that maven uses it -->
+            <dependency>
+                <groupId>javax.xml.ws</groupId>
+                <artifactId>jaxws-api</artifactId>
+                <version>2.2.8</version>
+            </dependency>
+
+            <!-- jaxws-tools:transitive dependency
+            com.sun.xml.bind:jaxb-xjc:2.2.6:2.2.11
+            com.sun.xml.ws:jaxws-rt:2.2.7:2.2.10-->
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-tools</artifactId>
+                <version>2.2.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-rt</artifactId>
+                <version>2.2.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>2.2.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jvnet.mimepull</groupId>
+                <artifactId>mimepull</artifactId>
+                <version>1.8</version>
+            </dependency>
+
+            <!-- policy.jar:transitive dependency
+            com.sun.istack:istack-commons-runtime:2.4:2.22
+            com.sun.xml.txw2:txw2 20110809
+            javax.xml.stream:stax-api:1.0-2-->
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>policy</artifactId>
+                <version>2.3.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- saaj-impl:transitive dependency
+            org.jvnet.mimepull:mimepull:1.7:1.9.6-->
+            <dependency>
+                <groupId>com.sun.xml.messaging.saaj</groupId>
+                <artifactId>saaj-impl</artifactId>
+                <version>1.3.19</version>
+            </dependency>
+
+            <!-- streambuffer:transitive dependency
+            javax.activation:activation:1.1:1.1.1
+            javax.xml.stream:stax-api:1.0-2
+            org.jvnet.staxex:stax-ex:1.7:1.7.7-->
+            <dependency>
+                <groupId>com.sun.xml.stream.buffer</groupId>
+                <artifactId>streambuffer</artifactId>
+                <version>1.5</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.xml.stream</groupId>
+                        <artifactId>stax-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.annotation</artifactId>
+                <version>3.1.1-b06</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.4.5</version>
+            </dependency>
+
+            <!-- woodstox-core-asl:transitive dependency
+            javax.xml.stream:stax-api:1.0-2
+            org.codehaus.woodstox:stax2-api:3.1.1:4.0.0-->
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>woodstox-core-asl</artifactId>
+                <version>4.1.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.xml.stream</groupId>
+                        <artifactId>stax-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.2.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>2.2.6</version>
+            </dependency>
+            <!-- end of jaxws-ri-->
+
+            <dependency>
+                <groupId>backport-util-concurrent</groupId>
+                <artifactId>backport-util-concurrent</artifactId>
+                <version>3.0</version>
+            </dependency>
+
+            <!-- metro:transitive dependency
+            com.sun.commons:beanutils:1.6.1-20070314
+            com.sun.commons:logging-api:1.0.4
+            com.sun.commons:modeler:1.1
+            javax.activation:activation:1.1:1.1.1
+            org.glassfish:javax.annotation:3.1.1-b06:3.1.1-->
+            <dependency>
+                <groupId>org.glassfish.metro</groupId>
+                <artifactId>webservices-extra</artifactId>
+                <version>2.2.1-1</version>
+            </dependency>
+
+            <!-- webservices-tools:transitive dependency
+            org.glassfish.metro : webservices-api   2.2.1-1 2.3.1-->
+            <dependency>
+                <groupId>org.glassfish.metro</groupId>
+                <artifactId>webservices-tools</artifactId>
+                <version>2.2.1-1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.metro</groupId>
+                <artifactId>webservices-extra-api</artifactId>
+                <version>2.2.1-1</version>
+            </dependency>
+
+
+            <!-- jersey 1.1.2 -->
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>1.5.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-attrs</artifactId>
+                <version>1.5.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>1.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-core</artifactId>
+                <version>1.12</version>
+            </dependency>
+
+            <!-- jersey-json:transitive dependency
+            com.sun.xml.bind:jaxb-impl:2.2.3-1:2.2.11
+            org.codehaus.jackson:jackson-core-asl:1.9.2:2.7.4
+            org.codehaus.jackson:jackson-jaxrs:1.9.2:2.7.4
+            org.codehaus.jackson:jackson-mapper-asl	1.9.2:2.7.4
+            org.codehaus.jackson:jackson-xc:1.9.2:2.7.4
+            org.codehaus.jettison:jettison:1.1:1.3.7 -->
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-json</artifactId>
+                <version>1.12</version>
+            </dependency>
+
+            <!-- jersey-server:transitive dependency
+            asm:asm:3.1:5.1-->
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-server</artifactId>
+                <version>1.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-servlet</artifactId>
+                <version>1.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>jsr311-api</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.jersey.contribs</groupId>
+                <artifactId>jersey-multipart</artifactId>
+                <version>1.19.2</version>
+            </dependency>
+            <!-- End of Jersey-1.1.2 -->
+
+            <dependency>
+                <groupId>castor</groupId>
+                <artifactId>castor</artifactId>
+                <version>0.9.6</version>
+            </dependency>
+
+            <!-- xercesImpl:transitive dependency
+            xml-apis:xml-apis:1.3.03:2.0.2
+            xml-resolver:xml-resolver (optional):1.1:1.2-->
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.12.0</version>
+            </dependency>
+
+            <!-- PSP Log dependency version.. START
+                1. slf4j-api - Logging API
+                2. log4j-api (log4j2 - called by slf4j api)
+                3. log4j-core is underlying logging implementation
+                4. log4j-slf4j-impl (binding between slf4j & log4j2)
+            -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- lmax.disruptor is runtime dependency for async logging by log4j2 -->
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${disruptor.version}</version>
+            </dependency>
+            <!-- PSP Log dependency version.. END -->
+
+            <dependency>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>oracle</groupId>
+                <artifactId>ojdbc14</artifactId>
+                <version>10.2.0.1.0</version>
+            </dependency>
+
+            <!-- dom4j:transitive dependency
+            xml-apis:xml-apis:1.0.b2
+            rest all are optional dependencies-->
+            <dependency>
+                <groupId>org.dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>xml-apis</groupId>
+                        <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Hibernate Dependency Start -->
+            <dependency>
+                <groupId>org.hibernate.common</groupId>
+                <artifactId>hibernate-commons-annotations</artifactId>
+                <version>${hibernate-commons-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-envers</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-jcache</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <!-- JCache implementation needs to be added along with hibernate-jcache.
+            Using ehcache:3.5.2 becasue IXP depends on ehcache:3.5.2-->
+            <dependency>
+                <groupId>org.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-c3p0</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-testing</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+            <!-- Hibernate Dependency End -->
+
+            <dependency>
+                <groupId>javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.12.0.GA</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.javaee</groupId>
+                <artifactId>jboss-transaction-api</artifactId>
+                <version>1.0.1.GA</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.8</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>antlr</groupId>
+                <artifactId>antlr</artifactId>
+                <version>2.7.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>2.1.3</version>
+                <type>jar</type>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>2.1_3</version>
+            </dependency>
+            <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jboss-annotations-ejb3</artifactId>
+                <version>4.2.0CP02</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.metro</groupId>
+                <artifactId>metro-standalone</artifactId>
+                <version>2.2.1-1</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.objenesis</groupId>
+                <artifactId>objenesis-tck</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.stream</groupId>
+                <artifactId>stax-api</artifactId>
+                <version>1.0-2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jaxrs</artifactId>
+                <version>2.1.0.GA</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml</groupId>
+                <artifactId>relaxngDatatype</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jvnet.staxex</groupId>
+                <artifactId>stax-ex</artifactId>
+                <version>1.7</version>
+            </dependency>
+            <dependency>
+                <groupId>xalan</groupId>
+                <artifactId>xalan</artifactId>
+                <version>2.7.1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181-api</artifactId>
+                <version>1.0-MR1</version>
+            </dependency>
+
+            <!-- jackson-core dependency -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>    <!-- No longer listing individual jackson dependencies below because it's a maintenance headache and the lower precedence of getting them thru the BOM is a small price to pay. 20190426. -->
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.launchdarkly</groupId>
+                <artifactId>launchdarkly-client</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.experimentation</groupId>
+                <artifactId>ixp-java-sdk</artifactId>
+                <version>${ixp-java-sdk.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sbg</groupId>
+                <artifactId>file-store</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.client.ius</groupId>
+                <artifactId>IUSClient</artifactId>
+                <version>2.5.6</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Unit Test Dependency -->
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>1.7.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito</artifactId>
+                <version>1.7.3</version>
+            </dependency>
+
+            <!-- End of dependencies read from maven/nexus repository -->
+
+            <!-- Dependencies from local repository -->
+            <dependency>
+                <groupId>localRepo.jwsdp.com.sun.xml</groupId>
+                <artifactId>xsdlib</artifactId>
+                <version>20050614</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.ibm</groupId>
+                <artifactId>numberspeller</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.osp.common.utils</groupId>
+                <artifactId>common-utils</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+
+            <!-- JWSDP jars -->
+            <dependency>
+                <groupId>localRepo.jwsdp.com.sun.xml.stream</groupId>
+                <artifactId>sjsxp</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.com.sun.xml</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>1.0.4</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>*</artifactId>
+                        <groupId>*</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.com.sun.xml</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>1.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.javax.xml</groupId>
+                <artifactId>jaxp-api</artifactId>
+                <version>1.2.6_01</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.javax.security</groupId>
+                <artifactId>jaas</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.javax.xml</groupId>
+                <artifactId>namespace</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.javax.transaction</groupId>
+                <artifactId>jta</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.com.sun.xml</groupId>
+                <artifactId>jaxb-libs</artifactId>
+                <version>1.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jwsdp.javax.xml</groupId>
+                <artifactId>jax-qname</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.org.antlr</groupId>
+                <artifactId>antlrworks</artifactId>
+                <version>1.1.5</version>
+            </dependency>
+            <!-- End of JWSDP jars-->
+            <dependency>
+                <groupId>localRepo.net.sf</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.net.sourceforge</groupId>
+                <artifactId>javacsv</artifactId>
+                <version>2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.ems.common</groupId>
+                <artifactId>payroll-data-service</artifactId>
+                <version>${payroll-data-service.version}</version>
+                <!-- <exclusions>
+                    <exclusion>
+                        <groupId>com.intuit.sb.api</groupId>
+                        <artifactId>v4-sdk-jackson2.9</artifactId>
+                    </exclusion>
+                </exclusions> -->
+            </dependency>
+            <dependency>
+                <groupId>localRepo.security.ingrian</groupId>
+                <artifactId>ingrian-nae</artifactId>
+                <version>4.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.security.jsharing.shamir</groupId>
+                <artifactId>jsharing</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.security</groupId>
+                <artifactId>security-all</artifactId>
+                <version>1.0.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.iasorderserviceinterface</groupId>
+                <artifactId>o2c-xml</artifactId>
+                <version>1.0.0.0 </version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.sbg.psp</groupId>
+                <artifactId>psp-ws-api</artifactId>
+                <version>0.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.osp</groupId>
+                <artifactId>wsf-base</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.osp</groupId>
+                <artifactId>wsf-server</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.ems.common</groupId>
+                <artifactId>cdm</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.ems</groupId>
+                <artifactId>tfs-messages</artifactId>
+                <version>2013-R9</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.oracle.weblogic</groupId>
+                <artifactId>wlthint3client</artifactId>
+                <version>3.6.10</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.org.glassfish.metro</groupId>
+                <artifactId>webservices-rt</artifactId>
+                <version>2.2.1-1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.oracle.oam</groupId>
+                <artifactId>jobaccess</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.flux</groupId>
+                <artifactId>flux</artifactId>
+                <version>7.9.8</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.cps.ade</groupId>
+                <artifactId>core-payroll-services</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.cps.ade.schema</groupId>
+                <artifactId>cdm</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.uploaded</groupId>
+                <artifactId>ojdbc7</artifactId>
+                <version>12.1.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.ibm</groupId>
+                <artifactId>jt400</artifactId>
+                <version>3.3</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.jscapesftp</groupId>
+                <artifactId>sftp</artifactId>
+                <version>8.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.intuit.workerscomp</groupId>
+                <artifactId>workers-comp-schema</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <!--Adobe-LCDS-->
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>concurrent</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>flex-bootstrap-jsp</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>flex-messaging</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>flex-messaging-common</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>flex-messaging-req</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>jsafeJCE</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>localRepo.com.adobe.lcds</groupId>
+                <artifactId>pdfencryption</artifactId>
+                <version>2.5.1</version>
+            </dependency>
+            <!--End of Adobe LCDS-->
+            <dependency>
+                <groupId>localRepo.junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.3.1</version>
+            </dependency>
+            <!--End of Local Based dependency -->
+            <!-- V4 dependencies -->
+            <dependency>
+                <groupId>com.intuit.sb.api</groupId>
+                <artifactId>v4-java-sdk-core</artifactId>
+                <version>${v4-sdk.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.intuit.sb.api</groupId>
+                <artifactId>v4-sdk-servlet</artifactId>
+                <version>${v4-sdk.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.intuit.platform.components</groupId>
+                        <artifactId>api-lastmile</artifactId>
+                    </exclusion>
+                    <!-- <exclusion>
+                        <groupId>com.intuit.sb.api</groupId>
+                        <artifactId>v4-sdk-jackson2.7</artifactId>
+                    </exclusion> -->
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sb.api</groupId>
+                <artifactId>v4-sdk-types</artifactId>
+                <version>${v4-sdk.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sb.api</groupId>
+                <artifactId>v4-sdk-core</artifactId>
+                <version>${v4-sdk.version}</version>
+                <exclusions>
+                    <!-- Excluding org.hibernate:hibernate-validator for org.hibernate.validator:hibernate-validator,
+                    javax.validation:validation-api for jakarta.validation:jakarta.validation-api as part of hibernate-lib upgrade -->
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-validator</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.intuit.sb.api</groupId>
+                <artifactId>v4-sdk-jackson2.9</artifactId>
+                <version>${v4-sdk.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.yaml</groupId>
+                        <artifactId>snakeyaml</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sb.api</groupId>
+                <artifactId>v4-sdk-schema</artifactId>
+                <version>${v4.schema.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>27.0.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>63.1</version>
+            </dependency>
+
+            <!-- JSS Dependency -->
+            <dependency>
+                <groupId>com.intuit.sbg</groupId>
+                <artifactId>job-scheduling-framework</artifactId>
+                <version>1.6.28</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.intuit.identity.authn</groupId>
+                        <artifactId>authn-java-sdk</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>2.1.7</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>c3p0</artifactId>
+                        <groupId>c3p0</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.ems</groupId>
+                <artifactId>hystrix-rest-wrappers</artifactId>
+                <version>1.9.3</version>
+            </dependency>
+
+            <!-- IDPS -->
+            <dependency>
+                <groupId>com.intuit.idps</groupId>
+                <artifactId>idps-sdk</artifactId>
+                <version>3.91.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.jersey</groupId>
+                        <artifactId>jersey-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jersey</groupId>
+                        <artifactId>jersey-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jersey.contribs</groupId>
+                        <artifactId>jersey-multipart</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+        <!-- IAM -->
+        <dependency>
+            <groupId>com.intuit.platform.integration.iamticket.client</groupId>
+            <artifactId>iamticket-client</artifactId>
+            <version>${iamticket-client.version}</version>
+            <exclusions>
+             <exclusion>
+            		<groupId>org.apache.commons</groupId>
+            		<artifactId>commons-collections4</artifactId>
+            	</exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <!-- bc-fips and bcprov-jdk15on cannot co-exist in IDPS          -->
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bc-fips</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>${commons-collections4.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+            </exclusions>
+		</dependency>
+        <dependency>
+            <groupId>com.intuit.ems</groupId>
+            <artifactId>direct-deposit-client</artifactId>
+            <version>1.1.14</version>
+        </dependency>
+
+            <dependency>
+                <groupId>com.intuit.ems</groupId>
+                <artifactId>payroll-moneymovement-orchestrator-client</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>1.3.8</version>
+            </dependency>
+
+            <!-- PSP Share Library Account service  -->
+
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>web-service-client</artifactId>
+                <version>${web-services-client.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.glassfish.jaxb</groupId>
+                        <artifactId>jaxb-runtime</artifactId>
+                    </exclusion>
+                    <!-- <exclusion>
+                        <groupId>com.intuit.sb.api</groupId>
+                        <artifactId>v4-sdk-jackson2.9</artifactId>
+                    </exclusion> -->
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>account-service-client</artifactId>
+                <version>${desktop-payroll-services-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>document-services-client</artifactId>
+                <version>${desktop-payroll-services-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>id-mapper-service-client</artifactId>
+                <version>${desktop-payroll-services-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>desktop-payroll-spring-security</artifactId>
+                <version>${desktop-payroll-spring-support.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.ws.rs</groupId>
+                        <artifactId>javax.ws.rs-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-to-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>spring-context-provider</artifactId>
+                <version>${desktop-payroll-spring-support.version}</version>
+            </dependency>
+            <!-- END PSP Share Library Account service  -->
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>1.33</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.10</version>
+            </dependency>
+            <!-- Spring Library -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.retry</groupId>
+                <artifactId>spring-retry</artifactId>
+                <version>1.2.5.RELEASE</version>
+            </dependency>
+            <!-- END Spring Library -->
+
+            <dependency>
+                <groupId>com.intuit.platform.integration.ius</groupId>
+                <artifactId>ius-do</artifactId>
+                <version>5.0.0.9</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.12</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.hystrix</groupId>
+                <artifactId>hystrix-core</artifactId>
+                <version>1.5.12</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.hystrix</groupId>
+                <artifactId>hystrix-javanica</artifactId>
+                <version>1.5.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>xmlunit</groupId>
+                <artifactId>xmlunit</artifactId>
+                <version>1.4</version>
+            </dependency>
+            <!-- IXP-SDK:6.4.4 specifically requires okhttp3:4.9.1 and okio:2.8.0-->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp-bom</artifactId>
+                <version>${okhttp-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okio.version}</version>
+            </dependency>
+
+            <!--entity mapper changes-->
+            <dependency>
+                <groupId>ma.glasnost.orika</groupId>
+                <artifactId>orika-core</artifactId>
+                <version>${orika-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.payroll</groupId>
+                <artifactId>payroll-api-models</artifactId>
+                <version>${payroll-api-models.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.thoughtworks.paranamer</groupId>
+                        <artifactId>paranamer</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.ws.rs</groupId>
+                        <artifactId>javax.ws.rs-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.wordnik</groupId>
+                        <artifactId>swagger-jersey2-jaxrs_2.10</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.commons</groupId>
+                        <artifactId>commons-dbcp2</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dom4j</groupId>
+                        <artifactId>dom4j</artifactId>
+                    </exclusion>
+                    <!-- Excluding org.hibernate:hibernate-validator for org.hibernate.validator:hibernate-validator,
+                    javax.validation:validation-api for jakarta.validation:jakarta.validation-api as part of hibernate-lib upgrade -->
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-validator</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.20.0-GA</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-configuration2</artifactId>
+                <version>${commons-configuration2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>events-publisher</artifactId>
+                <version>${events-publisher.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.intuit.idps</groupId>
+                        <artifactId>idps-sdk-fips</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>events-consumer</artifactId>
+                <version>${events-consumer.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.intuit.idps</groupId>
+                        <artifactId>idps-sdk-fips</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.platform.services.common</groupId>
+                <artifactId>platform-common-schema-ebpi-billing</artifactId>
+                <version>${platform-schema-ebpi-billing.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-web-services</artifactId>
+                    </exclusion>
+
+                    <exclusion>
+                        <groupId>org.raml.jaxrs</groupId>
+                        <artifactId>raml-to-jaxrs-maven-plugin</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.intuit.githooks</groupId>
+                        <artifactId>postcheckout</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-jdk14</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-spring</artifactId>
+                <version>${activemq-spring.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>re-encryption-psp</artifactId>
+                <version>2.9</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>c3p0</artifactId>
+                        <groupId>c3p0</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>re-encryption-files</artifactId>
+                <version>2.9</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>c3p0</artifactId>
+                        <groupId>c3p0</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgres.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>db-telemetry-spring</artifactId>
+                <version>${db-telemetry.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${net-minidev-json-smart}</version>
+            </dependency>
+
+            <!-- TODO: Remove the dependency after updating V4 sdk -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- TODO: Remove this dependency once spring-security-core is updated in desktop-payroll-spring-support-->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-bom</artifactId>
+                <version>${spring-security-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>proxy-injector</artifactId>
+                <version>${proxy-injector.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.jcraft</groupId>
+                        <artifactId>jsch</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.platform.messaging.pulsar.jms</groupId>
+                <artifactId>pulsar-jms-client</artifactId>
+                <version>${pulsar-jms-client.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.ws.rs</groupId>
+                        <artifactId>javax.ws.rs-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.streamnative</groupId>
+                        <artifactId>bouncy-castle-bc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.asynchttpclient</groupId>
+                        <artifactId>async-http-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.avro</groupId>
+                        <artifactId>avro</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg</groupId>
+                <artifactId>workflow-finder</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>1.8.4</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.platform.integration.messaging.crypto</groupId>
+                <artifactId>messaging-crypto-client</artifactId>
+                <version>${messaging-crypto-client.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-jersey-jaxrs</artifactId>
+                <version>${swagger-jersey-jaxrs.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.yaml</groupId>
+                        <artifactId>snakeyaml</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.cns.mail.client</groupId>
+                <artifactId>mail-client</artifactId>
+                <version>${mail-client.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.glassfish.jersey.connectors</groupId>
+                        <artifactId>jersey-apache-connector</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.glassfish.jersey.core</groupId>
+                        <artifactId>jersey-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.glassfish.jersey.core</groupId>
+                        <artifactId>jersey-common</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.reactivex</groupId>
+                        <artifactId>rxjava</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.scala-lang</groupId>
+                        <artifactId>scala-compiler</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activemq-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>dom4j</groupId>
+                        <artifactId>dom4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>commons-beanutils-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.validation</groupId>
+                        <artifactId>validation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.intuit.sbg.psp</groupId>
+                <artifactId>identity-services-client</artifactId>
+                <version>${desktop-payroll-services-client.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>win-build</id>
+            <activation>
+                <os>
+                    <name>windows 7</name>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>spcf-meta-conf-perm-chg</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>attrib</executable>
+                                    <arguments>
+                                        <argument>-R</argument>
+                                        <argument>spcf-meta-conf.xml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>local-batch-xml-perm-chg</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>attrib</executable>
+                                    <arguments>
+                                        <argument>-R</argument>
+                                        <argument>${local.config.path}/local.batch.xml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>local-jboss-xml-perm-chg</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>attrib</executable>
+                                    <arguments>
+                                        <argument>-R</argument>
+                                        <argument>${local.config.path}/local.jboss.xml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>local-test-xml-perm-chg</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>attrib</executable>
+
+                                    <arguments>
+                                        <argument>-R</argument>
+                                        <argument>${local.config.path}/local.test.xml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>unix-build</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>chmod-config-file</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>chmod</executable>
+                                    <arguments>
+                                        <argument>a+w</argument>
+                                        <argument>spcf-meta-conf.xml</argument>
+                                        <argument>${local.config.path}/local.test.xml</argument>
+                                        <argument>${local.config.path}/local.jboss.xml</argument>
+                                        <argument>${local.config.path}/local.batch.xml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>default-datasource</id>
+            <activation>
+                <property>
+                    <name>!environment</name>
+                </property>
+            </activation>
+            <properties>
+                <database.url>jdbc:oracle:thin://@localhost:1521/XE</database.url>
+                <database.schema>PSP_LOCAL</database.schema>
+                <database.password>PSP_LOCAL</database.password>
+                <databaseSecondary.url>jdbc:oracle:thin://@localhost:1521/XE</databaseSecondary.url>
+                <databaseSecondary.schema>PSP_LOCAL1</databaseSecondary.schema>
+                <databaseSecondary.password>PSP_LOCAL1</databaseSecondary.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>build-datasource</id>
+            <activation>
+                <property>
+                    <name>environment</name>
+                    <value>build</value>
+                </property>
+            </activation>
+            <properties>
+                <database.url>jdbc:oracle:thin://@localhost:1521/XE</database.url>
+                <database.schema>PSP_LOCAL</database.schema>
+                <database.password>PSP_LOCAL</database.password>
+                <databaseSecondary.url>jdbc:oracle:thin://@localhost:1521/XE</databaseSecondary.url>
+                <databaseSecondary.schema>PSP_LOCAL1</databaseSecondary.schema>
+                <databaseSecondary.password>PSP_LOCAL1</databaseSecondary.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-datasource</id>
+            <activation>
+                <property>
+                    <name>environment</name>
+                    <value>test</value>
+                </property>
+            </activation>
+            <properties>
+                <database.url>jdbc:oracle:thin://@localhost:1521/ORCLCDB.localdomain</database.url>
+                <database.schema>PSP_LOCAL</database.schema>
+                <database.password>PSP_LOCAL</database.password>
+                <databaseSecondary.url>jdbc:oracle:thin://@localhost:1521/ORCLCDB.localdomain</databaseSecondary.url>
+                <databaseSecondary.schema>PSP_LOCAL1</databaseSecondary.schema>
+                <databaseSecondary.password>PSP_LOCAL1</databaseSecondary.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>release-datasource</id>
+            <activation>
+                <property>
+                    <name>environment</name>
+                    <value>release</value>
+                </property>
+            </activation>
+            <properties>
+                <database.url>jdbc:oracle:thin://@orapbdqprd1.qcyf01.ie.intuit.net:1521/pbdprd</database.url>
+                <database.schema>PSP_LOCAL</database.schema>
+                <database.password>psp_local</database.password>
+                <databaseSecondary.url>jdbc:oracle:thin://@orapbdqprd1.qcyf01.ie.intuit.net:1521/pbdprd</databaseSecondary.url>
+                <databaseSecondary.schema>PSP_LOCAL1</databaseSecondary.schema>
+                <databaseSecondary.password>psp_local</databaseSecondary.password>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/fortify.xml</exclude>
+                    <exclude>**/clover.license</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>artifacts</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="artifacts/config"/>
+                                <mkdir dir="artifacts/zips"/>
+                                <mkdir dir="artifacts/wars"/>
+                                <mkdir dir="artifacts/jars"/>
+                                <copy todir="artifacts/config" file="smoketest.sh"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>Cp1252</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <!--<parallel>classes</parallel>
+                    <threadCount>1</threadCount>-->
+                    <workingDirectory>${main.dir}</workingDirectory>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <!--                    To add the aspectJ wever -->
+                    <argLine>${surefireArgLine} -Xms256m -Xmx1024m -XX:MaxPermSize=512m -javaagent:aspectjweaver.jar</argLine>
+                    <!--<argLine>${surefireArgLine} -Xms256m -Xmx1024m -XX:MaxPermSize=512m</argLine>-->
+                    <trimStackTrace>false</trimStackTrace>
+                    <!--<skipTests>true</skipTests>-->
+                    <rerunFailingTestsCount>1</rerunFailingTestsCount>
+                    <testFailureIgnore>true</testFailureIgnore>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <configuration>
+                    <dataFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</dataFile>
+                    <outputDirectory>${project.testresult.directory}/coverage/jacoco</outputDirectory>
+                    <!-- Sets the path to the file which contains the execution data. -->
+                    <destFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</destFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>surefireArgLine</propertyName>
+<!--                            <destFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</destFile>-->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+<!--                        <configuration>-->
+<!--                            <dataFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</dataFile>-->
+<!--                        </configuration>-->
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.39</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.00</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>CLASS</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.00</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>METHOD</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.00</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <filesToInclude>spcf-meta-conf.xml,${local.config.path}/local.batch.xml,${local.config.path}/local.jboss.xml,${local.config.path}/local.test.xml</filesToInclude>
+                    <regex>false</regex>
+                    <replacements>
+                        <replacement>
+                            <token>working.dir</token>
+                            <value>${main.dir}</value>
+                        </replacement>
+                        <replacement>
+                            <token>database.url</token>
+                            <value>${database.url}</value>
+                        </replacement>
+                        <replacement>
+                            <token>database.schema</token>
+                            <value>${database.schema}</value>
+                        </replacement>
+                        <replacement>
+                            <token>database.password</token>
+                            <value>${database.password}</value>
+                        </replacement>
+                        <replacement>
+                            <token>databaseSecondary.url</token>
+                            <value>${databaseSecondary.url}</value>
+                        </replacement>
+                        <replacement>
+                            <token>databaseSecondary.schema</token>
+                            <value>${databaseSecondary.schema}</value>
+                        </replacement>
+                        <replacement>
+                            <token>databaseSecondary.password</token>
+                            <value>${databaseSecondary.password}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

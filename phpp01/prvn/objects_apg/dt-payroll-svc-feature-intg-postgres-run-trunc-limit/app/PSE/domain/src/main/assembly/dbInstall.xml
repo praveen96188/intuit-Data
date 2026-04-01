@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">    
+    <id>psp-dbinstall</id>
+    <!-- Specifies that our binary distribution is a zip package -->
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.model.dir}</directory>
+            <outputDirectory>.</outputDirectory>
+            <excludes>
+                <exclude>**/old/*.*</exclude>
+            </excludes>
+            <includes>
+                <include>**/DB*.sql</include>
+                <include>**/InstallDB.sql</include>
+                <include>**/PostInstallDB.sql</include>
+                <include>**/DropDBObjects.sql</include>
+                <include>**/DropSynonym.sql</include>
+                <include>**/SAP_InsertTestUsers.sql</include>               
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../../localRepo/com/flux/flux/7.9.8/doc</directory>           
+            <includes>
+                <include>**/oracle.sql</include>
+                <include>**/inituser_pp_prod.sql</include>
+                <include>**/inituser_standard.sql</include>
+            </includes>           
+            <outputDirectory>.</outputDirectory> 
+        </fileSet>
+    </fileSets>
+</assembly>

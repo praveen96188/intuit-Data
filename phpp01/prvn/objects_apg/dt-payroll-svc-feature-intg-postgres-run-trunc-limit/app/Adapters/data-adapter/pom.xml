@@ -1,0 +1,375 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>data-adapter</artifactId>
+    <packaging>war</packaging>
+    <name>data-adapter</name>
+
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Adapters</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>filter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>payroll-services-api-impl</artifactId>
+            <exclusions>
+                <exclusion> <!-- its from configuraion manager -->
+                    <groupId>localRepo.security.ingrian</groupId>
+                    <artifactId>ingrian-log4j</artifactId>
+                </exclusion>
+                <exclusion>  <!-- its from configuraion manager -->
+                    <groupId>localRepo.security.ingrian</groupId>
+                    <artifactId>ingrian-nae</artifactId>
+                </exclusion>
+                <exclusion>  <!-- its from configuraion manager -->
+                    <groupId>localRepo.security.jsharing.shamir</groupId>
+                    <artifactId>jsharing</artifactId>
+                </exclusion>
+                <exclusion>  <!-- its from configuraion manager -->
+                    <groupId>localRepo.security</groupId>
+                    <artifactId>security-all</artifactId>
+                </exclusion>
+                <exclusion> <!-- its from configuraion manager -->
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcpg-jdk15on</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+                <exclusion> <!-- its from payroll-services-api -->
+                    <groupId>localRepo.jscapesftp</groupId>
+                    <artifactId>sftp</artifactId>
+                </exclusion>
+                <exclusion>  <!-- its from payroll-services-api -->
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>  <!-- its from payroll-services-api -->
+                    <groupId>javax.servlet.jsp</groupId>
+                    <artifactId>jsp-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>email-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>salestax-gateway</artifactId>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>*</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+        </dependency>
+        <!-- End of Module dependency -->
+
+        <!-- Dependencies Read from Local Repository -->
+        <dependency>
+            <groupId>com.intuit.ems.common</groupId>
+            <artifactId>payroll-data-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>localRepo.com.ibm</groupId>
+            <artifactId>jt400</artifactId>
+        </dependency>
+        <!-- End of Dependencies Read from Local Repository -->
+
+        <!-- Dependencies Read from Maven Repository -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- required by web service client-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <!--Jersey-1.12-->
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>stax</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.annotation</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--hibernate-validator-4.3-->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>jboss-logmanager</artifactId>
+        </dependency>
+        <!--Test Dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>testutils</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>DataAdapter-${psp.project.version}</finalName>
+        <plugins>
+            <!-- the war file generated should have the dependencies unpacked to match with the current war and
+            some of the resources are accessed in the psp-code base using getResouce method, so we have to
+            unpack the dependent modules before its packaged -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>**/*pom.xml,**/*pom.properties,**/*jaxb.episode,**/*.MF,**/*resources.xml</excludes>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>email-client</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>payroll-services-api-impl</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>processes-core</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>utils</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>payroll-services-api</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>domain</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>domain-secondary</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>configuration-manager</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>salestax-gateway</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>salestax-services-client</artifactId>
+                                    <version>${desktop-payroll-services-client.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>agency-rules</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>filter</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- For tests only to access truncateTables.sql-->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-remote-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>com.intuit.sbg.psp:domain:${psp.project.version}</resourceBundle>
+                                <resourceBundle>com.intuit.sbg.psp:domain-secondary:${psp.project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- WAR packaging will create only WAR.
+            We want to add this module as dependency to other modules for which we need a Jar to be created-->
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                    <classesClassifier>classes</classesClassifier>
+                    <packagingExcludes>%regex[WEB-INF/lib/(utils|salestax-gateway|processes-core|payroll-services-api-impl|payroll-services-api|filter|email-client|domain-secondary|domain|dd-gateway|configuration-manager|agency-rules|account-service-gateway)-${psp.project.version}.jar]</packagingExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>../../</directory>
+                            <targetPath>/</targetPath>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>appversion.html</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resource-one</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${project.wars.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>${project.build.finalName}.war</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,6 @@
+--
+-- This script will be executed BEFORE the automatically generated
+-- C:\Users\snasim\Documents\GitHub\Payroll-Services\PSE\domain\src\main\model\DBUpgrade_002.019.008.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

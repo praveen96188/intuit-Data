@@ -1,0 +1,142 @@
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		xmlns:pspui="psp.sap.view.*"
+		verticalGap="0" width="100%">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import psp.sap.application.SAP;
+			import psp.sap.model.ChaseReport;
+			
+			[Bindable]
+			public var report:ChaseReport;
+			
+			private function formatDate(item:Object, dgc:AdvancedDataGridColumn):String {
+				return dateFormatterShort.format(item.settlementDate);
+			}
+			
+			private function formatDebitCurrancy(item:Object, dgc:AdvancedDataGridColumn):String {
+				var amount:Number = item.debitAmount;						  				
+				if(amount>0){
+					return currencyFormatter.format(amount);
+				}							    
+		    	return "";
+		  	}
+		  	
+		  	private function formatCreditCurrancy(item:Object, dgc:AdvancedDataGridColumn):String {
+				var amount:Number = item.creditAmount;						  				
+				if(amount>0){
+					return currencyFormatter.format(amount);
+				}							    
+		    	return "";
+		  	}					
+		  	
+		  	private function maskDebitAccount(item:Object, dgc:AdvancedDataGridColumn):String {		  							    
+		    	return UIUtils.maskBankAccountNumbers(item.debitAccountNumber);
+		  	}
+		  	
+		  	private function maskCreditAccount(item:Object, dgc:AdvancedDataGridColumn):String {		  							    
+		    	return UIUtils.maskBankAccountNumbers(item.creditAccountNumber);
+		  	}
+		  			  	
+		]]>
+	</mx:Script>		
+	
+	<mx:DateFormatter id="dateFormatterShort" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+	<mx:DateFormatter id="dateFormatterTime" formatString="{SAP.instance.configuration.dateTimeFormatMedium}"/>
+	<mx:CurrencyFormatter id="currencyFormatter" precision="2"
+                          currencySymbol="" decimalSeparatorFrom="."
+                          decimalSeparatorTo="." useNegativeSign="true"
+                          useThousandsSeparator="true" alignSymbol="left"/>
+	
+	<mx:HBox>
+		<mx:Label text="Sent from Client:" fontWeight="bold"/>
+		<mx:Text id="sentFromClientText" text="{dateFormatterTime.format(report.connectionDate)}" />
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="Posting Date:" fontWeight="bold"/>
+		<mx:Text id="PostingDateText" text="{dateFormatterShort.format(report.postingDate)}" />
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="Company:" fontWeight="bold"/>
+		<mx:Text id="companyText" text="{report.companyName}" />
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="Source:" fontWeight="bold"/>
+		<mx:Text id="sourceText" text="{report.sourceSystem}" />
+	</mx:HBox>
+	<pspui:ChaseReportDataGrid
+		id="transactionsData"
+        dataProvider="{report.transactions}"
+		width="960"		
+		resizableColumns="false"
+		dragMoveEnabled="false"
+		selectable="false"
+		wordWrap="true"
+		variableRowHeight="true">		 
+		<pspui:groupedColumns>
+			<mx:AdvancedDataGridColumn
+				headerText="Release{String('\n')}Date"
+				dataField="settlementDate"
+				labelFunction="formatDate"
+				textAlign="center"
+				minWidth="90"/>
+			<mx:AdvancedDataGridColumn
+				headerText="Debit"
+				dataField="debitAmount"
+				headerStyleName="headerCenter"
+				labelFunction="formatDebitCurrancy"				
+				textAlign="right"
+				minWidth="115"/>
+			<mx:AdvancedDataGridColumn
+				headerText="Credit"
+				dataField="creditAmount"
+				headerStyleName="headerCenter"
+				labelFunction="formatCreditCurrancy"
+				textAlign="right"
+				minWidth="115"/>
+			<mx:AdvancedDataGridColumn
+				headerText="Transferred From"
+				dataField="debitAccountName"				
+				textAlign="left"
+				minWidth="145"/>
+			<mx:AdvancedDataGridColumn
+				headerText="Transferred To"
+				dataField="creditAccountName"				
+				textAlign="left"
+				minWidth="145"/>
+			<mx:AdvancedDataGridColumnGroup 
+				headerText="From Bank Account" 
+				textAlign="center">
+				<mx:AdvancedDataGridColumn 
+					headerText = "Routing"  
+					textAlign="center" 
+					dataField="debitAccountRoutingNumber"
+					minWidth="80"/>
+			
+				<mx:AdvancedDataGridColumn 
+					headerText = "Account"  
+					textAlign="center"
+					dataField="debitAccountNumber" 
+					labelFunction="maskDebitAccount"
+					minWidth="80"/>
+			</mx:AdvancedDataGridColumnGroup>
+			<mx:AdvancedDataGridColumnGroup 
+				headerText="To Bank Account" 
+				textAlign="center">
+				<mx:AdvancedDataGridColumn 
+					headerText = "Routing"  
+					textAlign="center" 
+					dataField="creditAccountRoutingNumber"
+					minWidth="80"/>
+			
+				<mx:AdvancedDataGridColumn 
+					headerText = "Account"
+					textAlign="center"
+					dataField="creditAccountNumber" 
+					labelFunction="maskCreditAccount"
+					minWidth="80"/>
+			</mx:AdvancedDataGridColumnGroup>				
+		</pspui:groupedColumns>
+	</pspui:ChaseReportDataGrid>
+    <mx:Spacer height="10"/>
+</mx:VBox>

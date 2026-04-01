@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:intuit="intuit.sbd.flex.framework.view.*"
+        xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.viewmodel.DDMUserEditViewModel;
+
+        private var mViewModel:DDMUserEditViewModel;
+        private var mTempViewModel:DDMUserEditViewModel;
+        private var mCreationComplete:Boolean = false;
+
+
+        [Bindable]
+        public function get viewModel():DDMUserEditViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:DDMUserEditViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function onRoleRemove():void {
+            viewModel.userDetails.roleIds.removeItemAt(viewModel.userDetails.roleIds.getItemIndex(selectedRoles.selectedItem));
+            viewModel.updateCanSave();
+        }
+
+        private function onRoleAdd():void {
+            if (! viewModel.userDetails.roleIds.contains(availableRoles.selectedItem)) {
+                viewModel.userDetails.roleIds.addItem(availableRoles.selectedItem);
+                viewModel.updateCanSave();
+            }
+
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox
+            width="100%"
+            verticalGap="0">
+        <mx:HBox width="450"
+                 height="100%"
+                 styleName="ddGrayMiniBoxStyle"
+                 paddingRight="10"
+                 paddingLeft="2">
+            <mx:VBox horizontalGap="0" width="100%" horizontalAlign="left" styleName="padderBox" paddingRight="10">
+                <!-- Edit User Label -->
+                <mx:HBox width="100%" verticalGap="0" horizontalAlign="left">
+                    <mx:Label text="Edit User:"/>
+                </mx:HBox>
+                <!-- First Name -->
+                <mx:HBox width="100%" verticalGap="0" horizontalAlign="left">
+                    <mx:Label text="First Name" fontWeight="bold" width="150"/>
+                    <controls:SAPTextInput dataField="userDetails.firstName" tabIndex="1" width="{lastNameInput.width}"/>
+                </mx:HBox>
+                <!-- Last Name -->
+                <mx:HBox width="100%" verticalGap="0" horizontalAlign="left">
+                    <mx:Label text="Last Name" fontWeight="bold" width="150"/>
+                    <controls:SAPTextInput dataField="userDetails.lastName" tabIndex="1" id="lastNameInput" width="200"/>
+                </mx:HBox>
+                <!-- Corp ID -->
+                <mx:HBox width="100%" verticalGap="0" horizontalAlign="left">
+                    <mx:Label text="IntuitCorpId" fontWeight="bold" width="150"/>
+                    <controls:SAPTextInput dataField="userDetails.corpId" tabIndex="3" width="{lastNameInput.width}"/>
+                </mx:HBox>
+                <!-- Role -->
+                <mx:HBox width="100%" verticalGap="0" horizontalAlign="left">
+                    <mx:Label text="Roles" fontWeight="bold" width="150"/>
+                    <mx:VBox>
+                        <mx:List id="selectedRoles" width="{lastNameInput.width}" dataProvider="{viewModel.userDetails.roleIds}" tabIndex="4"
+                                 rowCount="{Math.max(1, viewModel.userDetails.roleIds.length)}"/>
+                        <mx:Button enabled="{selectedRoles.selectedItem != null}" label="Remove Selected" click="onRoleRemove();" tabIndex="5"/>
+                        <mx:ComboBox id="availableRoles" width="{lastNameInput.width}" tabIndex="6" dataProvider="{viewModel.roleList}"/>
+                        <mx:Button enabled="{availableRoles.selectedItem != null}"
+                                   label="Add Selected" click="onRoleAdd();"/>
+                    </mx:VBox>
+                </mx:HBox>
+                <mx:Spacer height="5"/>
+                <mx:HBox width="100%" verticalGap="0" horizontalAlign="right" paddingRight="8">
+                    <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()" tabIndex="5"/>
+                    <mx:Button id="saveButton" label="Save" click="viewModel.save()" enabled="{viewModel.canSave}"
+                               width="{cancelButton.width}" tabIndex="6"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:HBox>
+    </mx:VBox>
+
+
+</mx:VBox>

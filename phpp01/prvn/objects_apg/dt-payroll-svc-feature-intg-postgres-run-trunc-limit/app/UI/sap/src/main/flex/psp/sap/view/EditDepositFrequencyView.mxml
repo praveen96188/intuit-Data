@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:view="psp.sap.view.*"
+         creationComplete="onCreationComplete();"
+         minWidth="350"
+         verticalGap="0">
+    <mx:Script>
+        <![CDATA[
+        import mx.binding.utils.BindingUtils;
+        import mx.controls.Alert;
+        import mx.controls.ComboBox;
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.DepositFrequency;
+        import psp.sap.viewmodel.EditDepositFrequencyViewModel;
+
+        private var mViewModel:EditDepositFrequencyViewModel;
+        private var mTempViewModel:EditDepositFrequencyViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EditDepositFrequencyViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EditDepositFrequencyViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                if (mViewModel != null) {
+                }
+            } else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to update these deposit frequencies?";
+            Alert.show(msgString,
+                    "Update Deposit Frequency Confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+
+        private function onEffectiveDateInputCreationComplete(event:Event):void {
+            var target:UIComponent = UIComponent(event.currentTarget);
+            var depositFrequency:DepositFrequency = DepositFrequency(target.getRepeaterItem());
+            if (depositFrequency != null) {
+                viewModel.getEffectiveDateValidator(depositFrequency).listener = target;
+            }
+        }
+
+        private function onDepositFrequencyBoxComplete(event:Event):void {
+            var target:UIComponent = UIComponent(event.currentTarget);
+            var depositFrequency:DepositFrequency = DepositFrequency(target.getRepeaterItem());
+            if (depositFrequency != null) {
+                viewModel.getDepositFrequencyValidator(depositFrequency).listener = target;
+            }
+        }
+
+        private function onComboCreationComplete(event:Event):void {
+            var target:ComboBox = ComboBox(event.currentTarget);
+            var depositFrequency:DepositFrequency = DepositFrequency(target.getRepeaterItem());
+            if (depositFrequency != null) {
+                BindingUtils.bindProperty(target, "selectedItem", depositFrequency, "newDepositFrequency");
+            }
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Edit Deposit Frequencies for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="headerBorder" id="headerLabel" paddingLeft="2" paddingBottom="0"
+              paddingTop="5"/>
+
+    <mx:Text text="Effective dates must be in increasing order."
+             visible="{viewModel.dateOutOfOrder}"
+             includeInLayout="{viewModel.dateOutOfOrder}"
+             styleName="errorMessageStyle"/>
+
+    <mx:Text text="Consecutive deposit frequencies must be different."
+             visible="{viewModel.consecutiveDepositFrequencySame}"
+             includeInLayout="{viewModel.consecutiveDepositFrequencySame}"
+             styleName="errorMessageStyle"/>
+
+
+    <mx:Grid backgroundColor="0xeeeeee" paddingBottom="4">
+        <mx:GridRow>
+            <mx:GridItem/>
+            <mx:GridItem>
+                <mx:Label text="Effective Date" fontStyle="italic"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Deposit Frequency" fontStyle="italic"/>
+            </mx:GridItem>
+            <mx:GridItem/>
+        </mx:GridRow>
+            <mx:Repeater dataProvider="{viewModel.depositFrequencies}" id="depositFrequencyRepeater">
+                <mx:GridRow verticalAlign="middle">
+                    <mx:GridItem verticalAlign="middle">
+                        <mx:Spacer width="3"/>
+                        <mx:LinkButton icon="{SAP.instance.icons.addRow}"
+                                       toolTip="Insert after"
+                                       click="viewModel.insertAfter(LinkButton(event.currentTarget).repeaterIndex)"
+                                       paddingLeft="0"
+                                       skin='{null}'
+                                       width="10"/>
+                        <mx:Spacer width="0"/>
+                        <mx:LinkButton icon="{SAP.instance.icons.deleteRow}"
+                                       visible="{DepositFrequency(depositFrequencyRepeater.currentItem).canDelete}"
+                                       click="viewModel.deleteAt(LinkButton(event.currentTarget).repeaterIndex)"
+                                       skin='{null}'
+                                       width="10"
+                                       paddingLeft="0"/>
+                    </mx:GridItem>
+                    <mx:GridItem width="155" verticalAlign="middle">
+                        <mx:Label text="{SAPDateFormatters.dateFormatShort.format(DepositFrequency(depositFrequencyRepeater.currentItem).effectiveDate)}"
+                                  fontWeight="bold"
+                                  visible="{!DepositFrequency(depositFrequencyRepeater.currentItem).canDelete || DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency != null}"
+                                  includeInLayout="{!DepositFrequency(depositFrequencyRepeater.currentItem).canDelete || DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency != null}"/>
+                        <view:SAPDateField creationComplete="onEffectiveDateInputCreationComplete(event)"
+                                           editable="true"
+                                           visible="{DepositFrequency(depositFrequencyRepeater.currentItem).canDelete &amp;&amp; DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency == null}"
+                                           includeInLayout="{DepositFrequency(depositFrequencyRepeater.currentItem).canDelete &amp;&amp; DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency == null}"
+                                           text="{DepositFrequency(depositFrequencyRepeater.currentItem).effectiveDateString}"
+                                           change="DepositFrequency(SAPDateField(event.currentTarget).getRepeaterItem()).effectiveDateString = (SAPDateField(event.currentTarget).text)"/>
+                    </mx:GridItem>
+                    <mx:GridItem width="202">
+                        <view:ErrorBox creationComplete="onDepositFrequencyBoxComplete(event)" changeThemeColor="false"
+                                       visible="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency == null}"
+                                       includeInLayout="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency == null}">
+                            <controls:ComboBoxEx creationComplete="onComboCreationComplete(event)"
+                                                 width="200"
+                                                 selectedItem="{DepositFrequency(depositFrequencyRepeater.currentItem).newDepositFrequency}"
+                                                 dataProvider="{viewModel.availableFrequencies}"
+                                                 change="DepositFrequency(ComboBox(event.currentTarget).getRepeaterItem()).newDepositFrequency = String(ComboBox(event.currentTarget).selectedItem)"/>
+                        </view:ErrorBox>
+                        <mx:HBox styleName="noPadding" verticalAlign="middle"
+                                 visible="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency != null}"
+                                 includeInLayout="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency != null}">
+                            <mx:Label text="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency}"/>
+                            <mx:Label text="Obsolete"
+                                      fontWeight="bold"
+                                      color="0xddaa00"/>
+                            <mx:LinkButton label="Edit"
+                                           toolTip="Edit this Deposit Frequency.  You will need to select a frequency that is not obsolete in order to save."
+                                           styleName="inlineLinkButtonStyle"
+                                           visible="{DepositFrequency(depositFrequencyRepeater.currentItem).newDepositFrequency != viewModel.defaultDepositFrequency}"
+                                           click="DepositFrequency(UIComponent(event.currentTarget).getRepeaterItem()).obsoleteFrequency = null; DepositFrequency(UIComponent(event.currentTarget).getRepeaterItem()).newDepositFrequency = ''"/>
+
+                        </mx:HBox>
+                    </mx:GridItem>
+                    <mx:GridItem>
+                        <mx:HBox styleName="noPadding" verticalAlign="middle"
+                                 visible="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency == null}"
+                                 includeInLayout="{DepositFrequency(depositFrequencyRepeater.currentItem).obsoleteFrequency == null}">
+                            <mx:Label text="Default"
+                                      fontStyle="italic"
+                                      visible="{DepositFrequency(depositFrequencyRepeater.currentItem).newDepositFrequency == viewModel.defaultDepositFrequency}"
+                                      includeInLayout="false"/>
+                            <mx:LinkButton label="Use default: {viewModel.defaultDepositFrequency}"
+                                           styleName="inlineLinkButtonStyle"
+                                           visible="{DepositFrequency(depositFrequencyRepeater.currentItem).newDepositFrequency != viewModel.defaultDepositFrequency}"
+                                           click="DepositFrequency(UIComponent(event.currentTarget).getRepeaterItem()).newDepositFrequency = viewModel.defaultDepositFrequency"/>
+                        </mx:HBox>
+                    </mx:GridItem>
+                </mx:GridRow>
+            </mx:Repeater>
+        </mx:Grid>
+
+    <mx:HBox horizontalAlign="right" width="100%" paddingTop="5">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+</mx:VBox>

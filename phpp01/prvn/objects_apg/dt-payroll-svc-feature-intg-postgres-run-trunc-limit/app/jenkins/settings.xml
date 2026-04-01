@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <servers>
+        <server>
+            <id>scm.dev.snap.repo</id>
+            <username>${env.NEXUS_SNAPSHOT_REPO_USERNAME}</username>
+            <password>${env.NEXUS_SNAPSHOT_REPO_PASSWORD}</password>
+        </server>
+        <server>
+            <id>scm.int.rel.repo</id>
+            <username>${env.NEXUS_RELEASE_REPO_USERNAME}</username>
+            <password>${env.NEXUS_RELEASE_REPO_PASSWORD}</password>
+        </server>
+    </servers>
+    <mirrors>
+        <mirror>
+            <id>central-mirror</id>
+            <mirrorOf>external:*,!servebox,!localR</mirrorOf>
+            <url>https://artifact.intuit.com/artifactory/maven-proxy/</url>
+        </mirror>
+    </mirrors>
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <!--Enable snapshots for the built in central repo to direct -->
+            <!--all requests to nexus via the mirror -->
+            <repositories>
+                <repository>
+                    <id>flex-mojos-repository</id>
+                    <url>https://artifact.intuit.com/artifactory/SBG.QBO.Intuit-Releases</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>flex-mojos-repository-2</id>
+                    <url>http://repository.sonatype.org/content/groups/flexgroup/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>sonatype-forge</id>
+                    <url>https://repository.sonatype.org/content/groups/forge/</url>
+                </repository>
+                <repository>
+                    <id>servebox</id>
+                    <url>http://maven.servebox.org/repository/</url>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>http://ban-fms-nexus.corp.intuit.net:8081/nexus/content/groups/qbo</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+        <profile>
+            <id>nexus-deploy</id>
+            <properties>
+                <url.snapshots>https://artifact.intuit.com/artifactory/SBG.Payments.Intuit-Snapshots/</url.snapshots>
+                <url.releases>https://artifact.intuit.com/artifactory/SBG.Payments.Intuit-Releases/</url.releases>
+            </properties>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <!--make the profile active all the time -->
+        <activeProfile>nexus</activeProfile>
+        <activeProfile>nexus-deploy</activeProfile>
+    </activeProfiles>
+</settings>

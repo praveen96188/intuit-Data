@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\Users\aagarwal14\Perforce\aagarwal14_INTUIT-RLNLLOH1_759\psp\dev-maven\PSE\domain\src\main\model\DBUpgrade_002.017.002.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

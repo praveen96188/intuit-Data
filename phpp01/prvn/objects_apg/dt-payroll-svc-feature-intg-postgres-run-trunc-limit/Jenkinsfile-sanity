@@ -1,0 +1,83 @@
+// The library version is controled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+@Library(value = 'msaas-shared-lib') _
+repo="payroll-dtpayroll/dt-payroll-svc"
+sanityEnv=""
+sanityEnvRegion=""
+
+node {
+    // setup the global static configuration
+    config = setupMsaasPipeline('msaas-config.yaml')
+    //TODO : Check if setupMigration needs to be uncommented or not
+    setupMigration(config)
+}
+
+pipeline {
+
+    agent {
+        kubernetes {
+            label "${config.pod_label}"
+            defaultContainer "test"
+            yaml """
+                apiVersion: v1
+                kind: Pod
+                spec:
+                    containers:
+                    - name: test
+                      image: docker.intuit.com/oicp/standard/external/maven:3.5.3-jdk-8
+                      command:
+                      - cat
+                      tty: true
+            """
+        }
+    }
+
+    parameters {
+        string(name: 'BRANCH', 'defaultValue': 'master', description: '')
+        choice(name: 'ENVIRONMENT', choices: ['qal-usw2-eks', 'e2e-usw2-eks', 'e2e-use2-eks', 'prd-usw2-eks', 'prd-use2-eks'], description: '')
+    }
+
+    environment {
+        GITHUB_CREDENTIALS = credentials("github-svc-sbseg-ci")
+        TEST_CLIENT_APP_SECRET = credentials("service-gateway-credentials")
+        SANITY_USER_CREDENTIALS = credentials("sanity-user-credentials")
+        GITHUB_USER = "${env.GITHUB_CREDENTIALS_USR}"
+        GITHUB_TOKEN = "${env.GITHUB_CREDENTIALS_PSW}"
+        NEXUS_RELEASE_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_SNAPSHOT_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_RELEASE_REPO_USERNAME = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_USR}"
+        NEXUS_RELEASE_REPO_PASSWORD = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_PSW}"
+        NEXUS_SNAPSHOT_REPO_USERNAME = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_USR}"
+        NEXUS_SNAPSHOT_REPO_PASSWORD = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_PSW}"
+    }
+
+    stages {
+        stage('Set Variable') {
+            options {
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            steps {
+                script {
+                    sanityEnv = params.ENVIRONMENT.split('-')[0]
+                    sanityEnvRegion =  params.ENVIRONMENT.split('-')[1]
+                    if(sanityEnvRegion == "use2") {
+                        sanityEnv = 'east_' + sanityEnv;
+                    }
+                }
+            }
+        }
+        stage('Sanity Suite for PSP') {
+            options {
+                timeout(time: 5, unit: 'MINUTES')
+            }
+            steps {
+                // Put your tests here
+                container('test') {
+                    overwatchTests(sanityEnvRegion, sanityEnv, config)
+                }
+            }
+        }
+    //End of stages
+    }
+//End of pipeline
+}

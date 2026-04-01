@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.core.UIComponent;
+
+        import psp.sap.application.enums.OperationsEnum;
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.EntitlementInfo;
+
+        import psp.sap.model.EntitlementUnit;
+        import psp.sap.viewmodel.CompanyAgreementsSummaryViewModel;
+
+        private var mViewModel:CompanyAgreementsSummaryViewModel;
+        private var mTempViewModel:CompanyAgreementsSummaryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyAgreementsSummaryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyAgreementsSummaryViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function onMoreEINs(event:Event):void {
+            viewModel.viewMoreEINs(EntitlementUnit(UIComponent(event.currentTarget).getRepeaterItem()));
+        }
+
+        public function onSyncEntitlement(event:Event):void {
+            viewModel.syncEntitlementUnit(EntitlementUnit(UIComponent(event.currentTarget).getRepeaterItem()));
+        }
+
+        public function displayRemoveSuspension(entitlement:EntitlementInfo):Boolean {
+            return entitlement.status == "Enabled" &&
+                   viewModel.canPerformOperation(OperationsEnum.REMOVE_TAX_TABLE_SUSPENSION);
+        }
+
+        public function onRemoveSuspension(event:Event):void {
+            viewModel.updateSubscriptionEndDate(EntitlementUnit(UIComponent(event.currentTarget).getRepeaterItem()));
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:Label text="No entitlements were found on this company." visible="{viewModel.entitlementUnits.length == 0}" includeInLayout="{viewModel.entitlementUnits.length == 0}"/>
+
+    <mx:TabNavigator id="entitlementUnitTabs" width="100%" height="310" tabEnabled="false" visible="{viewModel.entitlementUnits.length > 0}" includeInLayout="{viewModel.entitlementUnits.length > 0}">
+        <mx:Repeater id="entitlementUnitRepeater" dataProvider="{viewModel.entitlementUnits}" width="100%" height="100%" recycleChildren="true">
+            <mx:VBox horizontalGap="0" verticalGap="0" paddingLeft="5" width="100%" height="100%" label="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.entitlementCodeInfo.subtypeDescription}" toolTip="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.entitlementCodeInfo.subtypeDescription}">
+                <mx:HBox>
+                    <mx:VBox>
+                        <mx:Form verticalGap="1" paddingTop="0">
+                            <mx:FormItem labelStyleName="boldText" label="Entitlement Unit Status:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).status}"
+                                         color="{EntitlementUnit(entitlementUnitRepeater.currentItem).status == 'Activated' ? 0x009900 : 0xff0000}"/>
+                            </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Service Start Date:">
+                                                            <mx:Text text="{SAPDateFormatters.dateFormatShort.format(EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.subscriptionStartDate)}"/>
+                                                        </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Service Key:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).serviceKey}"/>
+                            </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Extension Key:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).extensionKey}"/>
+                            </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Last Validation:">
+                                <mx:Text text="{SAPDateFormatters.dateTimeFormatShort.format(EntitlementUnit(entitlementUnitRepeater.currentItem).lastValidationDate)}"/>
+                            </mx:FormItem>
+                        </mx:Form>
+                        <mx:Form verticalGap="1" paddingTop="0">
+                            <mx:FormItem labelStyleName="boldText" label="Edition:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.entitlementCodeInfo.edition}"/>
+                            </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Number of Employees:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.entitlementCodeInfo.numberOfEmployees}"/>
+                            </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Quickbooks Subtype:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.entitlementCodeInfo.subtypeDescription}"/>
+                            </mx:FormItem>
+                            <mx:FormItem labelStyleName="boldText" label="Asset Item Code:">
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.entitlementCodeInfo.assetItemCode}"/>
+                            </mx:FormItem>
+                            <mx:LinkButton
+                                    paddingTop="10"
+                                    label="View More EINs on This Entitlement"
+                                    styleName="standardLinkButtonStyle"
+                                    click="onMoreEINs(event)"/>
+                        </mx:Form>
+                    </mx:VBox>
+                    <mx:Form verticalGap="1" paddingTop="0">
+                        <mx:FormItem labelStyleName="boldText" label="Entitlement Status:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.status}"
+                                     color="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.status == 'Enabled' ? 0x009900 : 0xff0000}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Tax Table Status:"
+                                     toolTip="Tax tables are suspended when BRM is unable to collect subscription or usage fees from the customer.">
+                            <mx:HBox>
+                                <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.subscriptionEndDate == null ? 'Active' : 'Suspended'}"
+                                         color="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.subscriptionEndDate == null ? 0x009900 : 0xff0000}"/>
+                                <mx:LinkButton label="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.subscriptionEndDate == null ? 'Revoke Tax Table Calculations' : 'Reinstate Tax Table Calculations'}"
+                                               color="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.subscriptionEndDate == null ? 0xff0000 : 0x009900}"
+                                               styleName="standardLinkButtonStyle"
+                                               visible="{displayRemoveSuspension(EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement)}"
+                                               paddingTop="0" paddingBottom="0" paddingRight="0" paddingLeft="0"
+                                               click="onRemoveSuspension(event)"/>
+                            </mx:HBox>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="License Number:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.licenseNumber}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="EOC:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.eoc}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Order Source:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.orderSourceCode}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Order Number:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.orderNumber}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Billing Zip Code:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.billingZipCode}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Customer Account Number:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.customerId}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Contact Email:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.contactEmail}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Next Charge Date:">
+                            <mx:Text text="{SAPDateFormatters.dateFormatShort.format(EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.nextChargeDate)}"/>
+                        </mx:FormItem>
+                        <mx:FormItem labelStyleName="boldText" label="Subscription Number:">
+                            <mx:Text text="{EntitlementUnit(entitlementUnitRepeater.currentItem).entitlement.subscriptionNumber}"/>
+                        </mx:FormItem>
+                    </mx:Form>
+                </mx:HBox>
+                <mx:HBox width="100%" height="100%" horizontalAlign="right" paddingRight="5">
+                    <mx:Button
+                            enabled= "{EntitlementUnit(entitlementUnitRepeater.currentItem).status != 'Historic'}"
+                            toolTip="Sync license info to PSP"
+                            label="Sync"
+                            click="onSyncEntitlement(event)"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:Repeater>
+    </mx:TabNavigator>
+</mx:HBox>

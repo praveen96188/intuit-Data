@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="600"
+         verticalScrollPolicy="auto" clipContent="true"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.PaymentMethodPopUpViewModel;
+
+        private var mViewModel:PaymentMethodPopUpViewModel;
+        private var mTempViewModel:PaymentMethodPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PaymentMethodPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PaymentMethodPopUpViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getFormattedDate(item:Object, column:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[column.dataField]);
+        }
+
+        public function getEnabledDisabled(item:Object, column:DataGridColumn):String {
+            return getEnabledDisabledString(item[column.dataField]);
+        }
+
+        public function getEnabledDisabledString(item:Boolean):String {
+            return (item as Boolean) ? "Enabled" : "Disabled";
+        }
+
+        public function agentEnabledChanged(data:Object, event:Event):void {
+            data.isAgentEnabled = event.target.selectedItem;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="{viewModel.templateCode} Payment Methods History" styleName="heading" id="headerLabel"
+              paddingLeft="2"
+              paddingBottom="3"
+              paddingTop="5"/>
+   <controls:SAPDataGrid id="paymentMethodsHistoryGrid"
+                          dataProvider="{viewModel.paymentMethodsHistory}"
+                          width="100%" maxRows="6"
+                          selectable="false">
+        <controls:columns>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Changed On"
+                               width="170"
+                               dataField="modifiedDate" labelFunction="getFormattedDate"
+                               paddingLeft="5"
+                               draggable="false"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Payment Method"
+                               width="120"
+                               dataField="paymentMethodName"
+                               paddingLeft="5"
+                               draggable="false"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Enabled"
+                               width="100"
+                               dataField="isEnabled"
+                               labelFunction="getEnabledDisabled"
+                               paddingLeft="5"
+                               draggable="false"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Modified By"
+                               width="120"
+                               dataField="changedBy"
+                               paddingLeft="5"
+                               draggable="false"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

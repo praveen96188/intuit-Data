@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%" height="100%"
+         creationComplete="onCreationComplete()">
+    <mx:Script>
+		<![CDATA[
+        import flexlib.controls.tabBarClasses.SuperTab;
+
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.viewmodel.EmployeesViewModel;
+
+        private var mViewModel:EmployeesViewModel;
+        private var mTempViewModel:EmployeesViewModel;
+        private var mCreationComplete:Boolean = false;
+        private var mPreviousSelectedTab:String = null;
+
+        [Bindable]
+        public function get viewModel():EmployeesViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeesViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+            //Setting close policy for search tab to be never
+            tabNavigator.setClosePolicyForTab(tabNavigator.selectedIndex, SuperTab.CLOSE_NEVER);
+
+            //To stop annoying tab focus when first created.
+            tabNavigator.setFocus();
+        }
+        ]]>
+	</mx:Script>
+
+    <pspui:EmployeeTabNavigator
+            focusAlpha="0"
+            id="tabNavigator"
+            dragEnabled="false"
+            height="100%"
+            width="100%"
+            viewModel="{viewModel}"
+            resizeToContent="true"
+            focusEnabled="false"
+            horizontalGap="4">
+        <pspui:EmployeeListTabView label="{CompanyInspectorPageEnum.EMPLOYEE_LIST}"/>
+    </pspui:EmployeeTabNavigator>
+
+</mx:VBox>

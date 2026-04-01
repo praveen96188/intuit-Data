@@ -1,0 +1,126 @@
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findPaycheckSplitByCompanyExcludeTxnState">
+        <![CDATA[
+			Select payCheckSplit
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			     inner join finTxn.PaycheckSplit as payCheckSplit
+			     inner join payCheckSplit.Paycheck as payCheck
+			     inner join payCheck.PayrollRun as payrollRun
+			where payrollRun.Company =:company
+			    and payCheckSplit.SourceDdTxnId =:sourcePaycheckSplitId
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			    and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and payCheckSplit.Paycheck.Company = payCheckSplit.Company
+			]]>
+    </query>
+
+    <query name="findFraudCheckPaycheckSplitsById">
+        <![CDATA[
+			Select payCheckSplit
+			from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun
+			     inner join payrollRun.PaycheckSet as payCheck
+			     inner join payCheck.PaycheckSplitSet as payCheckSplit
+			where payrollRun.Company =:company
+			    and payCheckSplit.SourceDdTxnId =:sourcePaycheckSplitId
+			    and payCheck.Status =:paycheckState
+			]]>
+    </query>
+
+    <query name="findFraudCheckPaycheckSplits">
+        <![CDATA[
+			Select payCheckSplit
+			from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun			     
+			     inner join payrollRun.PaycheckSet as payCheck
+			     inner join payCheck.PaycheckSplitSet as payCheckSplit
+			where payrollRun.Company =:company
+			    and payrollRun.PaycheckDate =:depositDate
+			    and payCheck.Status =:paycheckState
+			]]>
+    </query>
+
+    <query name="findPaycheckSplitByEmployeeBankAccountAndCheckStatus">
+        <![CDATA[
+			Select payCheckSplit
+			from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun
+			     inner join payrollRun.PaycheckSet as payCheck
+			     inner join payCheck.PaycheckSplitSet as payCheckSplit
+			where payrollRun.Company =:company
+			    and payrollRun.PayrollRunDate <= :payrollRunDate
+			    and payCheck.Status =:paycheckState
+			    and payCheck.CreatedDate >= payrollRun.CreatedDate
+			    and payCheckSplit.EmployeeBankAccount = :employeeBankAccount
+			]]>
+    </query>
+
+    <query name="findPaycheckSplitByEmployeeBankAccountExcludeTxnState">
+        <![CDATA[
+			Select payCheckSplit
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			     inner join finTxn.PaycheckSplit as payCheckSplit
+			     inner join payCheckSplit.Paycheck as payCheck
+			     inner join payCheck.PayrollRun as payrollRun
+			     inner join payCheckSplit.EmployeeBankAccount as employeeBankAccount
+			where payrollRun.Company =:company
+			    and payrollRun.PayrollRunDate <= :payrollRunDate
+			    and employeeBankAccount.SourceBankAccountId =:sourceBankAccountId
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+                and finTxn.Company =:company
+                and finTxn.CreditBankAccount =:employeeBankAccount
+                and finTxn.TransactionType = 'EmployeeDdCredit'
+                and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and payCheckSplit.Paycheck.Company = payCheckSplit.Company
+			]]>
+    </query>
+
+   <query name="findPaycheckSplitByPayrollAndSplitId">
+        <![CDATA[
+			Select payCheckSplit
+			from com.intuit.sbd.payroll.psp.domain.PaycheckSplit as payCheckSplit
+                 inner join payCheckSplit.Paycheck as payCheck
+			     inner join payCheck.PayrollRun as payrollRun
+			where payrollRun =:payrollRun
+			    and payCheckSplit.SourceDdTxnId =:sourcePaycheckSplitId
+			    and payCheckSplit.Paycheck.Company = payCheckSplit.Company
+
+			]]>
+    </query>
+
+    <query name="findSumofPaycheckSplitAmountasAsNetPayBtwnTwoDates">
+        <![CDATA[
+     select payCheck.Id as id,
+           sum(paycheckSpit.PaycheckSplitAmount) as netAmount
+      from com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+           com.intuit.sbd.payroll.psp.domain.PayrollRun as payroll,
+           com.intuit.sbd.payroll.psp.domain.PaycheckSplit as paycheckSpit,
+            com.intuit.sbd.payroll.psp.domain.Company as company,
+           com.intuit.sbd.payroll.psp.domain.Employee as employee
+      where payCheck.PayrollRun=payroll
+            and (payCheck.SourceEmployee = employee or payCheck.DDEmployee = employee)
+            and payCheck.Company=company
+            and paycheckSpit.Paycheck=payCheck
+            and payroll.PaycheckDate  >=:payPeriodBeginDate
+            and payroll.PaycheckDate  <=:payPeriodEndDate
+            and company.IAMRealmId=:realmId
+            and employee.Id=:employeeId
+     group by(payCheck.Id)
+
+    ]]>
+    </query>
+
+</hibernate-mapping>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.model.EmployeeInfo;
+			import psp.sap.viewmodel.EmployeeInfoViewModel;
+			
+			
+			[Bindable]
+			public var viewModel:EmployeeInfoViewModel;
+			
+			public function ddYN(item:Object, dgc:DataGridColumn):String {
+				return ((item as EmployeeInfo).dd ? "Y" : "N");
+			}
+		]]>
+	</mx:Script>
+	<controls:SAPDataGrid id="employeesGrid" dataProvider="{viewModel.employees}" selectable="false" backgroundColor="#ffffff"		
+		maxRows="8"		
+		width="690">
+		<controls:columns>
+			<mx:DataGridColumn
+				headerText="Employee Name"
+				dataField="fullName"
+				minWidth="400"/>
+			<mx:DataGridColumn
+				headerText="SSN"
+				dataField="socialSecurityNumber"
+				minWidth="100"/>
+			<mx:DataGridColumn
+				headerText="State Live"
+				dataField="stateLive"
+				minWidth="85"/>
+			<mx:DataGridColumn
+				headerText="State Work"
+				dataField="stateWork"
+				minWidth="85"/>
+			<mx:DataGridColumn
+				headerText="DD Y/N"
+				dataField="dd"
+				labelFunction="ddYN"
+				minWidth="30"/>
+		</controls:columns>
+	</controls:SAPDataGrid>
+</mx:VBox>

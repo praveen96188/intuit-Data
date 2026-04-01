@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         xmlns:view="psp.sap.view.*"
+         width="100%"
+         height="100%"
+        >
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.model.EmployeeComplianceData;
+        import psp.sap.viewmodel.EmployeeComplianceViewModel;
+
+        private static const labelWidth:int = 125;
+        private var mViewModel:EmployeeComplianceViewModel;
+        private var mTempViewModel:EmployeeComplianceViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EmployeeComplianceViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeComplianceViewModel):void {
+            mViewModel = value;
+        }
+
+        public function showComplianceEditPopup(complianceData:EmployeeComplianceData):void {
+            viewModel.viewComplianceEditPopup(complianceData, "Edit");
+        }
+
+        public function showComplianceAddPopup():void {
+            viewModel.viewComplianceEditPopup(new EmployeeComplianceData(), "Add");
+        }
+
+        public function confirmDelete(complianceData:EmployeeComplianceData):void {
+            Alert.show("Are you sure you want to delete selected compliance data?",
+                       "Delete confirmation",
+                       Alert.YES | Alert.NO,
+                       null,
+                       function(e:CloseEvent):void {
+                           if (e.detail == Alert.YES) {
+                               viewModel.deleteComplianceData(complianceData);
+                           }
+                       },
+                       null,
+                       Alert.YES);
+        }
+
+        ]]>
+	</mx:Script>
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox id="dataContainer"
+             styleName="standardTabbedBody"
+             width="80%"
+             height="100%"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+
+        <mx:VBox width="100%" visible="{!viewModel.hasComplianceInfo}"
+                 includeInLayout="{!viewModel.hasComplianceInfo}" styleName="grayDataGridVBox">
+            <mx:Text text="No Employee Compliance Data found." width="100%" textAlign="center" fontWeight="bold"/>
+        </mx:VBox>
+
+        <mx:VBox visible="{viewModel.hasComplianceInfo}" includeInLayout="{viewModel.hasComplianceInfo}" height="100%">
+            <controls:SAPDataGrid id="employeeComplianceGrid"
+                                  dataProvider="{viewModel.complianceInfoList}"
+                                  width="100%"
+                                  maxRows="10"
+                                  textAlign="center"
+                                  verticalAlign="middle"
+                                  selectable="false">
+                <controls:columns>
+                    <mx:DataGridColumn
+                            headerWordWrap="true"
+                            headerText=""
+                            dataField="fullName"
+                            minWidth="90">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:HBox width="100%"
+                                         horizontalAlign="left"
+                                         verticalGap="0"
+                                         verticalScrollPolicy="off"
+                                         horizontalScrollPolicy="off">
+                                    <mx:LinkButton
+                                            label="Edit"
+                                            click="outerDocument.showComplianceEditPopup(EmployeeComplianceData(data))"
+                                            styleName="inlineLinkButtonStyleBold"
+                                            enabled="{SAP.canPerformOperation(OperationsEnum.UPDATE_COMPLIANCE_DATA)}"/>
+                                    <mx:LinkButton
+                                            label="Delete"
+                                            click="outerDocument.confirmDelete(EmployeeComplianceData(data))"
+                                            styleName="inlineLinkButtonStyleBold"
+                                            enabled="{SAP.canPerformOperation(OperationsEnum.UPDATE_COMPLIANCE_DATA)}"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.application.enums.OperationsEnum;
+                                        import psp.sap.model.EmployeeComplianceData;
+                                        ]]></mx:Script>
+                                </mx:HBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="State"
+                                       width="70"
+                                       dataField="state"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Domain"
+                                       width="120"
+                                       dataField="wagePlanDomain"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Name"
+                                       width="70"
+                                       dataField="name"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Wage Plan{String('\n')}Value"
+                                       width="160"
+                                       dataField="wagePlanValue"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Description"
+                                       width="210"
+                                       wordWrap="true"
+                                       dataField="description">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox width="100%"
+                                         horizontalAlign="left"
+                                         verticalGap="0"
+                                         verticalScrollPolicy="off"
+                                         horizontalScrollPolicy="off">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.EmployeeComplianceData;
+                                        ]]></mx:Script>
+                                    <mx:HBox horizontalGap="1">
+                                        <view:TruncatedText id="descriptionText"
+                                                            textAlign="left" text="{EmployeeComplianceData(data).description}"
+                                                            height="19"
+                                                            width="{this.width - 20}"
+                                                            paddingLeft="0"
+                                                            paddingRight="0"
+                                                            paddingTop="0"
+                                                            paddingBottom="0"/>
+                                    </mx:HBox>
+                                </mx:VBox>
+                            </mx:Component>
+
+                        </mx:itemRenderer>
+
+                    </mx:DataGridColumn>
+
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Rules{String('\n')}Version"
+                                       width="120"
+                                       dataField="rulesVersion"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+
+        </mx:VBox>
+        <mx:HBox paddingTop="10" paddingLeft="0">
+            <mx:LinkButton
+                    icon="{SAP.instance.icons.addRow}"
+                    styleName="inlineLinkButtonStyleBold"
+                    label="New Compliance Data"
+                    click="showComplianceAddPopup()"
+                    enabled="{SAP.canPerformOperation(OperationsEnum.UPDATE_COMPLIANCE_DATA)}"/>
+        </mx:HBox>
+
+        <controls:PopUpPart label="{CompanyInspectorPageEnum.EMPLOYEE_COMPLIANCE_EDIT+'_pup'}" showCloseButton="true"
+                            resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+            <view:EmployeeCompliancePopUp label="{CompanyInspectorPageEnum.EMPLOYEE_COMPLIANCE_EDIT}"/>
+        </controls:PopUpPart>
+    </mx:VBox>
+
+</mx:VBox>

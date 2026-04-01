@@ -1,0 +1,65 @@
+<project name="pse-dd-wsapi" default="pse-dd-wsapi.xjc" basedir=".">
+  <property name="pse-dd-wsapi" value="${basedir}"/>
+  <property name="pse-dd-wsapi.generated-src" value="${pse-dd-wsapi}/target/generated-source/main/java"/>
+  <property name="pse-dd-wsapi.build" value="${pse-dd-wsapi}/build"/>
+  <property name="pse-dd-wsapi.deployment" value="${pse-dd-wsapi}/deployment"/>
+
+  <property name="thirdparty" location="${basedir}/../../../ThirdParty"/>
+
+  <property name="thirdparty.activation.jar" value="${thirdparty}/jwsdp-1.5/jwsdp-shared/lib/activation.jar"/>
+  <property name="thirdparty.mail.jar" value="${thirdparty}/jwsdp-1.5/jwsdp-shared/lib/mail.jar"/>
+  <property name="thirdparty.dom4j-1.5.2.jar" value="${thirdparty}/jwsdp-1.5/jaxb/lib/dom4j-1.5.2.jar"/>
+  <property name="thirdparty.jaxb-api.jar" value="${thirdparty}/jwsdp-1.5/jaxb/lib/jaxb-api.jar"/>
+  <property name="thirdparty.jaxb-impl.jar" value="${thirdparty}/jwsdp-1.5/jaxb/lib/jaxb-impl.jar"/>
+  <property name="thirdparty.jaxb-libs.jar" value="${thirdparty}/jwsdp-1.5/jaxb/lib/jaxb-libs.jar"/>
+  <property name="thirdparty.jaxb-xjc.jar" value="${thirdparty}/jwsdp-1.5/jaxb/lib/jaxb-xjc.jar"/>
+  <property name="thirdparty.xalan.jar" value="${thirdparty}/jwsdp-1.5/jaxp/lib/endorsed/xalan.jar"/>
+  <property name="thirdparty.xercesImpl.jar" value="${thirdparty}/jwsdp-1.5/jaxp/lib/endorsed/xercesImpl.jar"/>
+  <property name="thirdparty.jaxp-api.jar" value="${thirdparty}/jwsdp-1.5/jaxp/lib/jaxp-api.jar"/>
+  <property name="thirdparty.jax-qname.jar" value="${thirdparty}/jwsdp-1.5/jwsdp-shared/lib/jax-qname.jar"/>
+  <property name="thirdparty.namespace.jar" value="${thirdparty}/jwsdp-1.5/jwsdp-shared/lib/namespace.jar"/>
+  <property name="thirdparty.relaxngDatatype.jar" value="${thirdparty}/jwsdp-1.5/jwsdp-shared/lib/relaxngDatatype.jar"/>
+  <property name="thirdparty.xsdlib.jar" value="${thirdparty}/jwsdp-1.5/jwsdp-shared/lib/xsdlib.jar"/>
+  <property name="thirdparty.axis.jar" value="${thirdparty}/axis-1_2_1/lib/axis.jar"/>
+  <property name="thirdparty.commons-discovery-0.2.jar" value="${thirdparty}/axis-1_2_1/lib/commons-discovery-0.2.jar"/>
+  <property name="thirdparty.commons-logging-1.0.4.jar" value="${thirdparty}/axis-1_2_1/lib/commons-logging-1.0.4.jar"/>
+  <property name="thirdparty.jaxrpc.jar" value="${thirdparty}/axis-1_2_1/lib/jaxrpc.jar"/>
+  <property name="thirdparty.saaj.jar" value="${thirdparty}/axis-1_2_1/lib/saaj.jar"/>
+
+  <property name="xjc.schema.dir" value="${pse-dd-wsapi.generated-src}/intuit/osp/pse/dd/wsapi/xsd"/>
+  <property name="xjc.produces.dir" value="${xjc.schema.dir}/companyadd"/>
+  <property name="xjc.output.base.package" value="intuit.osp.pse.dd.wsapi.xsd.companyadd"/>
+
+  <path id="pse-dd-wsapi.classpath">
+    <pathelement location="${thirdparty.jaxb-xjc.jar}"/>
+    <pathelement location="${thirdparty.jaxb-api.jar}"/>
+    <pathelement location="${thirdparty.jaxb-impl.jar}"/>
+    <pathelement location="${thirdparty.jaxb-libs.jar}"/>
+    <pathelement location="${thirdparty.jaxp-api.jar}"/>
+    <pathelement location="${thirdparty.namespace.jar}"/>
+    <pathelement location="${thirdparty.relaxngDatatype.jar}"/>
+    <pathelement location="${thirdparty.axis.jar}"/>
+    <pathelement location="${thirdparty.jaxrpc.jar}"/>
+    <pathelement location="${thirdparty.commons-discovery-0.2.jar}"/>
+    <pathelement location="${thirdparty.commons-logging-1.0.4.jar}"/>
+    <pathelement location="${thirdparty.dom4j-1.5.2.jar}"/>
+    <pathelement location="${thirdparty.saaj.jar}"/>
+    <pathelement location="${thirdparty.xercesImpl.jar}"/>
+    <pathelement location="${thirdparty.jax-qname.jar}"/>
+    <pathelement location="${thirdparty.xsdlib.jar}"/>
+    <pathelement location="${thirdparty.xalan.jar}"/>
+  </path>
+
+  <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+    <classpath refid="pse-dd-wsapi.classpath"/>
+  </taskdef>
+
+  <target name="pse-dd-wsapi.xjc">
+    <echo message="Compiling the schema..." />
+      <mkdir dir="${pse-dd-wsapi.generated-src}"/>
+      <xjc binding="src/main/java/intuit/osp/pse/dd/wsapi/xsd/wsapi.xjb" target="${pse-dd-wsapi.generated-src}">
+        <schema dir="src/main/java/intuit/osp/pse/dd/wsapi/xsd" includes="**/*.xsd"/>
+      </xjc>
+  </target>
+
+</project>

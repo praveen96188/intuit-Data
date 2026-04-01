@@ -1,0 +1,1042 @@
+Timing is on.
+set search_path=pspadm;
+SET
+Time: 0.473 ms
+alter table pspadm.psp_paycheck_usage RENAME to psp_paycheck_usa_old;
+ALTER TABLE
+Time: 33.403 ms
+alter table pspadm.psp_paycheck_usage_2012 RENAME to psp_paycheck_usa_2012_old;
+ALTER TABLE
+Time: 20.793 ms
+alter table pspadm.psp_paycheck_usage_2013 RENAME to psp_paycheck_usa_2013_old;
+ALTER TABLE
+Time: 19.013 ms
+alter table pspadm.psp_paycheck_usage_2014 RENAME to psp_paycheck_usa_2014_old;
+ALTER TABLE
+Time: 17.945 ms
+alter table pspadm.psp_paycheck_usage_2015 RENAME to psp_paycheck_usa_2015_old;
+ALTER TABLE
+Time: 16.169 ms
+alter table pspadm.psp_paycheck_usage_2016 RENAME to psp_paycheck_usa_2016_old;
+ALTER TABLE
+Time: 1696.158 ms (00:01.696)
+alter table pspadm.psp_paycheck_usage_2017 RENAME to psp_paycheck_usa_2017_old;
+ALTER TABLE
+Time: 14.247 ms
+alter table pspadm.psp_paycheck_usage_2018 RENAME to psp_paycheck_usa_2018_old;
+ALTER TABLE
+Time: 666.535 ms
+alter table pspadm.psp_paycheck_usage_2019 RENAME to psp_paycheck_usa_2019_old;
+ALTER TABLE
+Time: 31.030 ms
+alter table pspadm.psp_paycheck_usage_2020 RENAME to psp_paycheck_usa_2020_old;
+ALTER TABLE
+Time: 23.540 ms
+alter table pspadm.psp_paycheck_usage_2021 RENAME to psp_paycheck_usa_2021_old;
+ALTER TABLE
+Time: 20.014 ms
+alter table pspadm.psp_paycheck_usage_2022 RENAME to psp_paycheck_usa_2022_old;
+ALTER TABLE
+Time: 18.853 ms
+alter table pspadm.psp_paycheck_usage_2023 RENAME to psp_paycheck_usa_2023_old;
+ALTER TABLE
+Time: 19.989 ms
+alter table pspadm.psp_paycheck_usage_2024 RENAME to psp_paycheck_usa_2024_old;
+ALTER TABLE
+Time: 18.721 ms
+alter table pspadm.psp_paycheck_usa_2012_old RENAME constraint psp_paycheck_usage_2012_pk to psp_paycheck_usa_2012_old_pk;
+ALTER TABLE
+Time: 27.305 ms
+alter table pspadm.psp_paycheck_usa_2013_old RENAME constraint psp_paycheck_usage_2013_pk to psp_paycheck_usa_2013_old_pk;
+ALTER TABLE
+Time: 18.814 ms
+alter table pspadm.psp_paycheck_usa_2014_old RENAME constraint psp_paycheck_usage_2014_pk to psp_paycheck_usa_2014_old_pk;
+ALTER TABLE
+Time: 17.886 ms
+alter table pspadm.psp_paycheck_usa_2015_old RENAME constraint psp_paycheck_usage_2015_pk to psp_paycheck_usa_2015_old_pk;
+ALTER TABLE
+Time: 14.755 ms
+alter table pspadm.psp_paycheck_usa_2016_old RENAME constraint psp_paycheck_usage_2016_pk to psp_paycheck_usa_2016_old_pk;
+ALTER TABLE
+Time: 17.245 ms
+alter table pspadm.psp_paycheck_usa_2017_old RENAME constraint psp_paycheck_usage_2017_pk to psp_paycheck_usa_2017_old_pk;
+ALTER TABLE
+Time: 16.629 ms
+alter table pspadm.psp_paycheck_usa_2018_old RENAME constraint psp_paycheck_usage_2018_pk to psp_paycheck_usa_2018_old_pk;
+ALTER TABLE
+Time: 33134.280 ms (00:33.134)
+alter table pspadm.psp_paycheck_usa_2019_old RENAME constraint psp_paycheck_usage_2019_pk to psp_paycheck_usa_2019_old_pk;
+ALTER TABLE
+Time: 16.774 ms
+alter table pspadm.psp_paycheck_usa_2020_old RENAME constraint psp_paycheck_usage_2020_pk to psp_paycheck_usa_2020_old_pk;
+ALTER TABLE
+Time: 18.453 ms
+alter table pspadm.psp_paycheck_usa_2021_old RENAME constraint psp_paycheck_usage_2021_pk to psp_paycheck_usa_2021_old_pk;
+ALTER TABLE
+Time: 14.972 ms
+alter table pspadm.psp_paycheck_usa_2022_old RENAME constraint psp_paycheck_usage_2022_pk to psp_paycheck_usa_2022_old_pk;
+ALTER TABLE
+Time: 19.772 ms
+alter table pspadm.psp_paycheck_usa_2023_old RENAME constraint psp_paycheck_usage_2023_pk to psp_paycheck_usa_2023_old_pk;
+ALTER TABLE
+Time: 23.213 ms
+alter table pspadm.psp_paycheck_usa_2024_old RENAME constraint psp_paycheck_usage_2024_pk to psp_paycheck_usa_2024_old_pk;
+ALTER TABLE
+Time: 22.540 ms
+CREATE TABLE pspadm.psp_paycheck_usage(
+    paycheck_usage_seq CHARACTER VARYING(255) NOT NULL,
+    version integer,
+    creator_id CHARACTER VARYING(30),
+    created_date TIMESTAMP(6) WITHOUT TIME ZONE,
+    modifier_id CHARACTER VARYING(30),
+    modified_date TIMESTAMP(6) WITHOUT TIME ZONE,
+    realm_id SMALLINT NOT NULL DEFAULT - 1,
+    paycheck_date TIMESTAMP(6) WITHOUT TIME ZONE,
+    check_number CHARACTER VARYING(11),
+    source_paycheck_id CHARACTER VARYING(50),
+    transaction_id CHARACTER VARYING(50),
+    paycheck_status_code CHARACTER VARYING(255),
+    bill_fk CHARACTER VARYING(255),
+    employee_usage_fk CHARACTER VARYING(255),
+    reason_for_free_charge CHARACTER VARYING(255),
+    company_fk CHARACTER VARYING(255)
+)
+   PARTITION BY RANGE (paycheck_date)
+        WITH (
+        OIDS=FALSE
+        );
+CREATE TABLE
+Time: 27.094 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2012
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM (MINVALUE) TO ('2013-01-01 00:00:00');
+CREATE TABLE
+Time: 45.828 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2013
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2013-01-01 00:00:00') TO ('2014-01-01 00:00:00');
+CREATE TABLE
+Time: 42.283 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2014
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2014-01-01 00:00:00') TO ('2015-01-01 00:00:00');
+CREATE TABLE
+Time: 37.587 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2015
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2015-01-01 00:00:00') TO ('2016-01-01 00:00:00');
+CREATE TABLE
+Time: 40.657 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2016
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2016-01-01 00:00:00') TO ('2017-01-01 00:00:00');
+CREATE TABLE
+Time: 41.993 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2017
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2017-01-01 00:00:00') TO ('2018-01-01 00:00:00');
+CREATE TABLE
+Time: 44.612 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2018
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2018-01-01 00:00:00') TO ('2019-01-01 00:00:00');
+CREATE TABLE
+Time: 33.036 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2019
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2019-01-01 00:00:00') TO ('2020-01-01 00:00:00');
+CREATE TABLE
+Time: 39.818 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2020
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2020-01-01 00:00:00') TO ('2021-01-01 00:00:00');
+CREATE TABLE
+Time: 35.600 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2021
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2021-01-01 00:00:00') TO ('2022-01-01 00:00:00');
+CREATE TABLE
+Time: 33.350 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2022
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2023-01-01 00:00:00');
+CREATE TABLE
+Time: 46.552 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2023
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2023-01-01 00:00:00') TO ('2024-01-01 00:00:00');
+CREATE TABLE
+Time: 34.084 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2024
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2024-01-01 00:00:00') TO ('2025-01-01 00:00:00');
+CREATE TABLE
+Time: 47.390 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2025
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2025-01-01 00:00:00') TO ('2026-01-01 00:00:00');
+CREATE TABLE
+Time: 40.970 ms
+CREATE TABLE pspadm.psp_paycheck_usage_2026
+        PARTITION OF pspadm.psp_paycheck_usage
+        FOR VALUES FROM ('2026-01-01 00:00:00') TO (MAXVALUE);
+CREATE TABLE
+Time: 40.551 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2012 ADD CONSTRAINT psp_paycheck_usage_2012_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 31.036 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2013 ADD CONSTRAINT psp_paycheck_usage_2013_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 25.835 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2014 ADD CONSTRAINT psp_paycheck_usage_2014_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 29.552 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2015 ADD CONSTRAINT psp_paycheck_usage_2015_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 32.177 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2016 ADD CONSTRAINT psp_paycheck_usage_2016_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 31.910 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2017 ADD CONSTRAINT psp_paycheck_usage_2017_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 26.291 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2018 ADD CONSTRAINT psp_paycheck_usage_2018_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 30.373 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2019 ADD CONSTRAINT psp_paycheck_usage_2019_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 38.624 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2020 ADD CONSTRAINT psp_paycheck_usage_2020_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 32.995 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2021 ADD CONSTRAINT psp_paycheck_usage_2021_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 33.111 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2022 ADD CONSTRAINT psp_paycheck_usage_2022_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 35.211 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2023 ADD CONSTRAINT psp_paycheck_usage_2023_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 35.478 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2024 ADD CONSTRAINT psp_paycheck_usage_2024_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 33.191 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2025 ADD CONSTRAINT psp_paycheck_usage_2025_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 33.017 ms
+ALTER TABLE pspadm.psp_paycheck_usage_2026 ADD CONSTRAINT psp_paycheck_usage_2026_pk PRIMARY KEY (paycheck_usage_seq, realm_id);
+ALTER TABLE
+Time: 30.676 ms
+Timing is off.
+set search_path=pspadm;
+SET
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 07:02:59.740258-07
+(1 row)
+
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2012_old;
+INSERT 0 1416
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2013_old;
+INSERT 0 1226157
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2014_old;
+INSERT 0 16061433
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2015_old;
+INSERT 0 35769173
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2016_old;
+INSERT 0 55098032
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2017_old;
+INSERT 0 75042892
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2018_old;
+INSERT 0 94466203
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2019_old;
+INSERT 0 107946547
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2020_old;
+INSERT 0 109322205
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2021_old;
+INSERT 0 114598235
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2022_old;
+INSERT 0 116385288
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2023_old;
+INSERT 0 89949477
+Insert into pspadm.psp_paycheck_usage select * from pspadm.psp_paycheck_usa_2024_old;
+INSERT 0 0
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 11:02:36.572836-07
+(1 row)
+
+set search_path=pspadm;
+SET
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 11:02:36.573748-07
+(1 row)
+
+alter index  psp_paycheckusage_fk1 RENAME to psp_paycheckusage_fk1_old;
+ALTER INDEX
+alter index  psp_paycheckusage_fk2  RENAME to psp_paycheckusage_fk2_old;
+ALTER INDEX
+alter index  psp_paycheck_usage_fk1  RENAME to psp_paycheck_usage_fk1_old;
+ALTER INDEX
+alter index  psp_paycheck_usage_nu1  RENAME to psp_paycheck_usage_nu1_old;
+ALTER INDEX
+alter index  psp_paycheck_usage_u1  RENAME  to psp_paycheck_usage_u1_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date   RENAME to idx_pchk_usg_mod_date_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2012 RENAME to psp_paycheck_usage_fk1_2012_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2013 RENAME to psp_paycheck_usage_fk1_2013_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2014 RENAME to psp_paycheck_usage_fk1_2014_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2015 RENAME to psp_paycheck_usage_fk1_2015_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2016 RENAME to psp_paycheck_usage_fk1_2016_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2017 RENAME to psp_paycheck_usage_fk1_2017_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2018 RENAME to psp_paycheck_usage_fk1_2018_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2019 RENAME to psp_paycheck_usage_fk1_2019_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2020 RENAME to psp_paycheck_usage_fk1_2020_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2021 RENAME to psp_paycheck_usage_fk1_2021_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2022 RENAME to psp_paycheck_usage_fk1_2022_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2023 RENAME to psp_paycheck_usage_fk1_2023_old;
+ALTER INDEX
+alter index psp_paycheck_usage_fk1_2024 RENAME to psp_paycheck_usage_fk1_2024_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2012 RENAME to psp_paycheck_usage_nu1_2012_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2013 RENAME to psp_paycheck_usage_nu1_2013_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2014 RENAME to psp_paycheck_usage_nu1_2014_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2015 RENAME to psp_paycheck_usage_nu1_2015_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2016 RENAME to psp_paycheck_usage_nu1_2016_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2017 RENAME to psp_paycheck_usage_nu1_2017_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2018 RENAME to psp_paycheck_usage_nu1_2018_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2019 RENAME to psp_paycheck_usage_nu1_2019_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2020 RENAME to psp_paycheck_usage_nu1_2020_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2021 RENAME to psp_paycheck_usage_nu1_2021_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2022 RENAME to psp_paycheck_usage_nu1_2022_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2023 RENAME to psp_paycheck_usage_nu1_2023_old;
+ALTER INDEX
+alter index psp_paycheck_usage_nu1_2024 RENAME to psp_paycheck_usage_nu1_2024_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2012 RENAME to psp_paycheck_usage_u1_2012_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2013 RENAME to psp_paycheck_usage_u1_2013_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2014 RENAME to psp_paycheck_usage_u1_2014_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2015 RENAME to psp_paycheck_usage_u1_2015_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2016 RENAME to psp_paycheck_usage_u1_2016_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2017 RENAME to psp_paycheck_usage_u1_2017_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2018 RENAME to psp_paycheck_usage_u1_2018_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2019 RENAME to psp_paycheck_usage_u1_2019_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2020 RENAME to psp_paycheck_usage_u1_2020_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2021 RENAME to psp_paycheck_usage_u1_2021_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2022 RENAME to psp_paycheck_usage_u1_2022_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2023 RENAME to psp_paycheck_usage_u1_2023_old;
+ALTER INDEX
+alter index psp_paycheck_usage_u1_2024 RENAME to psp_paycheck_usage_u1_2024_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2012 RENAME to psp_paycheckusage_fk1_2012_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2013 RENAME to psp_paycheckusage_fk1_2013_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2014 RENAME to psp_paycheckusage_fk1_2014_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2015 RENAME to psp_paycheckusage_fk1_2015_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2016 RENAME to psp_paycheckusage_fk1_2016_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2017 RENAME to psp_paycheckusage_fk1_2017_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2018 RENAME to psp_paycheckusage_fk1_2018_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2019 RENAME to psp_paycheckusage_fk1_2019_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2020 RENAME to psp_paycheckusage_fk1_2020_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2021 RENAME to psp_paycheckusage_fk1_2021_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2022 RENAME to psp_paycheckusage_fk1_2022_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2023 RENAME to psp_paycheckusage_fk1_2023_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk1_2024 RENAME to psp_paycheckusage_fk1_2024_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2012 RENAME to psp_paycheckusage_fk2_2012_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2013 RENAME to psp_paycheckusage_fk2_2013_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2014 RENAME to psp_paycheckusage_fk2_2014_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2015 RENAME to psp_paycheckusage_fk2_2015_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2016 RENAME to psp_paycheckusage_fk2_2016_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2017 RENAME to psp_paycheckusage_fk2_2017_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2018 RENAME to psp_paycheckusage_fk2_2018_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2019 RENAME to psp_paycheckusage_fk2_2019_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2020 RENAME to psp_paycheckusage_fk2_2020_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2021 RENAME to psp_paycheckusage_fk2_2021_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2022 RENAME to psp_paycheckusage_fk2_2022_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2023 RENAME to psp_paycheckusage_fk2_2023_old;
+ALTER INDEX
+alter index psp_paycheckusage_fk2_2024 RENAME to psp_paycheckusage_fk2_2024_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2012 RENAME to idx_pchk_usg_mod_date_2012_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2013 RENAME to idx_pchk_usg_mod_date_2013_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2014 RENAME to idx_pchk_usg_mod_date_2014_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2015 RENAME to idx_pchk_usg_mod_date_2015_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2016 RENAME to idx_pchk_usg_mod_date_2016_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2017 RENAME to idx_pchk_usg_mod_date_2017_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2018 RENAME to idx_pchk_usg_mod_date_2018_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2019 RENAME to idx_pchk_usg_mod_date_2019_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2020 RENAME to idx_pchk_usg_mod_date_2020_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2021 RENAME to idx_pchk_usg_mod_date_2021_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2022 RENAME to idx_pchk_usg_mod_date_2022_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2023 RENAME to idx_pchk_usg_mod_date_2023_old;
+ALTER INDEX
+alter index  idx_pchk_usg_mod_date_2024 RENAME to idx_pchk_usg_mod_date_2024_old;
+ALTER INDEX
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 11:02:37.786405-07
+(1 row)
+
+Timing is on.
+set search_path=pspadm;
+SET
+Time: 0.345 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 11:02:37.787252-07
+(1 row)
+
+Time: 0.312 ms
+select 'creating index on psp_paycheck_usage' as status;
+                status                
+--------------------------------------
+ creating index on psp_paycheck_usage
+(1 row)
+
+Time: 0.385 ms
+create index concurrently psp_paycheck_usage_fk1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (company_fk );
+CREATE INDEX
+Time: 2239539.082 ms (37:19.539)
+create index concurrently psp_paycheck_usage_fk1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (company_fk );
+CREATE INDEX
+Time: 3064372.132 ms (51:04.372)
+create index concurrently psp_paycheck_usage_fk1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (company_fk );
+CREATE INDEX
+Time: 3073762.538 ms (51:13.763)
+create index concurrently psp_paycheck_usage_fk1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (company_fk );
+CREATE INDEX
+Time: 3381999.642 ms (56:22.000)
+create index concurrently psp_paycheck_usage_fk1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (company_fk );
+CREATE INDEX
+Time: 3680004.247 ms (01:01:20.004)
+create index concurrently psp_paycheck_usage_fk1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (company_fk );
+CREATE INDEX
+Time: 3898664.646 ms (01:04:58.665)
+create index concurrently psp_paycheck_usage_fk1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (company_fk );
+CREATE INDEX
+Time: 1499882.916 ms (24:59.883)
+create index concurrently psp_paycheck_usage_fk1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (company_fk );
+CREATE INDEX
+Time: 52689.532 ms (00:52.690)
+create index concurrently psp_paycheck_usage_fk1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (company_fk );
+CREATE INDEX
+Time: 54913.458 ms (00:54.913)
+create index concurrently psp_paycheck_usage_fk1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (company_fk );
+CREATE INDEX
+Time: 53498.578 ms (00:53.499)
+create index concurrently psp_paycheck_usage_fk1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (company_fk );
+CREATE INDEX
+Time: 53956.468 ms (00:53.956)
+create index concurrently psp_paycheck_usage_fk1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (company_fk );
+CREATE INDEX
+Time: 45445.754 ms (00:45.446)
+create index concurrently psp_paycheck_usage_fk1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (company_fk );
+CREATE INDEX
+Time: 328.823 ms
+create index concurrently psp_paycheck_usage_fk1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (company_fk );
+CREATE INDEX
+Time: 39.081 ms
+create index concurrently psp_paycheck_usage_fk1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (company_fk );
+CREATE INDEX
+Time: 36.378 ms
+create index concurrently psp_paycheck_usage_nu1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 44.159 ms
+create index concurrently psp_paycheck_usage_nu1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 3056.808 ms (00:03.057)
+create index concurrently psp_paycheck_usage_nu1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 36635.646 ms (00:36.636)
+create index concurrently psp_paycheck_usage_nu1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 85298.754 ms (01:25.299)
+create index concurrently psp_paycheck_usage_nu1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 132389.120 ms (02:12.389)
+create index concurrently psp_paycheck_usage_nu1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 183345.319 ms (03:03.345)
+create index concurrently psp_paycheck_usage_nu1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 226006.864 ms (03:46.007)
+create index concurrently psp_paycheck_usage_nu1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 252717.774 ms (04:12.718)
+create index concurrently psp_paycheck_usage_nu1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 259229.835 ms (04:19.230)
+create index concurrently psp_paycheck_usage_nu1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 268778.428 ms (04:28.778)
+create index concurrently psp_paycheck_usage_nu1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 273312.753 ms (04:33.313)
+create index concurrently psp_paycheck_usage_nu1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 205602.435 ms (03:25.602)
+create index concurrently psp_paycheck_usage_nu1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 26.492 ms
+create index concurrently psp_paycheck_usage_nu1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 22.450 ms
+create index concurrently psp_paycheck_usage_nu1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 16.919 ms
+create index concurrently psp_paycheck_usage_u1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 22.945 ms
+create index concurrently psp_paycheck_usage_u1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 2788.558 ms (00:02.789)
+create index concurrently psp_paycheck_usage_u1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 33822.405 ms (00:33.822)
+create index concurrently psp_paycheck_usage_u1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 78824.094 ms (01:18.824)
+create index concurrently psp_paycheck_usage_u1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 124042.082 ms (02:04.042)
+create index concurrently psp_paycheck_usage_u1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 172419.874 ms (02:52.420)
+create index concurrently psp_paycheck_usage_u1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 217607.288 ms (03:37.607)
+create index concurrently psp_paycheck_usage_u1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 250219.516 ms (04:10.220)
+create index concurrently psp_paycheck_usage_u1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 256572.735 ms (04:16.573)
+create index concurrently psp_paycheck_usage_u1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 268038.610 ms (04:28.039)
+create index concurrently psp_paycheck_usage_u1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 274086.973 ms (04:34.087)
+create index concurrently psp_paycheck_usage_u1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 203806.649 ms (03:23.807)
+create index concurrently psp_paycheck_usage_u1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 38.777 ms
+create index concurrently psp_paycheck_usage_u1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 19.647 ms
+create index concurrently psp_paycheck_usage_u1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 18.885 ms
+create index concurrently psp_paycheckusage_fk1_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 19.652 ms
+create index concurrently psp_paycheckusage_fk1_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 1533.254 ms (00:01.533)
+create index concurrently psp_paycheckusage_fk1_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 18127.734 ms (00:18.128)
+create index concurrently psp_paycheckusage_fk1_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 40540.290 ms (00:40.540)
+create index concurrently psp_paycheckusage_fk1_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 62891.581 ms (01:02.892)
+create index concurrently psp_paycheckusage_fk1_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 83965.559 ms (01:23.966)
+create index concurrently psp_paycheckusage_fk1_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 104069.886 ms (01:44.070)
+create index concurrently psp_paycheckusage_fk1_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 118792.515 ms (01:58.793)
+create index concurrently psp_paycheckusage_fk1_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 120168.640 ms (02:00.169)
+create index concurrently psp_paycheckusage_fk1_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 125078.829 ms (02:05.079)
+create index concurrently psp_paycheckusage_fk1_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 126347.010 ms (02:06.347)
+create index concurrently psp_paycheckusage_fk1_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 94215.930 ms (01:34.216)
+create index concurrently psp_paycheckusage_fk1_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 24.069 ms
+create index concurrently psp_paycheckusage_fk1_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 22.533 ms
+create index concurrently psp_paycheckusage_fk1_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (bill_fk );
+CREATE INDEX
+Time: 17.301 ms
+create index concurrently psp_paycheckusage_fk2_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 24.725 ms
+create index concurrently psp_paycheckusage_fk2_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 2230.490 ms (00:02.230)
+create index concurrently psp_paycheckusage_fk2_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 27976.501 ms (00:27.977)
+create index concurrently psp_paycheckusage_fk2_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 65890.491 ms (01:05.890)
+create index concurrently psp_paycheckusage_fk2_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 103774.960 ms (01:43.775)
+create index concurrently psp_paycheckusage_fk2_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 145072.018 ms (02:25.072)
+create index concurrently psp_paycheckusage_fk2_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 183349.246 ms (03:03.349)
+create index concurrently psp_paycheckusage_fk2_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 209301.760 ms (03:29.302)
+create index concurrently psp_paycheckusage_fk2_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 213406.941 ms (03:33.407)
+create index concurrently psp_paycheckusage_fk2_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 222930.200 ms (03:42.930)
+create index concurrently psp_paycheckusage_fk2_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 226434.886 ms (03:46.435)
+create index concurrently psp_paycheckusage_fk2_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 171077.511 ms (02:51.078)
+create index concurrently psp_paycheckusage_fk2_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 26.992 ms
+create index concurrently psp_paycheckusage_fk2_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 15.108 ms
+create index concurrently psp_paycheckusage_fk2_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 15.918 ms
+create index concurrently  idx_pchk_usg_mod_date_2012 on pspadm.psp_paycheck_usage_2012  USING BTREE (modified_date);
+CREATE INDEX
+Time: 20.281 ms
+create index concurrently  idx_pchk_usg_mod_date_2013 on pspadm.psp_paycheck_usage_2013  USING BTREE (modified_date);
+CREATE INDEX
+Time: 901.474 ms
+create index concurrently  idx_pchk_usg_mod_date_2014 on pspadm.psp_paycheck_usage_2014  USING BTREE (modified_date);
+CREATE INDEX
+Time: 9559.617 ms (00:09.560)
+create index concurrently  idx_pchk_usg_mod_date_2015 on pspadm.psp_paycheck_usage_2015  USING BTREE (modified_date);
+CREATE INDEX
+Time: 22563.208 ms (00:22.563)
+create index concurrently  idx_pchk_usg_mod_date_2016 on pspadm.psp_paycheck_usage_2016  USING BTREE (modified_date);
+CREATE INDEX
+Time: 34411.733 ms (00:34.412)
+create index concurrently  idx_pchk_usg_mod_date_2017 on pspadm.psp_paycheck_usage_2017  USING BTREE (modified_date);
+CREATE INDEX
+Time: 48227.003 ms (00:48.227)
+create index concurrently  idx_pchk_usg_mod_date_2018 on pspadm.psp_paycheck_usage_2018  USING BTREE (modified_date);
+CREATE INDEX
+Time: 58909.356 ms (00:58.909)
+create index concurrently  idx_pchk_usg_mod_date_2019 on pspadm.psp_paycheck_usage_2019  USING BTREE (modified_date);
+CREATE INDEX
+Time: 65249.588 ms (01:05.250)
+create index concurrently  idx_pchk_usg_mod_date_2020 on pspadm.psp_paycheck_usage_2020  USING BTREE (modified_date);
+CREATE INDEX
+Time: 68497.637 ms (01:08.498)
+create index concurrently  idx_pchk_usg_mod_date_2021 on pspadm.psp_paycheck_usage_2021  USING BTREE (modified_date);
+CREATE INDEX
+Time: 71280.155 ms (01:11.280)
+create index concurrently  idx_pchk_usg_mod_date_2022 on pspadm.psp_paycheck_usage_2022  USING BTREE (modified_date);
+CREATE INDEX
+Time: 72833.945 ms (01:12.834)
+create index concurrently  idx_pchk_usg_mod_date_2023 on pspadm.psp_paycheck_usage_2023  USING BTREE (modified_date);
+CREATE INDEX
+Time: 53068.830 ms (00:53.069)
+create index concurrently  idx_pchk_usg_mod_date_2024 on pspadm.psp_paycheck_usage_2024  USING BTREE (modified_date);
+CREATE INDEX
+Time: 26.251 ms
+create index concurrently  idx_pchk_usg_mod_date_2025 on pspadm.psp_paycheck_usage_2025  USING BTREE (modified_date);
+CREATE INDEX
+Time: 16.200 ms
+create index concurrently  idx_pchk_usg_mod_date_2026 on pspadm.psp_paycheck_usage_2026  USING BTREE (modified_date);
+CREATE INDEX
+Time: 16.591 ms
+select  'psp_paycheck_usage completed'  as status;
+            status            
+------------------------------
+ psp_paycheck_usage completed
+(1 row)
+
+Time: 0.401 ms
+create index  psp_paycheckusage_fk1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (bill_fk );
+CREATE INDEX
+Time: 7.495 ms
+create index  psp_paycheckusage_fk2 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (employee_usage_fk );
+CREATE INDEX
+Time: 11.354 ms
+create index  psp_paycheck_usage_fk1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (company_fk );
+CREATE INDEX
+Time: 5.306 ms
+create index  psp_paycheck_usage_nu1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (source_paycheck_id );
+CREATE INDEX
+Time: 5.001 ms
+create index  psp_paycheck_usage_u1 ON ONLY  pspadm.psp_paycheck_usage USING BTREE (employee_usage_fk ,source_paycheck_id );
+CREATE INDEX
+Time: 4.956 ms
+create index  idx_pchk_usg_mod_date ON ONLY  pspadm.psp_paycheck_usage USING BTREE (modified_date);
+CREATE INDEX
+Time: 4.887 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2012 ;
+ALTER INDEX
+Time: 9.058 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2013 ;
+ALTER INDEX
+Time: 4.648 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2014 ;
+ALTER INDEX
+Time: 6.290 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2015 ;
+ALTER INDEX
+Time: 4.778 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2016 ;
+ALTER INDEX
+Time: 4.655 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2017 ;
+ALTER INDEX
+Time: 4.126 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2018 ;
+ALTER INDEX
+Time: 12.009 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2019 ;
+ALTER INDEX
+Time: 4.149 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2020 ;
+ALTER INDEX
+Time: 4.612 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2021 ;
+ALTER INDEX
+Time: 4.171 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2022 ;
+ALTER INDEX
+Time: 4.316 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2023 ;
+ALTER INDEX
+Time: 4.621 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2024 ;
+ALTER INDEX
+Time: 4.603 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2025 ;
+ALTER INDEX
+Time: 4.500 ms
+alter index psp_paycheck_usage_fk1 attach partition  pspadm.psp_paycheck_usage_fk1_2026 ;
+ALTER INDEX
+Time: 4.581 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2012 ;
+ALTER INDEX
+Time: 4.378 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2013 ;
+ALTER INDEX
+Time: 4.605 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2014 ;
+ALTER INDEX
+Time: 4.540 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2015 ;
+ALTER INDEX
+Time: 3.963 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2016 ;
+ALTER INDEX
+Time: 3.814 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2017 ;
+ALTER INDEX
+Time: 4.066 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2018 ;
+ALTER INDEX
+Time: 3.720 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2019 ;
+ALTER INDEX
+Time: 3.942 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2020 ;
+ALTER INDEX
+Time: 3.717 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2021 ;
+ALTER INDEX
+Time: 3.735 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2022 ;
+ALTER INDEX
+Time: 3.917 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2023 ;
+ALTER INDEX
+Time: 3.736 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2024 ;
+ALTER INDEX
+Time: 4.658 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2025 ;
+ALTER INDEX
+Time: 4.474 ms
+alter index psp_paycheck_usage_nu1 attach partition  pspadm.psp_paycheck_usage_nu1_2026 ;
+ALTER INDEX
+Time: 4.412 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2012 ;
+ALTER INDEX
+Time: 4.648 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2013 ;
+ALTER INDEX
+Time: 4.526 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2014 ;
+ALTER INDEX
+Time: 4.759 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2015 ;
+ALTER INDEX
+Time: 4.608 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2016 ;
+ALTER INDEX
+Time: 4.559 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2017 ;
+ALTER INDEX
+Time: 4.216 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2018 ;
+ALTER INDEX
+Time: 4.670 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2019 ;
+ALTER INDEX
+Time: 5.719 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2020 ;
+ALTER INDEX
+Time: 4.384 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2021 ;
+ALTER INDEX
+Time: 4.426 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2022 ;
+ALTER INDEX
+Time: 3.651 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2023 ;
+ALTER INDEX
+Time: 3.666 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2024 ;
+ALTER INDEX
+Time: 3.598 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2025 ;
+ALTER INDEX
+Time: 3.616 ms
+alter index psp_paycheck_usage_u1 attach partition  pspadm.psp_paycheck_usage_u1_2026 ;
+ALTER INDEX
+Time: 3.987 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2012 ;
+ALTER INDEX
+Time: 3.834 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2013 ;
+ALTER INDEX
+Time: 4.562 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2014 ;
+ALTER INDEX
+Time: 3.574 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2015 ;
+ALTER INDEX
+Time: 3.684 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2016 ;
+ALTER INDEX
+Time: 3.626 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2017 ;
+ALTER INDEX
+Time: 3.716 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2018 ;
+ALTER INDEX
+Time: 3.605 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2019 ;
+ALTER INDEX
+Time: 3.839 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2020 ;
+ALTER INDEX
+Time: 4.053 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2021 ;
+ALTER INDEX
+Time: 3.869 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2022 ;
+ALTER INDEX
+Time: 3.657 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2023 ;
+ALTER INDEX
+Time: 3.841 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2024 ;
+ALTER INDEX
+Time: 3.711 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2025 ;
+ALTER INDEX
+Time: 3.503 ms
+alter index psp_paycheckusage_fk1 attach partition  pspadm.psp_paycheckusage_fk1_2026 ;
+ALTER INDEX
+Time: 3.626 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2012 ;
+ALTER INDEX
+Time: 3.932 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2013 ;
+ALTER INDEX
+Time: 3.581 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2014 ;
+ALTER INDEX
+Time: 3.535 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2015 ;
+ALTER INDEX
+Time: 3.547 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2016 ;
+ALTER INDEX
+Time: 4.575 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2017 ;
+ALTER INDEX
+Time: 4.052 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2018 ;
+ALTER INDEX
+Time: 4.145 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2019 ;
+ALTER INDEX
+Time: 4.061 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2020 ;
+ALTER INDEX
+Time: 3.907 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2021 ;
+ALTER INDEX
+Time: 3.731 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2022 ;
+ALTER INDEX
+Time: 3.799 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2023 ;
+ALTER INDEX
+Time: 5.496 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2024 ;
+ALTER INDEX
+Time: 3.651 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2025 ;
+ALTER INDEX
+Time: 3.696 ms
+alter index psp_paycheckusage_fk2 attach partition  pspadm.psp_paycheckusage_fk2_2026 ;
+ALTER INDEX
+Time: 3.890 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2012 ;
+ALTER INDEX
+Time: 3.884 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2013 ;
+ALTER INDEX
+Time: 3.681 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2014 ;
+ALTER INDEX
+Time: 3.816 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2015 ;
+ALTER INDEX
+Time: 3.506 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2016 ;
+ALTER INDEX
+Time: 4.925 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2017 ;
+ALTER INDEX
+Time: 3.584 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2018 ;
+ALTER INDEX
+Time: 3.567 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2019 ;
+ALTER INDEX
+Time: 3.579 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2020 ;
+ALTER INDEX
+Time: 3.718 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2021 ;
+ALTER INDEX
+Time: 3.580 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2022 ;
+ALTER INDEX
+Time: 3.536 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2023 ;
+ALTER INDEX
+Time: 3.772 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2024 ;
+ALTER INDEX
+Time: 3.769 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2025 ;
+ALTER INDEX
+Time: 3.598 ms
+alter index idx_pchk_usg_mod_date attach partition  pspadm.idx_pchk_usg_mod_date_2026 ;
+ALTER INDEX
+Time: 6.135 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 18:47:19.089488-07
+(1 row)
+
+Time: 0.422 ms

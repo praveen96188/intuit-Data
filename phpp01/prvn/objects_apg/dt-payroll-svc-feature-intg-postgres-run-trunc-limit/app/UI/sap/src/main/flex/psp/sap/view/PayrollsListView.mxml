@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+        import mx.events.MenuEvent;
+        import mx.events.ResizeEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.ActionEvent;
+        import psp.sap.model.ActionEventCode;
+        import psp.sap.model.PayrollRun;
+
+        import psp.sap.viewmodel.PayrollsListViewModel;
+
+        private var mViewModel:PayrollsListViewModel;
+        private var mTempViewModel:PayrollsListViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PayrollsListViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollsListViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function formatCurrency(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item.payrollNetAmount);
+        }
+
+        public function formatProcessingStatus(item:Object):String {
+            return SAP.instance.lookupService.payrollStatus.getItemByKey(item.payrollRunStatus).label;
+        }
+
+        /**
+         * Generic action call to ViewModel
+         */
+        public function onPayrollActionClicked(event:MenuEvent):void {
+            var actionEvent:ActionEvent = ActionEvent(event.item);
+
+            if (actionEvent.code == ActionEventCode.CANCEL_ADJUSTMENT) {
+                Alert.show("Are you sure you want to cancel this adjustment?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.cancelAdjustment(PayrollActionPopUpMenuButton(event.target).payroll);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else {
+                 viewModel.performPayrollAction(actionEvent, PayrollActionPopUpMenuButton(event.target).payroll);
+            }
+
+        }
+
+        public function onGridResize(event:ResizeEvent):void {
+            var p:UIComponent = this as UIComponent;
+
+            var heightBuffer:int = 268;
+
+            while(p !=null && p.parent != null)
+            {
+                if((p.height - heightBuffer) > 0)
+                {
+                    payrollsDataGrid.height = p.height - heightBuffer;
+                } else if((p.explicitHeight - heightBuffer) > 0) {
+                    payrollsDataGrid.height = p.explicitHeight - heightBuffer;
+                }
+
+                p = p.parent as UIComponent;
+            }
+        }
+
+        public function balanceColor(value:Object):uint {
+            return Number(value) > 0 ? 0xFF0000 : 0x000000;
+        }
+
+        public function getManualPayrollToolTip(item:PayrollRun):String {
+            var userFullName:String = item.manualCreator;
+
+            return "Manual payroll by <b>" + userFullName + "</b><br>" + item.manualNote;
+        }
+
+
+
+        ]]>
+    </mx:Script>
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+    <mx:DateFormatter id="dateTimeFormatter" formatString="MMM DD, YYYY L:NN A"/>
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox
+            id="dataContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}"
+            width="100%"
+            height="100%"
+            paddingRight="0"
+            verticalGap="0">
+        <mx:HBox textAlign="left" verticalAlign="middle" width="100%">
+            <pspui:ActionLink
+                    id="previous12MonthsLink"
+                    label="Previous 12 Months"
+                    enabled="{viewModel.showEntireHistory}"
+                    click="viewModel.showEntireHistory = false"
+                    tabEnabled="false"/>
+            <pspui:ActionLink
+                    id="showEntireHistoryLink"
+                    label="Show Entire History"
+                    enabled="{!viewModel.showEntireHistory}"
+                    click="viewModel.showEntireHistory = true"
+                    tabEnabled="false"/>
+            <mx:HBox width="100%" horizontalAlign="right">
+                <pspui:ActionLink
+                        label="Add Manual Fees"
+                        enabled="{SAP.canPerformOperation(OperationsEnum.ADD_MANUAL_FEE_TRANSACTIONS)}"
+                        click="viewModel.createManualFee()"
+                        tabEnabled="false"/>
+            </mx:HBox>
+        </mx:HBox>
+        <mx:DataGrid
+        	id="payrollsDataGrid"
+        	width="100%"
+        	minWidth="800"
+			dataProvider="{viewModel.payrolls}"
+			selectable="false"
+        	variableRowHeight="true"                   	
+        	draggableColumns="false"
+        	visible="{viewModel.hasPayrolls}"
+        	includeInLayout="{viewModel.hasPayrolls}"
+        	tabEnabled="false"
+        	resize="onGridResize(event)">
+        	<mx:columns>
+        		<mx:DataGridColumn
+        			headerText="Check Date {String('\n')}Run Date"
+        			dataField="paycheckDate"
+        			textAlign="left"
+        			minWidth="195">
+        				<mx:itemRenderer>
+        					<mx:Component>
+        						<mx:VBox width="100%" paddingLeft="5">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.formatters.SAPCurrencyFormatters;
+                                        import psp.sap.model.PayrollRun;
+                                        import psp.sap.view.controls.HTMLToolTip;
+                                        ]]></mx:Script>
+                                    <mx:Text
+        								id="paycheckDateText"
+        								automationName="paycheckDateText" 
+        								text="{outerDocument.dateFormatter.format(data.paycheckDate)}"
+                                              color="{PayrollRun(data).isBackdated ? 0xFF0000 : 0x000000}"/>
+        							<mx:HBox width="100%">
+        								<mx:Text 
+        									id="payrollRunDateText"
+        									automationName="payrollRunDateText" 
+        									text="{outerDocument.dateTimeFormatter.format(data.payrollRunDate)}"/>
+                                        <mx:Text
+        									id="voidPaycheckText"
+        									automationName="voidPaycheckText"
+                                            paddingLeft="10"
+        									text="{data.hasVoidedPaycheck ? 'VOID' : ''}"
+        									textAlign="left" 
+        									fontWeight="bold"/>
+                                        <mx:Image visible="{PayrollRun(data).manualCreator != null}" includeInLayout="{PayrollRun(data).manualCreator != null}"
+                                                  source="{SAP.instance.icons.userComment}"
+                                                  toolTipCreate="event.toolTip = new HTMLToolTip();"
+                                                  toolTip="{outerDocument.getManualPayrollToolTip(PayrollRun(data))}"/>
+                                        <mx:Image visible="{PayrollRun(data).isSuperseded}" includeInLayout="{PayrollRun(data).isSuperseded}"
+                                                  source="{SAP.instance.icons.relationship}"
+                                                  toolTip="This payroll has been superseded in PSP by another from a different service."/>
+                                        <mx:Image visible="{PayrollRun(data).feeOnlyAmount > 0}" includeInLayout="{PayrollRun(data).feeOnlyAmount > 0}"
+                                                  source="{SAP.instance.icons.moneyDollar}"
+                                                  toolTipCreate="event.toolTip = new HTMLToolTip();"
+                                                  toolTip="Fee-only payroll for {SAPCurrencyFormatters.defaultFormatter.format(PayrollRun(data).feeOnlyAmount)}"/>
+        							</mx:HBox>
+                                </mx:VBox>
+        					</mx:Component>
+        				</mx:itemRenderer>
+        			</mx:DataGridColumn>
+        		<mx:DataGridColumn
+        			headerText="ACH Status"
+        			dataField="payrollRunStatus"
+        			textAlign="left"
+        			minWidth="130">
+        			<mx:itemRenderer>
+        				<mx:Component>
+        					<mx:VBox width="100%" paddingLeft="5">
+        						<mx:Script>
+        							<![CDATA[
+                                    import psp.sap.application.SAP;
+        							]]>
+        						</mx:Script>
+                                <mx:Text
+                                        id="processingStatusText"
+                                        automationName="processingStatusText"
+                                        width="100%" textAlign="left" text="{outerDocument.formatProcessingStatus(data)}" />
+                                <mx:VBox verticalGap="0" width="100%" visible="{data.expectedResolutionDate != null}" includeInLayout="{data.expectedResolutionDate != null}">
+                                    <mx:Text
+                                            id="resolutionDateText"
+                                            automationName="resolutionDateText"
+                                            text="Expected Resolution Date:" width="100%" />
+                                    <mx:Text
+                                            id="resolutionDateValueText"
+                                            automationName="resolutionDateValueText"
+                                            paddingLeft="10" text="{outerDocument.dateFormatter.format(data.expectedResolutionDate)}" color="{SAP.instance.PSPDate.getTime() > data.expectedResolutionDate.getTime() ? 0xFF0000 : 0x000000}" />
+                                </mx:VBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                        headerText="Actions"
+                        sortable="false"
+                        textAlign="left"
+                        minWidth="120"
+                        dataField="actionCollection">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox height="100%" width="100%" paddingLeft="5" paddingRight="3">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.PayrollRun;
+                                    ]]></mx:Script>
+                                <pspui:PayrollActionPopUpMenuButton
+                                        id="payrollActionButton"
+                                        automationName="payrollActionButton"
+                                        payroll="{data as PayrollRun}"
+                                        dataProvider="{data.actionCollection}"
+                                        labelField="description"
+                                        width="100%"
+                                        paddingLeft="5"
+                                        textAlign="left"
+                                        itemClick="outerDocument.onPayrollActionClicked(event)"
+                                        fontWeight="normal"
+                                        popUpStyleName="payrollPopUpMenu"
+                                        />
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                        headerText="ACH Amount"
+                        dataField="payrollNetAmount"
+                        labelFunction="formatCurrency"
+                        textAlign="right"
+                        minWidth="105"/>
+                <controls:LazyDataGridColumn
+                        headerText="Balance Due"
+                        sortable="false"
+                        dataField="balanceDue"
+                        textAlign="right"
+                        minWidth="105"
+                        loadFunction="PayrollRun.loadBalance"
+                        colorFunction="balanceColor"
+                        textFunction="SAPCurrencyFormatters.defaultFormatter.format"/>
+                <mx:DataGridColumn
+                        headerText="Bank Account"
+                        sortable="false"
+                        minWidth="100">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%" paddingLeft="5" paddingRight="5" horizontalScrollPolicy="off">
+                                <pspui:PayrollBankAccountPopUpButton
+                                        id="bankNameButton"
+                                        automationName="bankNameButton"
+                                        bankAccount="{data.bankAccount}"
+                                        employerDDDebitTxnNumber="{data.employerDDDebitTxnNumber}"
+                                        label="{data.bankAccount.bankName}"
+                                        width="100%"
+                                        textAlign="left"
+                                        fontWeight="normal"
+                                        skin="{null}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:Text
+                id="noPayrollsText"
+                text="No {viewModel.label.toLowerCase()} were found for this company."
+                width="100%"
+                textAlign="center"
+                visible="{!viewModel.hasPayrolls}"
+                includeInLayout="{!viewModel.hasPayrolls}"
+                fontWeight="bold"/>
+    </mx:VBox>
+
+</mx:VBox>

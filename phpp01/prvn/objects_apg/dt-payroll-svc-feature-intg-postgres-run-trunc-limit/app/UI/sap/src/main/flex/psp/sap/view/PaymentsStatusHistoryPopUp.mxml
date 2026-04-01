@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="430"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Payment;
+        import psp.sap.model.PropertyAudit;
+        import psp.sap.viewmodel.PaymentsStatusHistoryViewModel;
+
+        private var mViewModel:PaymentsStatusHistoryViewModel;
+        private var mTempViewModel:PaymentsStatusHistoryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private const TRUNC_TEXT_HEIGHT:int = 20;
+        private const TRUNC_TEXT_WIDTH:int = 320;
+        
+        [Bindable]
+        public function get viewModel():PaymentsStatusHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PaymentsStatusHistoryViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getFormattedDate(item:Object, column:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatShort.format(item[column.dataField]);
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Payment Status History" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:HRule width="100%" height="13"/>
+
+        <mx:HBox visible="{viewModel.payment.ein != null}" includeInLayout="{viewModel.payment.ein != null}" paddingTop="10" paddingBottom="10">
+          <mx:VBox verticalGap="0">
+                <mx:Label text="EIN: " fontWeight="bold"/>
+                <mx:Label text="Legal Name: " fontWeight="bold"></mx:Label>
+                <mx:Label text="PSID: " fontWeight="bold"></mx:Label>
+          </mx:VBox>
+
+          <mx:VBox verticalGap="0">
+                <mx:Label text="{Payment(viewModel.payment).ein}"/>
+                <pspui:TruncatedText
+                    id="legalNameText"
+                    text="{Payment(viewModel.payment).companyName}"
+                    height="{TRUNC_TEXT_HEIGHT}"
+                    width="{TRUNC_TEXT_WIDTH}"
+                    includeInLayout="{Payment(viewModel.payment).companyName != null}"
+                    visible="{Payment(viewModel.payment).companyName != null}"/>
+                <mx:Label text="{Payment(viewModel.payment).psId}"/>
+          </mx:VBox>
+        </mx:HBox>
+
+        <controls:SAPDataGrid id="statusChangesGrid"   maxRows="10"
+                                  dataProvider="{viewModel.auditData}"
+                                  width="100%" 
+                                  selectable="false">
+                <controls:columns>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Date"
+                                       width="140"
+                                       dataField="auditDate"
+                                       itemRenderer="mx.controls.Text"
+                                       paddingLeft="5"
+                                       labelFunction="getFormattedDate"
+                                       draggable="false"/>
+                    <mx:DataGridColumn sortable="false"
+                                       headerText="Status"
+                                       width="145"
+                                       dataField="oldPropertyValue"
+                                       itemRenderer="mx.controls.Text"
+                                       paddingLeft="5"
+                                       draggable="false"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Modified By"
+                                       width="140"
+                                       dataField="userId"
+                                       itemRenderer="mx.controls.Text"
+                                       paddingLeft="5"
+                                       draggable="false"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+</mx:VBox>

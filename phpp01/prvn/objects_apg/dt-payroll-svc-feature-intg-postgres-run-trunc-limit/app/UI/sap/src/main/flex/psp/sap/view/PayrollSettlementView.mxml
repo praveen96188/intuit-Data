@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:flexlib="flexlib.controls.*"
+        xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+        verticalGap="0">
+
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.model.SettlementTypeEnum;
+        import psp.sap.viewmodel.PayrollSettlementViewModel;
+
+        private var mViewModel:PayrollSettlementViewModel;
+
+
+        [Bindable]
+        public function get viewModel():PayrollSettlementViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollSettlementViewModel):void {
+            if (value != null) {
+                if (mViewModel != null) {
+                    mViewModel.amountValidator.listener = null;
+                    mViewModel.taxAmountValidator.listener = null;
+                    mViewModel.settlementDateValidator.listener = null;
+                }
+
+                mViewModel = value;
+
+                if (mViewModel != null) {
+                    mViewModel.amountValidator.listener = amount;
+                    mViewModel.taxAmountValidator.listener = taxAmount;
+                    mViewModel.settlementDateValidator.listener = settlementDate;
+                }
+            }
+        }
+
+
+        [Bindable]
+        public var showSettlementType:Boolean = true;
+
+        [Bindable]
+        public var showSettlementDate:Boolean = true;
+
+        [Bindable]
+        public var showAmount:Boolean = true;
+
+        private function showAmountBox(pSettlementType:SettlementTypeEnum, pShowAmount:Boolean):Boolean {
+            return (pSettlementType != SettlementTypeEnum.ACH) && pShowAmount;
+        }
+        ]]>
+	</mx:Script>
+
+    <!-- settlement type -->
+    <mx:VBox
+            id="settlementTypeBox"
+            visible="{showSettlementType}"
+            includeInLayout="{showSettlementType}"
+            styleName="padderBox">
+        <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+            <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                <mx:HBox verticalAlign="middle"  width="100%" styleName="padderBox">
+                    <mx:Label text="Settlement Type" width="250"/>
+                    <mx:HBox horizontalGap="0">
+                        <!-- for alignment -->
+                        <mx:Label textAlign="right" text=" "/>
+                        <mx:ComboBox id="settlementTypeCombo" width="100" dataProvider="{viewModel.settlementTypes}" visible="{viewModel.canSelectNonStandardSettlementTypes}" includeInLayout="{viewModel.canSelectNonStandardSettlementTypes}"/>
+                        <mx:Label id="settlementTypeLabel" text="{viewModel.settlementType.label}" fontWeight="bold" textAlign="center" width="100" visible="{!viewModel.canSelectNonStandardSettlementTypes}" includeInLayout="{!viewModel.canSelectNonStandardSettlementTypes}"/>
+                    </mx:HBox>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:VBox
+            id="companyBankBox"
+            visible="{viewModel.settlementType == SettlementTypeEnum.ACH}"
+            includeInLayout="{viewModel.settlementType == SettlementTypeEnum.ACH}" verticalGap="0">
+
+        <mx:VBox styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox horizontalGap="0" verticalAlign="middle"  width="100%" styleName="padderBox">
+                        <mx:Label text="Company Bank Account" width="100%"/>
+                        <mx:HBox horizontalGap="0">
+                            <!-- for alignment-->
+                            <mx:Label textAlign="right" text=" "/>
+                            <mx:Text id="companyBankAccount"/>
+                        </mx:HBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:VBox
+            id="amountBox"
+            visible="{showAmountBox(viewModel.settlementType, showAmount)}"
+            includeInLayout="{showAmountBox(viewModel.settlementType, showAmount)}" verticalGap="0">
+
+        <mx:VBox styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox verticalAlign="middle"  width="100%" styleName="padderBox">
+                        <mx:Label text="DD Amount" width="250" visible="{viewModel.ddTaxSplit}" includeInLayout="{viewModel.ddTaxSplit}"/>
+                        <controls:RequiredLabel id="amountLabel" text="Amount" validator="{viewModel.amountRequiredValidator}" width="250" visible="{!viewModel.ddTaxSplit}" includeInLayout="{!viewModel.ddTaxSplit}"/>
+                        <mx:HBox horizontalGap="0">
+                            <mx:Label textAlign="right" text="$"/>
+                            <flexlib:PromptingTextInput
+                                    id="amount"
+                                    restrict="0-9.," visible="{viewModel.allowAmountChange}" includeInLayout="{viewModel.allowAmountChange}"
+                                    prompt="0.00"
+                                    promptFormat="&lt;font color='#999999'&gt;[prompt]&lt;/font&gt;"
+                                    width="100" text="0" textAlign="right" />
+                            <mx:Label id="amountValueLabel" paddingLeft="5" visible="{!viewModel.allowAmountChange}" includeInLayout="{!viewModel.allowAmountChange}"/>
+                        </mx:HBox>
+                    </mx:HBox>
+                    <mx:HBox horizontalGap="0" styleName="padderBox" visible="{viewModel.ddTaxSplit}" includeInLayout="{viewModel.ddTaxSplit}">
+                        <mx:Label text="Tax Amount" width="258"/>
+                        <mx:Label textAlign="right" text="$"/>
+                        <flexlib:PromptingTextInput
+                                id="taxAmount"
+                                restrict="0-9.,"
+                                prompt="0.00"
+                                promptFormat="&lt;font color='#999999'&gt;[prompt]&lt;/font&gt;"
+                                width="100" text="0" textAlign="right" />
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+
+        <!-- date -->
+        <mx:VBox
+                id="settlementDateBox"
+                visible="{showSettlementDate}"
+                includeInLayout="{showSettlementDate}"
+                styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox verticalAlign="middle"  width="100%" styleName="padderBox">
+                        <pspui:RequiredLabel id="dateLabel" text="Date" validator="{viewModel.settlementDateRequiredValidator}" width="250"/>
+                        <mx:HBox horizontalGap="0">
+                            <!-- for alignment -->
+                            <mx:Label textAlign="right" text=" "/>
+                            <pspui:SAPDateField width="100" id="settlementDate" editable="true"/>
+                        </mx:HBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+
+    </mx:VBox>
+
+    <mx:Binding source="settlementTypeCombo.selectedItem as SettlementTypeEnum" destination="viewModel.settlementType" />
+    <mx:Binding source="viewModel.settlementType" destination="settlementTypeCombo.selectedItem"/>
+
+    <mx:Binding source="viewModel.bankAccountLabel" destination="companyBankAccount.text" />
+
+    <!-- settlement date -->
+    <mx:Binding source="viewModel.settlementDate" destination="settlementDate.text"/>
+    <mx:Binding source="settlementDate.text" destination="viewModel.settlementDate"/>
+    <mx:Binding source="viewModel.settlementDateValidator.validDateRange" destination="settlementDate.selectableRange" />
+
+    <!-- amount -->
+    <mx:Binding source="amount.text" destination="viewModel.amount"/>
+    <mx:Binding source="viewModel.amount" destination="amount.text"/>
+    <mx:Binding source="viewModel.amount" destination="amountValueLabel.text"/>
+
+    <mx:Binding source="taxAmount.text" destination="viewModel.taxAmount"/>
+    <mx:Binding source="viewModel.taxAmount" destination="taxAmount.text"/>
+
+</mx:VBox>

@@ -1,0 +1,22 @@
+payroll:
+  security:
+    authentication:
+      ignore-authentication-failure: true
+    authorization:
+      ignore-access-failure: true
+      filters:
+        -
+          pattern: "/**"
+          filterBeanNames:
+            - "requestContextFilter"
+            - "intuitRequestContextFilter"
+      expressions:
+        -
+          pattern: "Add_Service"
+          configAttributes: "#intuit.isIntuitSystemUser() OR (#intuit.isIntuitUser() AND #payrollAuthentication.hasRealmId())"
+        -
+          pattern: "Create_Pin"
+          configAttributes: "#intuit.isIntuitSystemUser() OR (#intuit.isIntuitUser() AND #payrollAuthentication.hasRealmId())"
+        -
+          pattern: "**"
+          configAttributes: "#intuit.isIntuitUser() OR #intuit.isIntuitSystemUser()"

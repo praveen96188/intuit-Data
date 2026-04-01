@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp1 (http://www.altova.com) by Fred Chen (Intuit) -->
+<xsd:schema xmlns:ias="http://www.intuit.com/ias/common/xsd" xmlns="http://www.intuit.com/ias/notification/pub/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.intuit.com/ias/notification/pub/xsd" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.intuit.com/ias/common/xsd" schemaLocation="common.xsd"/>
+	<xsd:simpleType name="AddressDataType">
+		<xsd:annotation>
+			<xsd:documentation>Data type for an address value</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AttributeDataType">
+		<xsd:annotation>
+			<xsd:documentation>Name/Value pair data type</xsd:documentation>
+		</xsd:annotation>
+		<xsd:all>
+			<xsd:element name="Name" type="AttributeNameDataType">
+				<xsd:annotation>
+					<xsd:documentation>Data type for an attribute name. Attribute names must contain characters only from the character set A-Z, a-Z, 0-9, the period character (.), the space character ( ), the underscore character (_), or the hyphen character (-) </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Value" type="AttributeValueDataType">
+				<xsd:annotation>
+					<xsd:documentation>Data type for an attribute value</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:simpleType name="AttributeNameDataType">
+		<xsd:annotation>
+			<xsd:documentation>Data type for an attribute name. Attribute names must contain characters only from the character set A-Z, a-Z, 0-9, the period character (.), the underscore character (_), or the hyphen character (-) </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[A-Za-z][ A-Za-z\d\._\-]{0,99}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AttributeValueDataType">
+		<xsd:annotation>
+			<xsd:documentation>Data type for an attribute value</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="100000"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="BasicContentDataType">
+		<xsd:complexContent>
+			<xsd:extension base="ContentDataType">
+				<xsd:all>
+					<xsd:element name="ContentProviderId" type="ias:IDDataType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>If specified, identifies the source of the content. Currently, this element is not used.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ContentId" type="ias:IDDataType">
+						<xsd:annotation>
+							<xsd:documentation>Unique identifier for the content</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Subject" type="ias:DescriptionDataType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Subject/purpose of this notification</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:all>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="BasicRecipientDataType">
+		<xsd:complexContent>
+			<xsd:extension base="RecipientDataType">
+				<xsd:all>
+					<xsd:element name="Address" type="AddressDataType">
+						<xsd:annotation>
+							<xsd:documentation>Address of recipient</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Name" type="NameDataType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Name of recipient</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:all>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="BasicSenderDataType">
+		<xsd:complexContent>
+			<xsd:extension base="SenderDataType">
+				<xsd:all>
+					<xsd:element name="Address" type="AddressDataType">
+						<xsd:annotation>
+							<xsd:documentation>Email Address of sender</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Name" type="NameDataType">
+						<xsd:annotation>
+							<xsd:documentation>Name of sender</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:all>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="ContentDataType"/>
+	<xsd:simpleType name="NameDataType">
+		<xsd:annotation>
+			<xsd:documentation>Data type for an name</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="NotificationDataType">
+		<xsd:all>
+			<xsd:element name="NotificationType" type="NotificationTypeDataType">
+				<xsd:annotation>
+					<xsd:documentation>Type of notification. Currently, only EMAIL is supported</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DeliveryType">
+				<xsd:annotation>
+					<xsd:documentation>Specifies the type of delivery. Currently, only Immediate is supported</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:choice>
+						<xsd:element name="Immediate">
+							<xsd:annotation>
+								<xsd:documentation>Specifies the notification should be sent immediately</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType/>
+						</xsd:element>
+						<xsd:element name="Scheduled" type="xsd:dateTime">
+							<xsd:annotation>
+								<xsd:documentation>Specifies the notification should be sent at a later date/time</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Delayed" type="TimeIntervalDataType">
+							<xsd:annotation>
+								<xsd:documentation>Specifies the notification should be sent by time offset from now.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:choice>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="SenderProfile">
+				<xsd:annotation>
+					<xsd:documentation>Describes the sender of the notification. if not specified, the default sender configured in the provider is assumed</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="SenderId" type="ias:IDDataType">
+							<xsd:annotation>
+								<xsd:documentation>A unique identifier is assigned to each offering team using the Notification Service.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Sender" type="SenderDataType" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>Describes the sender of the notification. Caller must pass in a derived element of this type</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ContentProfile">
+				<xsd:annotation>
+					<xsd:documentation>Specifies the content and it's properties</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="Content" type="ContentDataType">
+							<xsd:annotation>
+								<xsd:documentation>Describes the content of the notification. Caller must pass in a derived element of this type</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TemplateProperties" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>Content scoped properties used for notification template substitutions</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Attribute" type="AttributeDataType" maxOccurs="100"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Destinations">
+				<xsd:annotation>
+					<xsd:documentation>Describes the recipient(s) of the notification</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Destination" maxOccurs="1000">
+							<xsd:annotation>
+								<xsd:documentation>One or more recipients of the notification</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:all>
+									<xsd:element name="RecipientId" type="ias:IDDataType" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Uniquely identifies the receiver for this request, as specified by the client.</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="Recipient" type="RecipientDataType">
+										<xsd:annotation>
+											<xsd:documentation>Describes the recipient of the notification message. Caller must pass in a derived element of this type</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="Format" type="ContentFormatDataType">
+										<xsd:annotation>
+											<xsd:documentation>The format that the recipient will receive the message in. Currently supported are HTML or Text</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="TemplateProperties" minOccurs="0">
+										<xsd:annotation>
+											<xsd:documentation>Per recipient scoped properties used for notification template substiutions</xsd:documentation>
+										</xsd:annotation>
+										<xsd:complexType>
+											<xsd:sequence>
+												<xsd:element name="Attribute" type="AttributeDataType" maxOccurs="100"/>
+											</xsd:sequence>
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:all>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:simpleType name="NotificationTypeDataType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="EMAIL"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="RecipientDataType"/>
+	<xsd:attributeGroup name="RequestAttributeGroup">
+		<xsd:attribute name="Version" type="ias:VersionDataType">
+			<xsd:annotation>
+				<xsd:documentation>The version of the request. If not set, the most current version is assumed.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	<xsd:attributeGroup name="ResponseAttributeGroup">
+		<xsd:attribute name="Version" type="ias:VersionDataType">
+			<xsd:annotation>
+				<xsd:documentation>The version of the response. If not set, the most current version is assumed.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	<!-- Success data type -->
+	<xsd:complexType name="SuccessDataType">
+		<xsd:annotation>
+			<xsd:documentation>Success data type</xsd:documentation>
+		</xsd:annotation>
+	</xsd:complexType>
+	<xsd:complexType name="SenderDataType"/>
+	<!--
+
+		SendNotification	
+	-->
+	<xsd:element name="SendRequest">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element name="Notification" type="NotificationDataType"/>
+			</xsd:all>
+			<xsd:attributeGroup ref="RequestAttributeGroup"/>
+		</xsd:complexType>
+	</xsd:element>
+	<!--
+
+		SendResponse
+	
+	-->
+	<xsd:element name="SendResponse">
+		<xsd:annotation>
+			<xsd:documentation> Response to SendRequest</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Error" type="ias:ErrorDataType" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>If an unexpected system error or an input error occurred while processing the entire request, this element will be set detailing the error. If one more more BUSINESS_LOGIC errors occured in the request, this error will be set to summarize a BUSINESS_LOGIC error occured. The Result element(s) will also be set to to describe the details of the BUSINESS_LOGIC error(s) that occured. </xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="Result" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="RecipientId" type="ias:IDDataType" minOccurs="0">
+								<xsd:annotation>
+									<xsd:documentation>The unique identifier of the recipient as specified in the request</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:choice>
+								<xsd:element name="Success" type="SuccessDataType">
+									<xsd:annotation>
+										<xsd:documentation>Indicates the request for notification to the specified receiver was received and achknowledged</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+								<xsd:element name="Error" type="ias:ErrorDataType">
+									<xsd:annotation>
+										<xsd:documentation>The error that occured specifically on the receiver</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+							</xsd:choice>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attributeGroup ref="ResponseAttributeGroup"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:simpleType name="TimeUnitDataType">
+		<xsd:annotation>
+			<xsd:documentation>The unit of time. MONTH, YEAR, ETC.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="MINUTE"/>
+			<xsd:enumeration value="HOUR"/>
+			<xsd:enumeration value="DAY"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="TimeIntervalDataType">
+		<xsd:annotation>
+			<xsd:documentation>Represents an interval of time interval."
+						</xsd:documentation>
+		</xsd:annotation>
+		<xsd:all>
+			<xsd:element name="TimeUnit" type="TimeUnitDataType">
+				<xsd:annotation>
+					<xsd:documentation>The time interval's unit of time.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TimeAmount" type="TimeAmountDataType">
+				<xsd:annotation>
+					<xsd:documentation>The time interval amount. For example, if TimeUnit is MONTH and this is set to"1", this means 1month..</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:simpleType name="TimeAmountDataType">
+		<xsd:restriction base="xsd:integer">
+			<xsd:minExclusive value="0"/>
+			<xsd:maxExclusive value="100000"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ContentFormatDataType">
+		<xsd:annotation>
+			<xsd:documentation>The format of the content that the content should be sent in.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Text"/>
+			<xsd:enumeration value="HTML"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

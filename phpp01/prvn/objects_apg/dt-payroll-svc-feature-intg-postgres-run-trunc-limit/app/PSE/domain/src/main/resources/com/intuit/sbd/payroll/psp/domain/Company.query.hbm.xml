@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findEligibleCompaniesforWorkforceInvitation">
+        <![CDATA[
+
+            select pc.id
+            from com.intuit.sbd.payroll.psp.domain.Company as pc,
+             com.intuit.sbd.payroll.psp.domain.CompanyService as pcs,
+             com.intuit.sbd.payroll.psp.domain.EntitlementUnit as peu,
+             com.intuit.sbd.payroll.psp.domain.Entitlement as pe,
+             com.intuit.sbd.payroll.psp.domain.Paycheck as paychk
+             where pc.id = pcs.Company.id
+             and pc.id = peu.Company.id
+             and pe.id = peu.Entitlement.id
+             and pc.id = paychk.Company.id
+             and (CASE WHEN (:isDD = TRUE) THEN paychk.DDEmployee ELSE '1' END) is not null
+             and pcs.Service.ServiceCd in ('ViewMyPaycheck') and pcs.StatusCd = 'ActiveCurrent'
+             and pe.EntitlementState = 'Enabled'
+             and peu.EntitlementUnitStatus in ('Activated', 'PendingActivation', 'PendingReactivation')
+             and pc.IsDgDisassociated = 0 and pc.IAMRealmId is not null
+             and SUBSTR(pc.PublishStatus,7, 1) = :publishStatusWorkforce
+             and paychk.CreatedDate > :fromDate
+
+			]]>
+    </query>
+
+    <query name="company.query.by.einenc">
+        <![CDATA[
+
+            SELECT 1
+            FROM com.intuit.sbd.payroll.psp.domain.Company
+            WHERE FedTaxIdEnc IN (:companyFedTaxIdEncList)
+              AND SourceSystemCd = :sourceSystemCd
+
+			]]>
+    </query>
+    <query name="findCompaniesTermedForMigartion">
+        <![CDATA[
+            SELECT C.SourceCompanyId
+             FROM com.intuit.sbd.payroll.psp.domain.SMSMigration as M,
+                  com.intuit.sbd.payroll.psp.domain.Company as C
+             WHERE M.MigrationStatus = :migartionStatus
+             AND C.Id = M.Company.Id
+             AND C.Id not in (select Company.Id from com.intuit.sbd.payroll.psp.domain.OnHoldReason where ExpirationDate is null)
+			]]>
+    </query>
+    <query name="findCompaniesTermedForEINENC">
+        <![CDATA[
+                Select comp
+    			from com.intuit.sbd.payroll.psp.domain.CompanyService as compServices,
+    			    com.intuit.sbd.payroll.psp.domain.Company as comp
+      			where
+      			    compServices.Company=comp
+    			    and comp.FedTaxIdEnc in (:companyFedTaxIdEncList)
+                    and compServices.StatusCd='Terminated'
+			]]>
+    </query>
+
+    <query name="findActiveCompaniesForEINENC">
+        <![CDATA[
+                Select comp
+    			from com.intuit.sbd.payroll.psp.domain.CompanyService as compServices,
+    			    com.intuit.sbd.payroll.psp.domain.Company as comp
+      			where
+      			    compServices.Company=comp
+    			    and comp.FedTaxIdEnc in (:companyFedTaxIdEncList)
+    			    and (comp.SourceSystemCd=:companySrcSysCd or :companySrcSysCd is null)
+                    and compServices.StatusCd!='Terminated'
+                    and compServices.StatusCd!='Cancelled'
+			]]>
+    </query>
+
+    <query name="findActiveCompaniesForEINENCAndPSID">
+        <![CDATA[
+                Select comp
+    			from com.intuit.sbd.payroll.psp.domain.CompanyService as compServices,
+    			    com.intuit.sbd.payroll.psp.domain.Company as comp
+      			where
+      			    compServices.Company=comp
+    			    and comp.FedTaxIdEnc in (:companyFedTaxIdEncList)
+    			    and (comp.SourceSystemCd=:companySrcSysCd or :companySrcSysCd is null)
+                    and compServices.StatusCd!='Terminated'
+                    and compServices.StatusCd!='Cancelled'
+                    and comp.SourceCompanyId=:companySrcCmpId
+			]]>
+    </query>
+
+    <query name="findServiceStatusForCompanyService">
+        <![CDATA[
+            Select compServices.StatusCd
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as compServices
+    			 inner join compServices.Company as comp
+    		where comp.Id=:companyId
+                and compServices.Service.ServiceCd=:serviceCd
+                and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN comp.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <query name="company.query.companyservice.by.sourcesystem">
+        <![CDATA[
+            Select cs
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN cs.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+
+    <query name="company.query.companyservice.by.legalname">
+        <![CDATA[
+            Select cs
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and lower(COALESCE(cast(cs.Company.LegalName as java.lang.String),'')) like lower(COALESCE(cast(:legalNameWithPercentSigns as java.lang.String),''))
+			  and cs.Service.ServiceCd = :serviceCd
+			  and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN cs.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+
+    <query name="company.query.companyservice.by.fedtaxidenc">
+        <![CDATA[
+            Select cs
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Company.FedTaxIdEnc in (:fedTaxIdEncList)
+			  and cs.Service.ServiceCd = :serviceCd
+			  and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN cs.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+
+    <query name="company.query.companyservice.by.sourcecompanyid">
+        <![CDATA[
+            Select cs
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Company.SourceCompanyId = :sourceCompanyId
+			  and cs.Service.ServiceCd = :serviceCd
+			  and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN cs.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <query name="findCompanySystemEvents">
+        <![CDATA[
+	        Select compEvents
+			from com.intuit.sbd.payroll.psp.domain.CompanyEvent as compEvents,
+			     com.intuit.sbd.payroll.psp.domain.EventType as eventType,
+			     com.intuit.sbd.payroll.psp.domain.SourceSystem as sourceSystem
+			where compEvents.Company =:company
+			    and sourceSystem.SourceSystemCd = compEvents.Company.SourceSystemCd
+                and compEvents.EventTimeStamp >= :fromDate
+                and compEvents.EventTimeStamp <= :toDate
+                and compEvents.EventTypeCd = eventType.EventTypeCd
+                and eventType in elements(sourceSystem.InterestingEventTypesSet)
+                order by compEvents.EventTimeStamp, compEvents.CreatedDate
+			]]>
+    </query>
+    <query name="findActiveCompaniesOnDirectDeposit">
+        <![CDATA[
+                Select distinct comp.SourceCompanyId
+    			from com.intuit.sbd.payroll.psp.domain.CompanyService as compServices,
+    			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+    			     com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu
+      			where
+      			    compServices.Company = comp
+      			    and eu.Company = comp
+      			    and eu.EntitlementUnitStatus in ('Activated','PendingActivation')
+                    and compServices.StatusCd != 'Cancelled'
+			        and compServices.StatusCd != 'Terminated'
+                    and compServices.Service.ServiceCd = 'DirectDeposit'
+                    and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN compServices.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <query name="findSystemEventsByCompany">
+        <![CDATA[
+	        Select compEvents
+			from com.intuit.sbd.payroll.psp.domain.CompanyEvent as compEvents,
+			     com.intuit.sbd.payroll.psp.domain.EventType as eventType,
+			     com.intuit.sbd.payroll.psp.domain.SourceSystem as sourceSystem
+			where compEvents.Company =:company
+			    and sourceSystem.SourceSystemCd = compEvents.Company.SourceSystemCd
+                and compEvents.EventTypeCd = eventType.EventTypeCd
+                and eventType in elements(sourceSystem.InterestingEventTypesSet)
+                order by compEvents.EventTimeStamp, compEvents.CreatedDate
+			]]>
+    </query>
+
+    <query name="findSourceSystemEvents">
+        <![CDATA[
+	        Select compEvents
+			from com.intuit.sbd.payroll.psp.domain.CompanyEvent as compEvents,
+			     com.intuit.sbd.payroll.psp.domain.EventType as eventType,
+			     com.intuit.sbd.payroll.psp.domain.SourceSystem as sourceSystem
+			where sourceSystem.SourceSystemCd = :sourceSystemCd
+                and compEvents.EventTimeStamp > :fromDate
+                and compEvents.EventTimeStamp <= :toDate
+                and compEvents.EventTypeCd = eventType.EventTypeCd
+                and eventType in elements(sourceSystem.InterestingEventTypesSet)
+            order by compEvents.EventTimeStamp, compEvents.CreatedDate
+			]]>
+    </query>
+
+    <query name="findCompanyEventsByToken">
+        <![CDATA[
+	        Select compEvents
+			from com.intuit.sbd.payroll.psp.domain.CompanyEvent as compEvents,
+			     com.intuit.sbd.payroll.psp.domain.EventType as eventType,
+			     com.intuit.sbd.payroll.psp.domain.SourceSystem as sourceSystem
+			where compEvents.Company =:company
+			    and sourceSystem.SourceSystemCd = compEvents.Company.SourceSystemCd
+                and compEvents.EventToken >= :fromToken
+                and compEvents.EventTypeCd = eventType.EventTypeCd
+                and eventType in elements(sourceSystem.InterestingEventTypesSet)
+            order by compEvents.EventToken, compEvents.EventTimeStamp, compEvents.CreatedDate
+			]]>
+    </query>
+
+    <sql-query name="getPSPDateFromDB">
+        <return-scalar column="executionTimestamp" type="java.sql.Timestamp"/>
+        <![CDATA[
+            select fn_get_psp_timestamp(0) executionTimestamp from dual
+			]]>
+    </sql-query>
+
+    <sql-query name="findNextQBDTSourceCompanyIdByState">
+        <return-scalar column="sourceCompanyId" type="java.lang.Long"/>
+        <![CDATA[
+            select fn_get_psid(:stateCode) as sourceCompanyId from dual
+			]]>
+    </sql-query>
+
+    <query name="findCompaniesByBAFraudCriteriaENC">
+        <![CDATA[
+            SELECT fba
+            FROM com.intuit.sbd.payroll.psp.domain.FraudBankAccount as fba
+            WHERE fba.AccountNumberEnc in (:accountNumberEncList)
+              AND fba.RoutingNumber=:routingNumber
+              AND fba.Company!=:pCompany
+			]]>
+    </query>
+
+    <query name="findUpdatedCompaniesForATFDataExtract">
+        <![CDATA[
+            Select comp
+			from com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Company=comp
+			  and cs.Service.ServiceCd = :serviceCd
+			  and ( (comp.ModifiedDate >= :fromDate and comp.ModifiedDate < :toDate)
+                  or (cs.ModifiedDate >= :fromDate and cs.ModifiedDate < :toDate)
+                  or (comp.LegalAddress.ModifiedDate >= :fromDate and comp.LegalAddress.ModifiedDate < :toDate )
+			      or ( exists (from comp.OnHoldReasonSet as onHoldReason
+			            where onHoldReason.ModifiedDate  >= :fromDate and onHoldReason.ModifiedDate  < :toDate )) )
+			 order by comp.CreatedDate
+			]]>
+    </query>
+
+    <query name="findAllQBDTCompanyIdsToAddCloudService">
+        <![CDATA[
+            Select comp.SourceCompanyId
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as compServices
+			    inner join compServices.Company as comp
+			where comp.SourceSystemCd = 'QBDT'
+			and compServices.Service.ServiceCd = 'DirectDeposit'
+            and compServices.StatusCd != 'Cancelled'
+			and compServices.StatusCd != 'Terminated'
+			and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN comp.IsDgDisassociated ELSE 0 END) = 0
+			order by comp.SourceCompanyId
+			]]>
+    </query>
+
+    <query name="findCompaniesBySourceSystemAndService">
+        <![CDATA[
+            Select comp
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN comp.IsDgDisassociated ELSE 0 END) = 0
+			  order by comp.CreatedDate
+			]]>
+    </query>
+
+    <query name="findCompanyIdsBySourceSystemAndService">
+        <![CDATA[
+            Select cs.Company.Id
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN cs.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <query name="findCompaniesBySourceSystemAndPendingTaxService">
+        <![CDATA[
+             Select comp
+             from com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+                  com.intuit.sbd.payroll.psp.domain.Company as comp
+             where cs.Company.SourceSystemCd = :sourceSystemCd
+               and cs.Service.ServiceCd = 'Tax'
+               and cs.ServiceStartDate is null
+               and cs.Company=comp
+               order by comp.CreatedDate
+             ]]>
+    </query>
+
+    <!--Used to find all companies with fileable liabilities for the quarter -->
+    <query name="findCompaniesWithFileableLiabilities">
+        <![CDATA[
+        Select distinct tx.Paycheck.PayrollRun.Company
+			from com.intuit.sbd.payroll.psp.domain.Tax as tx
+			where tx.Paycheck.PayrollRun.PaycheckDate >= tx.Law.PaymentTemplate.SupportStartDate
+			and tx.Paycheck.PayrollRun.PaycheckDate >= :quarterStartDate
+			and tx.Paycheck.PayrollRun.PaycheckDate <= :quarterEndDate
+			and tx.Paycheck.PayrollRun.PaycheckSettlementDate <=:twoDaysAway
+			and tx.Paycheck.PayrollRun.PayrollRunStatus != 'Pending'
+			and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN tx.Company.IsDgDisassociated ELSE 0 END) = 0
+			and tx.Paycheck.Company = tx.Company
+        ]]>
+    </query>
+
+
+    <!--Used to find all companies with fileable adjustments for the quarter -->
+    <query name="findCompaniesWithFileableAdjustments">
+        <![CDATA[
+            Select distinct la.PayrollRun.Company
+			from com.intuit.sbd.payroll.psp.domain.LiabilityAdjustment as la
+			 where la.EffectiveDate >= la.Law.PaymentTemplate.SupportStartDate
+			 and la.IsReconcilingAdjustment = false
+			 and la.PayrollRun.PaycheckSettlementDate <=:twoDaysAway
+			 and la.PayrollRun.PayrollRunStatus != 'Pending'
+			 and la.EffectiveDate >= :quarterStartDate
+			 and la.EffectiveDate <= :quarterEndDate
+			 and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN la.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <!--Used to find companies with fileable liabilities that were updated since the last time the batch job ran -->
+    <query name="findCompaniesWithUpdatedFileableLiabilities">
+        <![CDATA[
+            Select distinct tx.Paycheck.PayrollRun.Company.Id, tx.Paycheck.PayrollRun.PaycheckDate
+			from com.intuit.sbd.payroll.psp.domain.Tax as tx, com.intuit.sbd.payroll.psp.domain.ATFPayrollsToProcess as payrollsToProcess
+			where tx.Paycheck.PayrollRun.PaycheckDate >= tx.Law.PaymentTemplate.SupportStartDate
+			and tx.Paycheck.PayrollRun.PayrollRunStatus != 'Pending'
+			and tx.Paycheck.PayrollRun.Id = payrollsToProcess.PayrollRun.Id
+			and payrollsToProcess.ModifiedDate >=:lastRunDate
+			and tx.Paycheck.CreatedDate>=:beginningOfTimeTax and tx.Paycheck.CreatedDate<=:runDateTime
+			and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN tx.Company.IsDgDisassociated ELSE 0 END) = 0
+			and tx.Paycheck.Company = tx.Company
+			]]>
+    </query>
+
+    <!--Used to find companies with fileable adjustments that were updated since the last time the batch job ran -->
+    <query name="findCompaniesWithUpdatedFileableAdjustments">
+        <![CDATA[
+            Select distinct la.PayrollRun.Company.Id, la.EffectiveDate
+			from com.intuit.sbd.payroll.psp.domain.LiabilityAdjustment as la, com.intuit.sbd.payroll.psp.domain.ATFPayrollsToProcess as payrollsToProcess
+			 where la.EffectiveDate >= la.Law.PaymentTemplate.SupportStartDate
+			 and la.IsReconcilingAdjustment = false
+			 and la.PayrollRun.PayrollRunStatus != 'Pending'
+			 and la.PayrollRun.Id = payrollsToProcess.PayrollRun.Id
+			 and payrollsToProcess.ModifiedDate >=:lastRunDate
+			 and la.CreatedDate>=:beginningOfTimeTax and la.CreatedDate<=:runDateTime
+			 and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN la.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <!--Used to find companies with payments that were updated since the last time the batch job ran -->
+    <query name="findCompaniesWithUpdatedPayments">
+        <![CDATA[
+            Select distinct mmt.Company.Id, mmt.PaymentPeriodEnd
+			from com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmt
+			where mmt.PaymentPeriodEnd <=:endDate
+			 and mmt.MoneyMovementPaymentMethod in ('EFTPS', 'EFTPSDirectDebit', 'HPDE', 'HPDERefund', 'CheckPayment', 'ACHCredit', 'ACHDebit', 'EDI', 'SuperCheck')
+			 and mmt.TaxPaymentStatus in ('AcknowledgedByAgency', 'ReturnedTaxPaid', 'RejectedByAgency', 'None')
+			 and mmt.ModifiedDate >=:lastRunDate
+			 and mmt.InitiationDate <=:runDatePlus1
+			 and mmt.InitiationDate >=:beginningOfTimeTax
+			 and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN mmt.Company.IsDgDisassociated ELSE 0 END) = 0
+			]]>
+    </query>
+
+    <!--Used to find the sum of all fileable taxes for a given company, law, and paycheck date-->
+    <query name="findDailyTaxes">
+        <![CDATA[
+            Select sum(tx.TaxLiabilityAmount), sum(tx.TaxableWagesAmount), tx.Law.LawId, tx.Paycheck.PayrollRun.PaycheckDate, sum(tx.TipsTaxableWageAmount), tx.Paycheck.Status
+                from com.intuit.sbd.payroll.psp.domain.Tax as tx
+                where tx.Paycheck.PayrollRun.PaycheckDate >= tx.Law.PaymentTemplate.SupportStartDate
+                 and (tx.Paycheck.PayrollRun.PaycheckSettlementDate <=:twoDaysAway or tx.Paycheck.PayrollRun.PayrollRunStatus = 'Complete')
+                 and tx.Paycheck.PayrollRun.PayrollRunStatus != 'Pending'
+                 and tx.Paycheck.PayrollRun.PaycheckDate >= :beginDate and tx.Paycheck.PayrollRun.PaycheckDate <= :endDate
+                 and tx.Paycheck.PayrollRun.Company = :company
+                 and tx.Paycheck.PayrollRun.PayrollRunStatus != 'Superseded'
+                 and tx.Paycheck.SourcePaycheckId not like '-%'
+                 and tx.Paycheck.Company = tx.Company
+                group by  tx.Law.LawId, tx.Paycheck.PayrollRun.PaycheckDate, tx.Paycheck.Status
+			]]>
+    </query>
+
+    <!--Used to find the sum of all fileable adjustments for a given company, law, and liability adjustment effective date-->
+    <query name="findDailyAdjustments">
+        <![CDATA[
+            Select sum(la.Amount), sum(la.TaxableWages), la.Law.LawId, la.EffectiveDate
+			from com.intuit.sbd.payroll.psp.domain.LiabilityAdjustment as la
+			where la.EffectiveDate >= la.Law.PaymentTemplate.SupportStartDate
+			and la.IsReconcilingAdjustment = false
+			 and (la.PayrollRun.PaycheckSettlementDate <=:twoDaysAway or la.PayrollRun.PayrollRunStatus = 'Complete')
+			 and la.PayrollRun.PayrollRunStatus != 'Pending'
+			 and la.EffectiveDate >= :beginDate and la.EffectiveDate <= :endDate
+			 and la.PayrollRun.Company = :company
+			 and la.PayrollRun.PayrollRunStatus != 'Superseded'
+			  and  not exists (select 'T' from com.intuit.sbd.payroll.psp.domain.Paycheck as pc where pc.PayrollRun.Id = la.PayrollRun.Id and pc.SourcePaycheckId like '-%')
+			group by la.Law.LawId, la.EffectiveDate
+			]]>
+    </query>
+
+    <!--Used to find all IA BEN Numbers-->
+    <query name="findIABENNumbersENC">
+        <![CDATA[
+            Select company.SourceCompanyId, comaid.AgencyTaxpayerIdEnc
+			from com.intuit.sbd.payroll.psp.domain.Company as company
+			join company.CompanyAgencySet as companyagency
+			join companyagency.CompanyAgencyPaymentTemplateSet capt
+			join capt.CompanyPaymentTemplateAgencyIdSet comaid
+			where comaid.Name = 'BEN Number'
+			]]>
+    </query>
+
+    <!--PSP-13615:Used to find Companies with disabled transmission processing flag-->
+    <sql-query name="findProcessingDisabledCompanies">
+        <return alias="company" class="com.intuit.sbd.payroll.psp.domain.Company"/>
+        SELECT distinct co.* FROM psp_company co
+        join psp_quickbooks_info qinfo on co.company_seq=qinfo.company_fk
+        join (
+        select created_date, company_fk, company_event_seq, row_number() over(partition by company_fk order by created_date desc)  rn
+        from psp_company_event
+        where event_type_cd=:event_type_code
+        ) ce on ce.company_fk=qinfo.company_fk
+        and rn=1
+        where qinfo.process_transmissions=0
+        and 24 * (to_date(TO_CHAR(sys_extract_utc(fn_get_psp_timestamp),'DD/MM/YYYY HH:MI:SS PM'),'DD/MM/YYYY HH:MI:SS PM')
+        -to_date(TO_CHAR( ce.created_date,'DD/MM/YYYY HH:MI:SS PM'),'DD/MM/YYYY HH:MI:SS PM'))
+        BETWEEN :begin_hrs and :end_hrs
+        and (CASE WHEN (:excludeDeletedCompany = 1) THEN co.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+    </sql-query>
+
+    <sql-query name="findProcessingDisabledCompanies_postgres">
+        <return alias="company" class="com.intuit.sbd.payroll.psp.domain.Company"/>
+        SELECT distinct co.* FROM psp_company co
+        join psp_quickbooks_info qinfo on co.company_seq=qinfo.company_fk
+        join (
+        select created_date, company_fk, company_event_seq, row_number() over(partition by company_fk order by created_date desc)  rn
+        from psp_company_event
+        where event_type_cd=:event_type_code
+        ) ce on ce.company_fk=qinfo.company_fk
+        and rn=1
+        where qinfo.process_transmissions=0
+        and 24 * (to_date(TO_CHAR(timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz)),'DD/MM/YYYY HH:MI:SS PM'),'DD/MM/YYYY HH:MI:SS PM')
+        -to_date(TO_CHAR( ce.created_date,'DD/MM/YYYY HH:MI:SS PM'),'DD/MM/YYYY HH:MI:SS PM'))
+        BETWEEN :begin_hrs and :end_hrs
+        and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN co.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+    </sql-query>
+
+    <!--Used to find SUI rate data for all Assisted customers for a specified state-->
+    <sql-query name="findSuiCustomerRatesDataForStateEnc">
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="fed_tax_id_enc" type="string"/>
+        <return-scalar column="agency_taxpayer_id_enc" type="string"/>
+        <return-scalar column="legal_name" type="string"/>
+        <return-scalar column="address_line1" type="string"/>
+        <return-scalar column="address_line2" type="string"/>
+        <return-scalar column="city" type="string"/>
+        <return-scalar column="state" type="string"/>
+        <return-scalar column="zip_code" type="string"/>
+        <return-scalar column="zip_code_extension" type="string"/>
+        <return-scalar column="first_name" type="string"/>
+        <return-scalar column="last_name" type="string"/>
+        <return-scalar column="phone" type="string"/>
+        <return-scalar column="fax" type="string"/>
+        <return-scalar column="email" type="string"/>
+        <return-scalar column="rate" type="double"/>
+        <return-scalar column="company_agency_seq" type="string"/>
+        <![CDATA[
+            select co.source_company_id, co.fed_tax_id_enc, capt.agency_taxpayer_id_enc, co.legal_name,
+            legal.address_line1, legal.address_line2,
+            legal.city, legal.state, legal.zip_code, legal.zip_code_extension,
+            admin.first_name, admin.last_name, admin.phone, cont.fax, admin.email,
+            rate.rate, ca.company_agency_seq
+            from psp_company co
+            left join psp_address legal on co.legal_address_fk = legal.address_seq
+            join psp_contact cont on cont.company_fk = co.company_seq
+            join psp_individual admin on admin.individual_seq = cont.contact_seq
+            join psp_company_service serv on serv.company_fk = co.company_seq
+            join psp_tax_company_service_info taxinfo on taxinfo.tax_company_service_info_seq = serv.company_service_seq
+            join psp_company_agency ca on ca.company_fk = co.company_seq
+            join psp_company_law claw on claw.company_agency_fk = ca.company_agency_seq
+            join psp_law law on claw.law_fk = law.law_id
+            join psp_company_law_rate rate on rate.company_law_fk = claw.company_law_seq
+            join psp_companyagency_pmttemplate capt on capt.company_agency_fk = ca.company_agency_seq
+            join psp_payment_template pt on capt.payment_template_fk = pt.payment_template_cd
+            where serv.service_fk = 'Tax'
+                and ((serv.status_cd = 'ActiveCurrent' and serv.service_start_date <= sys_extract_utc(fn_get_psp_timestamp))
+                    or (serv.status_cd = 'Cancelled' and (taxinfo.last_quarter_to_file >= :yearQuarter)))
+                and not exists (select 'T' from psp_on_hold_reason ohr where ohr.company_fk = co.company_seq and ohr.expiration_date is null and ohr.on_hold_reason_cd = 'AS400Hold')
+                and cont.contact_role_cd = 'PayrollAdmin'
+                and law.payment_template_fk = pt.payment_template_cd
+                and pt.category = 'SUI'
+                and pt.payment_template_cd like :state
+                and law.law_category_code = 'UnemploymentEmployer'
+                and rate.invalid_date is null
+                and (rate.effective_date is null or rate.effective_date <= sys_extract_utc(fn_get_psp_timestamp))
+                and (claw.exemption_status is null or claw.exemption_status = 'NonExempt')
+                and (claw.filing_status is null or claw.filing_status = 'Active')
+                and (claw.reimbursable_status is null or claw.reimbursable_status = 'NotReimbursable')
+                and (CASE WHEN (:excludeDeletedCompany = 1) THEN co.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+            order by co.source_company_id, rate.effective_date desc
+        ]]>
+    </sql-query>
+
+    <sql-query name="findSuiCustomerRatesDataForStateEnc_postgres">
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="fed_tax_id_enc" type="string"/>
+        <return-scalar column="agency_taxpayer_id_enc" type="string"/>
+        <return-scalar column="legal_name" type="string"/>
+        <return-scalar column="address_line1" type="string"/>
+        <return-scalar column="address_line2" type="string"/>
+        <return-scalar column="city" type="string"/>
+        <return-scalar column="state" type="string"/>
+        <return-scalar column="zip_code" type="string"/>
+        <return-scalar column="zip_code_extension" type="string"/>
+        <return-scalar column="first_name" type="string"/>
+        <return-scalar column="last_name" type="string"/>
+        <return-scalar column="phone" type="string"/>
+        <return-scalar column="fax" type="string"/>
+        <return-scalar column="email" type="string"/>
+        <return-scalar column="rate" type="double"/>
+        <return-scalar column="company_agency_seq" type="string"/>
+        <![CDATA[
+            select co.source_company_id, co.fed_tax_id_enc, capt.agency_taxpayer_id_enc, co.legal_name,
+            legal.address_line1, legal.address_line2,
+            legal.city, legal.state, legal.zip_code, legal.zip_code_extension,
+            admin.first_name, admin.last_name, admin.phone, cont.fax, admin.email,
+            rate.rate, ca.company_agency_seq
+            from psp_company co
+            left join psp_address legal on co.legal_address_fk = legal.address_seq
+            join psp_contact cont on cont.company_fk = co.company_seq
+            join psp_individual admin on admin.individual_seq = cont.contact_seq
+            join psp_company_service serv on serv.company_fk = co.company_seq
+            join psp_tax_company_service_info taxinfo on taxinfo.tax_company_service_info_seq = serv.company_service_seq
+            join psp_company_agency ca on ca.company_fk = co.company_seq
+            join psp_company_law claw on claw.company_agency_fk = ca.company_agency_seq
+            join psp_law law on claw.law_fk = law.law_id
+            join psp_company_law_rate rate on rate.company_law_fk = claw.company_law_seq
+            join psp_companyagency_pmttemplate capt on capt.company_agency_fk = ca.company_agency_seq
+            join psp_payment_template pt on capt.payment_template_fk = pt.payment_template_cd
+            where serv.service_fk = 'Tax'
+                and ((serv.status_cd = 'ActiveCurrent' and serv.service_start_date <= timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz)))
+                    or (serv.status_cd = 'Cancelled' and (taxinfo.last_quarter_to_file >= cast(:yearQuarter as int))))
+                and not exists (select 'T' from psp_on_hold_reason ohr where ohr.company_fk = co.company_seq and ohr.expiration_date is null and ohr.on_hold_reason_cd = 'AS400Hold')
+                and cont.contact_role_cd = 'PayrollAdmin'
+                and law.payment_template_fk = pt.payment_template_cd
+                and pt.category = 'SUI'
+                and pt.payment_template_cd like :state
+                and law.law_category_code = 'UnemploymentEmployer'
+                and rate.invalid_date is null
+                and (rate.effective_date is null or rate.effective_date <= timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz)))
+                and (claw.exemption_status is null or claw.exemption_status = 'NonExempt')
+                and (claw.filing_status is null or claw.filing_status = 'Active')
+                and (claw.reimbursable_status is null or claw.reimbursable_status = 'NotReimbursable')
+                and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN co.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+            order by co.source_company_id, rate.effective_date desc
+        ]]>
+    </sql-query>
+
+    <sql-query name="sqlFindCompanyByCompanyRealm">
+        <return alias="company" class="com.intuit.sbd.payroll.psp.domain.Company"/>
+        SELECT /*+ INDEX (pc PSP_COMP_IAM_REALMID_IDX) */ *
+        FROM PSP_COMPANY pc
+        WHERE pc.I_A_M_REALM_ID = :company_realm_id
+        AND (CASE WHEN (:excludeDeletedCompany = 1) THEN pc.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+    </sql-query>
+
+    <sql-query name="sqlFindCompanyByCompanyRealm_postgres">
+        <return alias="company" class="com.intuit.sbd.payroll.psp.domain.Company"/>
+        SELECT /*+ INDEX (pc PSP_COMP_IAM_REALMID_IDX) */ *
+        FROM PSP_COMPANY pc
+        WHERE pc.I_A_M_REALM_ID = :company_realm_id
+        AND (CASE WHEN (:excludeDeletedCompany = TRUE) THEN pc.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+    </sql-query>
+
+    <!--Used to find DF  data for all Assisted customers for a specified state-->
+    <sql-query name="findCustomerDepositFrequencyDataForStateEnc">
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="fed_tax_id_enc" type="string"/>
+        <return-scalar column="agency_taxpayer_id_enc" type="string"/>
+        <return-scalar column="legal_name" type="string"/>
+        <return-scalar column="address_line1" type="string"/>
+        <return-scalar column="address_line2" type="string"/>
+        <return-scalar column="city" type="string"/>
+        <return-scalar column="state" type="string"/>
+        <return-scalar column="zip_code" type="string"/>
+        <return-scalar column="zip_code_extension" type="string"/>
+        <return-scalar column="first_name" type="string"/>
+        <return-scalar column="last_name" type="string"/>
+        <return-scalar column="phone" type="string"/>
+        <return-scalar column="fax" type="string"/>
+        <return-scalar column="email" type="string"/>
+        <return-scalar column="effective_date" type="java.sql.Timestamp"/>
+        <return-scalar column="payment_template_frequency" type="string"/>
+        <return-scalar column="future_effective_date" type="java.sql.Timestamp"/>
+        <return-scalar column="future_payment_frequency" type="string"/>
+        <return-scalar column="payment_template_frequency_cd" type="string"/>
+        <return-scalar column="company_agency_seq" type="string"/>
+        <return-scalar column="resp_start_date" type="java.sql.Timestamp"/>
+        <![CDATA[
+          select co.source_company_id, co.fed_tax_id_enc, capt.agency_taxpayer_id_enc, co.legal_name,
+            legal.address_line1, legal.address_line2,
+            legal.city, legal.state, legal.zip_code, legal.zip_code_extension,
+            admin.first_name, admin.last_name, admin.phone, cont.fax, admin.email,
+            currentdf.effective_date effective_date,
+            pf.payment_frequency_id payment_template_frequency,
+            futuredf.effective_date future_effective_date,
+            futurepf.payment_frequency_id future_payment_frequency,
+            pt.payment_template_cd payment_template_frequency_cd,
+            ca.company_agency_seq,
+            ca.resp_start_date
+            from psp_company co
+            left join psp_address legal on co.legal_address_fk = legal.address_seq
+            join psp_contact cont on cont.company_fk = co.company_seq
+            join psp_individual admin on admin.individual_seq = cont.contact_seq
+            join psp_company_service serv on serv.company_fk = co.company_seq
+            join psp_tax_company_service_info taxinfo on taxinfo.tax_company_service_info_seq = serv.company_service_seq
+            join psp_company_agency ca on ca.company_fk = co.company_seq
+            join psp_company_law claw on claw.company_agency_fk = ca.company_agency_seq
+            join psp_law law on claw.law_fk = law.law_id
+            join psp_companyagency_pmttemplate capt on capt.company_agency_fk = ca.company_agency_seq
+            left join psp_effective_deposit_freq currentdf on currentdf.company_agency_pmt_template_fk = capt.companyagency_pmttemplate_seq
+            left join psp_effective_deposit_freq futuredf on futuredf.company_agency_pmt_template_fk = capt.companyagency_pmttemplate_seq and futuredf.effective_date > sys_extract_utc(fn_get_psp_timestamp)
+            join psp_payment_template pt on capt.payment_template_fk = pt.payment_template_cd and pt.payment_template_cd  not like '%NOCALC'
+            left join psp_pmt_template_frequency pf on capt.payment_template_fk=pf.payment_template_fk and ( currentdf.payment_template_frequency_fk=pf.payment_template_frequency_id )
+            left  join psp_pmt_template_frequency futurepf on capt.payment_template_fk=pf.payment_template_fk and ( futuredf.payment_template_frequency_fk=futurepf.payment_template_frequency_id)
+            where serv.service_fk = 'Tax'
+                and ((serv.status_cd = 'ActiveCurrent' and serv.service_start_date <= sys_extract_utc(fn_get_psp_timestamp))
+                    or (serv.status_cd = 'Cancelled' and (taxinfo.last_quarter_to_file >= :yearQuarter)) )
+                and not exists (select 'T' from psp_on_hold_reason ohr where ohr.company_fk = co.company_seq and ohr.expiration_date is null and ohr.on_hold_reason_cd = 'AS400Hold')
+                and cont.contact_role_cd = 'PayrollAdmin'
+                and law.payment_template_fk = pt.payment_template_cd
+                and law.law_category_code= 'Withholding'
+                and pt.payment_template_cd like :state
+                and currentdf.invalid_date is null
+                and( currentdf.effective_date is null or ( currentdf.effective_date  >= ( select max(refdf.effective_date)  from psp_effective_deposit_freq refdf where refdf.invalid_date is null and ( refdf.effective_date is null or refdf.effective_date <= sys_extract_utc(fn_get_psp_timestamp)) and refdf.company_agency_pmt_template_fk = capt.companyagency_pmttemplate_seq)
+                        and currentdf.effective_date <= sys_extract_utc(fn_get_psp_timestamp)))
+                and futuredf.invalid_date is null
+                and( futuredf.effective_date is null or futuredf.effective_date > sys_extract_utc(fn_get_psp_timestamp))
+                and (claw.exemption_status is null or claw.exemption_status = 'NonExempt')
+                and (claw.filing_status is null or claw.filing_status = 'Active')
+                and (claw.reimbursable_status is null or claw.reimbursable_status = 'NotReimbursable')
+                and (CASE WHEN (:excludeDeletedCompany = 1) THEN co.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+            group by  co.source_company_id, co.fed_tax_id_enc, capt.agency_taxpayer_id_enc, co.legal_name,
+                            legal.address_line1, legal.address_line2,
+                            legal.city, legal.state, legal.zip_code, legal.zip_code_extension,
+                            admin.first_name, admin.last_name, admin.phone, cont.fax, admin.email,
+                            currentdf.effective_date, pf.payment_frequency_id,futuredf.effective_date,
+                            futurepf.payment_frequency_id,pt. payment_template_cd,ca.company_agency_seq,ca.resp_start_date
+            order by co.source_company_id , currentdf.effective_date desc,futuredf.effective_date desc,ca.company_agency_seq
+        ]]>
+    </sql-query>
+
+    <sql-query name="findCustomerDepositFrequencyDataForStateEnc_postgres">
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="fed_tax_id_enc" type="string"/>
+        <return-scalar column="agency_taxpayer_id_enc" type="string"/>
+        <return-scalar column="legal_name" type="string"/>
+        <return-scalar column="address_line1" type="string"/>
+        <return-scalar column="address_line2" type="string"/>
+        <return-scalar column="city" type="string"/>
+        <return-scalar column="state" type="string"/>
+        <return-scalar column="zip_code" type="string"/>
+        <return-scalar column="zip_code_extension" type="string"/>
+        <return-scalar column="first_name" type="string"/>
+        <return-scalar column="last_name" type="string"/>
+        <return-scalar column="phone" type="string"/>
+        <return-scalar column="fax" type="string"/>
+        <return-scalar column="email" type="string"/>
+        <return-scalar column="effective_date" type="java.sql.Timestamp"/>
+        <return-scalar column="payment_template_frequency" type="string"/>
+        <return-scalar column="future_effective_date" type="java.sql.Timestamp"/>
+        <return-scalar column="future_payment_frequency" type="string"/>
+        <return-scalar column="payment_template_frequency_cd" type="string"/>
+        <return-scalar column="company_agency_seq" type="string"/>
+        <return-scalar column="resp_start_date" type="java.sql.Timestamp"/>
+        <![CDATA[
+          select co.source_company_id, co.fed_tax_id_enc, capt.agency_taxpayer_id_enc, co.legal_name,
+            legal.address_line1, legal.address_line2,
+            legal.city, legal.state, legal.zip_code, legal.zip_code_extension,
+            admin.first_name, admin.last_name, admin.phone, cont.fax, admin.email,
+            currentdf.effective_date effective_date,
+            pf.payment_frequency_id payment_template_frequency,
+            futuredf.effective_date future_effective_date,
+            futurepf.payment_frequency_id future_payment_frequency,
+            pt.payment_template_cd payment_template_frequency_cd,
+            ca.company_agency_seq,
+            ca.resp_start_date
+            from psp_company co
+            left join psp_address legal on co.legal_address_fk = legal.address_seq
+            join psp_contact cont on cont.company_fk = co.company_seq
+            join psp_individual admin on admin.individual_seq = cont.contact_seq
+            join psp_company_service serv on serv.company_fk = co.company_seq
+            join psp_tax_company_service_info taxinfo on taxinfo.tax_company_service_info_seq = serv.company_service_seq
+            join psp_company_agency ca on ca.company_fk = co.company_seq
+            join psp_company_law claw on claw.company_agency_fk = ca.company_agency_seq
+            join psp_law law on claw.law_fk = law.law_id
+            join psp_companyagency_pmttemplate capt on capt.company_agency_fk = ca.company_agency_seq
+            left join psp_effective_deposit_freq currentdf on currentdf.company_agency_pmt_template_fk = capt.companyagency_pmttemplate_seq
+            left join psp_effective_deposit_freq futuredf on futuredf.company_agency_pmt_template_fk = capt.companyagency_pmttemplate_seq and futuredf.effective_date > timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz))
+            join psp_payment_template pt on capt.payment_template_fk = pt.payment_template_cd and pt.payment_template_cd  not like '%NOCALC'
+            left join psp_pmt_template_frequency pf on capt.payment_template_fk=pf.payment_template_fk and ( currentdf.payment_template_frequency_fk=pf.payment_template_frequency_id )
+            left  join psp_pmt_template_frequency futurepf on capt.payment_template_fk=pf.payment_template_fk and ( futuredf.payment_template_frequency_fk=futurepf.payment_template_frequency_id)
+            where serv.service_fk = 'Tax'
+                and ((serv.status_cd = 'ActiveCurrent' and serv.service_start_date <= timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz)))
+                    or (serv.status_cd = 'Cancelled' and (taxinfo.last_quarter_to_file >= cast(:yearQuarter as int))))
+                and not exists (select 'T' from psp_on_hold_reason ohr where ohr.company_fk = co.company_seq and ohr.expiration_date is null and ohr.on_hold_reason_cd = 'AS400Hold')
+                and cont.contact_role_cd = 'PayrollAdmin'
+                and law.payment_template_fk = pt.payment_template_cd
+                and law.law_category_code= 'Withholding'
+                and pt.payment_template_cd like :state
+                and currentdf.invalid_date is null
+                and( currentdf.effective_date is null or ( currentdf.effective_date  >= ( select max(refdf.effective_date)  from psp_effective_deposit_freq refdf where refdf.invalid_date is null and ( refdf.effective_date is null or refdf.effective_date <= timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz))) and refdf.company_agency_pmt_template_fk = capt.companyagency_pmttemplate_seq)
+                        and currentdf.effective_date <= timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz))))
+                and futuredf.invalid_date is null
+                and( futuredf.effective_date is null or futuredf.effective_date > timezone('UTC', cast(fn_get_psp_timestamp(1) AS timestamptz)))
+                and (claw.exemption_status is null or claw.exemption_status = 'NonExempt')
+                and (claw.filing_status is null or claw.filing_status = 'Active')
+                and (claw.reimbursable_status is null or claw.reimbursable_status = 'NotReimbursable')
+                and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN co.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+            group by  co.source_company_id, co.fed_tax_id_enc, capt.agency_taxpayer_id_enc, co.legal_name,
+                            legal.address_line1, legal.address_line2,
+                            legal.city, legal.state, legal.zip_code, legal.zip_code_extension,
+                            admin.first_name, admin.last_name, admin.phone, cont.fax, admin.email,
+                            currentdf.effective_date, pf.payment_frequency_id,futuredf.effective_date,
+                            futurepf.payment_frequency_id,pt. payment_template_cd,ca.company_agency_seq,ca.resp_start_date
+            order by co.source_company_id , currentdf.effective_date desc,futuredf.effective_date desc,ca.company_agency_seq
+        ]]>
+    </sql-query>
+
+    <!--Used to find the tax payments made by a company within a particular date range -->
+
+    <query name="findCompanyTaxPaymentDetails">
+        <![CDATA[
+            select pc.SourceCompanyId, cs.ServiceStartDate,  pr.PaycheckDate,  pr.PayrollRunDate AS PAYROLL_RUN_DATE,
+            payc.PayPeriodBeginDate AS PAYMENT_BEGIN_DATE, payc.PayPeriodEndDate AS PAYMENT_END_DATE,
+            cl.SourceDescription AS TAX_ITEM_DESCRIPTION,cl.SourceId AS TAX_ITEM_ID, pl.IsEmployerTax AS EMPLOYER_PAID,
+            mmt.TaxPaymentStatus AS PAYMENT_STATUS,sum(ft.FinancialTransactionAmount) as TOTAL_AMOUNT, mmt.DueDate as PAYMENT_DATE,
+            (case when pl.LawId  in('1','61','62','63','64','65','143','196','214','215','216') THEN 'N' else 'Y' end) as IS_STATE_TAX
+			from com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction mmt,
+			com.intuit.sbd.payroll.psp.domain.Company pc,
+			com.intuit.sbd.payroll.psp.domain.CompanyService cs,
+			com.intuit.sbd.payroll.psp.domain.FinancialTransaction ft,
+			com.intuit.sbd.payroll.psp.domain.Law pl,
+			com.intuit.sbd.payroll.psp.domain.CompanyLaw cl,
+			com.intuit.sbd.payroll.psp.domain.CompanyAgency ca,
+			com.intuit.sbd.payroll.psp.domain.PayrollRun pr,
+			com.intuit.sbd.payroll.psp.domain.Paycheck payc
+			WHERE mmt.Company= pc and ft.MoneyMovementTransaction=mmt and  pl = ft.Law and pl=cl.Law and ca.Company=pc
+			and cl.CompanyAgency=ca and ft.PayrollRun = pr and payc.PayrollRun=pr and cs.Company=pc and cs.Service='Tax' and
+			((payc.PayPeriodBeginDate>=:payPeriodBeginDate AND payc.PayPeriodEndDate<=:payPeriodEndDate)
+			OR (pr.PaycheckDate >=:payPeriodBeginDate  AND pr.PaycheckDate <=:payPeriodEndDate)
+			OR (mmt.DueDate >=:payPeriodBeginDate  AND mmt.DueDate <=:payPeriodEndDate))
+			AND mmt.PaymentTemplate is not null and pc.SourceCompanyId=:companyId
+			group by pc.SourceCompanyId, cs.ServiceStartDate,  pr.PaycheckDate, pr.PayrollRunDate,
+			cl.SourceDescription,cl.SourceId, pl.IsEmployerTax, mmt.TaxPaymentStatus,  mmt.DueDate,
+			payc.PayPeriodBeginDate, payc.PayPeriodEndDate,
+			(case  when pl.LawId in ('1','61','62','63','64','65','143','196','214','215','216') then 'N' else 'Y' end)
+			order by pc.SourceCompanyId, pr.PayrollRunDate desc
+			]]>
+    </query>
+
+    <sql-query name="findCompaniesByNonAuthCriteria">
+        <return alias="company" class="com.intuit.sbd.payroll.psp.domain.Company"/>
+            Select c.*
+			from psp_company c
+			inner join psp_contact con on con.company_fk=c.company_seq
+			inner join psp_individual pi on pi.individual_seq=con.contact_seq
+			where c.source_system_cd = :sourceSystemCode and con.contact_role_cd= :role
+            and (CASE WHEN (:excludeDeletedCompany = 1) THEN c.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+			and lower(pi.first_name) = :firstName and lower(pi.last_name) = :lastName
+			and con.social_security_number_enc in :ssnList
+			and lower(pi.email) = :email
+            and regexp_replace(pi.phone, '[^0-9]', '') = :phone
+    </sql-query>
+
+    <sql-query name="findCompaniesByNonAuthCriteria_postgres">
+        <return alias="company" class="com.intuit.sbd.payroll.psp.domain.Company"/>
+        Select c.*
+        from psp_company c
+        inner join psp_contact con on con.company_fk=c.company_seq
+        inner join psp_individual pi on pi.individual_seq=con.contact_seq
+        where c.source_system_cd = :sourceSystemCode and con.contact_role_cd= :role
+        and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN c.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+        and lower(pi.first_name) = :firstName and lower(pi.last_name) = :lastName
+        and con.social_security_number_enc in :ssnList
+        and lower(pi.email) = :email
+        and regexp_replace(pi.phone, '[^0-9]', '','g') = :phone
+    </sql-query>
+
+
+</hibernate-mapping>
+

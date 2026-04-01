@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+  
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Common</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ofx</artifactId>
+    <name>ofx</name>
+  
+    <dependencies>        
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+    </dependencies>
+  
+    <build>
+        <finalName>psp-ofx-${psp.project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>${project.resources.dir}</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <targetPath>resources</targetPath>
+            </resource>
+        </resources> 
+        <plugins>               
+            <plugin>
+                <!-- jaxb plugin -->
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.13.1</version>
+                <executions>
+                    <execution>
+                        <id>response</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <removeOldOutput>true</removeOldOutput>
+                            <!-- the package for the generated java classes -->
+                            <generateDirectory>${project.target.generated.sources}/response</generateDirectory>   
+                            <generatePackage>com.intuit.sbd.payroll.psp.common.ofx.response</generatePackage>                         
+                            <schemaIncludes>
+                                <include>ofx_response.xsd</include>
+                            </schemaIncludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>request</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>     
+                            <removeOldOutput>true</removeOldOutput>                       
+                            <generateDirectory>${project.target.generated.sources}/request</generateDirectory>      
+                            <generatePackage>com.intuit.sbd.payroll.psp.common.ofx.request</generatePackage>                        
+                            <schemaIncludes>
+                                <include>ofx_request.xsd</include>
+                            </schemaIncludes>                                                                                                                  
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>  
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-jars</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${project.jars.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>${project.build.finalName}.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

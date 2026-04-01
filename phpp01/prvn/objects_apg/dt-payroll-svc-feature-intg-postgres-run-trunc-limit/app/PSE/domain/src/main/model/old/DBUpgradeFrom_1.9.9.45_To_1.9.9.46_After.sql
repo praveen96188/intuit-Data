@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\dev\PSP\rel-1.2\PSE\Domain\src\main\model\DBUpgradeFrom_1.9.9.45_To_1.9.9.46.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

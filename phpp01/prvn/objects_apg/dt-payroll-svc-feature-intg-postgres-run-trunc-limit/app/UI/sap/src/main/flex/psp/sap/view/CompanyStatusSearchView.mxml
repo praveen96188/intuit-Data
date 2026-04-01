@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 	xmlns="*" 
+			xmlns:mx="http://www.adobe.com/2006/mxml"  
+			xmlns:pspui="psp.sap.view.*"
+			xmlns:controls="psp.sap.view.controls.*"
+			backgroundColor="white"
+			width="100%"
+			height="100%"
+           	horizontalScrollPolicy="off"
+           	creationComplete="callLater(resizeDataGrid);"
+           	>
+
+	<mx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.model.CompanyServiceStatus;
+        import psp.sap.model.CompanyStatusSearchResult;
+			import mx.events.ListEvent;
+			import mx.events.DataGridEvent;
+			import psp.sap.formatters.SAPCurrencyFormatter;
+			import psp.sap.model.Company;
+			import psp.sap.model.ServiceSubStatus;
+			import psp.sap.viewmodel.CompanyStatusSearchViewModel;
+	
+			private var mViewModel:CompanyStatusSearchViewModel;
+			private var mTotalNumberOfOnHoldReasons:Number=0;									
+			
+			[Bindable]
+			public function get viewModel():CompanyStatusSearchViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:CompanyStatusSearchViewModel):void {
+				mViewModel = value;
+			}
+						
+			public function displayBalanceDue(item:Object, column:DataGridColumn):String {
+				return currencyFormatter.format(CompanyStatusSearchResult(item).balanceDue);
+			}			
+			
+            public function onCompanyClick(e:DataGridEvent):void {
+                var searchResult:CompanyStatusSearchResult = CompanyStatusSearchResult(e.itemRenderer.data);
+                searchResult.key.display();
+            }
+            
+			private var currencyFormatter:SAPCurrencyFormatter = new SAPCurrencyFormatter();
+			
+			public function resizeDataGrid():void
+			{
+				if (companySearchResultsGrid != null) {
+					companySearchResultsGrid.results.height = this.height - mainSearchBox.height - 145;
+				}
+
+			}
+			
+			public function pageDataGridLoadDataFunction():void {												
+				viewModel.searchWithSameCriteria();
+			}
+			
+			public function searchForCompanies():void {
+				viewModel.reset();				
+				viewModel.search(); 
+				mainSearchBox.collapse();
+			}
+			
+			public function sourceSystemLabel(item:Object, column:DataGridColumn):String {
+				return (item as CompanyStatusSearchResult).key.sourceSystemCd;
+			}
+
+			public function companyIdLabel(item:Object, column:DataGridColumn):String {
+				return (item as CompanyStatusSearchResult).key.companyId;
+			}
+			
+			public function companyStatuses(item:Object, column:DataGridColumn):String {
+                var companyServices:ArrayCollection = (item as CompanyStatusSearchResult).services;
+                var returnString:String = "";
+                for each(var service:CompanyServiceStatus in companyServices) {
+                    returnString += service.displayStatus.displaySubStatus;
+                }
+				return returnString;
+			}
+			       	        	           
+		]]>
+	</mx:Script>
+
+	<controls:DataLoadFade id="postLoadFadeIn" target="{mainSearchResults}" isLoading="{viewModel.isDataLoading}" />
+			        		       	
+	<!-- Top Box -->	
+	<controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="99%" id="mainSearchBox"
+		filterStringFunction="{viewModel.getFilterString}"
+		openOnStartup="true"
+		transitionEffectEnd="resizeDataGrid();"
+		paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"				
+		>
+		<mx:TabNavigator id="tabNavigator"  width="100%" height="100%" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+			<mx:HBox styleName="ddGrayMiniBoxNoBorder" verticalGap="0" label="On Hold Substatuses" tabEnabled="false">
+				<mx:Tile direction="vertical" paddingLeft="1" paddingBottom="1"  height="120">
+					<mx:Repeater id="subStatusRepeater" dataProvider="{viewModel.onHoldSubStatuses}">
+						<mx:CheckBox id="subStatusNameBox" label="{subStatusRepeater.currentItem.subStatusName}"
+							selected="{subStatusRepeater.currentItem.selected}" 
+							click="ServiceSubStatus((event.currentTarget as CheckBox).getRepeaterItem()).selected=(event.currentTarget as CheckBox).selected;"/>
+					</mx:Repeater>
+				</mx:Tile>
+				<mx:HBox horizontalGap="0" verticalAlign="bottom" backgroundColor="#f4f4f4" horizontalAlign="left" height="100%">							
+					<mx:Button id="onHoldSearchButton" click="searchForCompanies()" label="Search" enabled="{viewModel.canSearchOnHold}"/>
+				</mx:HBox>
+			</mx:HBox>
+			<mx:HBox styleName="ddGrayMiniBoxNoBorder" horizontalGap="0" verticalGap="0"  label="Pending Activation Substatuses" tabEnabled="false">
+				<mx:Tile direction="vertical" paddingLeft="1" paddingBottom="1" height="120">
+					<mx:Repeater id="pendingActivationsRepeater" dataProvider="{viewModel.pendingActivationSubStatuses}">
+						<mx:CheckBox id="pendingActivationStatusName"
+                            label="{pendingActivationsRepeater.currentItem.subStatusName}"
+							selected="{pendingActivationsRepeater.currentItem.selected}"
+							click="ServiceSubStatus((event.currentTarget as CheckBox).getRepeaterItem()).selected=(event.currentTarget as CheckBox).selected;"
+							/>
+					</mx:Repeater>
+				</mx:Tile>
+				<mx:HBox horizontalGap="0"  backgroundColor="#f4f4f4" horizontalAlign="left" width="100%" verticalAlign="bottom" height="100%">							
+					<mx:Button id="pendingSearchButton" click="searchForCompanies()" label="Search" enabled="{viewModel.canSearchPending}"/>
+				</mx:HBox>
+			</mx:HBox>
+		</mx:TabNavigator>
+	</controls:FilterBox>
+	
+	<mx:Spacer height="15"/>
+
+	
+	<mx:VBox verticalGap="0" width="99%" height="100%" id="mainSearchResults">																															
+	
+		<pspui:PagingDataGrid
+			id="companySearchResultsGrid" 
+			width="100%"
+			horizontalAlign="right" 							
+			dataProvider="{viewModel.currentSearchIndex == 0 ? viewModel.onHoldSearchResults : viewModel.pendingActivationSearchResults}" 											
+			height="100%"
+			isDataLoading="{viewModel.isDataLoading}"			
+			loadDataFunction="{pageDataGridLoadDataFunction}"
+			paddingBottom="0"
+            tabEnabled="false"
+            tabChildren="false">
+			<pspui:columns>
+				<controls:CompanyDataGridColumn
+						minWidth="200"
+						width="200"
+						headerText="Company Legal Name"
+						textAlign="center" 
+						headerWordWrap="true"
+						dataField="legalName"
+						companyClick="onCompanyClick(event);"/>
+									
+				<mx:DataGridColumn
+						minWidth="80"
+						resizable="false"
+						headerText="Source{String('\n')}Payroll{String('\n')}System"
+						textAlign="center"
+                        dataField="sourceSystemCd"
+						labelFunction="sourceSystemLabel"/>								
+				
+				<mx:DataGridColumn
+						minWidth="100"
+						resizable="false"
+						headerText="EIN"
+						textAlign="center" 
+						dataField="fein"
+						itemRenderer="mx.controls.Text"/>
+				
+				<mx:DataGridColumn
+						minWidth="100"
+						headerText="Company ID"
+						textAlign="center"
+						labelFunction="companyIdLabel"
+                        dataField="companyId"
+						itemRenderer="mx.controls.Text" />
+						
+				<mx:DataGridColumn 	
+						minWidth="180"
+						headerText="Statuses"
+						textAlign="center"
+						headerWordWrap="true"
+						wordWrap="true"
+						paddingLeft="5"
+						labelFunction="companyStatuses"
+						sortable="false"/>
+						
+				<mx:DataGridColumn 	
+						headerText="Number{String('\n')}of Strikes"
+						minWidth="60"
+						textAlign="center"
+						headerWordWrap="true"
+						paddingLeft="5"
+						dataField="numberOfStrikes"
+						sortable="false"/>		
+						
+				<mx:DataGridColumn 	
+						minWidth="80"
+						headerText="Company{String('\n')}Balance Due"
+						textAlign="center"
+						headerWordWrap="true"
+						paddingLeft="5"
+						labelFunction="displayBalanceDue"
+						sortable="false"/>					
+						
+			</pspui:columns>
+		
+		</pspui:PagingDataGrid>											
+	</mx:VBox>
+	
+	<mx:Binding source="tabNavigator.selectedIndex" destination="viewModel.currentSearchIndex"/>
+	        
+</mx:VBox>

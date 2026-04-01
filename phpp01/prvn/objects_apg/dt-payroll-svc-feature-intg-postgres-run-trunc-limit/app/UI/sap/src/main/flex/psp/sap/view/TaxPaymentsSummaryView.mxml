@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%"
+	creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.scrollClasses.ScrollBar;
+
+        import psp.sap.application.CompanyInspectorLinkHandler;
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.application.events.SAPEvent;
+        import psp.sap.model.PaymentTemplate;
+        import psp.sap.model.PaymentTemplateQuarterPayment;
+        import psp.sap.model.TaxPaymentYear;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+        import psp.sap.viewmodel.CompositePartViewModel;
+        import psp.sap.viewmodel.TaxPaymentsSummaryViewModel;
+
+        private var mViewModel:TaxPaymentsSummaryViewModel;
+        private var mTempViewModel:TaxPaymentsSummaryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        private var paymentContentScrollBarVisible:int = 102;
+
+        public var pageLabel:String = "Payments";
+
+        [Bindable]
+        public function get viewModel():TaxPaymentsSummaryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:TaxPaymentsSummaryViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function onTemplateExpanded(e:SAPEvent):void {
+            var taxPaymentYear:TaxPaymentYear = TaxPaymentSummaryYearExpanderView(e.currentTarget).taxPaymentYear;
+            var paymentTemplate:PaymentTemplate = e.data as PaymentTemplate;
+            if (paymentTemplate != null && paymentTemplate.paymentTemplateYearPayment == null) {
+                viewModel.getTemplateYearPayment(taxPaymentYear, e.data as PaymentTemplate);
+            }
+        }
+
+        private function onQuarterSelected(e:SAPEvent):void {
+            viewModel.selectedQuarter = e.data as PaymentTemplateQuarterPayment;
+            CompositePartViewModel(viewModel.host).activateSinglePart(CompanyInspectorPageEnum.TAX_PAYMENTS_DETAIL);
+        }
+
+        private function set updateVerticalScrollBar(value:ScrollBar):void {
+            if (value == null) {
+                paymentContentScrollBarVisible = 101;
+            }
+            else {
+                paymentContentScrollBarVisible = 101 + value.minWidth;
+            }
+        }
+        ]]>
+	</mx:Script>
+	
+	<controls:DataLoadFade id="postLoadFadeIn" target="{content}" isLoading="{viewModel.isDataLoading}" />     
+	<mx:VBox
+		id="content"
+		verticalGap="0"
+		visible="{!viewModel.isDataLoading}"
+		includeInLayout="{!viewModel.isDataLoading}">
+		<mx:Grid horizontalGap="0" verticalGap="0" width="100%" visible="{!viewModel.isDataLoading}">
+            <mx:GridRow width="100%">
+                <mx:GridItem horizontalAlign="center" minWidth="80" styleName="headerBorderRight">
+                    <mx:Text text="Yr"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="50" styleName="headerBorderRight">
+                    <mx:Text text="Pay{String('\n')}Type" textAlign="center"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="50" styleName="headerBorderRight">
+                    <mx:Text text="Qtr"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                    <mx:Text text="Pending{String('\n')}Payments" textAlign="center"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                    <mx:Text text="Payments{String('\n')}Made" textAlign="center"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="{paymentContentScrollBarVisible}" styleName="headerBorderRight">
+                    <mx:Text text="Total"/>
+                </mx:GridItem>                
+            </mx:GridRow>
+        </mx:Grid>
+        <pspui:BindableCanvas 
+        	id="paymentContent" 
+        	width="100%" 
+        	height="100%" 
+        	horizontalScrollPolicy="off"
+        	visible="{viewModel.taxPaymentYears != null ? viewModel.taxPaymentYears.length > 0 : false }"
+			includeInLayout="{viewModel.taxPaymentYears != null ? viewModel.taxPaymentYears.length > 0 : false}">
+	        <mx:VBox width="100%" verticalGap="0">        	                	       
+		        <mx:Repeater
+		        	id="taxYear"
+		        	dataProvider="{viewModel.taxPaymentYears}">        	
+		        	<pspui:TaxPaymentSummaryYearExpanderView
+		        		taxPaymentYear="{taxYear.currentItem}"
+		        		templateExpanded="{onTemplateExpanded(event)}"
+		        		quarterSelected="onQuarterSelected(event)"/>
+		        </mx:Repeater>
+	        </mx:VBox>
+        </pspui:BindableCanvas>
+        <mx:VBox
+        	width="100%"
+        	visible="{viewModel.taxPaymentYears != null ? viewModel.taxPaymentYears.length == 0 : false}"
+			includeInLayout="{viewModel.taxPaymentYears != null ? viewModel.taxPaymentYears.length == 0 : false}"
+			borderStyle="solid"
+			borderSides="right, bottom"
+			borderColor="#999999">
+			<mx:Label
+				id="noTaxPayments"
+				width="100%" text="There are no tax payments for this company" textAlign="center" fontWeight="bold"/>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:LinkButton label="View Overpayments/Refunds"
+                   click="new CompanyInspectorLinkHandler(CompanyInspectorViewModel(viewModel.inspector)).goToTaxOverpayments();"
+                   enabled="{SAP.canPerformOperation(OperationsEnum.VIEW_OVERPAYMENTS)}"
+                   styleName="inlineLinkButtonStyle"
+                   fontWeight="bold"
+                   paddingTop="10"/>
+	
+	<mx:Binding source="paymentContent.verticalScrollBar" destination="updateVerticalScrollBar"/>
+</mx:VBox>

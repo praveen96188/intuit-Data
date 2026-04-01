@@ -1,0 +1,351 @@
+00:26:44 SQL> set echo on feedback on timing on
+00:26:44 SQL> 
+00:26:44 SQL> --disable online index rebuild cleanup job
+00:26:44 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+23-MAY-22 04.00.41.382028 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.10
+00:26:44 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.02
+00:26:44 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+23-MAY-22 04.00.41.382028 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+00:26:44 SQL> 
+00:26:44 SQL> exec dbms_streams.set_tag (hextoraw(3));
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.04
+00:26:44 SQL> 
+00:26:44 SQL> alter index PSPADM.SYS_C0020607 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:06:10.14
+00:32:54 SQL> alter index PSPADM.PSP_BILLING_DETAIL_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:04:48.55
+00:37:43 SQL> alter index PSPADM.PSP_LIABILITY_CHECK_BILLIN_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:50.18
+00:40:33 SQL> alter index PSPADM.PSP_LIABILITY_CHECK_BILLIN_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:52.31
+00:43:25 SQL> alter index PSPADM.SYS_C0020683 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:50.74
+00:46:16 SQL> alter index PSPADM.PSP_ATFPAYMENTS_TO_PROCESS_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:41.77
+00:48:58 SQL> alter index PSPADM.PSP_EMPLOYEE_W2_TOTALS_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:51.35
+00:51:49 SQL> alter index PSPADM.PSP_LIABILITY_CHECK_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:05:33.19
+00:57:23 SQL> alter index PSPADM.PSP_ATFPAYMENTS_TO_PROCESS_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:47.42
+01:00:10 SQL> alter index PSPADM.SYS_C0020673 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:33.91
+01:02:44 SQL> alter index PSPADM.SYS_C0020696 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:33.78
+01:05:18 SQL> alter index PSPADM.PSP_EMPLOYEE_W2_TOTALS_FK4 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:47.08
+01:08:05 SQL> alter index PSPADM.PSP_EMPLOYEE_LAW_QTR_TOTAL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:06:41.35
+01:14:46 SQL> alter index PSPADM.SYS_C0020608 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:11.87
+01:16:58 SQL> alter index PSPADM.PSP_LIABILITY_ADJUSTMENT_FK4 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:49.06
+01:18:47 SQL> alter index PSPADM.PSP_LIABILITY_ADJUSTMENT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:48.59
+01:20:36 SQL> alter index PSPADM.SYS_C0020560 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:48.80
+01:22:24 SQL> alter index PSPADM.PSP_LIABILITY_ADJUSTMENT_FK7 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:50.80
+01:24:15 SQL> alter index PSPADM.PSP_COMPANY_DAILY_LIABILIT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:03:52.52
+01:28:08 SQL> alter index PSPADM.SYS_C0020707 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:01.84
+01:29:10 SQL> alter index PSPADM.PSP_QBDT_EMPLOYEE_INFO_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:57.44
+01:31:07 SQL> alter index PSPADM.PSP_QBDT_EMPLOYEE_INFO_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:50.53
+01:32:58 SQL> alter index PSPADM.SYS_C0020603 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:49.14
+01:34:47 SQL> alter index PSPADM.PSP_BILL_PAYMENT_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:25.10
+01:36:12 SQL> alter index PSPADM.PSP_BILL_PAYMENT_SPLIT_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:25.52
+01:37:37 SQL> alter index PSPADM.PSP_BILL_PAYMENT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:32.46
+01:39:10 SQL> alter index PSPADM.PSP_BILL_PAYMENT_SPLIT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:15.02
+01:40:25 SQL> alter index PSPADM.SYS_C0020570 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:14.41
+01:41:39 SQL> alter index PSPADM.SYS_C0020569 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:24.32
+01:43:03 SQL> alter index PSPADM.PSP_WC_PCHK_STATE_PCHK_FK rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:13.22
+01:44:17 SQL> alter index PSPADM.SYS_C0020609 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:56.87
+01:45:14 SQL> alter index PSPADM.PSP_DISBURSE_ADVICE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:13.36
+01:46:27 SQL> alter index PSPADM.SYS_C0020610 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:12.55
+01:47:39 SQL> alter index PSPADM.SYS_C0020705 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:09.33
+01:48:49 SQL> alter index PSPADM.SYS_C0020695 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:27.38
+01:49:16 SQL> alter index PSPADM.SYS_C0020611 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:46.13
+01:50:02 SQL> alter index PSPADM.PSP_EMPLOYEE_W2_TOTALS_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:01:55.99
+01:51:58 SQL> alter index PSPADM.SYS_C0020600 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:03:16.09
+01:55:14 SQL> alter index PSPADM.PSP_USAGE_PERIOD_U1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:47.43
+01:56:02 SQL> alter index PSPADM.PSP_QBDT_PAYROLL_ITEM_INFO_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:03:20.35
+01:59:22 SQL> alter index PSPADM.PSP_EMPLOYEE_W2_TOTALS_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:24.80
+02:01:47 SQL> alter index PSPADM.PSP_ATFPAYMENTS_TO_PROCESS_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:02:07.65
+02:03:55 SQL> alter index PSPADM.PSP_BILL_U1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:44.81
+02:04:39 SQL> alter index PSPADM.PSP_USAGEPERIOD_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:46.06
+02:05:26 SQL> alter index PSPADM.SYS_C0020672 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:40.13
+02:06:06 SQL> alter index PSPADM.PSP_BILL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:44.73
+02:06:50 SQL> alter index PSPADM.SYS_C0020687 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:39.74
+02:07:30 SQL> alter index PSPADM.SYS_C0020688 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:39.41
+02:08:10 SQL> alter index PSPADM.PSP_QBDT_PAYROLL_ITEM_INFO_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:03:18.74
+02:11:28 SQL> alter index PSPADM.PSP_LEDGER_OPERATION_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:03:09.13
+02:14:37 SQL> 
+02:14:37 SQL> 
+02:14:37 SQL> --enable online index rebuild cleanup job
+02:14:37 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+23-MAY-22 04.00.41.382028 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+02:14:37 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+02:14:37 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+23-MAY-22 06.00.41.893595 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+02:14:37 SQL> 
+02:14:37 SQL> spool off;

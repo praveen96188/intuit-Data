@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="500"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.model.RAFRejectionReasonEnum;
+        import psp.sap.viewmodel.RAFRejectionReasonPopUpViewModel;
+
+        private var mViewModel:RAFRejectionReasonPopUpViewModel;
+        private var mTempViewModel:RAFRejectionReasonPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():RAFRejectionReasonPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:RAFRejectionReasonPopUpViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+            if (mViewModel != null) {
+                mViewModel.rejectionReasonValidator.listener = rejectionReasonTA;
+                mViewModel.rejectionReasonSelectionValidator.listener = rejectionReasonSelection;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Enter RAF Rejection Reason" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:HBox>
+        <controls:RequiredLabel
+                id="rejectionReasonLabel"
+                text="Rejection Reason: "
+                dataField="{(viewModel.rejectionReasonString=='')?'rejectionReasonString':'rejectionReason'}"/>
+        <mx:VBox>
+            <controls:SAPComboBox id="rejectionReasonSelection" dataProvider="{RAFRejectionReasonEnum.valuesWithBlank}"
+                                  dataField="rejectionReasonString"/>
+            <mx:TextArea id="rejectionReasonTA" width="330" visible="{viewModel.rejectionReasonString=='Other'}"
+                         includeInLayout="{viewModel.rejectionReasonString=='Other'}"/>
+        </mx:VBox>
+    </mx:HBox>
+    <mx:HBox>
+        <mx:Button label="Cancel" click="viewModel.cancel()" paddingLeft="4"/>
+        <mx:Button label="Save" click="viewModel.save()" paddingLeft="4" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+    <mx:Binding source="rejectionReasonTA.text" destination="viewModel.rejectionReason"/>
+    <mx:Binding source="viewModel.rejectionReason" destination="rejectionReasonTA.text"/>
+</mx:VBox>

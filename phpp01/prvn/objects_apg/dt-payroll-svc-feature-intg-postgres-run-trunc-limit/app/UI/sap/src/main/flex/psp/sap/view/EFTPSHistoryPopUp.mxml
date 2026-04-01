@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         width="430"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.EftpsEnrollmentItem;
+        import psp.sap.viewmodel.EFTPSEnrollmentsHistoryViewModel;
+
+        private var mViewModel:EFTPSEnrollmentsHistoryViewModel;
+        private var mTempViewModel:EFTPSEnrollmentsHistoryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EFTPSEnrollmentsHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EFTPSEnrollmentsHistoryViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getFormattedDate(item:Object, column:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[column.dataField]);
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="EFTPS Enrollment History" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:Button label="Initiate Re-enrollment"
+               click="viewModel.initiateReEnrollment()"
+               paddingLeft="4"
+               enabled="{SAP.canPerformOperation(OperationsEnum.RESOLVE_EFTPS_REJECT)}"
+               visible="{viewModel.canSave}"
+               includeInLayout="{viewModel.canSave}"/>
+    <mx:Button label="Create Manual Enrollment"
+               toolTip="Create an enrollment to verify information but not impact payments"
+               click="viewModel.createManualEFTPSEnrollment()"
+               paddingLeft="4"
+               paddingTop="4"
+               enabled="{SAP.canPerformOperation(OperationsEnum.MANUAL_EFTPS_ENROLLMENTS)}"/>
+    <mx:HBox height="10"/>
+    <mx:VBox verticalGap="0">
+        <mx:Repeater id="enrollmentsRepeater" dataProvider="{viewModel.enrollments}">
+            <mx:HRule width="100%" height="13"/>
+            <mx:HBox visible="{EftpsEnrollmentItem(enrollmentsRepeater.currentItem).secondaryEnrollment}"
+                     includeInLayout="{EftpsEnrollmentItem(enrollmentsRepeater.currentItem).secondaryEnrollment}">
+                <mx:Label text="Manual Enrollment: " fontWeight="bold"/>
+                <mx:Label text="Yes"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="EIN: " fontWeight="bold"/>
+                <mx:Label text="{EftpsEnrollmentItem(enrollmentsRepeater.currentItem).ein}" paddingLeft="5"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Legal Name: " fontWeight="bold"></mx:Label>
+                <mx:Label text="{EftpsEnrollmentItem(enrollmentsRepeater.currentItem).legalName}"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Legal Zip: " fontWeight="bold"/>
+                <mx:Label text="{EftpsEnrollmentItem(enrollmentsRepeater.currentItem).legalZip}" paddingLeft="5"/>
+            </mx:HBox>
+            <controls:SAPDataGrid id="statusChangesGrid"
+                                  dataProvider="{EftpsEnrollmentItem(enrollmentsRepeater.currentItem).statusChanges}"
+                                  width="100%" maxRows="5"
+                                  selectable="false">
+                <controls:columns>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Change Date"
+                                       width="120"
+                                       dataField="changeDate"
+                                       itemRenderer="mx.controls.Text"
+                                       paddingLeft="5"
+                                       labelFunction="getFormattedDate"
+                                       draggable="false"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Status"
+                                       width="130"
+                                       dataField="status"
+                                       itemRenderer="mx.controls.Text"
+                                       paddingLeft="5"
+                                       draggable="false"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Modified By"
+                                       width="140"
+                                       dataField="modifiedBy"
+                                       itemRenderer="mx.controls.Text"
+                                       paddingLeft="5"
+                                       draggable="false"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+        </mx:Repeater>
+    </mx:VBox>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EFTPS_MANUAL_ENROLLMENT+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EFTPSManualEnrollmentView label="{CompanyInspectorPageEnum.TAX_EFTPS_MANUAL_ENROLLMENT}"/>
+    </controls:PopUpPart>
+</mx:VBox>

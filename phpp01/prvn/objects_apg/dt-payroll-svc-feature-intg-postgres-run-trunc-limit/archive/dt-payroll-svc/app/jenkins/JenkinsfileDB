@@ -1,0 +1,179 @@
+def dockerRegistryCredsId = 'ibp-artifactory-creds'
+def dockerRegistryName = 'docker.intuit.com'
+def dockerUrl = 'docker.intuit.com'
+def mavenImage = 'maven:3.5.3-jdk-8'
+def dockerImage = 'dev/build/ibp/jnlp-slave-with-docker:latest'
+def imagePath = 'ecosystem/payroll/qbdt-payroll-service/service/psp'
+def imageCorrettoPathMavenSql = 'payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc/pspmavensqlcocoon'
+def dockerFilePath = './docker'
+def failureEmail = 'SBSEG-PDQBDTPSPAWS@intuit.com'
+
+pipeline {
+    agent {
+        kubernetes {
+            label "psp-build-pod-${UUID.randomUUID().toString()}"
+            defaultContainer "mavencorrettopspsqlplus"
+            yaml """
+                apiVersion: v1
+                kind: Pod
+                metadata:
+                    name: psp-maven-sql
+                labels:
+                name: "psp-maven-sql"
+                spec:
+                    containers:
+                    - name: mavencorrettopspsqlplus
+                      image: ${dockerUrl}/${imageCorrettoPathMavenSql}:latest
+                      command:
+                      - cat
+                      tty: true
+                      volumeMounts:
+                      - name: docker-volume
+                        mountPath: /var/run/docker.sock
+                    - name: dbbuild
+                      image: ${dockerRegistryName}/${imagePath}:latest
+                    volumes:
+                    - name: docker-volume
+                      hostPath:
+                        path: /var/run/dind/docker.sock
+            """
+        }
+    }
+    environment {
+        NEXUS_RELEASE_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_SNAPSHOT_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_RELEASE_REPO_USERNAME = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_USR}"
+        NEXUS_RELEASE_REPO_PASSWORD = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_PSW}"
+        NEXUS_SNAPSHOT_REPO_USERNAME = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_USR}"
+        NEXUS_SNAPSHOT_REPO_PASSWORD = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_PSW}"
+    }
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master', description: 'Specify the branch name to be built.')
+        choice(name: 'SkipInstallDB', choices: ['NO', 'YES'], description: 'Choose Yes if you want to build with DB')
+        choice(name: 'CleanupCocoon', choices: ['NO', 'YES'], description: 'Choose Yes if you want to cleanup Cocoon, Please do only if you know what you are doing')
+    }
+
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '15', numToKeepStr: '15', artifactNumToKeepStr: '30'))
+        timestamps()
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                container('mavencorrettopspsqlplus') {
+                    script {
+
+                        pom = readMavenPom file: './app/pom.xml'
+                        version = pom.version
+                        dockerTagTimeStamp = "${dockerRegistryName}/${imageCorrettoPathMavenSql}:latest"
+                        sh """
+                          chmod 775 ./app/jenkins/cleanupcocoon.sh
+                          ./app/jenkins/cleanupcocoon.sh ${params.CleanupCocoon}
+                        """
+                        sh """
+                            chmod 775 ./app/jenkins/check_db_connection.sh
+                            ./app/jenkins/check_db_connection.sh
+                        """
+                        sh """
+                                chmod 775 ./app/jenkins/update-build-version.sh
+                                ./app/jenkins/update-build-version.sh ${version}
+                        """
+                            pom = readMavenPom file: './app/pom.xml'
+                            version = pom.version
+                            sh """
+                                chmod 775 ./app/jenkins/buildhelper.sh
+                                ./app/jenkins/buildhelper.sh ${version} ${params.SkipInstallDB}
+                             """
+                        docker.withRegistry("https://${dockerRegistryName}", "${dockerRegistryCredsId}") {
+                            echo 'Build and Push cocoon image to registry..'
+                            sh """
+                                chmod 775 ./app/jenkins/cocoondockerhelper.sh
+                                ./app/jenkins/cocoondockerhelper.sh ${dockerTagTimeStamp}
+                            """
+                        }
+                    }
+                }
+
+                nexusPolicyEvaluation iqApplication: '1730525749114265769', iqStage: 'build'
+            }
+         }
+    }
+
+    post {
+        success {
+            jacoco exclusionPattern: "**/*Test*", inclusionPattern: "**/*.class,**/*.java"
+
+            script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                            buildNumber: env.BUILD_NUMBER,
+                            buildStatus: 'Success',
+                            buildUrl: env.BUILD_URL,
+                            buildUser: env.BUILD_USER,
+                            buildUserId: env.BUILD_USER_ID,
+                            branch: params.BRANCH,
+                            fullBuild: params.SkipInstallDB,
+                            buildDuration: currentBuild.durationString,
+                            statusColor: '#009933'
+                    )
+                }
+            }
+        }
+        failure {
+            echo "Build Pipeline Failure"
+
+            mail to: "${failureEmail}",
+                    subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                    body: "Something is wrong in ${env.BUILD_URL}"
+
+            script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                            buildNumber: env.BUILD_NUMBER,
+                            buildStatus: 'Failed',
+                            buildUrl: env.BUILD_URL,
+                            buildUser: env.BUILD_USER,
+                            buildUserId: env.BUILD_USER_ID,
+                            branch: params.BRANCH,
+                            fullBuild: params.SkipInstallDB,
+                            buildDuration: currentBuild.durationString,
+                            statusColor: '#b50911'
+                    )
+                }
+            }
+        }
+    }
+}
+
+def sendSlackNotification(Map parameters) {
+    def attachments = [
+            [
+                    "fallback": "Failed - Job '${parameters.jobName} [${parameters.buildNumber}]' (${parameters.buildUrl})",
+                    "author_name": "Built by ${parameters.buildUser} [${parameters.buildUserId}]",
+                    "author_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+                    "title": "${parameters.buildStatus} - ${parameters.jobName} #${parameters.buildNumber}",
+                    "title_link": "${parameters.buildUrl}",
+                    "fields": [
+                            [
+                                    "title": "Branch",
+                                    "value": "${parameters.branch}",
+                                    "short": true
+                            ],
+                            [
+                                    "title": "Build Duration",
+                                    "value": "${parameters.buildDuration}",
+                                    "short": true
+                            ],
+                            [
+                                    "title": "Full Build?",
+                                    "value": "${parameters.fullBuild}",
+                                    "short": true
+                            ]
+                    ],
+                    "color": "${parameters.statusColor}"
+            ]
+    ]
+    slackSend (attachments: attachments)
+}

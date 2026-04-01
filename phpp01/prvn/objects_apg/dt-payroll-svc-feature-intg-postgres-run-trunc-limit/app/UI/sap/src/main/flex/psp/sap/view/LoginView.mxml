@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+		xmlns:pspui="psp.sap.view.*"
+		width="100%"
+		height="100%"
+		styleName="loginPopupWindow"
+		creationComplete="onCreationComplete()"
+		show="username.setFocus()">
+
+
+	<mx:Script>
+		<![CDATA[
+		import mx.controls.Alert;
+		import mx.core.Application;
+		import mx.managers.PopUpManager;
+
+		import psp.sap.viewmodel.LoginViewModel;
+		import psp.sap.viewmodel.events.ViewModelEvent;
+		import psp.sap.viewmodel.events.ViewModelFaultEvent;
+		import psp.app.util.CommonUtil;
+
+		[Bindable]
+		private var loginViewModel:LoginViewModel = new LoginViewModel();
+
+		[Bindable]
+		private var exitDetails:String = null;
+
+		private function onCreationComplete():void {
+			loginViewModel.addEventListener(ViewModelEvent.LOGIN_SUCCEEDED, onLoginSucceeded, false, 0, true);
+			loginViewModel.addEventListener(ViewModelEvent.LOGIN_FAILED, onLoginFailed, false, 0, true);
+			loginViewModel.addEventListener(ViewModelFaultEvent.LOGIN_FAULTED, onLoginFaulted, false, 0, true);
+			loginViewModel.addEventListener(ViewModelEvent.CLOSE, onClose, false, 0, true);
+			loginViewModel.addEventListener(ViewModelEvent.ALERT_MSG, complete, false, 0, true);
+			//Focus
+			ExternalInterface.call("eval", "document.getElementById('SAPApp').focus();");
+			username.setFocus();
+
+			//check params to see if autologin should be attempted
+			var autoLogin:String = Application.application.getQueryStringParameters().autologin;
+
+			if (autoLogin != null) {
+				username.text = "AutoLogin";
+				password.text = autoLogin;
+				loginViewModel.login();
+			}
+
+			var url:String = ExternalInterface.call("eval", "window.location.href");
+			if (url.indexOf("#exitDetail=") > 0) {
+				exitDetails = unescape(url.substr(url.indexOf("#") + 12));
+				url = url.substr(0, url.indexOf("#") + 1);
+				ExternalInterface.call("eval", "window.location.replace('" + url + "')");
+			}
+
+		}
+
+		//Executed if login is successful
+		private function onLoginSucceeded(e:ViewModelEvent):void {
+			loginViewModel.close();
+		}
+
+		//Executed if login is unsuccessful
+		private function onLoginFailed(e:ViewModelEvent):void {
+			displayError("Login Failed.  Please verify that you have entered your username and password correctly.");
+		}
+
+		private function onLoginFaulted(e:ViewModelFaultEvent):void {
+
+			//Special fault cases
+			if (e.message != null) {
+				if (e.message.indexOf("LDAP user data not found in the database") > -1) {
+					displayError("You are not authorized to use the Intuit Payroll Services Platform Application.");
+				} else if (e.message.indexOf("Error communicating with LDAP server") > -1) {
+					displayError("Unable to connect to the Intuit LDAP Authentication Server.");
+				} else if (e.message.indexOf("LDAP") > -1) {
+					displayError("Unknown Intuit LDAP Authentication Server Exception.\n\n" + e.message);
+				} else if (e.message.indexOf("locked") > -1) {
+					displayError("Your account has been locked out of PSP, please try again in " +
+							e.message.match(/\d/g).join("") + // strip all non-digits to get the number
+							" minutes or call the help desk.");
+				} else {
+					displayError("System Error.\n\n" + e.message);
+				}
+			} else {
+				displayError("System Error.");
+			}
+		}
+
+		//If viewModel is closed (currently, if window is closed)
+		private function onClose(e:ViewModelEvent):void {
+			PopUpManager.removePopUp(this);
+		}
+
+		//When forgot password is clicked
+		private function onForgotPassword(action:ActionLinkEvent):void {
+			if(CommonUtil.isDTApp()) {
+				CommonUtil.openForgotPasswordURL("https://passwordreset.intuit.net");
+			} else {
+				ExternalInterface.call("window.open", "https://passwordreset.intuit.net", "_blank");
+			}
+		}
+
+		//To pop up error message
+		private function displayError(error:String):void {
+			Alert.show(error, "Login Error");
+		}
+
+
+		]]>
+	</mx:Script>
+
+	<mx:Script>
+
+    <![CDATA[
+
+		private function complete():void
+
+		{
+
+			move_up.yFrom = cs.height - 6;
+
+			move_up.yTo = 0 - tt.height + 6;
+
+			move_up.repeatCount = 0; //loop
+
+			move_up.repeatDelay = 0; //loop time
+
+			move_up.duration = 6000; //the time of scroll once
+
+			move_up.play();
+
+		}
+
+
+
+		private function move_pause():void
+
+		{
+
+			move_up.pause();  //pause
+
+		}
+
+
+
+		private function move_resume():void
+
+		{
+
+			move_up.resume(); //start from the pause position
+
+		}
+
+		]]>
+
+</mx:Script>
+
+	<mx:Move id="move_up" target="{tt}" />
+
+	<mx:Panel width="375" height="110" layout="absolute" title="Anouncement"
+
+			  fontSize="13" horizontalCenter="0" verticalCenter="0">
+
+		<mx:Canvas id="cs" width="100%" height="100%" left="0" top="0"
+
+				   verticalScrollPolicy="off">
+
+			<mx:Text id="tt" width="94%" horizontalCenter="0"
+
+					 text="This URL will be disabled soon.Please start using new URL: https://sap.sso.intuit.com" verticalCenter="0">
+
+			</mx:Text>
+
+		</mx:Canvas>
+
+	</mx:Panel>
+	<!-- VBox body -->
+
+	<mx:VBox width="100%" horizontalAlign="center">
+
+
+		<!-- Main login box with black border -->
+		<mx:VBox width="375" styleName="loginBox">
+			<mx:Label text="Log In" styleName="heading"/>
+
+			<mx:Text 	text="{exitDetails}" width="314" fontWeight="bold" color="#EE0B0B" id="sessionExitLabel"
+						includeInLayout="{exitDetails != null}"
+						visible="{exitDetails != null}"/>
+
+			<mx:Label text="Enter your Directory User ID and Password"/>
+
+			<!-- Actual Login Form -->
+			<mx:Form >
+				<mx:FormItem label="User ID" >
+					<mx:TextInput id="username" text="{loginViewModel.userName}"  maxChars="50"/>
+				</mx:FormItem>
+				<mx:FormItem label="Password" defaultButton="{loginButton}">
+					<mx:TextInput id="password" displayAsPassword="true"/>
+				</mx:FormItem>
+			</mx:Form>
+
+			<mx:VBox width="100%" horizontalAlign="center">
+				<!-- Login button -->
+				<mx:Button label="Login" id="loginButton" enabled="{loginViewModel.canLogin}" click="loginViewModel.login()"/>
+
+				<mx:Spacer height="3"/>
+
+				<!-- Forgot password link -->
+				<pspui:ActionLink label="Forgot password?" actionClick="onForgotPassword"/>
+			</mx:VBox>
+		</mx:VBox>
+
+	</mx:VBox>
+
+	<mx:Binding source="username.text" destination="loginViewModel.userName" />
+	<mx:Binding source="password.text" destination="loginViewModel.password" />
+
+</mx:TitleWindow>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created By: Rajkumar Ramakrishnan  -->
+<!-- Date Created: 03-23-2010     -->
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:usageabcs="http://www.intuit.com/iep/IntuitServiceUsage/V1"
+             xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:usageabm="http://www.intuit.com/iep/ServiceUsage/IntuitServiceUsageABO/V1"
+             name="IntuitServiceUsage"
+             targetNamespace="http://www.intuit.com/iep/IntuitServiceUsage/V1">
+    <documentation>
+        <svcdoc:Service>
+            <svcdoc:Description>This service contains operations that would be used by
+                the participating application to interact with the BRM
+                systems</svcdoc:Description>
+            <svcdoc:ServiceType>CommonABCSImplementation</svcdoc:ServiceType>
+            <svcdoc:DisplayName>CommonRequestorABCS</svcdoc:DisplayName>
+            <svcdoc:LifecycleStatus>Active</svcdoc:LifecycleStatus>
+            <svcdoc:Version>1.0</svcdoc:Version>
+            <svcdoc:ProductFamily>CRM</svcdoc:ProductFamily>
+            <svcdoc:ProductPillar>CRM</svcdoc:ProductPillar>
+            <svcdoc:ProductCode>CMU</svcdoc:ProductCode>
+            <svcdoc:ImplementationTechnology>ESB</svcdoc:ImplementationTechnology>
+        </svcdoc:Service>
+    </documentation>
+    <types>
+        <xsd:schema targetNamespace="http://www.intuit.com/iep/IntuitServiceUsage/V1"
+                    elementFormDefault="qualified">
+            <xsd:import namespace="http://www.intuit.com/iep/ServiceUsage/IntuitServiceUsageABO/V1"
+                        schemaLocation="IntuitServiceUsageABO.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="QueryUsageBalReqMsg">
+        <documentation>
+            <svcdoc:Message>
+                <svcdoc:Description>This message will contain the Create Service Usage
+                    request attributes</svcdoc:Description>
+            </svcdoc:Message>
+        </documentation>
+        <part name="QueryUsageBalReqMsg" element="usageabm:QueryUsageBalance"/>
+    </message>
+    <message name="QueryUsageBalResMsg">
+        <documentation>
+            <svcdoc:Message>
+                <svcdoc:Description>This message will contain the Create Service Usage
+                    Response attributes</svcdoc:Description>
+            </svcdoc:Message>
+        </documentation>
+        <part name="QueryUsageBalResMsg"
+              element="usageabm:QueryUsageBalanceResponse"/>
+    </message>
+    <message name="CreateServiceUsageReqMsg">
+        <documentation>
+            <svcdoc:Message>
+                <svcdoc:Description>This message will contain the Create Service Usage
+                    request attributes</svcdoc:Description>
+            </svcdoc:Message>
+        </documentation>
+        <part name="CreateServiceUsageRequest"
+              element="usageabm:CreateServiceUsage"/>
+    </message>
+    <message name="CreateServiceUsageResMsg">
+        <documentation>
+            <svcdoc:Message>
+                <svcdoc:Description>This message will contain the Create Service Usage
+                    Response attributes</svcdoc:Description>
+            </svcdoc:Message>
+        </documentation>
+        <part name="CreateServiceUsageResponse"
+              element="usageabm:CreateServiceUsageResponse"/>
+    </message>
+    <message name="IntuitFaultMsg">
+        <documentation>
+            <svcdoc:Message>
+                <svcdoc:Description>This message is used for propagating Error Context
+                    and Error Message</svcdoc:Description>
+            </svcdoc:Message>
+        </documentation>
+        <part name="Fault" element="usageabm:Error"/>
+    </message>
+    <portType name="IntuitServiceUsage">
+        <documentation>
+            <svcdoc:Interface>
+                <svcdoc:Description>This ABCS Interface contains operations that route
+                    the input messages to the appropriate ABCS
+                    Implementation services</svcdoc:Description>
+                <svcdoc:DisplayName>Create Service Usage ABCS Requestor Interface</svcdoc:DisplayName>
+                <svcdoc:LifecycleStatus>active</svcdoc:LifecycleStatus>
+            </svcdoc:Interface>
+        </documentation>
+        <operation name="CreateUsage">
+            <documentation>
+                <svcdoc:Operation>
+                    <svcdoc:Description>This operation routes to the
+                        QueryAccountBalanceSummary operation of the
+                        QueryBillingTransactionsIntuitReqABCS service</svcdoc:Description>
+                    <svcdoc:MEP>SYNC_REQ_RESPONSE</svcdoc:MEP>
+                    <svcdoc:DisplayName>Create and Record Usage</svcdoc:DisplayName>
+                    <svcdoc:Status>Active</svcdoc:Status>
+                    <svcdoc:Scope>Public</svcdoc:Scope>
+                </svcdoc:Operation>
+            </documentation>
+            <input message="usageabcs:CreateServiceUsageReqMsg"/>
+            <output message="usageabcs:CreateServiceUsageResMsg"/>
+            <fault name="fault" message="usageabcs:IntuitFaultMsg"/>
+        </operation>
+        <operation name="QueryUsageBalance">
+            <documentation>
+                <svcdoc:Operation>
+                    <svcdoc:Description>This operation routes to the
+                        QueryAccountBalanceSummary operation of the
+                        QueryBillingTransactionsIntuitReqABCS service</svcdoc:Description>
+                    <svcdoc:MEP>SYNC_REQ_RESPONSE</svcdoc:MEP>
+                    <svcdoc:DisplayName>Create and Record Usage</svcdoc:DisplayName>
+                    <svcdoc:Status>Active</svcdoc:Status>
+                    <svcdoc:Scope>Public</svcdoc:Scope>
+                </svcdoc:Operation>
+            </documentation>
+            <input message="usageabcs:QueryUsageBalReqMsg"/>
+            <output message="usageabcs:QueryUsageBalResMsg"/>
+            <fault name="fault" message="usageabcs:IntuitFaultMsg"/>
+        </operation>
+    </portType>
+</definitions>

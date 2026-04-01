@@ -1,0 +1,201 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Wed Feb 2 23:35:41 2022
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+SQL> Connected.
+SQL> SQL> SQL> 23:35:42 SQL> 23:35:42 SQL> 23:35:42 SQL> 
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+PSPUWP01
+ip-172-19-0-50
+
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+23:35:42 SQL> 23:35:42 SQL> 23:35:42 SQL> set echo on timing on
+23:35:42 SQL> set serveroutput on
+23:35:42 SQL> spool upd_comp_data_03Feb.log
+23:35:42 SQL> 
+23:35:42 SQL> DECLARE
+23:35:42   2  	  RECORD_COUNT	    INTEGER := 0;
+23:35:42   3  	  MAX_RECORDS	    INTEGER := 2000000;
+23:35:42   4  	  PROCESSED_RECORDS INTEGER := 0;
+23:35:42   5  	  MAX_FETCH_RECORDS INTEGER := 229500;
+23:35:42   6  BEGIN
+23:35:42   7  	  SELECT count(*) INTO RECORD_COUNT FROM PSPADM.PSP_COMPANY WHERE regexp_like(PUBLISH_STATUS,'......2.........');
+23:35:42   8  
+23:35:42   9  	  DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+23:35:42  10  
+23:35:42  11  	  WHILE RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS
+23:35:42  12  	      LOOP
+23:35:42  13  		  UPDATE PSPADM.PSP_COMPANY
+23:35:42  14  		  SET PUBLISH_STATUS = (substr(PUBLISH_STATUS,1,6) || '0' || substr(PUBLISH_STATUS, 8))
+23:35:42  15  		  WHERE company_seq IN (SELECT COMPANY_SEQ FROM
+23:35:42  16  						  (SELECT company_seq
+23:35:42  17  						   FROM PSPADM.PSP_COMPANY
+23:35:42  18  						   WHERE regexp_like(PUBLISH_STATUS,'......2.........'))
+23:35:42  19  					WHERE ROWNUM <= MAX_FETCH_RECORDS);
+23:35:42  20  		  COMMIT;
+23:35:42  21  		  PROCESSED_RECORDS := PROCESSED_RECORDS + MAX_FETCH_RECORDS;
+23:35:42  22  		  DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+23:35:42  23  	      END LOOP;
+23:35:42  24  EXCEPTION
+23:35:42  25  	  WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error updating the record');
+23:35:42  26  END;
+23:35:42  27  /
+Found 229463 Records
+Processed 229500 records successfully
+Processed 459000 records successfully
+Processed 688500 records successfully
+Processed 918000 records successfully
+Processed 1147500 records successfully
+Processed 1377000 records successfully
+Processed 1606500 records successfully
+Processed 1836000 records successfully
+Processed 2065500 records successfully
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:06:19.64
+23:42:01 SQL> 
+23:42:01 SQL> spool off
+23:42:01 SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+
+SQL*Plus: Release 12.1.0.2.0 Production on Wed Feb 2 23:49:54 2022
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+SQL> Connected.
+SQL> SQL> SQL> 23:49:54 SQL> 23:49:54 SQL> 23:49:54 SQL> 
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+PSPUWP01
+ip-172-19-0-50
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:49:54 SQL> 23:49:54 SQL> 23:49:54 SQL> set echo on timing on
+23:49:54 SQL> set serveroutput on
+23:49:54 SQL> spool upd_comp_data_03Feb_1.log
+23:49:54 SQL> 
+23:49:54 SQL> DECLARE
+23:49:54   2  	  RECORD_COUNT	    INTEGER := 0;
+23:49:54   3  	  MAX_RECORDS	    INTEGER := 285200;
+23:49:54   4  	  PROCESSED_RECORDS INTEGER := 0;
+23:49:54   5  	  MAX_FETCH_RECORDS INTEGER := 285100;
+23:49:54   6  BEGIN
+23:49:54   7  	  SELECT count(*) INTO RECORD_COUNT FROM PSPADM.PSP_COMPANY pc
+23:49:54   8  	  where pc.COMPANY_SEQ in (select company_seq
+23:49:54   9  				   from PSP_COMPANY pc
+23:49:54  10  					    join MCHOUBEY.tmp_custid on pc.COMPANY_SEQ = tmp_custid.entity_Id
+23:49:54  11  				   where not regexp_like(pc.PUBLISH_STATUS, '...3............'));
+23:49:54  12  
+23:49:54  13  	  DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+23:49:54  14  
+23:49:54  15  	  WHILE RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS
+23:49:54  16  	      LOOP
+23:49:54  17  		  UPDATE PSPADM.PSP_COMPANY
+23:49:54  18  		  SET PUBLISH_STATUS = (substr(PUBLISH_STATUS,1,3) || '3' || substr(PUBLISH_STATUS, 5))
+23:49:54  19  		  WHERE company_seq IN (select COMPANY_SEQ
+23:49:54  20  					from (select company_seq
+23:49:54  21  					      from PSP_COMPANY pc
+23:49:54  22  						       join MCHOUBEY.tmp_custid on pc.COMPANY_SEQ = tmp_custid.entity_Id
+23:49:54  23  					      where not regexp_like(pc.PUBLISH_STATUS, '...3............'))
+23:49:54  24  					where ROWNUM < MAX_FETCH_RECORDS);
+23:49:54  25  		  COMMIT;
+23:49:54  26  		  PROCESSED_RECORDS := PROCESSED_RECORDS + MAX_FETCH_RECORDS;
+23:49:54  27  		  DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+23:49:54  28  	      END LOOP;
+23:49:54  29  EXCEPTION
+23:49:54  30  	  WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error updating the record');
+23:49:54  31  END;
+23:49:54  32  /
+			     from PSP_COMPANY pc
+                                  *
+ERROR at line 9:
+ORA-06550: line 9, column 35:
+PL/SQL: ORA-00942: table or view does not exist
+ORA-06550: line 7, column 5:
+PL/SQL: SQL Statement ignored
+ORA-06550: line 21, column 46:
+PL/SQL: ORA-00942: table or view does not exist
+ORA-06550: line 17, column 13:
+PL/SQL: SQL Statement ignored
+
+
+Elapsed: 00:00:00.01
+23:49:54 SQL> 
+23:49:54 SQL> spool off
+23:49:54 SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+
+SQL*Plus: Release 12.1.0.2.0 Production on Wed Feb 2 23:52:53 2022
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+SQL> Connected.
+SQL> SQL> SQL> 23:52:53 SQL> 23:52:53 SQL> 23:52:53 SQL> 
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+PSPUWP01
+ip-172-19-0-50
+
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+23:52:53 SQL> 23:52:53 SQL> 23:52:53 SQL> set echo on timing on
+23:52:53 SQL> set serveroutput on
+23:52:53 SQL> spool upd_comp_data_03Feb_1.log
+23:52:53 SQL> 
+23:52:53 SQL> DECLARE
+23:52:53   2  	  RECORD_COUNT	    INTEGER := 0;
+23:52:53   3  	  MAX_RECORDS	    INTEGER := 285200;
+23:52:53   4  	  PROCESSED_RECORDS INTEGER := 0;
+23:52:53   5  	  MAX_FETCH_RECORDS INTEGER := 285100;
+23:52:53   6  BEGIN
+23:52:53   7  	  SELECT count(*) INTO RECORD_COUNT FROM PSPADM.PSP_COMPANY pc
+23:52:53   8  	  where pc.COMPANY_SEQ in (select company_seq
+23:52:53   9  				   from PSPADM.PSP_COMPANY pc
+23:52:53  10  					    join MCHOUBEY.tmp_custid on pc.COMPANY_SEQ = tmp_custid.entity_Id
+23:52:53  11  				   where not regexp_like(pc.PUBLISH_STATUS, '...3............'));
+23:52:53  12  
+23:52:53  13  	  DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+23:52:53  14  
+23:52:53  15  	  WHILE RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS
+23:52:53  16  	      LOOP
+23:52:53  17  		  UPDATE PSPADM.PSP_COMPANY
+23:52:53  18  		  SET PUBLISH_STATUS = (substr(PUBLISH_STATUS,1,3) || '3' || substr(PUBLISH_STATUS, 5))
+23:52:53  19  		  WHERE company_seq IN (select COMPANY_SEQ
+23:52:53  20  					from (select company_seq
+23:52:53  21  					      from PSPADM.PSP_COMPANY pc
+23:52:53  22  						       join MCHOUBEY.tmp_custid on pc.COMPANY_SEQ = tmp_custid.entity_Id
+23:52:53  23  					      where not regexp_like(pc.PUBLISH_STATUS, '...3............'))
+23:52:53  24  					where ROWNUM < MAX_FETCH_RECORDS);
+23:52:53  25  		  COMMIT;
+23:52:53  26  		  PROCESSED_RECORDS := PROCESSED_RECORDS + MAX_FETCH_RECORDS;
+23:52:53  27  		  DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+23:52:53  28  	      END LOOP;
+23:52:53  29  EXCEPTION
+23:52:53  30  	  WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error updating the record');
+23:52:53  31  END;
+23:52:53  32  /
+Found 285063 Records
+Processed 285100 records successfully
+Processed 570200 records successfully
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:01:46.99
+23:54:40 SQL> 
+23:54:40 SQL> spool off
+23:54:40 SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production

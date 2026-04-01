@@ -1,0 +1,1 @@
+-- You must have access to the DB Admin module to access the sync script.PROMPT finishedDBUpgradeFrom_1.9.9.44_To_1.9.9.45.sql

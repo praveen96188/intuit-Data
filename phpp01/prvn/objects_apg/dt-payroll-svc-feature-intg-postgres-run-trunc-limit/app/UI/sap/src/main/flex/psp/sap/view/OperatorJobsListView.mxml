@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.model.LedgerOperationJob;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.OperatorJobsListViewModel;
+        import psp.app.util.CommonUtil;
+
+        private var mViewModel:OperatorJobsListViewModel;
+        private var mTempViewModel:OperatorJobsListViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():OperatorJobsListViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:OperatorJobsListViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+        }
+
+        public function viewFile(job:LedgerOperationJob, viewProcessed:Boolean):void {
+            var urlRequest:URLRequest = new URLRequest("DownloadLedgerOperationsJob?jobId=" + job.id + "&processedFile=" + (viewProcessed ? "true" : "false") + "&token=" + SAP.instance.session.user.authorizationToken);
+            if(CommonUtil.isDTApp()) {
+                CommonUtil.downloadFromSAPURL(urlRequest.url, "LedgerOperationJob.csv");
+            } else {
+                navigateToURL(urlRequest, '_blank');
+            }
+        }
+        ]]>
+    </mx:Script>
+
+    <controls:SAPDataGrid
+            dataProvider="{viewModel.currentJobs}"
+            draggableColumns="false"
+            selectable="false"
+            maxRows="8"
+            variableRowHeight="true">
+        <controls:columns>
+            <controls:SAPDataGridColumn headerText="Upload Time" dataField="uploadTime"
+                                        labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"/>
+            <controls:SAPDataGridColumn headerText="Status" dataField="status" width="190">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:HBox verticalGap="0">
+                            <mx:Label
+                                    text="{LedgerOperationJob(data).status + (LedgerOperationJob(data).isRunning ? LedgerOperationJob(data).percentDoneString : '')}"/>
+                            <mx:Button visible="{LedgerOperationJob(data).canQueue}"
+                                       includeInLayout="{LedgerOperationJob(data).canQueue}"
+                                       label="Run"
+                                       click="outerDocument.viewModel.queue(LedgerOperationJob(data))"/>
+                            <mx:Button visible="{LedgerOperationJob(data).canQueue}"
+                                       includeInLayout="{LedgerOperationJob(data).canQueue}"
+                                       label="Delete"
+                                       click="outerDocument.viewModel.deleteJob(LedgerOperationJob(data))"
+                                    />
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.LedgerOperationJob;
+                                ]]></mx:Script>
+                        </mx:HBox>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+            <controls:SAPDataGridColumn headerText="Start Time" dataField="startTime"
+                                        labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"/>
+            <controls:SAPDataGridColumn headerText="Finish Time" dataField="finishTime"
+                                        labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"
+                                        visible="{viewModel.isCompleted}"/>
+            <controls:SAPDataGridColumn headerText="Type" dataField="type" width="210"/>
+            <controls:SAPDataGridColumn headerText="Description" dataField="description" width="210"/>
+            <controls:SAPDataGridColumn headerText="Total Records" dataField="totalRecords"/>
+            <controls:SAPDataGridColumn headerText="Original">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:Box>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.LedgerOperationJob;
+                                ]]></mx:Script>
+                            <mx:LinkButton label="Download" styleName="inlineLinkButtonStyleBoldNoUnderline"
+                                           click="outerDocument.viewFile(LedgerOperationJob(data), false)"/>
+                        </mx:Box>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+            <controls:SAPDataGridColumn headerText="Processed" visible="{viewModel.isCompleted}">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:Box>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.LedgerOperationJob;
+                                ]]></mx:Script>
+                            <mx:LinkButton label="Download" styleName="inlineLinkButtonStyleBoldNoUnderline"
+                                           click="outerDocument.viewFile(LedgerOperationJob(data), true)"
+                                           visible="{LedgerOperationJob(data).isProcessed}"/>
+                        </mx:Box>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+
+        </controls:columns>
+    </controls:SAPDataGrid>
+
+
+</mx:VBox>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="psp.sap.view.controls.*" 
+	xmlns:pspui="psp.sap.view.*" width="100%"
+	creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import psp.sap.viewmodel.events.ViewModelEvent;
+			import testTools.model.OffloadGroup;
+			import testTools.model.OffloadBatch;
+			import mx.controls.Button;
+			import psp.sap.viewmodel.TTOffloadGroupViewModel;
+			import psp.sap.application.SAP;
+			
+			private var mCreationComplete:Boolean = false;
+			private var mViewModel:TTOffloadGroupViewModel = null;
+			private var mTempViewModel:TTOffloadGroupViewModel = null;
+			
+			[Bindable]
+			public function get viewModel():TTOffloadGroupViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:TTOffloadGroupViewModel):void {
+				if (mCreationComplete) {
+					mViewModel = value;
+					
+					mViewModel.nameValidator.listener = this.groupNameText;
+					mViewModel.descriptionValidator.listener = this.groupDescriptionText;
+					mViewModel.timeValidator.listener = this.cutoffTimeText;
+					mViewModel.codeValidator.listener = this.groupCodeText;
+					
+					//mViewModel.addEventListener(ValidationResultEvent.INVALID, onInvalidValidation, false, 0, true);
+                    //mViewModel.addEventListener(ValidationResultEvent.VALID, onInvalidValidation, false, 0, true);
+					
+					mViewModel.addEventListener(ViewModelEvent.SAVE_SUCCEEDED, onSaveSucceeded);
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+	
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				if (mTempViewModel != null)
+					viewModel = mTempViewModel;
+			}
+							
+			public function clickGroup(event:MouseEvent, data:Object):void {
+				var group:OffloadGroup = data as OffloadGroup;
+				
+				viewModel.loadGroupForEdit(group);	
+						
+				this.editButton.label = "Save Group";
+				this.modifyBoxTitleLabel.text = "Modify Offload Group " + group.groupCode;
+						
+				viewModel.modifyMode = true;
+				viewModel.editMode = true;			
+			}
+			
+			public function addModeOn():void {
+				viewModel.groupCode = "";
+				viewModel.groupDescription = "";
+				viewModel.groupName = "";
+				viewModel.cutoffTime = "";
+				
+				this.editButton.label = "Add New Group";
+				this.modifyBoxTitleLabel.text = "Add New Offload Group";
+				
+				viewModel.modifyMode = false;
+				viewModel.editMode = true;	
+			}
+			
+			public function onSaveSucceeded(event:ViewModelEvent):void {
+				viewModel.modifyMode = true;
+				viewModel.editMode = false;			
+			}
+			
+			public function cancelEdit():void {
+				viewModel.modifyMode = true;
+				viewModel.editMode = false;
+			}
+			
+			private var currentOffloadGrp:OffloadGroup = null;
+			
+			public function executeOffloadOnGroup(event:MouseEvent, data:Object):void {
+				currentOffloadGrp = data as OffloadGroup;
+				var msgString:String = "Are you sure you execute the offload batch job for offload group '" + currentOffloadGrp.groupCode + "'?";
+				
+        		Alert.show(	msgString, 
+        					"Save Confirmation", 
+        					Alert.OK | Alert.CANCEL, 
+        					this, 
+        					confirmVerifyHandler, 
+        					null, 
+        					Alert.OK);
+        	}
+        	
+        	private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+        		if(evt_obj.detail == mx.controls.Alert.OK)
+        		{
+					viewModel.executeOffloadOnGroup(currentOffloadGrp.groupCode);
+					currentOffloadGrp = null;
+        		}
+			}
+		]]>
+	</mx:Script>
+	
+	<controls:Expander id="offloadGrpListExpander" title="Offload Group List" width="100%">
+		<mx:DataGrid
+            	id="offloadGrpDataGrid"
+                width="100%"
+            	dataProvider="{viewModel.offloadGroupList}"
+            	visible="{viewModel.offloadGroupList.length > 0}"
+                includeInLayout="{viewModel.offloadGroupList.length > 0}"
+                rowCount="{UIUtils.getRowCountFor(viewModel.offloadGroupList)+1}"
+                selectable="false"
+                variableRowHeight="true">
+			<mx:columns>
+            	<mx:DataGridColumn
+            		headerText="Group Name"
+            		dataField="groupName"
+            		textAlign="left">
+            		<mx:itemRenderer>
+            			<mx:Component>
+            				<mx:VBox>
+            					<mx:LinkButton
+            						label="{data.groupName}"
+            						click="outerDocument.clickGroup(event, data)"
+            						styleName="standardLinkButtonStyle"
+            						/>
+            				</mx:VBox>
+            			</mx:Component>
+            		</mx:itemRenderer>
+				</mx:DataGridColumn>            		
+            	<mx:DataGridColumn
+            		headerText="Group Description"
+            		dataField="groupDescription"
+            		itemRenderer="mx.controls.Text"
+            		textAlign="left"/>
+            	<mx:DataGridColumn
+            		headerText="Group Code"
+            		dataField="groupCode"
+            		itemRenderer="mx.controls.Text"
+            		textAlign="left"/>
+            	<mx:DataGridColumn
+            		headerText="Cutoff Time"
+            		dataField="cutoffTime"
+            		itemRenderer="mx.controls.Text"
+            		textAlign="left"/>
+            	<mx:DataGridColumn
+            		headerText="Execute Offload"
+            		textAlign="left">
+            		<mx:itemRenderer>
+            			<mx:Component>
+            				<mx:VBox>
+            					<mx:LinkButton
+            						label="Execute offload on {data.groupName}"
+            						click="outerDocument.executeOffloadOnGroup(event, data)"
+            						styleName="standardLinkButtonStyle"
+            						/>
+            				</mx:VBox>
+            			</mx:Component>
+            		</mx:itemRenderer>
+            	</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+	</controls:Expander>
+	<mx:LinkButton 
+		id="addNewOffloadGroupButton" 
+		label="Add New Offload Group" 
+		click="addModeOn()" 
+		enabled="{viewModel.modifyMode}"
+		styleName="standardLinkButtonStyle" />
+	<mx:Spacer height="20" />
+	<mx:VBox id="modifyOffloadGrpView" width="100%">
+		<mx:Text fontSize="14" id="modifyBoxTitleLabel" />
+		<mx:HBox>
+			<mx:Label text="Name:" width="200" textAlign="right" />
+			<mx:TextInput id="groupNameText"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Description:" width="200" textAlign="right" />
+			<mx:TextInput id="groupDescriptionText"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Offload Group Code:" width="200" textAlign="right" />
+			<mx:Label id="groupCodeLabel" text="{viewModel.groupCode}" visible="{viewModel.modifyMode}" includeInLayout="{viewModel.modifyMode}" />
+			<mx:TextInput id="groupCodeText" visible="{!viewModel.modifyMode}" includeInLayout="{!viewModel.modifyMode}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Cutoff Time:" width="200" textAlign="right" />
+			<mx:TextInput id="cutoffTimeText"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button id="editButton" label="Save Group" click="viewModel.save()" enabled="{viewModel.canSave}" />
+			<mx:Button id="cancelButton" label="Cancel" click="cancelEdit()" />
+		</mx:HBox>
+	</mx:VBox>
+	<mx:Spacer height="30" />
+	<controls:Expander id="offloadBatchListExpander" title="Offload Batch List (last 3 days)">
+		<mx:DataGrid
+			   	id="offloadBatchDataGrid"
+                width="100%"
+            	dataProvider="{viewModel.offloadBatchList}"
+            	visible="{viewModel.offloadBatchList.length > 0}"
+                includeInLayout="{viewModel.offloadBatchList.length > 0}"
+                rowCount="{UIUtils.getRowCountFor(viewModel.offloadBatchList)+1}"
+                selectable="false"
+                variableRowHeight="true">
+			<mx:columns>
+            	<mx:DataGridColumn
+            		headerText="Batch GSEQ"
+            		dataField="gseq"
+            		textAlign="left"
+            		itemRenderer="mx.controls.Text" />
+            	<mx:DataGridColumn
+            		headerText="Group Code"
+            		dataField="offloadGrpCd"
+            		textAlign="left"
+            		itemRenderer="mx.controls.Text" />
+				<mx:DataGridColumn
+					headerText="Status"
+					dataField="statusCd"
+					textAlign="left"
+					itemRenderer="mx.controls.Text" />
+				<mx:DataGridColumn
+					headerText="Insert Date"
+					dataField="insertDate"
+					textAlign="left">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:Text text="{data.insertDate}" />
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn
+					headerText="Status Change Date"
+					dataField="statusChangeDate"
+					textAlign="left"
+					itemRenderer="mx.controls.Text" />
+			</mx:columns>
+		</mx:DataGrid>
+	</controls:Expander>
+
+	<mx:Binding source="this.groupNameText.text" destination="this.viewModel.groupName" />	
+	<mx:Binding source="this.viewModel.groupName" destination="this.groupNameText.text" />	
+
+	<mx:Binding source="this.groupDescriptionText.text" destination="this.viewModel.groupDescription" />	
+	<mx:Binding source="this.viewModel.groupDescription" destination="this.groupDescriptionText.text" />	
+
+	<mx:Binding source="this.cutoffTimeText.text" destination="this.viewModel.cutoffTime" />	
+	<mx:Binding source="this.viewModel.cutoffTime" destination="this.cutoffTimeText.text" />	
+	
+	<mx:Binding source="this.groupCodeText.text" destination="this.viewModel.groupCode" />	
+	<mx:Binding source="this.viewModel.groupCode" destination="this.groupCodeText.text" />	
+	
+	<mx:Binding source="modifyOffloadGrpView.visible" destination="viewModel.editMode" />
+	<mx:Binding source="viewModel.editMode" destination="modifyOffloadGrpView.visible" />
+	<mx:Binding source="modifyOffloadGrpView.includeInLayout" destination="viewModel.editMode" />
+	<mx:Binding source="viewModel.editMode" destination="modifyOffloadGrpView.includeInLayout" />
+	
+</mx:VBox>

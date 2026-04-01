@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         creationComplete="onCreationComplete();"
+         xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+        >
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import psp.sap.viewmodel.CompanyEditCancellationInfoViewModel;
+
+        private var mViewModel:CompanyEditCancellationInfoViewModel;
+        private var mTempViewModel:CompanyEditCancellationInfoViewModel;
+        private const COLUMN_1_WIDTH:int = 205;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyEditCancellationInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditCancellationInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.lastPayrollDateValidator.listener = lastPayrollDateField;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to edit this company's Cancellation info?";
+
+            Alert.show(msgString,
+                       "Save Confirmation",
+                       Alert.OK | Alert.CANCEL,
+                       this,
+                       confirmVerifyHandler,
+                       null,
+                       Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK) {
+                viewModel.save();
+            }
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:HBox>
+        <mx:Label text="Last payroll date:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <pspui:SAPDateField id="lastPayrollDateField" text="{viewModel.lastPayrollDate}" width="100" editable="true"/>
+    </mx:HBox>
+
+    <mx:HBox paddingTop="5">
+        <controls:RequiredLabel text="Last quarter to file:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}" validator="{viewModel.lastTaxQuarterRequiredValidator}" errorCode="noMatch"/>
+        <mx:VBox>
+            <controls:SAPCheckBox dataField="doNotFile" label="Do not file (no tax filings for company)"/>
+            <mx:HBox paddingTop="5">
+                <controls:SAPComboBox  dataField="selectedYear" dataProvider="{viewModel.lstYears}" width="100" editable="false"/>
+                <controls:SAPComboBox  dataField="selectedQuarter" dataProvider="{viewModel.lstQuarters}" width="80" editable="false"/>
+            </mx:HBox>
+        </mx:VBox>
+
+    </mx:HBox>
+
+    <mx:HBox paddingTop="5">
+        <mx:Label text="Returns" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <mx:VBox>
+            <controls:SAPCheckBox dataField="fileAnnualReturns" label="File annual returns"/>
+            <controls:SAPCheckBox dataField="isFinal" label="File final returns"/>
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:HBox horizontalAlign="right" width="100%">
+        <mx:Button label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+
+    </mx:HBox>
+
+    <mx:Binding source="viewModel.lastPayrollDate" destination="lastPayrollDateField.text"/>
+    <mx:Binding source="lastPayrollDateField.text" destination="viewModel.lastPayrollDate"/>
+
+</mx:VBox>

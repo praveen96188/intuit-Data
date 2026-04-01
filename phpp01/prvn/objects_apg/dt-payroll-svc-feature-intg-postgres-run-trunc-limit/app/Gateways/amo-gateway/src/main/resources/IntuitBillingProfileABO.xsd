@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name://integration/AIA/AIAComponents/functional/AIAComponents/ApplicationObjectLibrary/Intuit/V1/schemas/IntuitBillingProfileABO.xsd
+
+Domain: Order
+Source of Truth, Perforce Location: 
+wcgbosp4.bos.intuit.com_1666\//integration/AIA/AIAComponents/functional/AIAComponents/ApplicationObjectLibrary/Intuit/V1/schemas/
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====      Intuit ABO Customer Account ABO Schema Module               ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns:cab="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" xmlns="http://www.intuit.com/iep/BillingProfile/BillingProfileABO/V1" xmlns:cc="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" targetNamespace="http://www.intuit.com/iep/BillingProfile/BillingProfileABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00.00">
+	<xsd:import namespace="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" schemaLocation="CustomerAccountBase.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" schemaLocation="CommonComponents.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ==============       Intuit Customer Asset ABO      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="IntuitBillingProfileABO" type="IntuitBillingProfileABOType">
+		<xsd:annotation>
+			<xsd:documentation>xx</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="IntuitBillingProfileABOType">
+		<xsd:annotation>
+			<xsd:documentation>Intuit Customer Asset ABO</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="BillingProfileType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="BillingProfileHeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Customer Asset Header</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocumentId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The unique Identifier assigned to this business transaction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DocumentDateTime" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which this service request is created or recorded</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BillingProfileResponseType">
+		<xsd:annotation>
+			<xsd:documentation>A data typa to represent a response to ?? - not used .</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Result"/>
+			<xsd:element name="BillingProfile" type="IntuitBillingProfileABOType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BillingProfileType">
+		<xsd:sequence>
+			<xsd:element name="BillingAccountNumber" type="cab:AccountNumberType">
+				<xsd:annotation>
+					<xsd:documentation>in 10.1, this should be identical to the primary Customer Account</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BillingProfileId" type="cc:BillingProfileIdType" minOccurs="0"/>
+			<xsd:element name="BillingProfileContactId" type="cab:ContactIdType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Contact on Customer Account</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BillingProfileAddressId" type="cab:AddressIdType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>This is the billing address, used for  full AVS credit card auth</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PaymentMethod" type="cc:PaymentMethodType" minOccurs="0"/>
+			<xsd:element name="BillingDayOfMonth" type="xsd:positiveInteger" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ==============       Data Types      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="Error" type="cc:ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Represents error information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Header" type="cc:HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the header information that can be supplied to DigiComms</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Result" type="cc:ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+		xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.CloseEvent;
+        import mx.events.MenuEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.ActionClickEvent;
+        import psp.sap.model.ActionEvent;
+        import psp.sap.model.ActionEventCode;
+        import psp.sap.model.PayrollRun;
+        import psp.sap.model.PayrollTransaction;
+        import psp.sap.viewmodel.PayrollTransactionsListViewModel;
+
+        [Bindable]
+        public var showActions:Boolean = true;
+        [Bindable]
+        public var showBankAccount:Boolean = true;
+        [Bindable]
+        public var boldAmount:Boolean = false;
+
+
+        private var mViewModel:PayrollTransactionsListViewModel;
+
+        private var mCreationComplete:Boolean = false;
+        private var mTempViewModel:PayrollTransactionsListViewModel;
+
+        private function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        [Bindable]
+        public function get viewModel():PayrollTransactionsListViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollTransactionsListViewModel):void {
+            if (!mCreationComplete) {
+                mTempViewModel = value;
+                return;
+            }
+            mViewModel = value;
+        }
+
+        /**
+         * Generic action call to ViewModel
+         */
+        public function actionEventButtonHandler(event:MenuEvent):void {
+            var action:ActionEvent = ActionEvent(event.item);
+            var transaction:PayrollTransaction = PayrollActionPopUpMenuButton(event.currentTarget).transaction;
+
+            if (action.code == ActionEventCode.FINANCIAL_TRANSACTION_CANCEL ||
+                    action.code == ActionEventCode.ER_FEE_CANCEL) {
+                Alert.show("Are you sure you want to cancel this transaction?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.cancelTransaction(transaction);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action.code == ActionEventCode.FINANCIAL_TRANSACTION_VOID_TX || action.code == ActionEventCode.VOID_TOR) {
+                Alert.show("Are you sure you want to void this transaction?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.voidTransaction(transaction);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action.code == ActionEventCode.REISSUE_PAYROLL_TAX_PAYMENT) {
+                Alert.show("Are you sure you want to reissue the associated payment?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.reissuePayrollTaxPayment(transaction);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else {
+                viewModel.performPayrollTransactionAction(action, transaction);
+            }
+        }
+
+        [Bindable]
+        public var paycheckDate:String = "";
+
+        public function set payrollRun(value:PayrollRun):void {
+            paycheckDate = value.paycheckDate != null ? dateFormatter.format(value.paycheckDate) : "";
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return dateFormatter.format(item[dgc.dataField]);
+        }
+
+        private function formatCurrency(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item[dgc.dataField]);
+        }
+
+        public function formatTxnType(item:Object, dgc:DataGridColumn):String {
+            return SAP.instance.lookupService.transactionTypes.getItemByKey(PayrollTransaction(item).txnType).name
+        }
+
+        public function formatEmployeeName(item:Object):String {
+            if (item.voidedAfterOffload) {
+                return item.employeeName + "<br/><b>VOIDED</b>";
+            }
+            return item.employeeName;
+        }
+
+        private function formatBankInfo(item:Object, dgc:DataGridColumn):String {
+			      var formattedBankInfo:String = "ACCT#: " + UIUtils.maskBankAccountNumbers(item.employeeBankAccountNumber) +
+				        String('\n') +
+					          "RTN #: " + item.employeeBankRoutingNumber +
+                String('\n') +
+                    "Trace #: " + item.jpmcTraceId;
+			      if (item.employerDDDebitTxnNumber == null) {
+				        return formattedBankInfo;
+			      }
+			      return formattedBankInfo +
+				        String('\n') +
+				            "TransactionID#: " + item.employerDDDebitTxnNumber;
+        }
+
+        public function onPaycheckActionClicked(event:ActionClickEvent):void {
+            viewModel.performPaycheckAction(event.actionEvent, EmployeeActionPopUpMenuButton(event.itemTarget).paycheck);
+        }
+
+
+        public function set preferencesChanged(changed:Boolean):void {
+            if (!changed) {
+                preferenceImage.source = SAP.instance.icons.lock;
+                preferenceImage.toolTip = "This setting will be used for every visit to the page";
+                preferenceImage.buttonMode = false;
+            } else {
+                preferenceImage.source = SAP.instance.icons.unLock;
+                preferenceImage.toolTip = "Save this setting for every visit to the page";
+                preferenceImage.buttonMode = true;
+            }
+        }
+
+        private function onPreferenceClick():void {
+            if (preferenceImage.buttonMode) {
+                viewModel.savePreferences();
+            }
+        }
+
+        public function confirmValidateEmail(email:String):void {
+            var msgString:String = "Email address - " + email + " is marked as invalid, are you sure you want to remove the invalid flag?";
+            Alert.show(msgString,
+                    "Remove invalid flag on email",
+                    Alert.YES | Alert.NO,
+                    this,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            mViewModel.removeInvalidFlagOnEmailId(email);
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataShield}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <!-- Main container for all three tables -->
+    <mx:VBox
+            width="100%"
+            verticalGap="0"
+            id="dataShield"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+
+        <mx:HBox>
+            <mx:Image id="preferenceImage"
+                      visible="{SAP.instance.session.user.inlineSettingsEnabled}"
+                      includeInLayout="{SAP.instance.session.user.inlineSettingsEnabled}"
+                      click="onPreferenceClick();"/>
+            <controls:SAPCheckBox label="Include cancelled transactions" dataField="includeCancelledTransactions"/>
+        </mx:HBox>
+
+        <!-- Employer Transactions -->
+        <mx:VBox
+             id="employerTransactionsPanel"
+             styleName="grayDataGridVBox"
+             verticalScrollPolicy="off"
+             horizontalScrollPolicy="off"
+             width="100%">
+            <mx:HBox width="100%" textAlign="left" verticalAlign="middle">
+                <mx:Label text="Employer Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <controls:SAPDataGrid
+            	id="erTxnsData"
+                width="100%"
+            	dataProvider="{viewModel.employerTransactions}"
+            	visible="{viewModel.showEmployerTransactions}"
+                includeInLayout="{erTxnsData.visible}"
+                selectable="false"
+                variableRowHeight="true"
+                rowCount="{UIUtils.getRowCountFor(viewModel.employerTransactions)+1}">
+                <controls:columns>
+                	<mx:DataGridColumn
+                		headerText="Txn Date"
+                		dataField="txnDate"
+                		labelFunction="formatDate"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="left"
+                        width="100"/>
+                	<mx:DataGridColumn
+                		headerText="Amount"
+                		dataField="amount"
+                		labelFunction="formatCurrency"
+                		itemRenderer="mx.controls.Text"
+                		fontWeight="{boldAmount ? 'bold' : 'normal'}"
+                		textAlign="right"
+                        width="80"/>
+                	<mx:DataGridColumn
+                		headerText="Txn Type"
+                		dataField="txnType"
+                		labelFunction="formatTxnType"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="left"
+                        width="140"/>
+                    <mx:DataGridColumn
+                            headerText="Txn Description"
+                            dataField="description">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <pspui:TruncatedText textAlign="left" text="{PayrollTransaction(data).description}"
+                                                     height="19"
+                                                     paddingLeft="0"
+                                                     paddingRight="0"
+                                                     paddingTop="0"
+                                                     paddingBottom="0">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.PayrollTransaction;
+                                        ]]></mx:Script>
+                                </pspui:TruncatedText>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                	<mx:DataGridColumn
+                		headerText="Status"
+                		dataField="status"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="70"/>
+            		<mx:DataGridColumn
+                		headerText="Rtn Cd"
+                		dataField="returnCd"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="55"/>
+                	<mx:DataGridColumn
+            			headerText="Actions"
+            			sortable="false"
+            			textAlign="left"
+            			width="120"
+            			dataField="actionCollection"
+            			visible="{showActions}">
+            			<mx:itemRenderer>
+            				<mx:Component>
+                                <mx:VBox paddingLeft="5" paddingRight="3">
+                                    <mx:Script>
+                                        <![CDATA[
+                                        import psp.sap.model.PayrollTransaction;
+                                        ]]>
+                                    </mx:Script>
+            							<pspui:PayrollActionPopUpMenuButton
+										id="erTxnsActionButton"
+										automationName="erTxnsActionButton"
+                                        fontWeight="normal"
+										payroll="{outerDocument.viewModel.payrollRun}"
+										dataProvider="{data.actionCollection}"
+										labelField="description"
+										width="100%"
+										paddingLeft="5"
+										textAlign="left"
+										itemClick="outerDocument.actionEventButtonHandler(event)"
+										transaction="{data as PayrollTransaction}"/>
+
+                                </mx:VBox>
+				        	</mx:Component>
+            			</mx:itemRenderer>
+            		</mx:DataGridColumn>
+            		<mx:DataGridColumn
+            			headerWordWrap="true"
+                		headerText="Settlement{String('\n')}Type"
+                		dataField="settlementType"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="85"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+	        <mx:Text
+            	id="noERTxnsText"
+                visible="{!viewModel.showEmployerTransactions}"
+                includeInLayout="{noERTxnsText.visible}"
+            	text="No employer transactions were found for this payroll."
+            	fontWeight="bold"
+            	textAlign="center"
+            	width="100%"/>
+        </mx:VBox>
+
+        <mx:Spacer height="10"/>
+
+        <!-- Intuit Transactions -->
+        <mx:VBox
+             id="intuitTransactionsPanel"
+             styleName="grayDataGridVBox"
+             verticalScrollPolicy="off"
+             horizontalScrollPolicy="off"
+             width="100%">
+            <mx:HBox textAlign="left" verticalAlign="middle">
+                <mx:Label text="Intuit Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <controls:SAPDataGrid
+            	id="intuitTxnsData"
+                width="100%"
+            	dataProvider="{viewModel.intuitTransactions}"
+            	visible="{viewModel.showIntuitTransactions}"
+                includeInLayout="{intuitTxnsData.visible}"
+	            rowCount="{UIUtils.getRowCountFor(viewModel.intuitTransactions)+1}"
+	            selectable="false"
+	            variableRowHeight="true">
+                <controls:columns>
+                	<mx:DataGridColumn
+                		headerText="Txn Date"
+                		dataField="txnDate"
+                		labelFunction="formatDate"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="left"/>
+                	<mx:DataGridColumn
+                		headerText="Amount"
+                		dataField="amount"
+                		labelFunction="formatCurrency"
+                		itemRenderer="mx.controls.Text"
+                		fontWeight="{boldAmount ? 'bold' : 'normal'}"
+                		textAlign="right"/>
+                	<mx:DataGridColumn
+                		headerText="Txn Type"
+                		dataField="txnType"
+                		labelFunction="formatTxnType"
+                		textAlign="left">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:Text text="{outerDocument.formatTxnType(data, null)}" toolTip="{PayrollTransaction(data).description}">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.PayrollTransaction;
+                                        ]]></mx:Script>
+                                </mx:Text>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                	<mx:DataGridColumn
+                		headerText="Status"
+                		dataField="status"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="70"/>
+            		<mx:DataGridColumn
+                		headerText="Rtn Cd"
+                		dataField="returnCd"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="55"/>
+                	<mx:DataGridColumn
+            			headerText="Actions"
+            			sortable="false"
+            			textAlign="left"
+            			width="120"
+            			visible="{showActions}"
+            			dataField="actionCollection">
+            			<mx:itemRenderer>
+            				<mx:Component>
+            					<mx:VBox  paddingLeft="5" paddingRight="3">
+                                    <mx:Script>
+                                        <![CDATA[
+                                        import psp.sap.model.PayrollTransaction;
+                                        ]]>
+                                    </mx:Script>
+            						<pspui:PayrollActionPopUpMenuButton
+										id="intuitTxnsActionButton"
+										automationName="intuitTxnsActionButton"
+                                        fontWeight="normal"
+										payroll="{outerDocument.viewModel.payrollRun}"
+										dataProvider="{data.actionCollection}"
+										labelField="description"
+										width="100%"
+										paddingLeft="5"
+										textAlign="left"
+										itemClick="outerDocument.actionEventButtonHandler(event)"
+										transaction="{data as PayrollTransaction}"/>
+            					</mx:VBox>
+				        	</mx:Component>
+            			</mx:itemRenderer>
+            		</mx:DataGridColumn>
+            		<mx:DataGridColumn
+            			headerWordWrap="true"
+                		headerText="Settlement{String('\n')}Type"
+                		dataField="settlementType"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="85"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+            <mx:Text
+            	id="noIntuitTxnsText"
+                text="No intuit transactions were found for this payroll."
+            	fontWeight="bold"
+            	visible="{!viewModel.showIntuitTransactions}"
+                includeInLayout="{noIntuitTxnsText.visible}"
+                width="100%"
+                textAlign="center"/>
+        </mx:VBox>
+
+        <mx:Spacer height="10"/>
+
+        <!-- Employee Transactions -->
+        <mx:VBox
+        	id="employeeTransactionsPanel"
+         	styleName="grayDataGridVBox"
+         	verticalScrollPolicy="off"
+         	horizontalScrollPolicy="off"
+         	width="100%"
+                visible="{!viewModel.payrollRun.isBillPaymentPayroll}"
+                includeInLayout="{!viewModel.payrollRun.isBillPaymentPayroll}">
+            <mx:HBox textAlign="left" verticalAlign="middle">
+                <mx:Label text="Employee Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <mx:VBox
+                    width="100%"
+                    verticalGap="0">
+                <controls:SAPDataGrid
+                        id="eeTxnsData"
+                        dataProvider="{viewModel.employeeTransactions}"
+		            	width="100%"
+		                rowCount="{UIUtils.getRowCountFor(viewModel.employeeTransactions)+1}"
+		                selectable="false"
+		                visible="{viewModel.showEmployeeTransactions}"
+            			includeInLayout="{eeTxnsData.visible}"
+		                variableRowHeight="true">
+		            	<controls:columns>
+		            		<mx:DataGridColumn
+		            			headerText="Employee Name"
+		            			dataField="employeeName"
+		            			textAlign="left"
+		            			minWidth="{130 + (!showActions ? 110 : 0) + (!showBankAccount ? 50 : 0)}">
+		            			<mx:itemRenderer>
+		            				<mx:Component>
+		            					<mx:Text
+		            						automationName="employeeName"
+		            						htmlText="{outerDocument.formatEmployeeName(data)}"/>
+		            				</mx:Component>
+		            			</mx:itemRenderer>
+		            		</mx:DataGridColumn>
+		            		<mx:DataGridColumn
+		            			headerText="Txn Date"
+		            			dataField="txnDate"
+		            			itemRenderer="mx.controls.Text"
+		            			labelFunction="formatDate"
+		            			textAlign="center"
+		            			minWidth="80"/>
+		            		<mx:DataGridColumn
+		            			headerText="Amount"
+		            			dataField="amount"
+		            			itemRenderer="mx.controls.Text"
+		            			labelFunction="formatCurrency"
+		            			textAlign="right"
+		            			fontWeight="{boldAmount ? 'bold' : 'normal'}"
+		            			minWidth="80"/>
+		            		<mx:DataGridColumn
+		            			headerText="Txn Type"
+		            			dataField="txnType"
+		            			labelFunction="formatTxnType"
+		            			textAlign="left"
+		            			minWidth="80">
+                                <mx:itemRenderer>
+                                    <mx:Component>
+                                        <mx:Text text="{outerDocument.formatTxnType(data, null)}" toolTip="{PayrollTransaction(data).description}">
+                                            <mx:Script><![CDATA[
+                                                import psp.sap.model.PayrollTransaction;
+                                                ]]></mx:Script>
+                                        </mx:Text>
+                                    </mx:Component>
+                                </mx:itemRenderer>
+		            			</mx:DataGridColumn>
+		            		<mx:DataGridColumn
+		            			headerText="Status"
+		            			dataField="status"
+		            			itemRenderer="mx.controls.Text"
+		            			textAlign="center"
+		            			width="70"/>
+		            		<mx:DataGridColumn
+		            			headerText="Rtn Cd"
+		            			dataField="returnCd"
+		            			width="55"
+		            			itemRenderer="mx.controls.Text"
+		            			textAlign="center"/>
+		            		<mx:DataGridColumn
+		            			headerText="Actions"
+		            			sortable="false"
+		            			textAlign="left"
+		            			width="110"
+		            			dataField="actionCollection"
+		            			visible="{showActions}">
+		            			<mx:itemRenderer>
+		            				<mx:Component>
+		            					<mx:VBox  paddingLeft="5" paddingRight="3">
+                                        <mx:Script>
+                                            <![CDATA[
+                                            import psp.sap.model.PayrollTransaction;
+                                            ]]>
+                                        </mx:Script>
+		            						<pspui:PayrollActionPopUpMenuButton
+											id="eeTxnsActionButton"
+											automationName="eeTxnsActionButton"
+                                            fontWeight="normal"
+											payroll="{outerDocument.viewModel.payrollRun}"
+											dataProvider="{data.actionCollection}"
+											labelField="description"
+											width="100%"
+											paddingLeft="5"
+											textAlign="left"
+											itemClick="outerDocument.actionEventButtonHandler(event)"
+											transaction="{data as PayrollTransaction}"/>
+		            					</mx:VBox>
+						        	</mx:Component>
+		            			</mx:itemRenderer>
+		            		</mx:DataGridColumn>
+		            		<mx:DataGridColumn
+		            			headerText="Bank Account"
+		            			sortable="false"
+		            			dataField="employeeBankAccountNumber"
+		            			itemRenderer="mx.controls.Text"
+		            			labelFunction="formatBankInfo"
+		            			textAlign="left"
+		            			minWidth="105"
+		            			visible="{showBankAccount}"/>
+		            		<mx:DataGridColumn
+		            			headerWordWrap="true"
+		                		headerText="Settlement{String('\n')}Type"
+		                		dataField="settlementType"
+		                		itemRenderer="mx.controls.Text"
+		                		textAlign="center"
+		                		width="85"/>
+		            	</controls:columns>
+		            </controls:SAPDataGrid>
+	            	<mx:Text
+	            		id="noDDTxnsText"
+                        text="No direct deposit transactions were found for this payroll."
+                        visible="{!viewModel.showEmployeeTransactions}"
+                        includeInLayout="{noDDTxnsText.visible}"
+                        fontWeight="bold"
+                        width="100%"
+                        textAlign="center"
+                        paddingTop="5"
+                        paddingBottom="5"/>
+            </mx:VBox>
+        </mx:VBox>
+
+        <mx:Spacer height="10" visible="{viewModel.showEmployeePaychecks}" includeInLayout="{viewModel.showEmployeePaychecks}"/>
+
+        <mx:VBox
+             styleName="grayDataGridVBox"
+             verticalScrollPolicy="off"
+             horizontalScrollPolicy="off"
+             width="100%"
+             visible="{viewModel.showEmployeePaychecks}"
+             includeInLayout="{viewModel.showEmployeePaychecks}">
+            <mx:HBox textAlign="left" verticalAlign="middle">
+                <mx:Label text="Other Paychecks" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <pspui:PaychecksDataGrid paychecks="{viewModel.employeePaychecks}"
+                                     includeEmployeeNameColumn="true"
+                                     includePaycheckDateColumn="false"
+                                     actionClickedEvent="onPaycheckActionClicked(event)"/>
+        </mx:VBox>
+
+        <mx:Spacer height="10"/>
+
+        <!-- Agency Transactions -->
+        <mx:VBox
+             id="agencyTransactionsPanel"
+             styleName="grayDataGridVBox"
+             verticalScrollPolicy="off"
+             horizontalScrollPolicy="off"
+             width="100%">
+            <mx:HBox textAlign="left" verticalAlign="middle">
+                <mx:Label text="Agency Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <controls:SAPDataGrid
+            	id="agencyTxnsData"
+                width="100%"
+            	dataProvider="{viewModel.agencyTransactions}"
+            	visible="{viewModel.showAgencyTransactions}"
+                includeInLayout="{viewModel.showAgencyTransactions}"
+	            rowCount="{UIUtils.getRowCountFor(viewModel.agencyTransactions)+1}"
+	            selectable="false"
+	            variableRowHeight="true">
+                <controls:columns>
+                	<mx:DataGridColumn
+                		headerText="Agency Name"
+                		dataField="agencyAbbreviation"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                		dataTipField="agencyName"/>
+                	<mx:DataGridColumn
+                		headerText="Tax Type"
+                		dataField="taxAbbreviation"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"/>
+                	<mx:DataGridColumn
+                		headerText="Txn Date"
+                		dataField="txnDate"
+                		labelFunction="formatDate"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="left"/>
+                	<mx:DataGridColumn
+                		headerText="Amount"
+                		dataField="amount"
+                		labelFunction="formatCurrency"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="right"/>
+                	<mx:DataGridColumn
+                		headerText="Txn Type"
+                		dataField="txnType"
+                		labelFunction="formatTxnType"
+                		textAlign="left">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:Text text="{outerDocument.formatTxnType(data, null)}" toolTip="{PayrollTransaction(data).description}">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.PayrollTransaction;
+                                        ]]></mx:Script>
+                                </mx:Text>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                		</mx:DataGridColumn>
+
+                	<mx:DataGridColumn
+                		headerText="Status"
+                		dataField="status"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="70"/>
+                	<mx:DataGridColumn
+            			headerText="Actions"
+            			sortable="false"
+            			textAlign="left"
+            			width="120"
+            			dataField="actionCollection">
+            			<mx:itemRenderer>
+            				<mx:Component>
+            					<mx:VBox  paddingLeft="5" paddingRight="3">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.PayrollTransaction;
+                                        ]]></mx:Script>
+                                    <pspui:PayrollActionPopUpMenuButton
+										id="agencyTxnsActionButton"
+										automationName="agencyTxnsActionButton"
+                                        fontWeight="normal"
+										payroll="{outerDocument.viewModel.payrollRun}"
+										dataProvider="{data.actionCollection}"
+										labelField="description"
+										width="100%"
+										paddingLeft="5"
+										textAlign="left"
+										itemClick="outerDocument.actionEventButtonHandler(event)"
+										transaction="{data as PayrollTransaction}"/>
+                                </mx:VBox>
+				        	</mx:Component>
+            			</mx:itemRenderer>
+            		</mx:DataGridColumn>
+            		<mx:DataGridColumn
+            			headerWordWrap="true"
+                		headerText="Settlement{String('\n')}Type"
+                		dataField="settlementType"
+                		itemRenderer="mx.controls.Text"
+                		textAlign="center"
+                        width="85"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+            <!-- todo hide box for dd company? -->
+            <mx:Text
+            	id="noAgencyTxnsText"
+                text="No agency transactions were found for this payroll."
+            	fontWeight="bold"
+            	visible="{!viewModel.showAgencyTransactions}"
+                includeInLayout="{noAgencyTxnsText.visible}"
+                width="100%"
+                textAlign="center"/>
+        </mx:VBox>
+
+        <mx:Spacer height="10"/>
+
+        <!-- Vendor Transactions -->
+        <mx:VBox
+                id="vendorTransactionsPanel"
+                styleName="grayDataGridVBox"
+                verticalScrollPolicy="off"
+                horizontalScrollPolicy="off"
+                width="100%"
+                visible="{viewModel.payrollRun.isBillPaymentPayroll}"
+                includeInLayout="{viewModel.payrollRun.isBillPaymentPayroll}">
+            <mx:HBox textAlign="left" verticalAlign="middle">
+                <mx:Label text="Vendor Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            	<mx:VBox
+            		width="100%"
+            		verticalGap="0">
+	            	<controls:SAPDataGrid
+		            	id="vendorTxnsData"
+                        dataProvider="{viewModel.vendorTransactions}"
+		            	width="100%"
+		                rowCount="{UIUtils.getRowCountFor(viewModel.vendorTransactions)+1}"
+		                selectable="false"
+		                visible="{viewModel.showVendorTransactions}"
+            			includeInLayout="{viewModel.showVendorTransactions}"
+		                variableRowHeight="true">
+		            	<controls:columns>
+		            		<mx:DataGridColumn
+		            			headerText="Vendor Name"
+		            			dataField="employeeName"
+		            			textAlign="left"
+		            			minWidth="120">
+		            			<mx:itemRenderer>
+		            				<mx:Component>
+		            					<mx:Text
+		            						automationName="employeeName"
+		            						htmlText="{outerDocument.formatEmployeeName(data)}"/>
+		            				</mx:Component>
+		            			</mx:itemRenderer>
+		            		</mx:DataGridColumn>
+                            <mx:DataGridColumn
+                                    headerText="Email"
+                                    dataField="emailId"
+                                    textAlign="left"
+                                    minWidth="120">
+                                <mx:itemRenderer>
+                                    <mx:Component>
+                                        <mx:VBox width="100%"
+                                                 horizontalAlign="left"
+                                                 verticalGap="0"
+                                                 paddingTop="0"
+                                                 paddingBottom="0"
+                                                 verticalScrollPolicy="off"
+                                                 horizontalScrollPolicy="off">
+                                            <mx:LinkButton styleName="standardLinkButtonStyle" label="Validate"
+                                                           enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_COMPANY_CONTACT_INFORMATION)}"
+                                                           includeInLayout="{PayrollEmployeeTransaction(data).emailId != null &amp;&amp; PayrollEmployeeTransaction(data).hasInvalidEmail}"
+                                                           visible="{PayrollEmployeeTransaction(data).emailId != null &amp;&amp; PayrollEmployeeTransaction(data).hasInvalidEmail}"
+                                                           toolTip="Remove invalid flag on email"
+                                                           click="outerDocument.confirmValidateEmail(PayrollEmployeeTransaction(data).emailId)"/>
+                                            <mx:Text text="{PayrollEmployeeTransaction(data).emailId}" color="{PayrollEmployeeTransaction(data).hasInvalidEmail ? 0xff0000 : 0x000000}">
+                                                <mx:Script><![CDATA[
+                                                    import psp.sap.application.SAP;
+                                                    import psp.sap.application.enums.OperationsEnum;
+                                                    import psp.sap.model.PayrollEmployeeTransaction;
+                                                    ]]></mx:Script>
+                                            </mx:Text>
+                                        </mx:VBox>
+                                    </mx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+		            		<mx:DataGridColumn
+		            			headerText="Txn Date"
+		            			dataField="txnDate"
+		            			itemRenderer="mx.controls.Text"
+		            			labelFunction="formatDate"
+		            			textAlign="center"
+		            			minWidth="80"/>
+		            		<mx:DataGridColumn
+		            			headerText="Amount"
+		            			dataField="amount"
+		            			itemRenderer="mx.controls.Text"
+		            			labelFunction="formatCurrency"
+		            			textAlign="right"
+		            			fontWeight="{boldAmount ? 'bold' : 'normal'}"
+		            			minWidth="80"/>
+		            		<mx:DataGridColumn
+		            			headerText="Txn Type"
+		            			dataField="txnType"
+		            			labelFunction="formatTxnType"
+		            			textAlign="left"
+		            			minWidth="80">
+                                <mx:itemRenderer>
+                                    <mx:Component>
+                                        <mx:Text text="{outerDocument.formatTxnType(data, null)}" toolTip="{PayrollTransaction(data).description}">
+                                            <mx:Script><![CDATA[
+                                                import psp.sap.model.PayrollTransaction;
+                                                ]]></mx:Script>
+                                        </mx:Text>
+                                    </mx:Component>
+                                </mx:itemRenderer>
+		            			</mx:DataGridColumn>
+		            		<mx:DataGridColumn
+		            			headerText="Status"
+		            			dataField="status"
+		            			itemRenderer="mx.controls.Text"
+		            			textAlign="center"
+		            			width="70"/>
+		            		<mx:DataGridColumn
+		            			headerText="Rtn Cd"
+		            			dataField="returnCd"
+		            			width="55"
+		            			itemRenderer="mx.controls.Text"
+		            			textAlign="center"/>
+		            		<mx:DataGridColumn
+		            			headerText="Actions"
+		            			sortable="false"
+		            			textAlign="left"
+		            			width="110"
+		            			dataField="actionCollection"
+		            			visible="{showActions}">
+		            			<mx:itemRenderer>
+		            				<mx:Component>
+		            					<mx:VBox  paddingLeft="5" paddingRight="3">
+                                            <mx:Script>
+                                                <![CDATA[
+                                                import psp.sap.model.PayrollTransaction;
+                                                ]]>
+                                            </mx:Script>
+		            						<pspui:PayrollActionPopUpMenuButton
+											id="vendorTxnsActionButton"
+											automationName="eeTxnsActionButton"
+                                            fontWeight="normal"
+											payroll="{outerDocument.viewModel.payrollRun}"
+											dataProvider="{data.actionCollection}"
+											labelField="description"
+											width="100%"
+											paddingLeft="5"
+											textAlign="left"
+											itemClick="outerDocument.actionEventButtonHandler(event)"
+											transaction="{data as PayrollTransaction}"/>
+		            					</mx:VBox>
+						        	</mx:Component>
+		            			</mx:itemRenderer>
+		            		</mx:DataGridColumn>
+		            		<mx:DataGridColumn
+		            			headerText="Bank Account"
+		            			sortable="false"
+		            			dataField="employeeBankAccountNumber"
+		            			itemRenderer="mx.controls.Text"
+		            			labelFunction="formatBankInfo"
+		            			textAlign="left"
+		            			minWidth="105"
+		            			visible="{showBankAccount}"/>
+		            		<mx:DataGridColumn
+		            			headerWordWrap="true"
+		                		headerText="Settlement{String('\n')}Type"
+		                		dataField="settlementType"
+		                		itemRenderer="mx.controls.Text"
+		                		textAlign="center"
+		                		width="85"/>
+		            	</controls:columns>
+		            </controls:SAPDataGrid>
+	            	<mx:Text
+	            		id="vendorDDTxnsText"
+                        text="No vendor payments were found for this payroll."
+	            		visible="{!viewModel.showVendorTransactions}"
+        				includeInLayout="{!viewModel.showVendorTransactions}"
+        				fontWeight="bold"
+            			width="100%"
+            			textAlign="center"
+            			paddingTop="5"
+            			paddingBottom="5"/>
+	            </mx:VBox>
+
+            </mx:VBox>
+
+    </mx:VBox>
+    <mx:Binding source="viewModel.preferencesChanged" destination="preferencesChanged"/>
+
+</mx:VBox>

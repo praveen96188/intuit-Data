@@ -1,0 +1,23 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column WAGE_AMOUNT;
+ALTER TABLE PSP_LEDGER_OPERATION
+ ADD (WAGE_AMOUNT  NUMBER(19,4));
+
+Prompt Constraint C_PSP_COMPANY_EVENT_EMAIL1;
+ALTER TABLE PSP_COMPANY_EVENT_EMAIL
+ DROP CONSTRAINT C_PSP_COMPANY_EVENT_EMAIL1;
+
+ALTER TABLE PSP_COMPANY_EVENT_EMAIL
+ ADD CONSTRAINT C_PSP_COMPANY_EVENT_EMAIL1
+  CHECK (EMAIL_TEMPLATE_TYPE_CD IN('AdditionalMedicareTaxDebitNotification', 'VendorInvalidEmail', 'EmployerNOC52LoanAccount', 'SameDayMoFedAssessmentDebit', 'SUICreditNotification', 'ServiceCancelledConfirmation1', 'AssistedFailedEnrollment', 'AssistedPayrollConfirmation', 'AllPaycheckReversalsFailed', 'AllPaycheckReversalsSuccessful', 'AutoRedebit', 'AutoRedebitFourStrikes', 'BankVerificationFailed', 'BilledNonPayrollRelatedFee', 'CustomerInitiatedDDReversal', 'DDBankVerificationReminder', 'DDBankVerificationSuccessful', 'DDERBankAccountChange', 'DDPINChangeConfirmation', 'DDServiceCancelledConfirmation', 'DDSignupConfirmation', 'ERandEENOC2', 'LastChanceEmail', 'ManualRedebit', 'NonACHPaymentReceivedInFull', 'NonACHPaymentReceivedInFullActionRequired', 'NonACHPaymentReceivedLiabilityOutstanding', 'PartialPaycheckReversal', 'PayrollCancellationNotification', 'DebitReturned', 'DebitReturnedFourStrikes', 'EEDDREJECT', 'EmailChangeNotification', 'EmployeeNOC', 'EmployeeNOC2', 'EmployerNOC', 'ERandEENOC', 'PayrollCancelledNotification', 'QBDTPayrollConfirmation', 'RedebitFailed', 'RefundedFeeAmount', 'RefundWithRebillFeeAmount', 'WireExpectedNotification', 'EFTPSEnrollmentRejectedEIN', 'EFTPSEnrollmentRejectedName', 'BankVerifyAttemptFailed', 'DDEEBankAccountChange', 'TOKFraudNotification', 'TOKVoidDelete', 'VendorPaymentSignupConfirmation', 'VendorPaymentReceived', 'VendorPaymentOffloaded1', 'ManualRedebit2', 'DebitReturnedFourStrikes3', 'WireExpectedNotification3', 'DebitReturned3', 'AutoRedebit2', 'LastChanceEmail3', 'PayrollCancellationNotification2', 'PayrollCancelledNotification2', 'NonPrintChecks', 'Correct401kEmployeeInfo', 'Correct401kEmployeeInfoAfterSend', 'VendorPaymentReceived1', 'VendorPaymentOffloadedForWriteChecks', 'VendorPaymentOffloadedForPayBills', 'SKDiskDeliveryKey1', 'SKBasicKey1', 'SKFreeBasicKey1', 'SKEnhancedKey1', 'SKEnhancedKeyAccount1', 'SKStandardKey1', 'SKDefaultKey1', 'SameDaySUIDebitNotification3', 'SUIRefundNotification3', 'EndofQuarterSUIDebitNotification3', 'DDERBankAccountChangeAssisted', 'EmployeeNOCAssisted', 'EmployerNOC1', 'LastChanceEmail1', 'LastChanceEmail4', 'ManualRedebit3', 'NonACHPaymentReceivedInFull1', 'NonACHPMTReceivedLiabOutstanding1', 'PartialPaycheckReversal1'
+, 'RedebitFailed1', 'WireExpectedNotification4', 'AllPaycheckReversalsFailed1', 'AllPaycheckReversalsSuccessful1', 'AutoRedebit3', 'BankVerificationFailed1', 'BilledNonPayrollRelatedFee1', 'CustomerInitiatedDDReversal1', 'DDBankVerificationReminder1', 'DDPINChangeConfirmation1', 'DebitReturned1', 'DebitReturned4', 'EEDDREJECT1', 'RefundedFeeAmount1', 'RefundWithRebillFeeAmount1', 'DDEEBankAccountChange1', 'SymphonyWelcomeNoTrial', 'SymphonyBillingDetailsMonthly', 'UsageBillingMidTrial', 'SymphonyWelcomeFreeTrial', 'CreditReductionGeneric', 'CreditReductionFUTA', 'SymphonyBillingDetailsAnnual', 'FUTACreditReduction', 'BilledNonPayrollRelatedFee2', 'SUIRefundNotification4', 'SameDaySUIDebitNotification4', 'EndofQuarterSUIDebitNotification4', 'VmpEmployeeWelcome', 'VmpEmployerWelcome', 'VmpPaystubNotification', 'SameDayMAUHIDebitNotification', 'MinimumMonthlyBilling'));
+
+PROMPT finished DBUpgrade_002.013.012.002.sql

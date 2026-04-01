@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\dev\psp\main\pse\domain\src\main\model\DBUpgradeFrom_1.9.9.6_To_1.9.9.7.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

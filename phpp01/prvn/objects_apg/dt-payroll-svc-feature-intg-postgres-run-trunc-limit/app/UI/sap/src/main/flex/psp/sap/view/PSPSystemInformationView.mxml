@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+                xmlns:pspui="psp.sap.view.*"
+                width="525" height="350"
+                title="{viewModel.title}"
+                creationComplete="onCreationComplete();"
+                showCloseButton="true"
+                close="onCloseClicked()">
+    <mx:Script>
+		<![CDATA[
+        import mx.managers.PopUpManager;
+
+        import psp.sap.application.ClientLoggingTarget;
+        import psp.sap.application.SAP;
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.ExplorerEnum;
+        import psp.sap.viewmodel.PSPSystemInformationViewModel;
+        import psp.sap.viewmodel.SettingsInspectorViewModel;
+        import psp.sap.viewmodel.UserSettingsAdvancedTopicViewModel;
+
+        [Bindable]
+        public var viewModel:PSPSystemInformationViewModel = new PSPSystemInformationViewModel();
+
+        public function onCreationComplete():void {
+            ViewModelSync.associatePageViewModels(this, viewModel);
+            viewModel.refresh();
+        }
+
+        public function set isLoading(value:Boolean):void {
+            if (value)
+                this.cursorManager.setBusyCursor();
+            else
+                this.cursorManager.removeBusyCursor();
+        }
+
+        public function copyToClipboard():void {
+            System.setClipboard(viewModel.clipboardContent);
+        }
+
+        public function onCloseClicked():void {
+            PopUpManager.removePopUp(this);
+            //i think these will always be visible, but removing the popup is a NO-OP
+            if (permissions.visible) {
+                onPermissionsCloseClicked();
+            }
+            if (userLog.visible) {
+                onUserLogCloseClicked();
+            }
+            if (paymentTemplateSupportDateModal.visible) {
+                paymentTemplateSupportDateModal.viewModel.hidePopUp();
+            }
+        }
+
+        public function operationName(item:Object):String {
+            return item.operationId;
+        }
+
+        public function popUpPermissions():void {
+            PopUpManager.addPopUp(permissions, this);
+            PopUpManager.centerPopUp(permissions);
+        }
+
+        public function onPermissionsCloseClicked():void {
+            PopUpManager.removePopUp(permissions);
+        }
+
+        public function popUpUserLog():void {
+            logTextArea.text = ClientLoggingTarget.instance.toString();
+            PopUpManager.addPopUp(userLog, this);
+            PopUpManager.centerPopUp(userLog);
+        }
+
+        public function onUserLogCloseClicked():void {
+            PopUpManager.removePopUp(userLog);
+        }
+
+        private function copyLogToClipboard():void {
+            System.setClipboard(logTextArea.text);
+        }
+
+        private function enableAdvancedSettings():void {
+            var inspector:SettingsInspectorViewModel = SettingsInspectorViewModel(SAP.instance.explorers.getExplorer(ExplorerEnum.SETTINGS).inspectors.getInspectorAt(0));
+            if (inspector.topics.length <= 1) {
+                var topic:UserSettingsAdvancedTopicViewModel = new UserSettingsAdvancedTopicViewModel(inspector);
+                inspector.topics.addItem(topic);
+            }
+        }
+
+        public function showPTSD():void {
+            viewModel.showPTSD_PopUp();
+        }
+
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%">
+		
+		<mx:Text id="loadFaultDetailText" text="{viewModel.loadFaultDetail}" 
+			includeInLayout="{viewModel.loadFaultDetail.length > 0}" 
+			visible="{viewModel.loadFaultDetail.length > 0}" />
+		
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:HBox width="100%" horizontalAlign="left">
+				<mx:LinkButton styleName="standardLinkButtonStyle" label="View User Log" click="popUpUserLog()" />
+			</mx:HBox>
+			<mx:LinkButton label="copy to clipboard" click="copyToClipboard()" color="blue"/>
+		</mx:HBox>
+		
+		<mx:Form>
+			<mx:FormItem label="PSP Date:">
+				<mx:Label id="pspDateLabel" text="{viewModel.systemInformation.pspDate}"/>
+			</mx:FormItem>
+			<mx:FormItem label="SAP Date:">
+				<mx:Label id="sapDateLabel" text="{SAP.instance.PSPDate}"/>
+			</mx:FormItem>		
+			<mx:FormItem label="Build Number:">
+				<mx:Label id="buildNumberLabel" text="{viewModel.systemInformation.buildNumber}"/>
+			</mx:FormItem>
+			<mx:FormItem label="Schema Version:">
+				<mx:Label id="schemaVersionLabel" text="{viewModel.systemInformation.schemaVersion}"/>
+			</mx:FormItem>
+			<mx:FormItem label="User:">
+				<mx:Label id="userNameLabel" text="{SAP.instance.session.user.userName}" doubleClickEnabled="true" doubleClick="enableAdvancedSettings();"/>
+			</mx:FormItem>
+			<mx:FormItem label="Roles:">
+                <mx:HBox verticalAlign="middle" paddingTop="0" paddingBottom="0">
+                    <mx:Label id="roleIdLabel" text="{SAP.instance.session.user.roleIds.toString()}"/>
+                    <mx:LinkButton id="viewPermissionsButton" styleName="standardLinkButtonStyle"
+                                   label="View Permissions" click="popUpPermissions()" paddingBottom="0"/>
+                </mx:HBox>
+            </mx:FormItem>
+            <mx:FormItem label="Agency Support Dates:" paddingTop="0" paddingBottom="0">
+                <mx:HBox verticalAlign="middle" paddingTop="0" paddingBottom="0">
+                    <mx:LinkButton styleName="standardLinkButtonStyle" paddingLeft="0" paddingTop="0" paddingBottom="0"
+                                   label="View PSP Support Dates" click="showPTSD()"/>
+                </mx:HBox>
+            </mx:FormItem>
+        </mx:Form>
+        <mx:HBox width="100%" horizontalAlign="center">
+            <mx:Button label="Close" click="onCloseClicked()"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:Container>   <!-- these windows are in a non displaying container instead of changing the visibility or else it errors -->
+        <mx:TitleWindow
+                borderAlpha="1"
+                title="Permissions"
+                close="onPermissionsCloseClicked()"
+                showCloseButton="true"
+                id="permissions">
+            <mx:List id="operationsList" dataProvider="{SAP.instance.session.user.grantedOperations}"
+                     labelFunction="operationName"/>
+        </mx:TitleWindow>
+        <mx:TitleWindow
+                width="525"
+                height="350"
+                borderAlpha="1"
+                title="User Log"
+                close="onUserLogCloseClicked()"
+                showCloseButton="true"
+                id="userLog">
+            <mx:Button label="Copy to Clipboard" click="copyLogToClipboard()"/>
+            <mx:TextArea id="logTextArea" height="100%" width="100%"/>
+        </mx:TitleWindow>
+    </mx:Container>
+    <mx:Binding source="viewModel.isLoading" destination="isLoading"/>
+    <controls:PopUpPart id="paymentTemplateSupportDateModal"
+                        label="{CompanyInspectorPageEnum.PSP_PAYMENT_TEMPLATE_SUPPORT_DATES+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        isModal="false">
+        <pspui:PaymentTemplateSupportDatePopUpView id="paymentTemplateSupportDateView"
+                                                   label="{CompanyInspectorPageEnum.PSP_PAYMENT_TEMPLATE_SUPPORT_DATES}"/>
+    </controls:PopUpPart>
+</mx:TitleWindow>

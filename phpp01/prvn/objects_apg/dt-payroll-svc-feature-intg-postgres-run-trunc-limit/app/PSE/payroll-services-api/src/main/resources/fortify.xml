@@ -1,0 +1,42 @@
+<project name="fortify" basedir="." default="translate">
+
+  <property name="file.fortify_temp" location="${basedir}/fortify_temp.txt"/>
+
+  <!-- clean -->
+  <target name="clean">
+    <echo message="sourceanalyzer ${basedir} clean"/>
+    <exec dir="${basedir}" executable="sourceanalyzer.exe" failonerror="true">
+      <arg line=" -b ${sourceanalyzer.buildid} -clean"/>
+    </exec>
+    <echo message="removing ${file.fortify_temp}"/>
+    <delete file="${file.fortify_temp}"/>
+  </target>
+  
+  <!-- translate -->
+  <target name="translate">
+    <!-- 
+    TURN ON DEBUG IN TRANSLATE:  -debug -logfile fortify-debug.log
+    -->
+
+    <!-- translate all java files -->
+    <echo message="sourceanalyzer ${basedir} translate - java"/>
+    <echo file="${file.fortify_temp}">-version -source 1.5
+    -cp "${compile_classpath}"
+    "${basedir}/src"
+    </echo>
+    <exec dir="${basedir}" executable="sourceanalyzer.exe" failonerror="true">
+      <arg line="-Xmx1000M -b ${sourceanalyzer.buildid} @${file.fortify_temp}"/>
+    </exec>
+    <echo message="removing ${file.fortify_temp}"/>
+    <delete file="${file.fortify_temp}"/>
+  </target>
+
+  <!-- scan -->
+  <target name="scan">
+    <echo message="sourceanalyzer ${basedir} scan"/>
+    <exec dir="${basedir}" executable="sourceanalyzer.exe" failonerror="true">
+      <arg line=" -Xmx1000M -version -b ${sourceanalyzer.buildid} -scan -source 1.5 -f ${sourceanalyzer.buildid}.fpr -append -html-report"/>
+    </exec>
+
+  </target>
+</project>

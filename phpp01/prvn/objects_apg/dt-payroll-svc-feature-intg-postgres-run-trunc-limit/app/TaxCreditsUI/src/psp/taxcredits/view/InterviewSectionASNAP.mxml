@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+        tagText="{resourceManager.getString('interview','page_2_tag')}"
+        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        [Bindable]
+        public var question1MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question2Enabled:Boolean = false;
+        [Bindable]
+        public var question3Enabled:Boolean = false;
+        [Bindable]
+        public var question4Enabled:Boolean = false;
+        [Bindable]
+        public var question4MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question5Enabled:Boolean = false;
+
+        public var questionStructure:Array =
+                [
+                    {label:"question1MoveOnEnabled", children: []},
+                    {label:"question2Enabled", children: [
+                        {label:"question3Enabled", children: []},
+                        {label:"question4Enabled", children: [
+                            {label:"question4MoveOnEnabled", children: []},
+                            {label:"question5Enabled", children: []}
+                        ]}
+                    ]}
+                ];
+
+
+        public function onCreationComplete():void {
+            validators.addItem(snapEver.validator);
+            validators.addItem(snapLast6.validator);
+            validators.addItem(snap3of5.validator);
+            validators.addItem(benefits3Input.nameValidator);
+            validators.addItem(benefits3Input.cityValidator);
+            validators.addItem(benefits3Input.stateValidator);
+            validators.addItem(benefits5Input.nameValidator);
+            validators.addItem(benefits5Input.cityValidator);
+            validators.addItem(benefits5Input.stateValidator);
+        }
+
+
+        public function writeToModel():void {
+            if (snapEver.selectedValue == null) {
+                model.employee.snapEverSet = false;
+            } else {
+                model.employee.snapEver = snapEver.selectedValue as Boolean;
+                model.employee.snapEverSet = true;
+            }
+
+            if (snapLast6.selectedValue == null) {
+                model.employee.snapLast6Set = false;
+            } else {
+                model.employee.snapLast6 = snapLast6.selectedValue as Boolean;
+                model.employee.snapLast6Set = true;
+            }
+
+            if (snap3of5.selectedValue == null) {
+                model.employee.snap3of5Set = false;
+            } else {
+                model.employee.snap3of5 = snap3of5.selectedValue as Boolean;
+                model.employee.snap3of5Set = true;
+            }
+
+            model.employee.snap3Benefits.name = benefits3Input.nameValue;
+            model.employee.snap3Benefits.city = benefits3Input.cityValue;
+            model.employee.snap3Benefits.state = benefits3Input.stateValue;
+
+            model.employee.snap5Benefits.name = benefits5Input.nameValue;
+            model.employee.snap5Benefits.city = benefits5Input.cityValue;
+            model.employee.snap5Benefits.state = benefits5Input.stateValue;
+        }
+
+        //too complicated to do easily with binding
+        override public function readFromModel():void {
+            if (! model.employee.snapEverSet) {
+                snapEver.selectedValue = null;
+            } else {
+                snapEver.selectedValue = model.employee.snapEver;
+            }
+
+            if (! model.employee.snapLast6Set) {
+                snapLast6.selectedValue = null;
+            } else {
+                snapLast6.selectedValue = model.employee.snapLast6;
+            }
+
+            if (! model.employee.snap3of5Set) {
+                snap3of5.selectedValue = null;
+            } else {
+                snap3of5.selectedValue = model.employee.snap3of5;
+            }
+
+
+            benefits3Input.nameValue = model.employee.snap3Benefits.name;
+            benefits3Input.cityValue = model.employee.snap3Benefits.city;
+            benefits3Input.stateValue = model.employee.snap3Benefits.state;
+
+            benefits5Input.nameValue = model.employee.snap5Benefits.name;
+            benefits5Input.cityValue = model.employee.snap5Benefits.city;
+            benefits5Input.stateValue = model.employee.snap5Benefits.state;
+
+
+            var tempEnabled:Object = [];
+
+            tempEnabled.question1MoveOnEnabled = model.employee.snapEverSet && ! model.employee.snapEver;
+            tempEnabled.question2Enabled = model.employee.snapEverSet && model.employee.snapEver;
+            tempEnabled.question3Enabled = tempEnabled.question2Enabled && model.employee.snapLast6Set && model.employee.snapLast6;
+            tempEnabled.question4Enabled = tempEnabled.question2Enabled && model.employee.snapLast6Set && ! model.employee.snapLast6;
+            tempEnabled.question4MoveOnEnabled = tempEnabled.question4Enabled && model.employee.snap3of5Set && ! model.employee.snap3of5;
+            tempEnabled.question5Enabled = tempEnabled.question4Enabled && model.employee.snap3of5Set && model.employee.snap3of5;
+
+            recurseTest(tempEnabled, questionStructure);
+
+            for (var enabledVar:String in tempEnabled) {
+                this[enabledVar] = tempEnabled[enabledVar];
+            }
+
+            syncValidators();
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','snap_subheader')}"/>
+
+
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="1." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="625"
+                 text="{resourceManager.getString('interview','snap_ever')}"/>
+        <controls:InlineHelp help="{resourceManager.getString('interview','snap_ever_help')}"/>
+    </mx:HBox>
+    <mx:VBox paddingLeft="40">
+        <controls:YesNoRadio id="snapEver" yesNoChange="writeToModel()"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question1MoveOnEnabled}"
+                 htmlText="{resourceManager.getString('interview','snap_move_on')}"/>
+    </mx:VBox>
+    <mx:VBox paddingLeft="40" enabled="{question2Enabled}">
+        <mx:HBox horizontalGap="0">
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="2." paddingRight="0"/>
+            <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="625"
+                     text="{resourceManager.getString('interview','snap_last_6_months')}"/>
+        </mx:HBox>
+        <mx:VBox paddingLeft="40">
+            <controls:YesNoRadio id="snapLast6" yesNoChange="writeToModel()"/>
+        </mx:VBox>
+        <mx:VBox paddingLeft="40" enabled="{question3Enabled}">
+            <mx:HBox horizontalGap="0">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                                     text="3." paddingRight="0"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                         htmlText="{resourceManager.getString('interview','snap_enter_info')}"/>
+            </mx:HBox>
+            <controls:BenefitsInput id="benefits3Input" paddingLeft="40" paddingTop="0" change="writeToModel();"/>
+        </mx:VBox>
+        <mx:VBox paddingLeft="40" enabled="{question4Enabled}">
+            <mx:HBox horizontalGap="0">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                                     text="4." paddingRight="0"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="560"
+                         text="{resourceManager.getString('interview','snap_3_of_5')}"/>                
+            </mx:HBox>
+            <mx:VBox paddingLeft="40" paddingTop="0">
+                <controls:YesNoRadio id="snap3of5" yesNoChange="writeToModel()"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question4MoveOnEnabled}"
+                         htmlText="{resourceManager.getString('interview','snap_move_on')}"/>
+            </mx:VBox>
+            <mx:VBox paddingLeft="40" enabled="{question5Enabled}">
+                <mx:HBox horizontalGap="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="5." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="520"
+                             htmlText="{resourceManager.getString('interview','snap_enter_info')}"/>
+                </mx:HBox>
+                <controls:BenefitsInput id="benefits5Input" paddingLeft="40" paddingTop="0" change="writeToModel();"/>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+
+    
+
+
+
+
+</controls:InterviewPage>

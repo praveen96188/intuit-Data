@@ -1,0 +1,2154 @@
+19:44:17 SQL> 
+19:44:17 SQL> begin
+19:44:17   2  	  rdsadmin.rdsadmin_password_verify.create_verify_function(
+19:44:17   3  	      p_verify_function_name => 'SOX_VERIFY_FUNCTION',
+19:44:17   4  	 -- Check if the password is same as the username
+19:44:17   5  	  p_disallow_username	 => true,
+19:44:17   6  	 -- 1. Check for one non-alphabetic character
+19:44:17   7  	  p_min_special 	 => 1,
+19:44:17   8  	 -- 2. Check for one low case character
+19:44:17   9  	  p_min_lowercase	 => 1,
+19:44:17  10  	 -- 3. Check for one capital character
+19:44:17  11  	      p_min_uppercase	     => 1,
+19:44:17  12  	 -- Check if the password differs from the previous password by at least
+19:44:17  13  	 -- 3 letters
+19:44:17  14  	      p_min_different_chars  => 3,
+19:44:17  15  	 -- Check for the minimum length of the password
+19:44:17  16  	      p_min_length	     => 8 ,
+19:44:17  17  	-- disallow reverse of username
+19:44:17  18  	      p_disallow_reverse    => true,
+19:44:17  19  	 -- disallow simple string
+19:44:17  20  	      p_disallow_simple_strings    => true,
+19:44:17  21  	 -- disallow white space
+19:44:17  22  	      p_disallow_whitespace    => true,
+19:44:17  23  	 -- disallow at sign
+19:44:17  24  	      p_disallow_at_sign    => true);
+19:44:17  25  end;
+19:44:17  26  /
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:03.95
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> CREATE PROFILE "APPLICATION_HIGH_RISK_PROFILE"
+19:44:21   2  	  LIMIT
+19:44:21   3  	       COMPOSITE_LIMIT UNLIMITED
+19:44:21   4  	       SESSIONS_PER_USER UNLIMITED
+19:44:21   5  	       CPU_PER_SESSION UNLIMITED
+19:44:21   6  	       CPU_PER_CALL UNLIMITED
+19:44:21   7  	       LOGICAL_READS_PER_SESSION UNLIMITED
+19:44:21   8  	       LOGICAL_READS_PER_CALL UNLIMITED
+19:44:21   9  	       IDLE_TIME UNLIMITED
+19:44:21  10  	       CONNECT_TIME UNLIMITED
+19:44:21  11  	       PRIVATE_SGA UNLIMITED
+19:44:21  12  	       FAILED_LOGIN_ATTEMPTS UNLIMITED
+19:44:21  13  	       PASSWORD_LIFE_TIME UNLIMITED
+19:44:21  14  	       PASSWORD_REUSE_TIME 31536000/86400
+19:44:21  15  	       PASSWORD_REUSE_MAX 10
+19:44:21  16  	       PASSWORD_VERIFY_FUNCTION null
+19:44:21  17  	       PASSWORD_LOCK_TIME UNLIMITED
+19:44:21  18  	       PASSWORD_GRACE_TIME UNLIMITED ;
+
+Profile created.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> CREATE PROFILE "GENERIC_APP_PROFILE"
+19:44:21   2  LIMIT
+19:44:21   3  	  COMPOSITE_LIMIT UNLIMITED
+19:44:21   4  	  SESSIONS_PER_USER UNLIMITED
+19:44:21   5  	  CPU_PER_SESSION UNLIMITED
+19:44:21   6  	  CPU_PER_CALL UNLIMITED
+19:44:21   7  	  LOGICAL_READS_PER_SESSION UNLIMITED
+19:44:21   8  	  LOGICAL_READS_PER_CALL UNLIMITED
+19:44:21   9  	  IDLE_TIME UNLIMITED
+19:44:21  10  	  CONNECT_TIME UNLIMITED
+19:44:21  11  	  PRIVATE_SGA UNLIMITED
+19:44:21  12  	  FAILED_LOGIN_ATTEMPTS UNLIMITED
+19:44:21  13  	  PASSWORD_LIFE_TIME UNLIMITED
+19:44:21  14  	  PASSWORD_REUSE_TIME 365
+19:44:21  15  	  PASSWORD_REUSE_MAX 10
+19:44:21  16  	  PASSWORD_VERIFY_FUNCTION NULL
+19:44:21  17  	  PASSWORD_LOCK_TIME UNLIMITED
+19:44:21  18  	  PASSWORD_GRACE_TIME UNLIMITED;
+
+Profile created.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> CREATE PROFILE "SYSTEM_MONTORING_PROFILE"
+19:44:21   2  LIMIT
+19:44:21   3  	  COMPOSITE_LIMIT UNLIMITED
+19:44:21   4  	  SESSIONS_PER_USER UNLIMITED
+19:44:21   5  	  CPU_PER_SESSION UNLIMITED
+19:44:21   6  	  CPU_PER_CALL UNLIMITED
+19:44:21   7  	  LOGICAL_READS_PER_SESSION UNLIMITED
+19:44:21   8  	  LOGICAL_READS_PER_CALL UNLIMITED
+19:44:21   9  	  IDLE_TIME UNLIMITED
+19:44:21  10  	  CONNECT_TIME UNLIMITED
+19:44:21  11  	  PRIVATE_SGA UNLIMITED
+19:44:21  12  	  FAILED_LOGIN_ATTEMPTS UNLIMITED
+19:44:21  13  	  PASSWORD_LIFE_TIME UNLIMITED
+19:44:21  14  	  PASSWORD_REUSE_TIME 365
+19:44:21  15  	  PASSWORD_REUSE_MAX 10
+19:44:21  16  	  PASSWORD_VERIFY_FUNCTION NULL
+19:44:21  17  	  PASSWORD_LOCK_TIME UNLIMITED
+19:44:21  18  	  PASSWORD_GRACE_TIME UNLIMITED;
+
+Profile created.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> CREATE PROFILE "PROD_SOX_PROFILE"
+19:44:21   2  LIMIT
+19:44:21   3  	  COMPOSITE_LIMIT UNLIMITED
+19:44:21   4  	  SESSIONS_PER_USER UNLIMITED
+19:44:21   5  	  CPU_PER_SESSION UNLIMITED
+19:44:21   6  	  CPU_PER_CALL UNLIMITED
+19:44:21   7  	  LOGICAL_READS_PER_SESSION UNLIMITED
+19:44:21   8  	  LOGICAL_READS_PER_CALL UNLIMITED
+19:44:21   9  	  IDLE_TIME 15
+19:44:21  10  	  CONNECT_TIME UNLIMITED
+19:44:21  11  	  PRIVATE_SGA UNLIMITED
+19:44:21  12  	  FAILED_LOGIN_ATTEMPTS 3
+19:44:21  13  	  PASSWORD_LIFE_TIME 90
+19:44:21  14  	  PASSWORD_REUSE_TIME 365
+19:44:21  15  	  PASSWORD_REUSE_MAX 10
+19:44:21  16  	  PASSWORD_VERIFY_FUNCTION NULL
+19:44:21  17  	  PASSWORD_LOCK_TIME .042
+19:44:21  18  	  PASSWORD_GRACE_TIME 7;
+
+Profile created.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> CREATE PROFILE "INDIVIDUAL_PROFILE"
+19:44:21   2  LIMIT
+19:44:21   3  	  COMPOSITE_LIMIT UNLIMITED
+19:44:21   4  	  SESSIONS_PER_USER UNLIMITED
+19:44:21   5  	  CPU_PER_SESSION UNLIMITED
+19:44:21   6  	  CPU_PER_CALL UNLIMITED
+19:44:21   7  	  LOGICAL_READS_PER_SESSION UNLIMITED
+19:44:21   8  	  LOGICAL_READS_PER_CALL UNLIMITED
+19:44:21   9  	  IDLE_TIME 15
+19:44:21  10  	  CONNECT_TIME UNLIMITED
+19:44:21  11  	  PRIVATE_SGA UNLIMITED
+19:44:21  12  	  FAILED_LOGIN_ATTEMPTS 3
+19:44:21  13  	  PASSWORD_LIFE_TIME 90
+19:44:21  14  	  PASSWORD_REUSE_TIME 365
+19:44:21  15  	  PASSWORD_REUSE_MAX 10
+19:44:21  16  	  PASSWORD_VERIFY_FUNCTION NULL
+19:44:21  17  	  PASSWORD_LOCK_TIME .042
+19:44:21  18  	  PASSWORD_GRACE_TIME 7;
+
+Profile created.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> alter profile APPLICATION_HIGH_RISK_PROFILE limit PASSWORD_VERIFY_FUNCTION SOX_VERIFY_FUNCTION;
+
+Profile altered.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> alter profile GENERIC_APP_PROFILE limit PASSWORD_VERIFY_FUNCTION SOX_VERIFY_FUNCTION;
+
+Profile altered.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> alter profile SYSTEM_MONTORING_PROFILE limit PASSWORD_VERIFY_FUNCTION SOX_VERIFY_FUNCTION;
+
+Profile altered.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> alter profile PROD_SOX_PROFILE limit PASSWORD_VERIFY_FUNCTION SOX_VERIFY_FUNCTION;
+
+Profile altered.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> alter profile INDIVIDUAL_PROFILE limit PASSWORD_VERIFY_FUNCTION SOX_VERIFY_FUNCTION;
+
+Profile altered.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> create role PSPAPP_ROLE;
+
+Role created.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> create role PSPREAD_ROLE;
+
+Role created.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> create role mon_ops_role;
+
+Role created.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> 	 CREATE USER "PSPADM" IDENTIFIED BY "BxOZlq#if74uyr"
+19:44:21   2  	    DEFAULT TABLESPACE "PSP_DATA01"
+19:44:21   3  	    TEMPORARY TABLESPACE "TEMP"
+19:44:21   4  	    PROFILE "APPLICATION_HIGH_RISK_PROFILE";
+
+User created.
+
+Elapsed: 00:00:00.05
+19:44:21 SQL>  ALTER USER "PSPADM" LOCAL TEMPORARY TABLESPACE "SYSTEM";
+ ALTER USER "PSPADM" LOCAL TEMPORARY TABLESPACE "SYSTEM"
+*
+ERROR at line 1:
+ORA-12911: permanent tablespace cannot be temporary tablespace 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	 GRANT "CONNECT" TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	 GRANT "RESOURCE" TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	 GRANT "PSPAPP_ROLE" TO "PSPADM" WITH ADMIN OPTION;
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	 GRANT "PSPREAD_ROLE" TO "PSPADM" WITH ADMIN OPTION;
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	GRANT CREATE ANY OUTLINE TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT CREATE ANY CONTEXT TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT CREATE ROLE TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT CREATE DATABASE LINK TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DROP ANY SYNONYM TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT CREATE ANY SYNONYM TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UNLIMITED TABLESPACE TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	GRANT SELECT ON "SYS"."DBA_USERS" TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT EXECUTE ON "SYS"."DBMS_LOCK" TO "PSPADM";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPLOG"."PSE_EVENT_LOG" TO "PSPADM";
+  GRANT SELECT ON "PSPLOG"."PSE_EVENT_LOG" TO "PSPADM"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT EXECUTE ON "PSPLOG"."PK_LOGGING_MONITORING" TO "PSPADM";
+  GRANT EXECUTE ON "PSPLOG"."PK_LOGGING_MONITORING" TO "PSPADM"
+                            *
+ERROR at line 1:
+ORA-04042: procedure, function, package, or package body does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TEMP_SRC_EMP_ID_8_13" TO "PSPADM";
+  GRANT SELECT ON "APPBUGFIX"."TEMP_SRC_EMP_ID_8_13" TO "PSPADM"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TEMP_TOR_2_28" TO "PSPADM";
+  GRANT SELECT ON "APPBUGFIX"."TEMP_TOR_2_28" TO "PSPADM"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TEMP_SRC_EMP_ID" TO "PSPADM";
+  GRANT SELECT ON "APPBUGFIX"."TEMP_SRC_EMP_ID" TO "PSPADM"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT EXECUTE ON "APPBUGFIX"."FN_GMT_LOCAL_MIDNIGHT" TO "PSPADM";
+  GRANT EXECUTE ON "APPBUGFIX"."FN_GMT_LOCAL_MIDNIGHT" TO "PSPADM"
+                               *
+ERROR at line 1:
+ORA-04042: procedure, function, package, or package body does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	 ALTER USER "PSPADM" DEFAULT ROLE ALL;
+
+User altered.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	 CREATE USER "PSPAPP" IDENTIFIED BY "HvSDcx#tr03jip"
+19:44:21   2  	    DEFAULT TABLESPACE "PSP_DATA01"
+19:44:21   3  	    TEMPORARY TABLESPACE "TEMP"
+19:44:21   4  	    PROFILE "APPLICATION_HIGH_RISK_PROFILE";
+
+User created.
+
+Elapsed: 00:00:00.02
+19:44:21 SQL>  ALTER USER "PSPAPP" LOCAL TEMPORARY TABLESPACE "SYSTEM";
+ ALTER USER "PSPAPP" LOCAL TEMPORARY TABLESPACE "SYSTEM"
+*
+ERROR at line 1:
+ORA-12911: permanent tablespace cannot be temporary tablespace 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	 GRANT "CONNECT" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	 GRANT "PSPAPP_ROLE" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	GRANT CREATE ANY CONTEXT TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	GRANT SELECT ON "SYS"."DBA_USERS" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "SYS"."DBA_ROLE_PRIVS" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "SYS"."DBA_SYS_PRIVS" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "SYS"."DBA_TAB_PRIVS" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "SYS"."V_$DATABASE" TO "PSPAPP";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP";
+  GRANT DELETE ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP";
+  GRANT INSERT ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."SEQ_ATF_BATCH_ID_NBR" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."SEQ_ATF_BATCH_ID_NBR" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP";
+  GRANT SELECT ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_PERF_SST" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_ADE_LAW_MAP" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_EMPLOYER_PREFERENCE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_TAX_CREDITS_APPLICATION" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_SQL_EXECUTION_LOG_ENTRY" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_PAY_ITEM" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP";
+  GRANT UPDATE ON "PSPADM"."PSP_ENTITY_UPDATE" TO "PSPAPP"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT EXECUTE ON "PSPADM"."PK_GEMS_ACCOUNTS_RECEIVABLE" TO "PSPAPP";
+  GRANT EXECUTE ON "PSPADM"."PK_GEMS_ACCOUNTS_RECEIVABLE" TO "PSPAPP"
+                            *
+ERROR at line 1:
+ORA-04042: procedure, function, package, or package body does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT EXECUTE ON "PSPADM"."FN_GET_EDR_AMOUNT" TO "PSPAPP";
+  GRANT EXECUTE ON "PSPADM"."FN_GET_EDR_AMOUNT" TO "PSPAPP"
+                            *
+ERROR at line 1:
+ORA-04042: procedure, function, package, or package body does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT EXECUTE ON "PSPADM"."FN_GET_LEDGER_BALANCE" TO "PSPAPP";
+  GRANT EXECUTE ON "PSPADM"."FN_GET_LEDGER_BALANCE" TO "PSPAPP"
+                            *
+ERROR at line 1:
+ORA-04042: procedure, function, package, or package body does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT ALTER ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT ALTER ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT ALTER ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT ALTER ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT DELETE ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT DELETE ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INDEX ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT INDEX ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INDEX ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT INDEX ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT INSERT ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT INSERT ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT SELECT ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT SELECT ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TMP_DUP_FTS" TO "PSPAPP";
+  GRANT SELECT ON "APPBUGFIX"."TMP_DUP_FTS" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "APPBUGFIX"."TMP_PPD_RECORD_DATA" TO "PSPAPP";
+  GRANT SELECT ON "APPBUGFIX"."TMP_PPD_RECORD_DATA" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT UPDATE ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT UPDATE ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT UPDATE ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                              *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT REFERENCES ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT REFERENCES ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                                  *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT REFERENCES ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT REFERENCES ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                                  *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT ON COMMIT REFRESH ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT ON COMMIT REFRESH ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                                         *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT ON COMMIT REFRESH ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT ON COMMIT REFRESH ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                                         *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT QUERY REWRITE ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT QUERY REWRITE ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                                     *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT QUERY REWRITE ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT QUERY REWRITE ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                                     *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DEBUG ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT DEBUG ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DEBUG ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT DEBUG ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                             *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT FLASHBACK ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP";
+  GRANT FLASHBACK ON "APPBUGFIX"."TMP_ZP_FT" TO "PSPAPP"
+                                 *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT FLASHBACK ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP";
+  GRANT FLASHBACK ON "APPBUGFIX"."TMP_ZP_MMT" TO "PSPAPP"
+                                 *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 
+19:44:21 SQL> 
+19:44:21 SQL> 	 ALTER USER "PSPAPP" DEFAULT ROLE ALL;
+
+User altered.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> ALTER USER PSPAPP ACCOUNT LOCK;
+
+User altered.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 	 CREATE USER "PSPHIST_QBOE" IDENTIFIED BY VALUES 'S:5777BB434DC832CDAD9FF0414F3F4E75F40DA4D0743B6B49C3387D2D5975;T:1127A1A18097B366DB158EDF05AD5A5EC6BED64E29EDE8353A9BE3BF6A6D5C9A9C53B4C921BBC81051E371057859C3E2BD75A09D7B9AD3DD91602E2DD4C27D917E044EC4B72BCB821DB40CC366102136;6CB42E5A58027889'
+19:44:21   2  	    DEFAULT TABLESPACE "ARC_DATA01"
+19:44:21   3  	    TEMPORARY TABLESPACE "TEMP"
+19:44:21   4  	    PROFILE "APPLICATION_HIGH_RISK_PROFILE";
+
+User created.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 	 GRANT "CONNECT" TO "PSPHIST_QBOE";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	 GRANT "RESOURCE" TO "PSPHIST_QBOE";
+
+Grant succeeded.
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_TRANSMISSION_PAYROLL_RUN" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_TRANSMISSION_PAYROLL_RUN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_TRANSMISSION_PAYROLL_RUN" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_TRANSMISSION_PAYROLL_RUN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_TRANSMISSION_PAYROLL_RUN" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_TRANSMISSION_PAYROLL_RUN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_ADDRESS" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_ADDRESS" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_ADDRESS" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_ADDRESS" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_ADDRESS" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_ADDRESS" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_NOTE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_NOTE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_NOTE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_NOTE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_NOTE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_NOTE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_SERVICE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_SERVICE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_SERVICE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_SERVICE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_SERVICE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_SERVICE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_CONTACT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_CONTACT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_CONTACT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_CONTACT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_CONTACT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_CONTACT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_DDCOMPANY_SERVICE_INFO" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_DDCOMPANY_SERVICE_INFO" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_DDCOMPANY_SERVICE_INFO" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_DDCOMPANY_SERVICE_INFO" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_DDCOMPANY_SERVICE_INFO" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_DDCOMPANY_SERVICE_INFO" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_EMPLOYEE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_EMPLOYEE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_EMPLOYEE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_EMPLOYEE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_EMPLOYEE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_EMPLOYEE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_INDIVIDUAL" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_INDIVIDUAL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_INDIVIDUAL" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_INDIVIDUAL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_INDIVIDUAL" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_INDIVIDUAL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PAYROLL_RUN" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_PAYROLL_RUN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PAYROLL_RUN" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_PAYROLL_RUN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PAYROLL_RUN" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_PAYROLL_RUN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_TRANSACTION_RESPONSE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_TRANSACTION_RESPONSE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_TRANSACTION_RESPONSE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_TRANSACTION_RESPONSE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_TRANSACTION_RESPONSE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_TRANSACTION_RESPONSE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_TRANSACTION_RETURN" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_TRANSACTION_RETURN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_TRANSACTION_RETURN" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_TRANSACTION_RETURN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_TRANSACTION_RETURN" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_TRANSACTION_RETURN" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FINTXN_ONHOLDREASON_ASSOC" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FINTXN_ONHOLDREASON_ASSOC" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FINTXN_ONHOLDREASON_ASSOC" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FINTXN_ONHOLDREASON_ASSOC" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FINTXN_ONHOLDREASON_ASSOC" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FINTXN_ONHOLDREASON_ASSOC" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_BILLING_DETAIL" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_BILLING_DETAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_BILLING_DETAIL" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_BILLING_DETAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_BILLING_DETAIL" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_BILLING_DETAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_DETAIL" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_DETAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_DETAIL" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_DETAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_DETAIL" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_DETAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_SERVICE_BANK_ACCT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_SERVICE_BANK_ACCT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_SERVICE_BANK_ACCT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_SERVICE_BANK_ACCT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_SERVICE_BANK_ACCT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_SERVICE_BANK_ACCT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE_BKP" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE_BKP" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE_BKP" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PROPERTY_AUDIT_BKP" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_PROPERTY_AUDIT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PROPERTY_AUDIT_BKP" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_PROPERTY_AUDIT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PROPERTY_AUDIT_BKP" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_PROPERTY_AUDIT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_NOTE_BKP" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_NOTE_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_NOTE_BKP" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_NOTE_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_NOTE_BKP" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_NOTE_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT_BKP" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT_BKP" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT_BKP" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_EMPLOYEE_BANK_ACCOUNT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_BKP" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_BKP" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_BKP" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_BKP" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FINANCIAL_TRANSACTION" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FINANCIAL_TRANSACTION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FINANCIAL_TRANSACTION" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FINANCIAL_TRANSACTION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FINANCIAL_TRANSACTION" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FINANCIAL_TRANSACTION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_ENTRY_DETAIL_RECORD" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_ENTRY_DETAIL_RECORD" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT INSERT ON "PSPADM"."PSP_ENTRY_DETAIL_RECORD" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_ENTRY_DETAIL_RECORD" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT SELECT ON "PSPADM"."PSP_ENTRY_DETAIL_RECORD" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_ENTRY_DETAIL_RECORD" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:21 SQL> 	GRANT DELETE ON "PSPADM"."PSP_MONEY_MOVEMENT_TRANSACTION" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_MONEY_MOVEMENT_TRANSACTION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_MONEY_MOVEMENT_TRANSACTION" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_MONEY_MOVEMENT_TRANSACTION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_MONEY_MOVEMENT_TRANSACTION" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_MONEY_MOVEMENT_TRANSACTION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FINANCIAL_TRANS_STATE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_SOURCE_SYSTEM_TRANSMISSION" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_SOURCE_SYSTEM_TRANSMISSION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_SOURCE_SYSTEM_TRANSMISSION" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_SOURCE_SYSTEM_TRANSMISSION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_SOURCE_SYSTEM_TRANSMISSION" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_SOURCE_SYSTEM_TRANSMISSION" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PAYCHECK_SPLIT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_PAYCHECK_SPLIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PAYCHECK_SPLIT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_PAYCHECK_SPLIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PAYCHECK_SPLIT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_PAYCHECK_SPLIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL_PARAM" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL_PARAM" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL_PARAM" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL_PARAM" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL_PARAM" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT_EMAIL_PARAM" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."TEMP1_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."TEMP1_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."TEMP1_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."TEMP1_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."TEMP1_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."TEMP1_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."TEMP_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."TEMP_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."TEMP_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."TEMP_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."TEMP_PAYCHECK" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."TEMP_PAYCHECK" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."TEMP_COMPANY_DATAFILE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."TEMP_COMPANY_DATAFILE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."TEMP_COMPANY_DATAFILE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."TEMP_COMPANY_DATAFILE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."TEMP_COMPANY_DATAFILE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."TEMP_COMPANY_DATAFILE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_OFFERING" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_OFFERING" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_OFFERING" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_OFFERING" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_OFFERING" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_OFFERING" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_BANK_ACCOUNT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_BANK_ACCOUNT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_ON_HOLD_REASON" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_ON_HOLD_REASON" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_ON_HOLD_REASON" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_ON_HOLD_REASON" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_ON_HOLD_REASON" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_ON_HOLD_REASON" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."TEMP_FT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."TEMP_FT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."TEMP_FT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."TEMP_FT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."TEMP_FT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."TEMP_FT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_PROPERTY_AUDIT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_PROPERTY_AUDIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_PROPERTY_AUDIT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_PROPERTY_AUDIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_PROPERTY_AUDIT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_PROPERTY_AUDIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_LEDGER_BALANCE" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_LEDGER_BALANCE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_LEDGER_BALANCE" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_LEDGER_BALANCE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_LEDGER_BALANCE" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_LEDGER_BALANCE" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_CONTACT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_COMPANY" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_FRAUD_ADDRESS" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_QUICKBOOKS_INFO" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_QUICKBOOKS_INFO" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_QUICKBOOKS_INFO" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_QUICKBOOKS_INFO" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_QUICKBOOKS_INFO" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_QUICKBOOKS_INFO" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_RPT_PAID_EMPLOYEES" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_RPT_PAID_EMPLOYEES" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_RPT_PAID_EMPLOYEES" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_RPT_PAID_EMPLOYEES" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_RPT_PAID_EMPLOYEES" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_RPT_PAID_EMPLOYEES" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_ENTITLEMENT_UNIT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_ENTITLEMENT_UNIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_ENTITLEMENT_UNIT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_ENTITLEMENT_UNIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_ENTITLEMENT_UNIT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_ENTITLEMENT_UNIT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.01
+19:44:22 SQL> 	GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT" TO "PSPHIST_QBOE";
+  GRANT DELETE ON "PSPADM"."PSP_COMPANY_EVENT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT" TO "PSPHIST_QBOE";
+  GRANT INSERT ON "PSPADM"."PSP_COMPANY_EVENT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 	GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT" TO "PSPHIST_QBOE";
+  GRANT SELECT ON "PSPADM"."PSP_COMPANY_EVENT" TO "PSPHIST_QBOE"
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+Elapsed: 00:00:00.00
+19:44:22 SQL> 
+19:44:22 SQL> spool off

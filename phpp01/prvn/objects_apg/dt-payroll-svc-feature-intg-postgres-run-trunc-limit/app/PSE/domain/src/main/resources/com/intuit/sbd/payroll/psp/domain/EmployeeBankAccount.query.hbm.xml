@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <!-- Find employee bank accounts by company id, employee id and source bank account id -->
+    <query name="findEEBAByCompanyIdEEId">
+        <![CDATA[
+            Select employeeBankAccount
+    			from com.intuit.sbd.payroll.psp.domain.EmployeeBankAccount as employeeBankAccount
+            where employeeBankAccount.Employee.Company=:company
+                and employeeBankAccount.Employee.SourceEmployeeId=:srcEmployeeId
+                and (employeeBankAccount.SourceBankAccountId=:sourceBankAccountId or :sourceBankAccountId is null)
+            order by employeeBankAccount.StatusEffectiveDate, employeeBankAccount.Version 
+        ]]>
+    </query>
+    
+    <sql-query name="sqlBankAccountsOfFraudCompaniesENC">
+        <return-scalar column="employee_fk" type="string"/>
+        <return-scalar column="routing_number" type="string"/>
+        <return-scalar column="account_number_enc" type="string"/>
+        <return-scalar column="account_type_cd" type="string"/>
+        SELECT /*+ index(employeeba2_ PSP_EMPLOYEE_BANK_ACCOUNT_FK2) index(bankaccoun3_ SYS_C008577) */
+        employeeba2_.employee_fk,
+        bankaccoun3_.routing_number,
+        bankaccoun3_.account_number_enc,
+        bankaccoun3_.account_type_cd
+        FROM psp_on_hold_reason onholdreas0_
+        INNER JOIN psp_employee employee1_ ON employee1_.company_fk = onholdreas0_.company_fk
+        INNER JOIN psp_employee_bank_account employeeba2_ ON employee1_.employee_seq = employeeba2_.employee_fk
+        INNER JOIN psp_bank_account bankaccoun3_ ON employeeba2_.bank_account_fk = bankaccoun3_.bank_account_seq
+        WHERE
+        (onholdreas0_.on_hold_reason_cd IN ('Fraud', 'FraudReview'))
+        AND (onholdreas0_.expiration_date IS NULL)
+    </sql-query>
+
+    <sql-query name="sqlPayeeBankAccountsOfFraudCompaniesENC">
+        <return-scalar column="payee_fk" type="string"/>
+        <return-scalar column="routing_number" type="string"/>
+        <return-scalar column="account_number_enc" type="string"/>
+        <return-scalar column="account_type_cd" type="string"/>
+        SELECT /*+ USE_NL (onholdreas0_, payee)  USE_NL (payee, pba) */
+        pba.payee_fk,
+        bankaccoun3_.routing_number,
+        bankaccoun3_.account_number_enc,
+        bankaccoun3_.account_type_cd
+        FROM psp_on_hold_reason onholdreas0_
+        INNER JOIN psp_payee payee ON payee.company_fk = onholdreas0_.company_fk
+        INNER JOIN psp_payee_bank_account pba ON payee.payee_seq = pba.payee_fk
+        INNER JOIN psp_bank_account bankaccoun3_ ON pba.bank_account_fk = bankaccoun3_.bank_account_seq
+        WHERE
+        (onholdreas0_.on_hold_reason_cd IN ('Fraud', 'FraudReview'))
+        AND (onholdreas0_.expiration_date IS NULL)
+    </sql-query>
+
+</hibernate-mapping>
+

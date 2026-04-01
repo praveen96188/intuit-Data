@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" implements="mx.controls.listClasses.IDropInListItemRenderer" width="100%" height="100%">
+    
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.DataGrid;
+        import mx.controls.dataGridClasses.DataGridListData;
+        import mx.controls.listClasses.BaseListData;
+
+        import psp.sap.view.SAPIcons;
+
+        public var mListData:BaseListData;
+
+        [Bindable]
+        public function get listData():BaseListData {
+            return mListData;
+        }
+
+        public function set listData(value:BaseListData):void {
+            mListData = value;
+        }
+
+        override public function set data(value:Object):void {
+            super.data = value;
+            loadIfVisible();
+            dispatchEvent(new Event("lazyLoaded"));
+        }
+
+        private function loadIfVisible():void {
+            if (listData.rowIndex < DataGrid(listData.owner).rowCount + 3) {
+                column.loadFunction(data);
+            }
+        }
+
+        [Bindable(event="lazyLoaded")]
+        public function get dataValue():Object {
+            return data[DataGridListData(listData).dataField];
+        }
+
+        [Bindable(event="lazyLoaded")]
+        public function get column():LazyDataGridColumn {
+            return LazyDataGridColumn(DataGrid(listData.owner).columns[DataGridListData(listData).columnIndex]);
+        }
+
+        [Bindable(event="lazyLoaded")]
+        public function get textValue():String {
+            if (column.textFunction != null) {
+                return column.textFunction(dataValue);
+            } else {
+                return new String(dataValue);
+            }
+        }
+
+        [Bindable(event="lazyLoaded")]
+        public function get colorValue():uint {
+            if (column.colorFunction != null) {
+                return column.colorFunction(dataValue);
+            } else {
+                return getStyle("color"); //inherited default
+            }
+        }
+
+        [Bindable(event="lazyLoaded")]
+        public function get isLoaded():Boolean {
+            return dataValue is Number ?
+                    !isNaN(Number(dataValue)) :
+                    dataValue != null;
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:HBox width="99%" height="99%" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"
+             horizontalAlign="center" verticalAlign="middle" visible="{!isLoaded}" includeInLayout="{!isLoaded}">
+        <mx:Image source="{SAPIcons.spinner}" scaleX=".5" scaleY=".5"/>
+    </mx:HBox>
+    <mx:Text visible="{isLoaded}" includeInLayout="{isLoaded}"             
+             paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"
+             width="99%"
+             height="99%"
+             text="{textValue}"
+             textAlign="{column.getStyle('textAlign')}"
+             color="{colorValue}"/>
+
+</mx:Canvas>

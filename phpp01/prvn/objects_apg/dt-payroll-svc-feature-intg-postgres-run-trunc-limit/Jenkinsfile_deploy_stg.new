@@ -1,0 +1,73 @@
+// this pipeline is created explicitly for deploying in staging env. Reasons for separate job:
+// - this prevents developers to accidentally deploy in staging
+// - this avoids any change in the prod build and deployment pipeline and avoids any confusion
+// - this is temporary staging env only for parallel env
+// The library version is controled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+@Library('msaas-shared-lib') _
+
+node {
+  // setup the global static configuration
+  config = setupMsaasPipeline('msaas-config.yaml')
+}
+
+pipeline {
+  agent {
+      kubernetes {
+          label "${config.pod_label}"
+          yamlFile 'KubernetesPods.yaml'
+      }
+  }
+
+  parameters {
+      choice(name: 'ENVIRONMENT', choices: ['STG-EKS'], description: 'Environment to Deploy')
+      string(name: 'IMAGE', defaultValue: '', description: 'PSP image in format {branchName}-commitId. Ex: develop-81d78a6')
+      choice(name: 'MONOLITH', choices: ['oracle', 'postgres'], description: 'monolith db to connect to')
+      choice(name: 'AUDIT', choices: ['oracle', 'postgres'], description: 'audit db to connect to')
+
+  }
+
+  environment{
+    IMAGE_PATH = "docker.intuit.com/payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc:${params.IMAGE}"
+  }
+
+  stages {
+      stage ('Validate DB') {
+          when{
+              expression {
+                  params.ENVIRONMENT =='STG-EKS' &&
+                  (params.MONOLITH == 'postgres')
+              }
+          }
+          steps {
+              error "Selected DB not supported.."
+          }
+      }
+      stage('STG-EKS:') {
+          when {
+               expression { params.ENVIRONMENT =='STG-EKS'}
+          }
+          options {
+              lock(resource: getEnv(config, 'stg-usw2-eks').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-stg-usw2-eks-milestone')
+                           script {
+                               def dbConfig = load "DBConfig.groovy"
+                               //to generate and commit config map in deployment repo with selected db configuration before deployment
+                               dbConfig.commitDBConfigFile(config, 'stg-usw2-eks',1800, params.MONOLITH, params.AUDIT)
+                          }
+                          gitOpsDeploy(config, 'stg-usw2-eks', "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+
+  }
+}

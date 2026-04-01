@@ -1,0 +1,31 @@
+Timing is on.
+set session work_mem='64MB';
+SET
+Time: 0.420 ms
+set session maintenance_work_mem='25098MB';
+SET
+Time: 0.303 ms
+set search_path to pspadm;
+SET
+Time: 0.303 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-28 22:12:20.596995-07
+(1 row)
+
+Time: 0.419 ms
+create index concurrently psp_property_audit_i1_p0 on pspadm.psp_property_audit_p0 USING BTREE (company_fk, class_name, property_name);
+psql:psp_property_audit_new_idex.sql:8: ERROR:  relation "psp_property_audit_i1_p0" already exists
+Time: 3.204 ms
+create index concurrently psp_property_audit_i1_p1 on pspadm.psp_property_audit_p1 USING BTREE (company_fk, class_name, property_name);
+CREATE INDEX
+Time: 322598.083 ms (05:22.598)
+create index concurrently psp_property_audit_i1_p2 on pspadm.psp_property_audit_p2 USING BTREE (company_fk, class_name, property_name);
+CREATE INDEX
+Time: 338892.082 ms (05:38.892)
+create index concurrently psp_property_audit_i1_p3 on pspadm.psp_property_audit_p3 USING BTREE (company_fk, class_name, property_name);
+CREATE INDEX
+Time: 337005.866 ms (05:37.006)
+create index concurrently psp_property_audit_i1_p4 on pspadm.psp_property_audit_p4 USING BTREE (company_fk, class_name, property_name);
+./run_on_ppsp-stg-pitparmo-pspadm_owner.sh: line 2:  9953 Killed                  psql -h ppsp-stg-pitparmo.cluster-cjls0bohfgpq.us-west-2.rds.amazonaws.com -U pspadm_owner -p 5432 -d pitparmo -f $1 -a -b -e

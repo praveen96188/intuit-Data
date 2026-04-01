@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.SourceSystemEnum;
+        import psp.sap.viewmodel.FraudSettingsPageViewModel;
+
+        private var mViewModel:FraudSettingsPageViewModel;
+
+        private var mTempViewModel:FraudSettingsPageViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        private var SETTINGS_BOX_WIDTH:Number = 630;
+        [Bindable]
+        private var COLUMN_1_WIDTH:Number = 190;
+
+        [Bindable]
+        public function get viewModel():FraudSettingsPageViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:FraudSettingsPageViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+	</mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox id="dataContainer"
+             styleName="standardTabbedBody"
+             width="80%"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+
+
+        <!--Default Fraud Limits-->
+        <mx:HBox verticalAlign="top" paddingBottom="5">
+            <mx:Label text="Fraud Rule Set: "/>
+            <controls:SAPComboBox dataField="fraudRule" dataProvider="{viewModel.fraudRules}" labelField="description"/>
+        </mx:HBox>
+
+        <mx:HBox styleName="companyInformationBoxStyle" horizontalGap="0" verticalAlign="top">
+            <mx:HBox horizontalGap="0" verticalAlign="top">
+                <mx:Label text="Per Employee Fraud Thresholds" width="{COLUMN_1_WIDTH}" />
+            </mx:HBox>
+            <mx:HBox height="100%" verticalAlign="middle" width="{SETTINGS_BOX_WIDTH}" paddingRight="10" styleName="dataBoxStyle">
+                <mx:VBox width="100%" verticalGap="0" height="100%">
+                    <mx:HBox id="hboxEELimit" width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Any paid more than"/>
+                        <mx:Label id="fraudEEAcctUpdateMaxLabel" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudEEAcctUpdateMax)}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="within" />
+                        <mx:Label id="fraudEEAcctUpdateDaysLabel" text="{viewModel.fraudEEAcctUpdateXDays}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="days of bank account update" />
+                    </mx:HBox>
+                    <mx:Spacer height="5" />
+                    <mx:HBox  width="{hboxEELimit.width}" styleName="ddLimitBoxStyle">
+                        <mx:Label text="Paid in whole dollar amounts within first" />
+                        <mx:Label id="fraudEERoundPayrollsLabel" text="{viewModel.fraudEERoundPaidXPayrolls}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="payrolls" />
+                        <mx:Label text ="and payroll amount is greater than"/>
+                        <mx:Label id="fraudEERoundPaidXAmount" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudEERoundPaidXAmount)}" styleName="ddLimitDollarAmountStyle"/>
+                    </mx:HBox>
+                    <mx:Spacer height="5" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                               includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"/>
+                    <!--PSP-12056, retiring few rules-->
+                    <mx:HBox width="{hboxEELimit.width}" styleName="ddLimitBoxStyle" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}">
+                        <mx:Label text="Any paid"/>
+                        <mx:Label id="fraudEEIncreaseMaxLabel" text="{viewModel.fraudEEPercentIncreaseMax}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="% more than previous payroll within first"/>
+                        <mx:Label id="fraudEEIncreaseMaxPayrollsLabel" text="{viewModel.fraudEEPercentIncreaseMaxXPayrolls}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="payrolls"/>
+                    </mx:HBox>
+                    <mx:Spacer height="5" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                               includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"/>
+                    <mx:HBox width="{hboxEELimit.width}" styleName="ddLimitBoxStyle" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}">
+                        <mx:Label text="Any paid"/>
+                        <mx:Label text="{viewModel.fraudEEPaidXTimes}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="times in"/>
+                        <mx:Label text="{viewModel.fraudEENumberOfDaysMultiplePaychecks}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="days"/>
+                    </mx:HBox>
+                    <mx:Spacer height="5" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                               includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}" />
+                    <mx:HBox width="{hboxEELimit.width}" styleName="ddLimitBoxStyle" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}">
+                        <mx:Label text="Any paid"/>
+                        <mx:Label text="{viewModel.fraudEEPercentGreaterThanOtherEEs}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="% more than any other EE within"/>
+                        <mx:Label text="{viewModel.fraudEENewEmployeeAddedXDays}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text=" days from being added"/>
+                    </mx:HBox>
+
+                    <!-- employee has recent bank acct change and receives spike in pay  -->
+                    <mx:Spacer height="5" />
+                    <mx:HBox width="{hboxEELimit.width}" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="EE paid"/>
+                        <mx:Label text="{viewModel.fraudEEPercentGreaterThanAverage}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="% more than average of previous"/>
+                        <mx:Label text="{viewModel.fraudEENumberOfPaychecksSpikeInPay}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="paychecks within"/>
+                        <mx:Label text="{viewModel.fraudEENumberOfDaysBankAcctUpdated}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="days of bank account update"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:Spacer height="15" />
+
+        <mx:HBox styleName="companyInformationBoxStyle" horizontalGap="0" verticalAlign="top"
+                 visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                 includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}">
+            <mx:HBox horizontalGap="0" verticalAlign="top">
+                <mx:Label text="Per Payee Fraud Thresholds" width="{COLUMN_1_WIDTH}" />
+            </mx:HBox>
+            <mx:HBox height="100%" verticalAlign="middle" width="{SETTINGS_BOX_WIDTH}" paddingRight="10" styleName="dataBoxStyle">
+                <mx:VBox width="100%" verticalGap="0" height="100%">
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Any paid more than"/>
+                        <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudBPAcctUpdateMax)}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="within" />
+                        <mx:Label text="{viewModel.fraudBPAcctUpdateXDays}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="days of bank account update" />
+                    </mx:HBox>
+
+                    <mx:Spacer height="5" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                               includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}" />
+                    <mx:HBox width="{hboxEELimit.width}" styleName="ddLimitBoxStyle" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}">
+                        <mx:Label text="Any paid"/>
+                        <mx:Label text="{viewModel.fraudPayeePaidXTimes}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="times in"/>
+                        <mx:Label text="{viewModel.fraudPayeeNumberOfDaysMultiplePayments}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="days"/>
+                    </mx:HBox>
+                    <mx:Spacer height="5" />
+                    <mx:HBox  width="{hboxEELimit.width}" styleName="ddLimitBoxStyle">
+                        <mx:Label text="Paid in whole dollar amounts within first" />
+                        <mx:Label text="{viewModel.fraudBPRoundPaidXPayrolls}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="payrolls" />
+                        <mx:Label text ="and payroll amount is greater than"/>
+                        <mx:Label id="fraudBPRoundPaidXAmount" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudBPRoundPaidXAmount)}" styleName="ddLimitDollarAmountStyle"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:Spacer height="15" />
+        <!-- verify bank account limits -->
+
+        <mx:HBox styleName="companyInformationBoxStyle" height="120" horizontalGap="0" verticalAlign="top">
+            <mx:VBox verticalGap="5" verticalAlign="top" width="{COLUMN_1_WIDTH}">
+                <mx:Label text="Direct Deposit:" fontWeight="bold" />
+                <mx:Label text="Per Payroll Fraud Thresholds" />
+            </mx:VBox>
+            <mx:HBox height="100%" verticalAlign="middle" width="900" paddingRight="10" styleName="dataBoxStyle">
+                <mx:VBox width="100%" verticalGap="5" height="100%">
+                    <mx:HBox id="hboxPRLimit" width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Total more than"/>
+                        <mx:Label id="fraudPRMaxLabel" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudPRMax)}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="within the first" />
+                        <mx:Label id="fraudPRMaxPayrollsLabel" text ="{viewModel.fraudPRMaxXPayrolls}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="payrolls" />
+                    </mx:HBox>
+
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Total is" />
+                        <mx:Label id="fraudPRIncreaseMaxLabel" text="{viewModel.fraudPRPercentIncreaseMax}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="% more than previous payroll within first" />
+                        <mx:Label id="fraudPRIncreaseMaxPayrollsLabel" text="{viewModel.fraudPRPercentIncreaseMaxXPayrolls}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="payrolls"/>
+                    </mx:HBox>
+
+                    <!-- percent of ee paid to the same bank (routing number) -->
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}">
+                        <mx:Label text="Payroll with a min of "/>
+                        <mx:Label text="{viewModel.fraudPRTotalEmployeeToCheckSameBank}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" employees with "/>
+                        <mx:Label text="{viewModel.fraudPRPercentEmployeesPaidSameBank}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="% of EEs paid to same bank within the first"/>
+                        <mx:Label text="{viewModel.fraudPRNumberOfPayrollsToCheckSameBank}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="payrolls"/>
+                    </mx:HBox>
+
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Payroll with more than "/>
+                        <mx:Label text="{viewModel.fraudPREmployeesSameBankAccountMax}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" employees paid to the same bank account"/>
+                    </mx:HBox>
+
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Payroll of more than "/>
+                        <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudDDInactivityPayrollAmount)}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" when company has been inactive for "/>
+                        <mx:Label text="{viewModel.fraudDDInactivityDays}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" days and employee bank account was updated"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton id="editButton" label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:Spacer height="15" />
+
+        <mx:HBox styleName="companyInformationBoxStyle"  height="50" horizontalGap="0" verticalAlign="top"
+                 visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code|| viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                 includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code|| viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}">
+            <mx:VBox verticalGap="5" verticalAlign="top" width="{COLUMN_1_WIDTH}" >
+                <mx:Label text="Vendor Payments:" fontWeight="bold"/>
+                <mx:Label text="Per Payroll Fraud Thresholds"/>
+            </mx:VBox>
+            <mx:HBox height="100%" verticalAlign="top" width="900" paddingRight="10" styleName="dataBoxStyle">
+                <mx:VBox width="100%" verticalGap="5" height="100%">
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Total more than"/>
+                        <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudBPMax)}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="within the first" />
+                        <mx:Label text ="{viewModel.fraudBPMaxXPayrolls}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="payrolls" />
+                    </mx:HBox>
+
+                    <!-- percent of ee paid to the same bank (routing number) -->
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}">
+                        <mx:Label text="Payment with a min of "/>
+                        <mx:Label text="{viewModel.fraudBPTotalPayeesToCheckSameBank}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" payees with "/>
+                        <mx:Label text="{viewModel.fraudBPPercentPayeesPaidSameBank}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="% of payees paid to same bank within the first"/>
+                        <mx:Label text="{viewModel.fraudBPNumberOfPaymentsToCheckSameBank}" styleName="ddLimitDollarAmountStyle" />
+                        <mx:Label text="payments"/>
+                    </mx:HBox>
+
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Payroll of more than "/>
+                        <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudBPInactivityPayrollAmount)}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" when company has been inactive for "/>
+                        <mx:Label text="{viewModel.fraudBPInactivityDays}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text=" days and vendor bank account was updated "/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:Spacer height="15" />
+        <!-- verify number of payrolls submitted within X days from sign up date -->
+
+        <mx:HBox styleName="companyInformationBoxStyle" height="50" horizontalGap="0" verticalAlign="top">
+            <mx:HBox horizontalGap="0" verticalAlign="top">
+                <mx:Label text="Signup Fraud Thresholds" width="{COLUMN_1_WIDTH}" />
+            </mx:HBox>
+            <mx:HBox height="100%" verticalAlign="middle" width="900" paddingRight="10" styleName="dataBoxStyle">
+                <mx:VBox width="100%" verticalGap="0" height="100%">
+                    <mx:HBox id="hboxPRNumberOfPayrolls" width="100%" styleName="ddLimitBoxStyle" >
+                        <mx:Label text="Direct Deposit:" fontWeight="bold"/>
+                        <mx:Label text="Total more than"/>
+                        <mx:Label id="fraudPRNumberOfPayrollsLabel" text="{viewModel.fraudPRNumberOfPayrollsInXDays}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="payrolls within" />
+                        <mx:Label id="fraudPRNumberOfDaysLabel" text ="{viewModel.fraudPRNumberOfDaysForXPayrolls}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                                  includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code }"
+                                  text=" days from test debit verification date" />
+                        <mx:Label visible="{ viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                                  includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                                  text=" days from sign up date" />
+
+                        <mx:Label text ="and payroll amount is greater than"/>
+                        <mx:Label id="fraudPRXPayrollAmount" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudPRXPayrollAmount)}" styleName="ddLimitDollarAmountStyle"/>
+
+                    </mx:HBox>
+
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle"
+                             visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                             includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}">
+                        <mx:Label text="Vendor Payments:" fontWeight="bold"/>
+                        <mx:Label text="Total more than"/>
+                        <mx:Label text="{viewModel.fraudBPNumberOfPaymentsInXDays}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label text="payrolls within" />
+                        <mx:Label text ="{viewModel.fraudBPNumberOfDaysForXPayments}" styleName="ddLimitDollarAmountStyle"/>
+                        <mx:Label visible="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code}"
+                                  includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBDT.code || viewModel.fraudRule.sourceSystem == SourceSystemEnum.QBOE.code }"
+                                  text=" days from test debit verification date" />
+                        <mx:Label visible="{ viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                                  includeInLayout="{viewModel.fraudRule.sourceSystem == SourceSystemEnum.IOP.code}"
+                                  text=" days from sign up date" />
+                        <mx:Label text ="and payroll amount is greater than"/>
+                        <mx:Label id="fraudBPXPayrollAmount" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.fraudBPXPayrollAmount)}" styleName="ddLimitDollarAmountStyle"/>
+
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton id="editNumberOfPayrollsButton" label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+
+</mx:VBox>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- For EWS, this file belongs in com/intuit/payroll/psi/v01/gen/psimessage. -->
+<!-- Qube location: http://qube.intuit.com/library/display_details.cfm?doc_id=66561 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation>Payroll System Interface Schema (EWS --- AS400)</xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="PSIMessage">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Action" minOccurs="0">
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:NMTOKEN">
+							<xsd:enumeration value="CREATE_ACCOUNT"/>
+							<xsd:enumeration value="UPDATE_ACCOUNT"/>
+							<xsd:enumeration value="MIGRATE_ACCOUNT"/>
+							<xsd:enumeration value="ACTIVATE_FEATURE"/>
+							<xsd:enumeration value="QUERY_ACCT"/>
+							<xsd:enumeration value="VALID_BANK"/>
+							<xsd:enumeration value="CREATE_PIN"/>
+							<xsd:enumeration value="UPDATE_BANK"/>
+							<xsd:enumeration value="UPDATE_PIN"/>
+							<xsd:enumeration value="INACTIVATE_FEATURE"/>
+							<xsd:enumeration value="AUTHENTICATE_PIN"/>
+							<xsd:enumeration value="QUERY_OFFER"/>
+							<xsd:enumeration value="GET_MONTHLY_FEE"/>
+							<xsd:enumeration value="DEBUG_SET_FEATURE_STATUS"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<xsd:element name="RespStatus" type="ResponseType" minOccurs="0"/>
+				<xsd:element name="Company" type="CompanyType" minOccurs="0"/>
+				<xsd:element name="Feature" type="FeatureType" minOccurs="0"/>
+				<xsd:element name="Fee" type="FeeType" minOccurs="0"/>
+				<xsd:element name="DateTimeStamp" type="xsd:dateTime" minOccurs="0"/>
+				<xsd:element name="ServerId" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="ServerPassword" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="ForceRandomDollar" type="xsd:boolean" minOccurs="0"/>
+				<xsd:element name="Offer" type="OfferType" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="CompanyType">
+		<xsd:sequence>
+			<xsd:element name="PSID" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="EIN" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PayrollAdmin" type="ContactType" minOccurs="0"/>
+			<xsd:element name="PrimaryPrincipal" type="ContactType" minOccurs="0"/>
+			<xsd:element name="SecondaryPrincipal" type="ContactType" minOccurs="0"/>
+			<xsd:element name="QuickBooks" type="QuickBooksType" minOccurs="0"/>
+			<xsd:element name="LegalInfo" type="LegalType" minOccurs="0"/>
+			<xsd:element name="DBA" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PIN" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="OldPIN" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PINExists" type="xsd:boolean" minOccurs="0"/>
+			<xsd:element name="W2DeliveryPref" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="mail"/>
+						<xsd:enumeration value="electronic"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ClientPacketDeliveryPref" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="mail"/>
+						<xsd:enumeration value="electronic"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ShippingAddress" type="AddressType" minOccurs="0"/>
+			<xsd:element name="MailingAddress" type="AddressType" minOccurs="0"/>
+			<xsd:element name="LicenceNumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LastConnectedDateTime" type="xsd:dateTime" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FeatureType">
+		<xsd:sequence>
+			<xsd:element name="FeatureName" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="DD"/>
+						<xsd:enumeration value="Assisted"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Bank" type="BankType" minOccurs="0"/>
+			<xsd:element name="OfferCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SourceCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PriceCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="MostCurrentTaxYear" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Agreement" type="AgreementType" minOccurs="0"/>
+			<xsd:element name="Status" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="A"/>
+						<xsd:enumeration value="PP"/>
+						<xsd:enumeration value="PB"/>
+						<xsd:enumeration value="PE"/>
+						<xsd:enumeration value="PU"/>
+						<xsd:enumeration value="CC"/>
+						<xsd:enumeration value="TI"/>
+						<xsd:enumeration value="Sub"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="OnHold" type="xsd:boolean" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AgreementType">
+		<xsd:sequence>
+			<xsd:element name="AgreementName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="ServiceType" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SubscriptionNum" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="ServiceKey" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="CRISRowId" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SubType" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PriceType" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AddEIN" type="xsd:boolean" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ContactType">
+		<xsd:sequence>
+			<xsd:element name="Title" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="TitleSuffix" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="FirstName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="MiddleInitial" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LastName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="JobTitle" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Email" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="WorkPhone" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="HomePhone" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="HomeAddress" type="AddressType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BankType">
+		<xsd:sequence>
+			<xsd:element name="BankName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="BankAccountNumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="BankRoutingNumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="BankAccountQBName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="BankAccountType" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="CHECKING"/>
+						<xsd:enumeration value="SAVINGS"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="RandomDollarDebitRequest" type="xsd:boolean" minOccurs="0"/>
+			<xsd:element name="BankVerificationStatus" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="New"/>
+						<xsd:enumeration value="Verified"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="HoldReason" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="ACHREJECT"/>
+						<xsd:enumeration value="DDLIMIT"/>
+						<xsd:enumeration value="NACHA"/>
+						<xsd:enumeration value="OTHER"/>
+						<xsd:enumeration value="PAPERWORK"/>
+						<xsd:enumeration value="RISK"/>
+						<xsd:enumeration value="BANKCHANGE"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="PendingPayrollExists" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="Y"/>
+						<xsd:enumeration value="N"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="RandomDollar1" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="RandomDollar2" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="NoOfRetries" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LastRetryDateTime" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="RandomDebitDateTime" type="xsd:dateTime" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="LegalType">
+		<xsd:sequence>
+			<xsd:element name="LegalName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LegalAddress1" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LegalAddress2" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LegalCity" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LegalState" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="LegalZip" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="QuickBooksType">
+		<xsd:sequence>
+			<xsd:element name="AppVer" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="AppId" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AddressType">
+		<xsd:sequence>
+			<xsd:element name="Address1" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Address2" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="City" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="State" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Zip" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResponseType">
+		<xsd:sequence>
+			<xsd:element name="ErrorCode" type="xsd:int" minOccurs="0"/>
+			<xsd:element name="ErrorText" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OfferType">
+		<xsd:sequence>
+			<xsd:element name="OfferCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="FeeType">
+		<xsd:sequence>
+			<xsd:element name="MonthlyFee" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

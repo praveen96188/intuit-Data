@@ -1,0 +1,108 @@
+<?xml version="1.0" ?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="psp.taxcredits.view.*"
+        backgroundColor="#FFFFFF" layout="vertical" historyManagementEnabled="true" backgroundGradientColors="[0xFFFFFF, 0xFFFFFF]" creationComplete="onCreationComplete();"
+        verticalGap="0" paddingTop="0" paddingLeft="0" paddingRight="0"
+        verticalLineScrollSize="20" preinitialize="model.preInitialize();">
+    <mx:Metadata>
+        [ResourceBundle("header")]
+        [ResourceBundle("intro")]
+        [ResourceBundle("pages")]      
+        [ResourceBundle("interview")]
+        [ResourceBundle("eligibility")]
+        [ResourceBundle("estimateSavings")]
+        [ResourceBundle("reviewPricing")]
+        [ResourceBundle("companyInfo")]
+        [ResourceBundle("finalSteps")]
+    </mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+        import psp.taxcredits.model.PageChangeEvent;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        [Bindable]
+        public var backgroundSidesHeight:int = 1;
+
+
+        private function onCreationComplete():void {
+            model.pageManager.addEventListener(PageChangeEvent.PAGE_CHANGE, function(e:Event):void {
+                currentIndex = model.pageManager.currentIndex;
+            },false, 200);
+            model.initialize();
+        }
+
+
+        public function set currentIndex(value:int):void {
+            viewStack.selectedIndex = value;
+            viewStack.selectedChild.invalidateProperties();
+            if (viewStack.selectedChild.label == TaxCreditsPageEnum.INTRO) {
+                subHeader.visible = false;
+                viewStack.x = 0;
+                viewStack.y = 0;
+            } else {
+                subHeader.visible = true;
+                viewStack.x = 12;
+                viewStack.y = 88;
+            }
+        }
+
+        private function onPageChange(e:Event):void {
+            this.verticalScrollPosition = 0;
+        }
+
+
+        public function moveBackground():void {
+            backgroundSidesHeight = Math.max(1, viewStack.height - (706 - viewStack.y));
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Style source="psp/taxcredits/view/taxCredits.css"/>   	
+
+	<analytics:FlexTracker
+    	xmlns:analytics="com.google.analytics.components.*"
+    	id="tracker"
+    	account="UA-10237841-2"
+    	mode="AS3"
+    	visualDebug="false"
+	/>
+
+
+    <mx:VBox verticalScrollPolicy="off">
+        <view:TaxCreditsHeader paddingTop="20"/>
+        <mx:Canvas>
+            <mx:Image source="psp/taxcredits/view/assets/bg_home_top.png"/>
+            <view:Subheader id="subHeader" visible="false"/>
+            <mx:ViewStack
+                    id="viewStack" x="0" y="0" 
+                    resize="moveBackground();"
+                    paddingRight="1"
+                    paddingBottom="1"
+                    resizeToContent="true"
+                    width="100%"
+                    creationPolicy="all"
+                    change="onPageChange(event);"
+                    historyManagementEnabled="false">
+                <view:TaxCreditsIntro label="{TaxCreditsPageEnum.INTRO}"/>
+                <view:Eligibility label="{TaxCreditsPageEnum.ELIGIBILITY}"/>
+                <view:Estimate label="{TaxCreditsPageEnum.ESTIMATE}"/>
+                <view:ReviewPricing label="{TaxCreditsPageEnum.PRICING}"/>
+                <view:CollectCompanyInfo label="{TaxCreditsPageEnum.COMPANY_INFO}"/>
+                <view:FinalSteps label="{TaxCreditsPageEnum.FINAL_STEPS}"/>
+
+            </mx:ViewStack>
+            <mx:VBox id="backgroundSides" styleName="backgroundBox" width="952" y="706" height="{backgroundSidesHeight}"/>
+            <mx:Image y="{706 + backgroundSides.height}" source="psp/taxcredits/view/assets/bg_home_bot.png"/>
+        </mx:Canvas>
+        <view:TaxCreditsFooter paddingTop="25"/>
+    </mx:VBox>
+
+
+    <!--this has to be inverted because of the way GA uses the DisplayObject.
+        Also why I track the first page view from the View-->
+    <mx:Binding source="tracker" destination="model.tracker"/>    
+    
+</mx:Application>

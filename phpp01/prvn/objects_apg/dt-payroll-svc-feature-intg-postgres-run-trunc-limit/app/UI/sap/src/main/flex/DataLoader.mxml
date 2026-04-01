@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.CursorManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.remoting.RemoteObject;
+			import mx.rpc.Responder;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var dataLoaderArray:Array = null;
+				
+			public var dataLoaderService:RemoteObject = new RemoteObject("dataloaderservice");
+			
+			[Bindable]
+			public var currentDate: String;
+			
+			public function changePSPDate():void {
+				var remoteToken:AsyncToken = dataLoaderService.changePSPDate(newPSPDate.selectedDate);
+				remoteToken.addResponder(new mx.rpc.Responder(onChangePSPDateResult, onChangePSPDateFault));
+			}
+			
+			private function onChangePSPDateResult(e:ResultEvent):void {
+				Alert.show("PSP Date changed!");
+				loadServerDate();
+			}
+			
+			private function onChangePSPDateFault(e:FaultEvent):void {
+				Alert.show("Error changing PSP date.  Details: " + e.message);
+			}			
+			
+			public function loadServerDate():void {
+				var remoteToken:AsyncToken = dataLoaderService.getPSPDate();
+				remoteToken.addResponder(new mx.rpc.Responder(onLoadPSPDateResult, onLoadPSPDateFault));
+				CursorManager.setBusyCursor();
+			}
+			
+			private function onLoadPSPDateResult(e:ResultEvent):void {
+				currentDate = (e.result as Date).toString();
+				CursorManager.removeBusyCursor();
+			}
+			
+			private function onLoadPSPDateFault(e:FaultEvent):void {
+				Alert.show("Error loading PSP date.  Details: " + e.message);
+				CursorManager.removeBusyCursor();
+			}
+			
+			public function onCreationComplete():void {
+				var remoteToken:AsyncToken = dataLoaderService.getRegisteredDataLoaders();
+				remoteToken.addResponder(new mx.rpc.Responder(resultHandler, faultHandler));
+				
+				loadServerDate();
+			}
+			
+			private function resultHandler(e:ResultEvent):void {
+				dataLoaderArray = e.result as Array;
+				dataLoaderArray.sort(Array.CASEINSENSITIVE);	
+			}
+			
+			private function faultHandler(e:FaultEvent):void {
+				Alert.show("Error loading data loader list.  Details: " + e.message);
+			}
+			
+			public function loadSelected(): void {
+				loadButton.enabled = false;
+				cursorManager.setBusyCursor();
+				var remoteToken:AsyncToken = dataLoaderService.runDataLoader(dataLoaderList.selectedItem.toString());
+				remoteToken.addResponder(new mx.rpc.Responder(loaderResult, loaderFault));
+			}	
+			
+			private function loaderResult(e:ResultEvent):void {
+				Alert.show("Data loaded");
+				loadButton.enabled = true;
+				cursorManager.removeBusyCursor();
+				loadServerDate();
+			}	
+			
+			private function loaderFault(e:FaultEvent):void {
+				Alert.show("Error loading data.  Details: " + e.message);
+				loadButton.enabled = true;
+				cursorManager.removeBusyCursor();
+			}	
+		]]>
+	</mx:Script>
+	<mx:VBox>
+		<mx:Spacer height="30" />
+		<mx:HBox>
+			<mx:Spacer width="30" />
+			<mx:VBox>
+				<mx:Text id="currentPSPDate" text="{currentDate}" />
+				<mx:HBox>
+					<mx:DateChooser id="newPSPDate" />
+					<mx:Button id="newPSPDateButton" click="changePSPDate()" label="Change PSP Date" />
+				</mx:HBox>
+				<mx:Spacer height="15" />
+				<mx:List id="dataLoaderList" width="500" height="300" dataProvider="{dataLoaderArray}" />
+				<mx:Button id="loadButton" label="Run Selected Dataloader" click="loadSelected()" />
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>	
+</mx:Application>

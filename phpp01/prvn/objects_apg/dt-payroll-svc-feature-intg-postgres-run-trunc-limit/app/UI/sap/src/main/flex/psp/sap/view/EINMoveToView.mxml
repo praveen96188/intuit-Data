@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         width="714"
+         paddingLeft="7"
+         paddingTop="7"
+         paddingBottom="7"
+         paddingRight="7">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.controls.RadioButton;
+        import mx.events.CloseEvent;
+
+        import psp.sap.model.CompanySearchResult;
+        import psp.sap.model.EntitlementSearchResult;
+        import psp.sap.viewmodel.EINMoveToViewModel;
+
+        [Bindable]
+        public var viewModel:EINMoveToViewModel;
+
+        [Bindable]
+        public var moveAddText:String = "Move";
+
+        public function onSelectedEUChange(e:Event):void {
+            var rb:RadioButton = e.currentTarget as RadioButton;
+            viewModel.selectedEntitlementUnit = EntitlementSearchResult(rb.value);
+        }
+
+        public function sourceSystemLabel(item:Object, column:DataGridColumn):String {
+            return (item as CompanySearchResult).key.sourceSystemCd;
+        }
+
+        protected function set onEntitlementsLoaded(value:ArrayCollection):void {
+            viewModel.selectedEntitlementUnit = null;
+
+            //hack @see CompanyOffersView
+            entitlementUnitsGroup.selection = null;
+            for (var i:int = 0; i < value.length; i++) {
+                entitlementUnitsGroup.getRadioButtonAt(i).selected = false;
+            }
+        }
+
+        private function confirmMove():void
+        {
+            var msgString:String = "Are you sure you want to move this EIN ?";
+
+            Alert.show(msgString,
+                    "Move Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+        private function confirmVerifyHandler(e:CloseEvent):void {
+            if (e.detail == Alert.OK)
+            {
+                viewModel.save();
+            }
+        }
+        
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="{moveAddText} to {viewModel.licenseNumber}/{viewModel.eoc}" styleName="subheading"/>
+
+    <mx:HBox backgroundColor="#EEEEEE">
+        <mx:Form defaultButton="{searchButton}">
+            <mx:FormItem label="EIN:" direction="horizontal">
+                <controls:SAPTextInput dataField="ein" maxChars="10"/>
+                <mx:Button id="searchButton" label="Find Companies" enabled="{viewModel.canSave}" click="viewModel.search();"/>
+            </mx:FormItem>
+        </mx:Form>
+    </mx:HBox>
+
+
+
+    <controls:LoadingBox viewModel="{viewModel}" width="100%"
+                         visible="{!viewModel.searchResults || viewModel.searchResults.length > 0}"
+                         includeInLayout="{!viewModel.searchResults || viewModel.searchResults.length > 0}">
+        <controls:RadioButtonGroupEx
+                id="entitlementUnitsGroup"/>
+        <!-- Sorting disabled because it effs up the radio buttons-->
+        <controls:SAPDataGrid
+                dataProvider="{viewModel.searchResults}"                
+                maxRows="5"
+                width="700"
+                paddingLeft="0"
+                paddingRight="0"
+                sortableColumns="false"
+                selectable="false">
+            <controls:columns>
+                <mx:DataGridColumn
+                        width="30"
+                        headerText=""
+                        sortable="false">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:HBox horizontalAlign="center" >
+                                <mx:RadioButton
+                                        group="{outerDocument.entitlementUnitsGroup}"
+                                        value="{data}"
+                                        change="outerDocument.onSelectedEUChange(event)"/>
+                            </mx:HBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+
+                <mx:DataGridColumn
+                        editable="false"
+                        width="80"
+                        resizable="false"
+                        headerText="EIN"
+                        textAlign="center"
+                        dataField="fein"
+                        itemRenderer="mx.controls.Text"/>
+
+                <mx:DataGridColumn
+                        editable="false"
+                        minWidth="170"
+                        resizable="false"
+                        headerText="Legal Name"
+                        textAlign="center"
+                        dataField="legalName"
+                        itemRenderer="mx.controls.Text"/>
+
+                <mx:DataGridColumn
+                        editable="false"
+                        headerText="PSID"
+                        textAlign="center"
+                        dataField="PSID"
+                        width="80"
+                        itemRenderer="mx.controls.Text" />
+
+                <mx:DataGridColumn
+                        visible="{viewModel.isMove}"
+                        editable="false"
+                        headerText="License Number"
+                        textAlign="center"
+                        dataField="licenseNumber"
+                        width="120"
+                        itemRenderer="mx.controls.Text" />
+
+                <mx:DataGridColumn
+                        visible="{viewModel.isMove}"
+                        editable="false"
+                        headerText="EOC"
+                        textAlign="center"
+                        dataField="eoc"
+                        width="120"
+                        itemRenderer="mx.controls.Text" />
+
+                <mx:DataGridColumn
+                        visible="{viewModel.isMove}"
+                        editable="false"
+                        headerText="EU Status"
+                        textAlign="center"
+                        dataField="entitlementUnitStatus"
+                        width="100"
+                        itemRenderer="mx.controls.Text"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+    </controls:LoadingBox>
+
+    <mx:VBox visible="{viewModel.searchResults &amp;&amp; viewModel.searchResults.length == 0}"
+             includeInLayout="{viewModel.searchResults &amp;&amp; viewModel.searchResults.length == 0}"
+             paddingTop="0">
+        <mx:Text text="No companies found" styleName="errorMessageStyle" paddingTop="0"/>
+    </mx:VBox>
+
+    <mx:HBox width="100%" horizontalAlign="center">
+        <mx:Button label="Cancel" click="viewModel.cancel();"/>
+        <mx:Button label="{moveAddText}" click="confirmMove()" enabled="{viewModel.selectedEntitlementUnit != null}"/>
+    </mx:HBox>
+
+    <mx:Binding source="viewModel.selectedEntitlementUnit" destination="entitlementUnitsGroup.selectedValue"/>
+</mx:VBox>

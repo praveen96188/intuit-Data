@@ -1,0 +1,570 @@
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findPaycheckByCompany">
+        <![CDATA[
+			Select payCheck
+			from com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck
+			     inner join payCheck.PayrollRun as payrollRun
+			where payrollRun.Company =:company
+			    and payCheck.SourcePaycheckId =:sourcePaycheckId
+
+			]]>
+    </query>
+
+    <query name="findAssistedPaychecksByPaycheckDateRange">
+        <![CDATA[
+            Select pc.Id
+              From com.intuit.sbd.payroll.psp.domain.Paycheck as pc
+                   inner join pc.PayrollRun as pr
+                   inner join pr.Company as c
+                   inner join c.CompanyServiceSet as cs
+             Where cs.Company.SourceSystemCd = 'QBDT'
+               and cs.Service.ServiceCd = 'Assisted'
+               and cs.StatusCd != 'Terminated'
+               and cs.StatusCd != 'Cancelled'
+               and pr.PaycheckDate >= :startPaycheckDate
+               and pr.PaycheckDate <= :endPaycheckDate
+               order by c.SourceCompanyId
+			]]>
+    </query>
+
+    <query name="findNonFinalTP401kPaychecks">
+        <![CDATA[
+            Select pc
+              From com.intuit.sbd.payroll.psp.domain.Paycheck as pc
+                   inner join fetch pc.ThirdParty401kPaycheckSet as tpp
+             Where
+               pc.Company = :company
+               and pc.SourceEmployee = :sourceEmployee
+               and tpp.CurrentStateCd != 'Sent'
+               and tpp.CurrentStateCd != 'Cancelled'
+			]]>
+    </query>
+
+    <query name="findTP401kOffloadablePaychecks">
+        <![CDATA[
+            Select tppps
+              From com.intuit.sbd.payroll.psp.domain.ThirdParty401kPaycheckPendingState as tppps
+                   inner join fetch tppps.ThirdParty401kPaycheck as tpp
+                   inner join fetch tpp.Paycheck as pc
+                   inner join fetch pc.PayrollRun as pr
+                   inner join fetch pr.Company as c
+                   inner join c.CompanyServiceSet as cs
+                   inner join fetch pc.SourceEmployee
+             Where tppps.StateCd = 'Pending'
+               and tppps.InitiationDate >= cs.ServiceStartDate
+               and tppps.InitiationDate <= :initiationDate
+               and cs.StatusCd != 'Terminated'
+               and cs.StatusCd != 'Cancelled'
+             order by c.SourceCompanyId
+			]]>
+    </query>
+
+    <query name="findTP401kQueuedPaychecks">
+        <![CDATA[
+            Select pc
+              From com.intuit.sbd.payroll.psp.domain.Paycheck as pc
+                   inner join pc.PayrollRun as pr
+                   inner join pr.Company as c
+                   inner join c.CompanyServiceSet as cs
+             Where
+               pc.PayrollRun.Company = :company
+               and cs.Service.ServiceCd = 'ThirdParty401k'
+               and cs.ServiceStartDate <= :today
+               and cs.StatusCd != 'Terminated'
+               and cs.StatusCd != 'Cancelled'
+               and pr.PaycheckDate >= cs.ServiceStartDate
+               and pc.Status = 'Active'
+               and pc.SourceEmployee.SourceEmployeeId = :sourceEmployeeId
+               and not exists (
+                   Select bp.Paycheck
+                     From com.intuit.sbd.payroll.psp.domain.ThirdParty401kBatchPaycheck as bp
+                     Where bp.Paycheck = pc
+                   )
+               order by c.SourceCompanyId
+			]]>
+    </query>
+
+    <query name="findPaycheckByCompanyExcludeTxnState">
+        <![CDATA[
+			Select distinct payCheck
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			 inner join finTxn.PaycheckSplit as  payCheckSplit
+			  inner join payCheckSplit.Paycheck as payCheck
+			  inner join payCheck.PayrollRun as payrollRun
+			where payrollRun.Company =:company
+			    and payCheck.SourcePaycheckId =:sourcePaycheckId
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			    and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and payCheckSplit.Paycheck.Company = payCheckSplit.Company
+
+			]]>
+    </query>
+
+    <query name="findPaychecksBySettlementDate">
+        <![CDATA[
+			Select payCheck
+			from com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck
+			 inner join payCheck.PayrollRun as payrollRun
+			where payrollRun.Company =:company
+			    and payrollRun.PaycheckSettlementDate = :paycheckSettlementDate
+			    and payCheck.DDEmployee is not null
+			]]>
+    </query>
+
+    <query name="findTaxesForQuarterlyData">
+        <![CDATA[
+			Select distinct tax, comp.SourceCompanyId, payCheck.PayrollRun.PaycheckDate ,payCheck.SourcePaycheckId
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and payCheck.PayrollRun.Company = comp
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate < :payChkToDt
+			  order by comp.SourceCompanyId, cast(tax.Law.LawId as java.lang.Long), payCheck.PayrollRun.PaycheckDate,payCheck.SourcePaycheckId
+			]]>
+    </query>
+
+    <query name="findTaxesForCompanyQuarterlyData">
+        <![CDATA[
+			Select distinct tax,tax.Paycheck.PayrollRun.PaycheckDate,payCheck.SourcePaycheckId
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and comp.Id = :companyId
+			  and payCheck.PayrollRun.Company = comp
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate < :payChkToDt
+			  order by cast(tax.Law.LawId as java.lang.Long), tax.Paycheck.PayrollRun.PaycheckDate,payCheck.SourcePaycheckId
+			]]>
+    </query>
+
+    <query name="findSumTaxLiabilityForCompanyBtwnDates">
+        <![CDATA[
+			Select sum(tax.TaxLiabilityAmount)
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and comp.Id = :companyId
+			  and tax.Law.LawId = :lawId
+			  and payCheck.PayrollRun.Company = comp
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate < :payChkToDt
+			]]>
+    </query>
+
+    <query name="findTaxesForQuarterlyDataOrderBYEmployee">
+        <![CDATA[
+			Select distinct tax, comp.SourceCompanyId, payCheck.PayrollRun.PaycheckDate ,emp.SourceEmployeeId
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.Employee as emp
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and payCheck.PayrollRun.Company = comp
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.DDEmployee = emp
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate < :payChkToDt
+			  order by comp.SourceCompanyId,emp.SourceEmployeeId, cast(tax.Law.LawId as java.lang.Long), payCheck.PayrollRun.PaycheckDate
+			]]>
+    </query>
+
+    <query name="findTaxesForCompanyQuarterlyDataOrderByEmployee">
+        <![CDATA[
+			Select distinct tax, payCheck.PayrollRun.PaycheckDate, emp.SourceEmployeeId
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.Employee as emp
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and comp.Id = :companyId
+			  and payCheck.PayrollRun.Company = comp
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.DDEmployee = emp
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate < :payChkToDt
+			  order by emp.SourceEmployeeId, cast(tax.Law.LawId as java.lang.Long), payCheck.PayrollRun.PaycheckDate
+			]]>
+    </query>
+
+    <query name="findTaxTotalsByEmployeeAndLaw">
+        <![CDATA[
+			Select sum(tax.TaxLiabilityAmount),sum(tax.TaxableWagesAmount),sum(tax.TotalWagesAmount)
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.Employee as emp
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and comp.Id = :companyId
+			  and tax.Law.LawId = :lawId
+			  and emp.Id = :employeeId
+			  and payCheck.PayrollRun.Company = comp
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.DDEmployee = emp
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate < :payChkToDt
+			]]>
+    </query>
+
+    <query name="findTaxTotalsByLaw">
+        <![CDATA[
+			Select sum(tax.TaxLiabilityAmount),sum(tax.TaxableWagesAmount),sum(tax.TotalWagesAmount)
+			from com.intuit.sbd.payroll.psp.domain.Tax as tax,
+			     com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck
+			where tax.Law = :law
+			  and tax.Company = :company
+			  and payCheck.PayrollRun.Company = :company
+              and payCheck.Company = :company
+			  and payCheck.Status = :payCheckStatusCd
+			  and tax.Paycheck = payCheck
+			  and payCheck.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and payCheck.PayrollRun.PaycheckDate <= :payChkToDt
+			]]>
+    </query>
+
+    <query name="findAdjustmentTotalsByLaw">
+        <![CDATA[
+			Select sum(liabilityadj.Amount),sum(liabilityadj.TaxableWages),sum(liabilityadj.TotalWages)
+			from com.intuit.sbd.payroll.psp.domain.LiabilityAdjustment as liabilityadj
+			where liabilityadj.Law = :law
+			  and liabilityadj.PayrollRun.Company = :company
+			  and liabilityadj.PayrollRun.PaycheckDate >= :payChkFromDt
+			  and liabilityadj.PayrollRun.PaycheckDate <= :payChkToDt
+			]]>
+    </query>
+
+    <query name="findEmployeeCount">
+        <![CDATA[
+            select count(distinct emp)
+            from com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck
+            join payCheck.TaxSet as tax on tax.Company=:company
+            join payCheck.SourceEmployee as emp
+            where payCheck.PayrollRun.Company=:company
+            and payCheck.Company=:company
+            and payCheck.PayrollRun.PaycheckDate>=:paymentPeriodBegin
+            and payCheck.PayrollRun.PaycheckDate<=:paymentPeriodEnd
+            and tax.Law=:law
+        ]]>
+    </query>
+
+    <query name="findPaycheckPayslipsByEmployeeIdBtwnTwoDates">
+        <![CDATA[
+         select payCheck.Id as payslipId,
+                companyPayrollItem.Id as id,
+                companyPayrollItem.PayrollItem.PayrollItemCode as typeName,
+                compensation.HoursWorked as hoursInDouble,
+                compensation.CompensationAmount as amount,
+                payroll.PaycheckDate as paycheckDate,
+                payCheck.PayPeriodBeginDate as payBeginDate,
+                payCheck.PayPeriodEndDate as payEndDate,
+                qbi.OvertimeMultiplier as otMultiplier,
+                payCheck.NetAmount as netPay
+          from  com.intuit.sbd.payroll.psp.domain.Paycheck as payCheck,
+                com.intuit.sbd.payroll.psp.domain.PayrollRun as payroll,
+                com.intuit.sbd.payroll.psp.domain.Employee as employee,
+                com.intuit.sbd.payroll.psp.domain.Company as company,
+                com.intuit.sbd.payroll.psp.domain.CompanyPayrollItem as companyPayrollItem,
+                com.intuit.sbd.payroll.psp.domain.Compensation as compensation,
+                com.intuit.sbd.payroll.psp.domain.QbdtPayrollItemInfo as qbi
+          where payCheck.PayrollRun=payroll
+               and (payCheck.SourceEmployee = employee or payCheck.DDEmployee = employee)
+               and payCheck.Company=company
+               and compensation.Paycheck=payCheck
+               and compensation.CompanyPayrollItem=companyPayrollItem
+               and qbi.CompanyPayrollItem=companyPayrollItem
+               and companyPayrollItem.AdditionalPayrollItem is null
+               and payroll.PaycheckDate  >=:payPeriodBeginDate
+               and payroll.PaycheckDate  <=:payPeriodEndDate
+               and company.IAMRealmId=:realmId
+               and employee.Id=:employeeId
+               order by paycheckDate,payCheck.CreatedDate
+       ]]>
+    </query>
+
+    <query name="findPaystubPayslipsByEmployeeIdBtwnTwoDates">
+        <![CDATA[
+         select companyPayrollItem.Id as id,
+                companyPayrollItem.PayrollItem.PayrollItemCode as typeName,
+                psItem.CurAmt as amount,
+                psItem.QtyTime as hoursInString,
+                paystub.Id as payslipId,
+                paystub.PaycheckDate as paycheckDate,
+                paystub.PayBeginDate as payBeginDate,
+                paystub.PayEndDate as payEndDate,
+                paystub.GrossPay as grossPay,
+                paystub.NetPay as netPay,
+                qbi.OvertimeMultiplier as otMultiplier
+           from com.intuit.sbd.payroll.psp.domain.Paystub as paystub,
+                com.intuit.sbd.payroll.psp.domain.PstubEmployeeInfo as employeeInfo,
+                com.intuit.sbd.payroll.psp.domain.Employee as employee,
+                com.intuit.sbd.payroll.psp.domain.Company as company,
+                com.intuit.sbd.payroll.psp.domain.QbdtPayrollItemInfo as qbi,
+                com.intuit.sbd.payroll.psp.domain.PstubPayItem as psItem,
+                com.intuit.sbd.payroll.psp.domain.CompanyPayrollItem as companyPayrollItem
+          where paystub.PstubEmployeeInfo= employeeInfo
+                and paystub.Company= employeeInfo.Company
+                and psItem.Paystub=paystub
+                and psItem.Company=paystub.Company
+                and employeeInfo.Employee=employee
+                and employee.Company=company
+                and employeeInfo.Company=employee.Company
+                and qbi.ListId=psItem.PayrollItemListId
+                and qbi.CompanyPayrollItem=companyPayrollItem
+                and companyPayrollItem.AdditionalPayrollItem is null
+                and qbi.Company=company
+                and psItem.Type in ('Earnings')
+                and paystub.PaycheckDate  >=:payPeriodBeginDate
+                and paystub.PaycheckDate  <=:payPeriodEndDate
+                and company.IAMRealmId=:realmId
+                and employee.Id=:employeeId
+                order by paycheckDate,paystub.CreatedDate
+     ]]>
+    </query>
+
+    <sql-query name="SqlPaychecks">
+        <return alias="paycheck" class="com.intuit.sbd.payroll.psp.domain.Paycheck"/>
+        SELECT /*+ INDEX (pc PSP_PAYCHECK_I2) */ *
+        FROM PSP_PAYCHECK pc
+        WHERE pc.COMPANY_FK = :company_seq
+        AND pc.SOURCE_PAYCHECK_ID in (:paycheck_ids)
+     </sql-query>
+
+    <sql-query name="SqlPaycheck">
+        <return alias="paycheck" class="com.intuit.sbd.payroll.psp.domain.Paycheck"/>
+        SELECT /*+ INDEX (pc PSP_PAYCHECK_I2) */ *
+        FROM PSP_PAYCHECK pc
+        WHERE pc.COMPANY_FK = :company_seq
+        AND pc.SOURCE_PAYCHECK_ID = :paycheck_id
+     </sql-query>
+
+     <sql-query name="SqlPaychecksByStatus">
+        <return alias="paycheck" class="com.intuit.sbd.payroll.psp.domain.Paycheck"/>
+        SELECT /*+ INDEX (pc PSP_PAYCHECK_I2) */ *
+        FROM PSP_PAYCHECK pc
+        WHERE pc.COMPANY_FK = :company_seq
+        AND pc.SOURCE_PAYCHECK_ID = :paycheck_id
+        AND pc.STATUS in (:status_ids)
+     </sql-query>
+
+    <sql-query name="taxLedgerEmployeeBreakdownEnc">
+        <![CDATA[
+        select name, ssn, sum(totalwages) as sumTotalWages, sum(taxablewages) as sumTaxableWages, sum(tips) as sumTips, sum(tax) as sumTax from (
+            select pr.company_fk, pr.paycheck_date, law.payment_template_fk, law.law_id, ii.last_name || ', ' || ii.first_name || ' ' || ii.middle_name || '.'  name, ee.tax_id_enc ssn , tax.total_wages_amount totalwages, taxable_wages_amount taxablewages , tax.tips_taxable_wage_amount tips , tax.tax_liability_amount tax
+            from psp_payroll_run pr
+                join psp_paycheck pc on pc.payroll_run_fk  = pr.payroll_run_seq and pc.company_fk = :companyId
+                join psp_employee ee on ee.employee_seq = pc.source_employee_fk
+                join psp_individual ii on ii.individual_seq = ee.employee_seq
+                join psp_tax tax on tax.paycheck_fk = pc.paycheck_seq and tax.company_fk = :companyId
+                join psp_law law on tax.law_fk = law.law_id
+            where pc.status = 'Active' and pc.SOURCE_PAYCHECK_ID not like '-%'
+                   and  PAYROLL_RUN_STATUS !='Superseded'
+                   and pr.company_fk = :companyId
+            union all (
+                select pr.company_fk, pr.paycheck_date, law.payment_template_fk, law.law_id, case when la.employee_fk is null then 'CLA' else ii.last_name || ', ' || ii.first_name || ' ' || ii.middle_name || '.' end,  ee.tax_id_enc, la.total_wages, la.taxable_wages, 0, la.amount
+                from psp_payroll_run pr
+                    join psp_liability_adjustment la on la.payroll_run_fk = pr.payroll_run_seq
+                    left join psp_employee ee on ee.employee_seq = la.employee_fk
+                    left join psp_individual ii on ii.individual_seq = ee.employee_seq
+                    join psp_law law on la.law_fk = law.law_id
+                 where  PAYROLL_RUN_STATUS !='Superseded'
+                 and pr.company_fk = :companyId
+            )
+        ) result
+        where company_fk = :companyId
+              and paycheck_date >= :paycheckStart and paycheck_date <= :paycheckEnd
+              and payment_template_fk = :paymentTemplate
+              and law_id = :lawId
+        group by name, ssn
+        ]]>
+    </sql-query>
+
+    <sql-query name="paycheckPeriodAggregationQuery">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="ytdGrossAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdCommissionAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdBonusAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdOvertimeAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdOtherAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdSalaryAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdHourlyAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="year" type="java.lang.Integer"/>
+        <![CDATA[
+    select
+    employee_seq as employeeSeq,
+    SUM(gross_pay) as ytdGrossAmt,
+    SUM(commission) as ytdCommissionAmt,
+    SUM(bonus_amt) as ytdBonusAmt,
+    SUM(over_time) as ytdOvertimeAmt,
+    SUM(other_amt) as ytdOtherAmt,
+    SUM(salary_amt) as ytdSalaryAmt,
+    SUM(hourly_amt) as ytdHourlyAmt,
+    extract(year from PAYCHECK_DATE) as yr
+    from (
+    select comp.COMPENSATION_AMOUNT as gross_pay,
+    case when (cpi.payroll_item_fk  in ('Salary') and qbi.OVERTIME_MULTIPLIER <= 1)
+    then comp.COMPENSATION_AMOUNT
+    end as salary_amt,
+    case when (cpi.payroll_item_fk  in ('Hourly') and qbi.OVERTIME_MULTIPLIER <= 1)
+    then comp.COMPENSATION_AMOUNT
+    end as hourly_amt,
+    case when cpi.payroll_item_fk in ('Commission')
+    then comp.COMPENSATION_AMOUNT
+    end as commission,
+    case when cpi.payroll_item_fk in ('Bonus')
+    then comp.COMPENSATION_AMOUNT
+    end as bonus_amt,
+    case when (cpi.payroll_item_fk in ('Hourly') and qbi.OVERTIME_MULTIPLIER > 1)
+    then comp.COMPENSATION_AMOUNT
+    end as over_time,
+    case when cpi.payroll_item_fk not in ('Commission','Bonus','Hourly','Salary')
+    then comp.COMPENSATION_AMOUNT
+    end as other_amt,
+    emp.employee_seq,
+    pr.paycheck_date
+    from
+    PSP_COMPENSATION comp,
+    PSP_COMPANY co,
+    PSP_EMPLOYEE emp,
+    PSP_PAYCHECK pc,
+    PSP_PAYROLL_RUN pr,
+    PSP_COMPANY_PAYROLL_ITEM cpi,
+    PSP_QBDT_PAYROLL_ITEM_INFO qbi
+    where (emp.employee_seq = pc.d_d_employee_fk or emp.employee_seq = pc.source_employee_fk)
+    and emp.company_fk = pc.company_fk
+    and pc.paycheck_seq = comp.paycheck_fk
+    and pc.company_fk = comp.company_fk
+    and qbi.company_payroll_item_fk = comp.company_payroll_item_fk
+    and qbi.company_payroll_item_fk = cpi.company_payroll_item_seq
+    and cpi.ADDITIONAL_PAYROLL_ITEM_FK is null
+    and emp.EMPLOYEE_SEQ = :employeeId
+    and emp.COMPANY_FK = co.COMPANY_SEQ
+    and co.I_A_M_REALM_ID = :realmId
+    and pr.PAYROLL_RUN_SEQ = pc.PAYROLL_RUN_FK
+    and pr.company_fk = pc.company_fk
+    and pr.PAYCHECK_DATE >= :payPeriodBeginDate
+    and pr.PAYCHECK_DATE <= :payPeriodEndDate
+    ) result
+    group by employee_seq, extract(year from paycheck_date)
+    order by yr
+     ]]>
+    </sql-query>
+
+    <sql-query name="paystubPeriodAggregationQuery">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="ytdGrossAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdCommissionAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdBonusAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdOvertimeAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdOtherAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdSalaryAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="ytdHourlyAmt" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="year" type="java.lang.Integer"/>
+        <![CDATA[
+        select
+        employee_seq as employeeSeq,
+        SUM(gross_pay) as ytdGrossAmt,
+        SUM(commission) as ytdCommissionAmt,
+        SUM(bonus_amt) as ytdBonusAmt,
+        SUM(over_time) as ytdOvertimeAmt,
+        SUM(other_amt) as ytdOtherAmt,
+        SUM(salary_amt) as ytdSalaryAmt,
+        SUM(hourly_amt) as ytdHourlyAmt,
+        extract(year from PAYCHECK_DATE) as yr
+        from (
+        select psi.CUR_AMT as gross_pay,
+        case when (cpi.payroll_item_fk  in ('Salary') and qbi.OVERTIME_MULTIPLIER <= 1)
+        then psi.CUR_AMT
+        end as salary_amt,
+        case when (cpi.payroll_item_fk  in ('Hourly') and qbi.OVERTIME_MULTIPLIER <= 1)
+        then psi.CUR_AMT
+        end as hourly_amt,
+        case when cpi.payroll_item_fk in ('Commission')
+        then psi.CUR_AMT
+        end as commission,
+        case when cpi.payroll_item_fk in ('Bonus')
+        then psi.CUR_AMT
+        end as bonus_amt,
+        case when (cpi.payroll_item_fk in ('Hourly') and qbi.OVERTIME_MULTIPLIER > 1)
+        then psi.CUR_AMT
+        end as over_time,
+        case when cpi.payroll_item_fk not in ('Commission','Bonus','Hourly','Salary')
+        then psi.CUR_AMT
+        end as other_amt,
+        emp.employee_seq,
+        ps.paycheck_date
+        from
+        PSP_PAYSTUB ps,
+        PSP_PSTUB_EMPLOYEE_INFO psin,
+        PSP_EMPLOYEE emp,
+        PSP_COMPANY co,
+        PSP_PSTUB_PAY_ITEM psi,
+        PSP_QBDT_PAYROLL_ITEM_INFO qbi,
+        PSP_COMPANY_PAYROLL_ITEM cpi
+        where PS.PSTUB_EMPLOYEE_INFO_FK = psin.PSTUB_EMPLOYEE_INFO_SEQ
+        and ps.company_fk = psin.company_fk
+        and ps.paystub_seq = psi.paystub_fk
+        and ps.company_fk = psi.company_fk
+        and qbi.LIST_ID = psi.PAYROLL_ITEM_LIST_ID
+        and qbi.COMPANY_FK  = co.COMPANY_SEQ
+        and emp.EMPLOYEE_SEQ = PSIN.EMPLOYEE_FK
+        and emp.company_fk = psin.company_fk
+        and psi.type in ('Earnings')
+        and cpi.COMPANY_PAYROLL_ITEM_SEQ = qbi.COMPANY_PAYROLL_ITEM_FK
+        and cpi.ADDITIONAL_PAYROLL_ITEM_FK is null
+        and psin.EMPLOYEE_FK = :employeeId
+        and emp.COMPANY_FK = co.COMPANY_SEQ
+        and co.I_A_M_REALM_ID = :realmId
+        and ps.paycheck_date >= :payPeriodBeginDate
+        and ps.paycheck_date <= :payPeriodEndDate
+        ) result
+        group by employee_seq, EXTRACT(year from paycheck_date)
+        order by yr
+    ]]>
+    </sql-query>
+</hibernate-mapping>

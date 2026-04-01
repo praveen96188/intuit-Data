@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name:integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\ProvisioningABCSImpl\IntuitProvisioningOrderABM.xsd
+
+Domain: Provisioning
+Source of Truth, Perforce Location: wcgbosp4.bos.intuit.com_1666\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\ProvisioningABCSImpl
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====          Intuit ABO Provisioning Order ABM Schema Module           ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xacml-context="urn:oasis:names:tc:xacml:2.0:context:schema:cd:04" xmlns:xacml="urn:oasis:names:tc:xacml:2.0:policy:schema:cd:04" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/iep/ProvisioningOrder/IntuitProvisioningOrderABO/V1" targetNamespace="http://www.intuit.com/iep/ProvisioningOrder/IntuitProvisioningOrderABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.01">
+	<!-- ====================================================================== -->
+	<!-- ==============  Imports and Includes   =============================== -->
+	<!-- ====================================================================== -->
+	<xsd:include schemaLocation="IntuitProvisioningOrderABO.xsd"/>
+	<!-- ====================================================================== -->
+	<xsd:annotation>
+		<xsd:documentation>
+			<svcdoc:ABO>
+				<svcdoc:Description>IntuitProvisioningOrder ABM identifies all the service operations that are supported for the ProvisioningOrder ABO</svcdoc:Description>
+				<svcdoc:Type>ABM</svcdoc:Type>
+				<svcdoc:Industry/>
+				<svcdoc:ABOName>IntuitProvisioningOrderABO</svcdoc:ABOName>
+			</svcdoc:ABO>
+		</xsd:documentation>
+	</xsd:annotation>
+	<!-- ====================================================================== -->
+	<xsd:complexType name="IntuitProvisioningOrderABMType">
+		<xsd:complexContent>
+			<xsd:extension base="IntuitProvisioningOrderABOType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ==================   ProcessProvisioningOrder Service     =================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="ProcessProvisioningOrderABM" type="ProcessProvisioningOrderDataAreaType"/>
+	<xsd:complexType name="ProcessProvisioningOrderDataAreaType">
+		<xsd:sequence>
+			<xsd:element name="TransactionInfo" type="TransactionInfoType">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Info</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="ProcessProvisioningOrder"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProcessProvisioningOrderType">
+		<xsd:complexContent>
+			<xsd:extension base="IntuitProvisioningOrderABMType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="ProcessProvisioningOrder" type="ProcessProvisioningOrderType"/>
+	<!-- ====================================================================== -->
+	<!-- =============      ProcessProvisioningOrder Response Service     ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="ProcessProvisioningOrderResponseABM" type="ProcessProvisioningOrderResponseDataAreaType"/>
+	<xsd:complexType name="ProcessProvisioningOrderResponseDataAreaType">
+		<xsd:sequence>
+			<xsd:element ref="ProcessProvisioningOrderResponse"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProcessProvisioningOrderResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="ProvisioningOrderResponseType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="ProcessProvisioningOrderResponse" type="ProcessProvisioningOrderResponseType"/>
+</xsd:schema>

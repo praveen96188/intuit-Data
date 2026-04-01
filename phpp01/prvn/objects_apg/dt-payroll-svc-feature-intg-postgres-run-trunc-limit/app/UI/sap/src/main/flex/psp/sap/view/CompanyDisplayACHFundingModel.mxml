@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete();"
+	width="100%"
+	>
+    <mx:Script>
+    	<![CDATA[
+    		import psp.sap.viewmodel.CompanyEditFundingModelViewModel;
+    		    		
+			private var mViewModel:CompanyEditFundingModelViewModel;
+			private var mTempViewModel:CompanyEditFundingModelViewModel;
+			private var mCreationComplete:Boolean = false;
+			
+			[Bindable]
+			public function get viewModel():CompanyEditFundingModelViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:CompanyEditFundingModelViewModel):void {
+				if (mCreationComplete) {
+					mViewModel = value;
+				} else {
+					mTempViewModel = value;
+				}
+			}
+			
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;
+			}
+    	]]>
+    </mx:Script>
+    <mx:HBox width="100%">
+	    <mx:Text
+	    	id="fundingModelNameText"
+	    	styleName="fieldLabel"
+	    	text="{viewModel.fundingModel.name}"/>
+    </mx:HBox>
+    	    
+</mx:VBox>

@@ -1,0 +1,23 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- D:\dev\PSP\rel-1.11\PSE\Domain\src\main\model\DBUpgrade_002.000.011.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--
+
+insert into PSP_COMPANY_PAYCHECK_BATCH
+(select CHECK_PRINT_BATCH_SEQ, -1, paycheck_date, company_fk
+ from PSP_CHECK_PRINT_BATCH);
+
+Prompt COLUMN PAYCHECK_DATE;
+ALTER TABLE PSP_CHECK_PRINT_BATCH DROP COLUMN PAYCHECK_DATE;
+
+Prompt COLUMN COMPANY_FK;
+ALTER TABLE PSP_CHECK_PRINT_BATCH DROP COLUMN COMPANY_FK;
+
+update PSP_CHECK_PRINT_PAYCHECK
+set COMPANY_PAYCHECK_BATCH_FK = CHECK_PRINT_BATCH_FK;
+
+Prompt COLUMN CHECK_PRINT_BATCH_FK;
+ALTER TABLE PSP_CHECK_PRINT_PAYCHECK DROP COLUMN CHECK_PRINT_BATCH_FK;
+

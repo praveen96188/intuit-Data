@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\dev\psp\main\pse\domain\src\main\model\DBUpgradeFrom_1.1.0.0_To_1.2.0.0.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

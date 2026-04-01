@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="right" verticalGap="0">
+    <mx:Script><![CDATA[
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.EmployeeInfoTabViewModel;
+
+        [Bindable]
+        public var viewModel:EmployeeInfoTabViewModel;
+
+        [Bindable]
+        public var isTotal:Boolean;
+        [Bindable]
+        public var isVoided:Boolean;
+        [Bindable]
+        public var paycheckDate:Date;
+        [Bindable]
+        public var sourcePayrollRunId:String;
+        [Bindable]
+        public var isELA:Boolean;
+
+        [Bindable("propertyChange")]
+        public function get subHeaderText():String {
+            var returnString:String = "";
+            if (isELA) {
+                returnString += "Adj";
+                if (isVoided) {
+                    returnString += " Void";
+                }
+            } else if (isVoided) {
+                returnString = "Voided";
+            }
+            return returnString;
+        }
+
+        ]]></mx:Script>
+    <mx:LinkButton
+            visible="{!isTotal &amp;&amp; sourcePayrollRunId != null}"
+            includeInLayout="{!isTotal &amp;&amp; sourcePayrollRunId != null}"
+            label="{SAPDateFormatters.dateFormatShort.format(paycheckDate)}"
+            toolTip="View payroll transactions"
+            click="viewModel.goToPayrollTransactions(sourcePayrollRunId, paycheckDate)"
+            styleName="standardLinkButtonStyle"
+            paddingTop="0" paddingBottom="0"/>
+    <mx:Text visible="{!isTotal &amp;&amp; sourcePayrollRunId == null}"
+             includeInLayout="{!isTotal &amp;&amp; sourcePayrollRunId == null}"
+             text="{SAPDateFormatters.dateFormatShort.format(paycheckDate)}"
+             paddingTop="0" paddingBottom="0"/>
+
+    <mx:Label text="{subHeaderText}" width="68" styleName="noPadding" textAlign="center"/>
+
+    <mx:Label text="Total"
+              visible="{isTotal}"
+              includeInLayout="{isTotal}"/>
+</mx:VBox>

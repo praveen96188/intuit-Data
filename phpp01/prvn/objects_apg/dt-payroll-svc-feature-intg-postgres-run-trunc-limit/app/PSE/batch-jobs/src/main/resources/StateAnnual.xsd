@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 3 sp1 (http://www.altova.com) by April Branson (ASC X12) -->
+<xsd:schema xmlns="http://www.irs.gov/efile" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.4">
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>State Employment Schema - Schema for State Annual Reconciliation</Description>
+			<TaxYear>2007</TaxYear>
+			<Version>Draft</Version>
+			<ReleaseDate>Oct 22, 2007</ReleaseDate>
+		</xsd:documentation>
+	</xsd:annotation>
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="efileTypes.xsd"/>
+	<xsd:include schemaLocation="StateeFileTypes.xsd"/>
+	<xsd:include schemaLocation="FSETeFileTypes.xsd"/>
+	<xsd:element name="StateAnnual" type="StateAnnualType">
+		<xsd:annotation>
+			<xsd:documentation>State Annual Reconciliation</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="StateAnnualType">
+		<xsd:sequence>
+			<xsd:element name="SubmitW2" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:annotation>
+						<xsd:documentation>Indicate how w2's have been/will be submitted</xsd:documentation>
+					</xsd:annotation>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="1">
+							<xsd:annotation>
+								<xsd:documentation>Paper</xsd:documentation>
+							</xsd:annotation>
+						</xsd:enumeration>
+						<xsd:enumeration value="2">
+							<xsd:annotation>
+								<xsd:documentation>Magnetic media</xsd:documentation>
+							</xsd:annotation>
+						</xsd:enumeration>
+						<xsd:enumeration value="3">
+							<xsd:annotation>
+								<xsd:documentation>Internet</xsd:documentation>
+							</xsd:annotation>
+						</xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Submit1099" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:annotation>
+						<xsd:documentation>Indicate how w2's have been/will be submitted</xsd:documentation>
+					</xsd:annotation>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="1">
+							<xsd:annotation>
+								<xsd:documentation>Paper</xsd:documentation>
+							</xsd:annotation>
+						</xsd:enumeration>
+						<xsd:enumeration value="2">
+							<xsd:annotation>
+								<xsd:documentation>Magnetic media</xsd:documentation>
+							</xsd:annotation>
+						</xsd:enumeration>
+						<xsd:enumeration value="3">
+							<xsd:annotation>
+								<xsd:documentation>Internet</xsd:documentation>
+							</xsd:annotation>
+						</xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="NumberOfRecords" maxOccurs="4">
+				<xsd:annotation>
+					<xsd:documentation>Enter the total number of records reported this year as indicated by attribute.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="IntegerNNType">
+							<xsd:attribute name="RecordType" use="required">
+								<xsd:simpleType>
+									<xsd:restriction base="StringType">
+										<xsd:enumeration value="W2"/>
+										<xsd:enumeration value="1099"/>
+										<xsd:enumeration value="Other"/>
+										<xsd:enumeration value="Total"/>
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TotalWagesYear" type="AmountType">
+				<xsd:annotation>
+					<xsd:documentation>Enter state income tax withheld</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TotalIncomeTaxWithheld" type="AmountType">
+				<xsd:annotation>
+					<xsd:documentation>Total state income tax withheld.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TaxWithheldYear" type="AmountType">
+				<xsd:annotation>
+					<xsd:documentation>Enter state income tax withheld.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="WHPenalty" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Penalty due from prior year</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="DecimalNNType">
+						<xsd:totalDigits value="15"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AnnualPayRoll" type="AnnualPayRollType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AnnualPayRollType">
+		<xsd:sequence>
+			<xsd:element name="Employee" type="EmployeeStateRecordType" maxOccurs="unbounded"/>
+			<xsd:element name="EmployeeNameFormat" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Name format accepted by state.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EmployeeStateRecordType">
+		<xsd:sequence>
+			<xsd:element name="SSN" type="SSNType"/>
+			<xsd:element name="Employee" type="IndividualNameType"/>
+			<xsd:element name="TotalWages" type="AmountType"/>
+			<xsd:element name="TaxableWages" type="AmountType"/>
+			<xsd:element name="TaxWithheld" type="AmountType"/>
+			<xsd:element name="EmployeeContribution" type="AmountType" minOccurs="0"/>
+			<xsd:element name="WeeksWorked" type="IntegerType" minOccurs="0"/>
+			<xsd:element name="DateFirstEmployed" type="DateType" minOccurs="0"/>
+			<xsd:element name="DateOfSeparation" type="DateType" minOccurs="0"/>
+			<xsd:element name="StateOfResidence" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

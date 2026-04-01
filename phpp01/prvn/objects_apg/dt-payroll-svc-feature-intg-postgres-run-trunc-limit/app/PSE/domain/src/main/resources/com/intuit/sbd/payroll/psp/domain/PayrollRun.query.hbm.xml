@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findPayrollRunByLimitIncreaseCriteria">
+		<![CDATA[
+		Select payrollRun
+		    from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun
+			where
+			exists(
+			    Select payrollRun.Company.Id
+                from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun,
+                com.intuit.sbd.payroll.psp.domain.Company as company,
+                com.intuit.sbd.payroll.psp.domain.CompanyEvent as companyEvent
+			    where company.Id = :companyId
+			    and payrollRun.Company.Id= company.Id
+			    and companyEvent.Company.Id=company.Id
+			    and companyEvent.EventTypeCd = :eventTypeCd
+                group by payrollRun.Company.Id
+                having min(companyEvent.StatusEffectiveDate) < :earliestPayrollRunDateMin
+            )
+            and payrollRun.Company.Id = :companyId
+            and payrollRun.PayrollRunStatus in ('Complete','OffloadedAll','OffloadedDebit')
+        ]]>
+    </query>
+
+    <query name="findReversalsOffloadedPayrollRunsForDateRange">
+        <![CDATA[
+			Select distinct payrollRun
+			from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun,
+			    com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where payrollRun.Company.SourceSystemCd=:sourceSystemCd
+			    and finTxn.Company.Id=payrollRun.Company.Id
+			    and payrollRun.PayrollRunStatus=:payrollStatus
+			    and payrollRun.Id=finTxn.PayrollRun.Id
+			    and finTxn.TransactionType=:transactionType
+			    and finTxn.SettlementDate between :lowerBound and :upperBound
+			]]>
+    </query>
+
+    <query name="findVoidedPayrollsWithPendingApplyForward">
+        <![CDATA[
+			Select distinct payrollRun
+			from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun,
+			    com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where payrollRun.Company = :company
+			    and payrollRun.Id = finTxn.PayrollRun.Id
+			    and finTxn.TransactionType = :transactionType
+			    and finTxn.CurrentTransactionState = :createdState
+			    and finTxn.SettlementTypeCd = :settlementType
+			    order by payrollRun.PaycheckSettlementDate asc
+			]]>
+    </query>
+
+    <!-- todo R3/4 review payment methods for Check, ACHCredit, ACHDebit, etc. -->
+    <query name="findPayrollsByStatusOnOrBeforeMMTInitiationDate">
+        <![CDATA[
+			select distinct pr
+			from com.intuit.sbd.payroll.psp.domain.PayrollRun as pr,
+			     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as ft
+			where pr.Id = ft.PayrollRun.Id
+			  and pr.Company.SourceSystemCd = :sourceSystemCd
+			  and pr.PayrollRunStatus in (:statusList)
+			  and ft.SettlementDate >= FN_DATE_ADD(pr.CreatedDate, -2 , 'day')
+			  and ft.MoneyMovementTransaction.InitiationDate between :initDateMinus30 and :initDate
+			  and ft.MoneyMovementTransaction.MoneyMovementPaymentMethod = 'ACHDirectDeposit'
+			  and ft.MoneyMovementTransaction.Company = ft.Company
+			order by pr.CreatedDate, pr.PaycheckSettlementDate asc
+			]]>
+    </query>
+
+    <!--
+        the sys_extract_utc is used for the SQL query b/c passing the Timestamp through the PSP Application.findByNamedQuery
+        does not specify the timezone and it gets defaulted to PST (bad).
+    -->
+    <sql-query name="SqlFindPayrollsByStatusOnOrBeforeMMTInitiationDate">
+        <return alias="payrollRun" class="com.intuit.sbd.payroll.psp.domain.PayrollRun"/>
+        select /*+ index(ft PSP_FINANCIAL_TRANSACTION_FK5) index(pr PSP_PAYROLL_RUN_I2) */ distinct pr.*
+        from psp_payroll_run pr
+        join psp_financial_transaction ft on ft.payroll_run_fk = pr.payroll_run_seq and ft.company_fk = pr.company_fk
+        join psp_money_movement_transaction mmt on mmt.money_movement_transaction_seq = ft.money_movement_transaction_fk and mmt.company_fk = ft.company_fk
+        join psp_company c on c.company_seq = pr.company_fk
+        where
+        c.source_system_cd = :sourceSystemCd
+        and pr.payroll_run_status in (:statusList)
+        and ft.settlement_date >= pr.created_date - 2
+        and ft.on_hold = 1
+        and ft.current_transaction_state_fk in ('Created', 'Cancelled')
+        and mmt.initiation_date between sys_extract_utc(:initDateMinus30) and sys_extract_utc(:initDate)
+        and mmt.money_movement_payment_method = 'ACHDirectDeposit'
+        order by pr.created_date, pr.paycheck_settlement_date asc
+    </sql-query>
+
+    <sql-query name="SqlFindPayrollIdsByStatusOnOrBeforeMMTInitiationDate">
+        <return-scalar column="payroll_run_seq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        select /*+ index(ft PSP_FINANCIAL_TRANSACTION_FK5) index(pr PSP_PAYROLL_RUN_I2) */ distinct pr.payroll_run_seq
+        from psp_payroll_run pr
+            join psp_financial_transaction ft on ft.payroll_run_fk = pr.payroll_run_seq and ft.company_fk = pr.company_fk
+            join psp_money_movement_transaction mmt on mmt.money_movement_transaction_seq = ft.money_movement_transaction_fk and mmt.company_fk = ft.company_fk
+            join psp_company c on c.company_seq = pr.company_fk
+        where
+            c.source_system_cd = :sourceSystemCd
+            and pr.payroll_run_status in (:statusList)
+            and ft.settlement_date >= pr.created_date - 2
+            and ft.on_hold = 1
+            and ft.current_transaction_state_fk in ('Created', 'Cancelled')
+            and mmt.initiation_date between sys_extract_utc(:initDateMinus30) and sys_extract_utc(:initDate)
+            and mmt.money_movement_payment_method = 'ACHDirectDeposit'
+    </sql-query>
+
+    <sql-query name="SqlFindPayrollsByStatusOnOrBeforeMMTInitiationDate_postgres">
+        <return alias="payrollRun" class="com.intuit.sbd.payroll.psp.domain.PayrollRun"/>
+        select distinct pr.*
+        from psp_payroll_run pr
+        join psp_financial_transaction ft on ft.payroll_run_fk = pr.payroll_run_seq and ft.company_fk = pr.company_fk
+        join psp_money_movement_transaction mmt on mmt.money_movement_transaction_seq = ft.money_movement_transaction_fk and mmt.company_fk = ft.company_fk
+        join psp_company c on c.company_seq = pr.company_fk
+        where
+        c.source_system_cd = :sourceSystemCd
+        and pr.payroll_run_status in (:statusList)
+        and ft.settlement_date >= pr.created_date - interval '2' day
+        and ft.on_hold = 1
+        and ft.current_transaction_state_fk in ('Created', 'Cancelled')
+        and mmt.initiation_date between timezone('UTC',cast (:initDateMinus30 AS timestamptz))
+        and timezone('UTC',cast (:initDate AS timestamptz))
+        and mmt.money_movement_payment_method = 'ACHDirectDeposit'
+        order by pr.created_date, pr.paycheck_settlement_date asc
+    </sql-query>
+
+    <sql-query name="SqlFindPayrollIdsByStatusOnOrBeforeMMTInitiationDate_postgres">
+        <return-scalar column="payroll_run_seq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        select distinct pr.payroll_run_seq
+        from psp_payroll_run pr
+        join psp_financial_transaction ft on ft.payroll_run_fk = pr.payroll_run_seq and ft.company_fk = pr.company_fk
+        join psp_money_movement_transaction mmt on mmt.money_movement_transaction_seq = ft.money_movement_transaction_fk and mmt.company_fk = ft.company_fk
+        join psp_company c on c.company_seq = pr.company_fk
+        where
+        c.source_system_cd = :sourceSystemCd
+        and pr.payroll_run_status in (:statusList)
+        and ft.settlement_date >= pr.created_date - interval '2' day
+        and ft.on_hold = 1
+        and ft.current_transaction_state_fk in ('Created', 'Cancelled')
+        and mmt.initiation_date between timezone('UTC',cast (:initDateMinus30 AS timestamptz))
+        and timezone('UTC',cast (:initDate AS timestamptz))
+        and mmt.money_movement_payment_method = 'ACHDirectDeposit'
+    </sql-query>
+
+    <query name="findPriorPayrollRunBySettlementDateAndCompany">
+		<![CDATA[
+		Select payrollRun2
+		    from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun1,
+		         com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun2
+			where payrollRun1.Company = payrollRun2.Company
+			 and  payrollRun1.SourcePayRunId = :sourcePayRunId
+			 and  payrollRun2.SourcePayRunId != :sourcePayRunId
+			 and  payrollRun2.PaycheckSettlementDate <  payrollRun1.PaycheckSettlementDate
+			 and  payrollRun2.PayrollRunDate <=  payrollRun1.PayrollRunDate
+			 and  payrollRun1.PayrollRunType = 'Regular'
+			 and  payrollRun2.PayrollRunType =  'Regular'
+			 and  payrollRun1.Company = :company
+			 order by payrollRun2.PaycheckSettlementDate desc, payrollRun2.PayrollRunDate desc
+        ]]>
+    </query>
+    <query name="findNextPayrollRunBySettlementDateAndCompany">
+		<![CDATA[
+		Select payrollRun2
+		    from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun1,
+		         com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun2
+			where payrollRun1.Company = payrollRun2.Company
+			 and  payrollRun1.SourcePayRunId = :sourcePayRunId
+			 and  payrollRun2.SourcePayRunId != :sourcePayRunId
+			 and  payrollRun2.PaycheckSettlementDate >  payrollRun1.PaycheckSettlementDate
+			 and  payrollRun2.PayrollRunDate >= payrollRun1.PayrollRunDate
+			 and  payrollRun1.PayrollRunType = 'Regular'
+			 and  payrollRun2.PayrollRunType =  'Regular'
+			 and  payrollRun1.Company = :company
+			 order by payrollRun2.PaycheckSettlementDate asc, payrollRun2.PayrollRunDate asc
+        ]]>
+    </query>
+
+</hibernate-mapping>
+

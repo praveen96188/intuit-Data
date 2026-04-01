@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<project name="SAP Build Console" default="prod" basedir=".">
+    <target name="dev-All">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="dev" />
+    </target>
+    <target name="dev_Deploy">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="dev-deploy" />
+    </target>
+    <target name="prod">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="prod" />
+    </target>
+    <target name="prod_Deploy">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="prod-deploy" />
+    </target>
+
+    <target name="dev-DataLoader">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="dev-DataLoader" />
+    </target>
+
+    <target name="dev-TestRunner-All">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="dev-TestRunner-All" />
+    </target>
+    
+    <target name="dev-TestRunner-Single">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="dev-TestRunner-Single" />
+    </target>
+
+    <target name="dev-TestGen">
+         <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="dev-TestGen"  />        
+    </target>
+
+    <target name="Copy SWF to WARs">        
+        <mkdir dir="${basedir}\Adapters\SAP\out\exploded\SAP.war"/>
+        <copy file="${basedir}\SAP\out\SAPApp.swf" todir="${basedir}\Adapters\SAP\out\exploded\SAP.war" failonerror="false" overwrite="true"/>
+        <mkdir dir="${basedir}\Adapters\SAP\out\exploded\SAP-prod.war"/>
+        <copy file="${basedir}\SAP\out\SAPApp.swf" todir="${basedir}\Adapters\SAP\out\exploded\SAP-prod.war" failonerror="false" overwrite="true"/>
+    </target>
+
+    <target name="Insert test users">
+        <exec dir="${basedir}\Adapters\SAP\scripts" executable="cmd.exe" failonerror="true">
+            <arg line="/c sqlplus PSP_LOCAL/PSP_LOCAL@XE @create_sap_users.sql"/>
+        </exec>
+    </target>    
+
+    <target name="taxCredits">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="build.TaxCreditsUI"/>
+    </target>
+    <target name="taxCredits-deploy">
+        <ant antfile="TeamCity-PostBuild-SAPPackaging.xml" target="j2ee.build.jar.taxcreditsweb"/>
+    </target>
+
+</project>

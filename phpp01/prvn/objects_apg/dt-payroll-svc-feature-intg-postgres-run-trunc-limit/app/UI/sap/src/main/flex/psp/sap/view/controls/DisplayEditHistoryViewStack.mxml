@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+         initialize="onInit();"
+         height="100%"
+         width="100%">
+
+    <mx:Metadata>
+        [DefaultProperty("children")]
+    </mx:Metadata>
+
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.viewmodel.DisplayEditHistoryViewModel;
+        import psp.sap.application.SAP;
+
+        import mx.core.Container;
+
+        import flash.sampler.NewObjectSample;
+
+        import psp.sap.viewmodel.AbstractPartViewModel;
+
+        import mx.binding.utils.BindingUtils;
+
+        private var mChildren:Array = [];
+        private var mChildrenChanged:Boolean = false;
+        private var mEditAdded:Boolean = false;
+        private var mHistoryAdded:Boolean = false;
+
+        public function set children(value:Array):void
+        {
+            mChildren = value;
+
+            mChildrenChanged = true;
+        }
+
+        public function get children():Array
+        {
+            return mChildren;
+        }
+
+
+        protected function onInit():void {
+            extractChildren();
+            addDisplayView(displayView);
+        }
+
+        private var displayView:DisplayObject;
+        private var editView:DisplayObject;
+        private var historyView:DisplayObject;
+
+        private function extractChildren():void {
+            if (mChildrenChanged) {
+                displayView = null;
+                editView = null;
+                historyView = null;
+
+                if (children.length == 1) {
+                    displayView = children[0];
+                } else if (children.length == 2) {
+                    displayView = children[0];
+                    if (skipEdit) {
+                        historyView = children[1];
+                    } else {
+                        editView = children[1];
+                    }
+                } else if (children.length >= 3) {
+                    displayView = children[0];
+                    editView = children[1];
+                    historyView = children[2];
+                }
+
+                mEditViewPresent = (editView != null);
+                mHistoryViewPresent = (historyView != null);
+
+                mChildrenChanged = false;
+            }
+        }
+
+        private function addDisplayView(view:DisplayObject):void {
+            displayEditViewStack.addChild(view);
+        }
+
+        private function addEditView(view:DisplayObject):void {
+            displayEditViewStack.addChild(view);
+            mEditAdded = true;
+            ViewModelSync.associatePageViewModels(this, viewModel);
+        }
+
+        private function addHistoryView(view:DisplayObject):void {
+            historyContent.addChild(view);
+            mHistoryAdded = true;
+
+            if (historyLabelText && historyLabelText != "") {
+                historyLabel.text = historyLabelText;
+            } else if (view is Container) {
+                historyLabel.text = (view as Container).label;
+            }
+
+            ViewModelSync.associatePageViewModels(this, viewModel);
+        }
+
+        private function historyOpened():void {
+            if (! mHistoryAdded) {
+                addHistoryView(historyView);
+            }
+        }
+
+
+        [Bindable]
+        public var viewModel:DisplayEditHistoryViewModel;
+
+
+        [Bindable]
+        //if this property is false, the edit button will not appear even if there is a view
+        public var editVisible:Boolean = true;
+
+        [Bindable]
+        private var mEditViewPresent:Boolean = false;
+
+        [Bindable]
+        //if this property is false, the edit button will be disabled
+        public var editEnabled:Boolean = true;
+
+        //if this is true, the 2nd view will be history instead of edit
+        //todo vm
+        public var skipEdit:Boolean = false;
+
+
+        [Bindable]
+        private var mHistoryViewPresent:Boolean = false;
+
+        [Bindable]
+        //if this property is false, the history button will not appear even if there is a view
+        public var historyVisible:Boolean = true;
+
+        [Bindable]
+        //if this property is false, the history button will be disabled
+        public var historyEnabled:Boolean = true;
+
+        //if this is set, the label/header will be set to it, or else the view's label
+        public var historyLabelText:String;
+
+
+        public function switchToEdit():void {
+            displayEditViewStack.selectedIndex = 1;
+        }
+
+        private function set displayActive(value:Boolean):void {
+            if (value) {
+                displayEditViewStack.selectedIndex = 0;
+            } else {
+                if (! mEditAdded) {
+                    addEditView(editView);
+                }
+                displayEditViewStack.selectedIndex = 1;
+            }
+        }
+
+        protected function onExpanderTitleChange(e:Event):void {
+            dispatchEvent(new Event("titleChange", true));
+        }
+
+        [Bindable(event="titleChange")]
+        protected function getAutomationName(value:String):String {
+            //check for 2 levels of expander, though this really could be arbitrary
+            //but this entire automation stuff is a hack anyway
+            if (parent is Expander) {
+                return getAutomationNameFromExpander(parent as Expander, value);
+            } else if (parent != null && parent.parent is Expander) {
+                return getAutomationNameFromExpander(parent.parent as Expander, value);
+            } else if (id != null) {
+                return id + "_" + value;
+            } else {
+                return "automation_" + value;
+            }
+        }
+
+        protected function getAutomationNameFromExpander(expander:Expander, value:String):String {
+            if (expander.title == null) {
+                expander.addEventListener("titleChange", onExpanderTitleChange, false, 0, true);
+            } else {
+                expander.removeEventListener("titleChange", onExpanderTitleChange);
+            }
+            return expander.title + "_" + value;
+        }
+	
+		]]>
+	</mx:Script>
+    <mx:Canvas width="100%" verticalScrollPolicy="off">
+        <mx:VBox width="100%" height="100%" paddingLeft="15">
+            <pspui:SaveStatusMessage id="displayMessage" tabEnabled="false" textFieldWidth="{this.width - 100}"/>
+            <pspui:SaveStatusMessage id="editMessage" tabEnabled="false" textFieldWidth="{this.width - 100}"/>
+            <mx:ViewStack id="displayEditViewStack" width="100%" height="100%" resizeToContent="true"/>            
+        </mx:VBox>
+        <mx:HBox width="100%" horizontalAlign="right">
+            <mx:Button label="Edit"
+                       id="editButton" automationName="{getAutomationName('editButton')}"
+                       includeInLayout="false"
+                       y="0"
+                       enabled="{!viewModel.isEditingAnySubPart &amp;&amp; editEnabled}"
+                       visible="{editVisible &amp;&amp; mEditViewPresent}"
+                       click="switchToEdit()"/>
+        </mx:HBox>
+    </mx:Canvas>
+    <mx:VBox id="history" width="100%" height="100%" paddingLeft="30"
+             visible="{mHistoryViewPresent &amp;&amp; historyVisible}"
+             includeInLayout="{mHistoryViewPresent &amp;&amp; historyVisible}"
+            >
+        <mx:Spacer height="10"/>
+        <mx:HBox width="100%">
+            <mx:HBox horizontalAlign="left">
+                <mx:Label id="historyLabel" text="" fontWeight="bold" visible="false" includeInLayout="false"/>
+            </mx:HBox>
+            <mx:HBox horizontalAlign="right" width="100%">
+                <mx:Button id="showHistoryButton"
+                           labelPlacement="left"
+                           automationName="{getAutomationName('showHistoryButton')}"
+                           label="Show History"
+                           icon="{SAP.instance.icons.downArrowWithBar}"
+                           enabled="{historyEnabled}"
+                           click="viewModel.toggleHistory();"/>
+            </mx:HBox>
+        </mx:HBox>
+        <mx:VBox id="historyContent"
+                 width="100%"
+                 height="100%"
+                 visible="false"
+                 includeInLayout="false"
+                 paddingLeft="10"
+                >
+            <pspui:SaveStatusMessage id="historyMessage" tabEnabled="false" textFieldWidth="{this.width - 100}"/>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:states>
+        <mx:State name="historyClosed">
+            <mx:SetProperty target="{showHistoryButton}" name="label" value="Show History"/>
+            <mx:SetProperty target="{historyContent}" name="visible" value="false"/>
+            <mx:SetProperty target="{historyContent}" name="includeInLayout" value="false"/>
+            <mx:SetProperty target="{historyLabel}" name="visible" value="false"/>
+            <mx:SetProperty target="{historyLabel}" name="includeInLayout" value="false"/>
+        </mx:State>
+        <mx:State name="historyOpen" enterState="historyOpened();">
+            <mx:SetProperty target="{showHistoryButton}" name="label" value="Hide History"/>
+            <mx:SetProperty target="{historyContent}" name="visible" value="true"/>
+            <mx:SetProperty target="{historyContent}" name="includeInLayout" value="true"/>
+            <mx:SetProperty target="{historyLabel}" name="visible" value="true"/>
+            <mx:SetProperty target="{historyLabel}" name="includeInLayout" value="true"/>
+        </mx:State>
+    </mx:states>
+
+    <mx:transitions>
+        <mx:Transition fromState="historyOpen" toState="historyClosed">
+            <mx:Sequence>
+                <mx:SetStyleAction target="{showHistoryButton}" name="icon"
+                                   value="{SAP.instance.icons.downArrowWithBar}"/>
+            </mx:Sequence>
+        </mx:Transition>
+        <mx:Transition fromState="historyClosed" toState="historyOpen">
+            <mx:Sequence>
+                <mx:SetStyleAction target="{showHistoryButton}" name="icon"
+                                   value="{SAP.instance.icons.upArrowWithBar}"/>
+            </mx:Sequence>
+        </mx:Transition>
+    </mx:transitions>
+
+    <mx:Binding source="displayEditViewStack.selectedIndex" destination="viewModel.displayEditSelectedIndex"/>
+    <mx:Binding source="viewModel.displayActive" destination="this.displayActive"/>
+
+    <mx:Binding source="AbstractPartViewModel(viewModel.displayViewModel).saveMsg" destination="displayMessage.text"/>
+    <mx:Binding source="AbstractPartViewModel(viewModel.displayViewModel).saveFaulted"
+                destination="displayMessage.isError"/>
+    <mx:Binding source="AbstractPartViewModel(viewModel.editViewModel).saveMsg" destination="editMessage.text"/>
+    <mx:Binding source="AbstractPartViewModel(viewModel.editViewModel).saveFaulted" destination="editMessage.isError"/>
+    <mx:Binding source="AbstractPartViewModel(viewModel.historyViewModel).saveMsg" destination="historyMessage.text"/>
+    <mx:Binding source="AbstractPartViewModel(viewModel.historyViewModel).saveFaulted"
+                destination="historyMessage.isError"/>
+
+    <mx:Binding source="viewModel.currentState" destination="currentState"/>
+</mx:VBox>

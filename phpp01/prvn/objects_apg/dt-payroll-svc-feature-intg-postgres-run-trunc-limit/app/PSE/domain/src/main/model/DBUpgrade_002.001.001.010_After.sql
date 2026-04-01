@@ -1,0 +1,12 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\dev\PSP\dev\PSE\Domain\src\main\model\DBUpgrade_002.001.001.010.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--
+
+-- Moved to a predeploy script
+--update psp_payroll_run pr set PR.E_E_CALCULATION_TOKEN = 0
+--/
+--COMMIT
+--/

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name://integration/AIA/AIAComponents/functional/AIAComponents/ApplicationObjectLibrary/Intuit/V1/schemas/ntuitSalesOrderABO.xsd
+
+Domain: Order
+Source of Truth, Perforce Location: 
+wcgbosp4.bos.intuit.com_1666\//integration/AIA/AIAComponents/functional/AIAComponents/ApplicationObjectLibrary/Intuit/V1/schemas/
+
+
+
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====      Intuit ABO Sales Order ABO Schema Module                                                ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/iep/SalesOrder/IntuitSalesOrderABO/V1" xmlns:qs="http://www.intuit.com/iep/gcs/quote/xsd" xmlns:pa="http://www.intuit.com/iep/order/payauth/xsd" xmlns:ca="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" xmlns:bp="http://www.intuit.com/iep/BillingProfile/BillingProfileABO/V1" xmlns:cc="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" targetNamespace="http://www.intuit.com/iep/SalesOrder/IntuitSalesOrderABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00">
+	<xsd:import namespace="http://www.intuit.com/iep/gcs/quote/xsd" schemaLocation="QuoteService.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/order/payauth/xsd" schemaLocation="PayAuthService.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" schemaLocation="CustomerAccountBase.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" schemaLocation="CommonComponents.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/BillingProfile/BillingProfileABO/V1" schemaLocation="IntuitBillingProfileABO.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ==============       Intuit SalesOrder ABO                                           ============== -->
+	<!-- ====================================================================== -->
+	<xsd:complexType name="AccountReferenceType">
+		<xsd:sequence>
+			<xsd:element name="CustomerAccountNumber" type="ca:AccountNumberType">
+				<xsd:annotation>
+					<xsd:documentation>External Number that is given to the customer and used as a common identifier across the ecosystem.t</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CustomerAccountContactId" type="ca:ContactIdType">
+				<xsd:annotation>
+					<xsd:documentation>Unique identifer used as the common identifier for the contact across the ecosystem.  This is an internal identifier and not given to the customer.  
+					A single person can have a relationship with n different Customer Accounts.  A new CustomerAccountContact exists for each relationship. Roles and PII are managed separately for each relationship.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="PrimaryAddressId" type="ca:AddressIdType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>An account is allowed not to have an address</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="IntuitSalesOrderABO">
+		<xsd:annotation>
+			<xsd:documentation>Order Object</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="IntuitSalesOrderABOType"/>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="IntuitSalesOrderABOType">
+		<xsd:annotation>
+			<xsd:documentation>Intuit SalesOrder ABO</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="PrimaryAccountNumber" type="AccountReferenceType"/>
+			<xsd:element name="BillingProfile">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="BillingAccount" type="AccountReferenceType"/>
+						<xsd:element name="BillingProfileId" type="cc:BillingProfileIdType" minOccurs="0"/>
+						<xsd:element name="PaymentMethod" type="cc:PaymentMethodType" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="OrderSource" type="xsd:string"/>
+			<xsd:element name="OrderNumber" type="cc:OrderNumberType">
+				<xsd:annotation>
+					<xsd:documentation>Order Number is a numeric value, not to exceed 15 digits in length, must begin with a three digit prefix assigned to the order source. It is the responsiblity of the source system to guarantee uniquness</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ShippingAccount" type="AccountReferenceType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>This could be be different from the primary Customer Account</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ServiceAccount" type="AccountReferenceType">
+				<xsd:annotation>
+					<xsd:documentation>in 10.1, this should be identical to the primary Customer Account  Siebel supports Service Account only at header level.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SalesOrderLine" type="OrderLineType" maxOccurs="unbounded"/>
+			<xsd:element name="OrderDateTime" type="xsd:dateTime"/>
+			<xsd:element name="QuoteInfo">
+				<xsd:annotation>
+					<xsd:documentation>Results of a successful Quote service cal</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="SalesQuote" type="qs:SalesQuoteType"/>
+						<xsd:element name="Pricing" type="qs:PricingHeaderType">
+							<xsd:annotation>
+								<xsd:documentation>PricingDate, Promotion, PartyConcession  will not be used for order processing.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="PayAuthInfo">
+				<xsd:annotation>
+					<xsd:documentation>Results of a successful PayAuth service call</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="AuthorizationInfo" type="pa:AuthorizationInfoType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="PaymentMethodCode" type="PaymentMethodCodeType">
+				<xsd:annotation>
+					<xsd:documentation>Identify what payment method is used.  Siebel will not derive from pyament method specified in Billing Profile.
+				10.1,  the only supported values are Credit Card, and EFT</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TypeCode" type="cc:TypeCodeType">
+				<xsd:annotation>
+					<xsd:documentation>10.1, the only supported value is WEBORDER</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Status" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Not required for new order, Siebel will default to 'Pending' if no status is specified.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="StatusAsOfDate" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Siebel will default the date</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CustomerAccount" type="ca:CustomerAccountType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>CustomerAccount References in BillingProfile node must exist as a CustomerAccount.   The address information is required for partial AVS Auth.  The data provided here must be MDM data.  OrderSubmission service will *not* perform MDM lookup to check for accuracy.  It depends on the client to send the same exact data that was sent to MDM.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OrderItemType">
+		<xsd:annotation>
+			<xsd:documentation>Order Item</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ItemId" type="cc:ItemIdType"/>
+			<xsd:element name="PromotionProductNumber" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Promotion Product Number</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Description" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>A Name or Description of the Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionAttributes" type="cc:TransactionAttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Item Attributes</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LicenseId" type="cc:LicenseIdType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>A grouping mechanism that allows a customer segregate entitlements into specific partitions</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EntitlementId" type="cc:EntitlementIdType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Define an entitlement which represents  the specific features, entitlements and use  restrictions for the item along with other Property Types that may drive initial configurations for offering application setup.  
+aka. EOC</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ProductClass" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>This is an ICC attribute that represents the product family.  ERS must have this value for provisioning purpose.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OrderLineType">
+		<xsd:annotation>
+			<xsd:documentation>OrderLine Line</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ShippingAccount" type="AccountReferenceType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>This could be be different from the primary Customer Account and different per order line</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LineNumber" type="xsd:nonNegativeInteger">
+				<xsd:annotation>
+					<xsd:documentation>A unique Serial Number assigned to the line by the source system.  Each line must have a unique value on a given transaction document.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ParentLineNumber" type="xsd:nonNegativeInteger" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Parent Line Number for bundle, ensemble, etc.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RelatedLine" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="FirstProcessingDate" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="OrderQuantity" type="cc:QuantityType">
+				<xsd:annotation>
+					<xsd:documentation>The Ordered Quantity for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Status" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="ServiceLevelCode" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>service level code for shippable lineitem</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrderItem" type="OrderItemType">
+				<xsd:annotation>
+					<xsd:documentation>The Product/Service item information for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="UnitPrice" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The Unit Price of the Line Item</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:complexContent>
+						<xsd:extension base="qs:PriceType">
+							<xsd:sequence>
+								<xsd:element name="PriceDetails" type="qs:PriceDetailsType" minOccurs="0">
+									<xsd:annotation>
+										<xsd:documentation>Price Details</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:extension>
+					</xsd:complexContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="LineTotal" type="qs:AmountType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Total Cost of the Line Item (ExtCurrentCharge + ExtCurrentChargeTax + ExtNetShippingCharge + ExtNetShippingChargeTax + CreditAmount + CreditAmountTax)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Pricing" type="qs:PricingLineType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Pricing for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Adjustments" type="qs:AdjustmentsType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Adjustments Info</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Tax" type="qs:TaxType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Tax Info for the Line Item.  It includes the freight and sales tax.  Any tax objects supplied on the GetQuote message will be ignored.  The tax object will be returned on the ShowQuote message.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Freight" type="qs:FreightType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Freight Info for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ActionType" type="cc:ActionTypeType" default="ADD">
+				<xsd:annotation>
+					<xsd:documentation>The Action to be performed on the Line Item.  Specifically, it indicates whether the line item is added, updated, resumed, suspended, deleted or no action.
+				10.1, the only supported value are ADD and NONE (for CPC bank item refill order)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ActionDateTime" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which the action was/will be performed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Subscription" type="qs:SubscriptionType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Not Used in 10.1</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Fulfillment" type="qs:FulfillmentType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Fulfillment Info for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="PaymentMethodCodeType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Credit Card"/>
+			<xsd:enumeration value="EFT"/>
+			<xsd:enumeration value="Not Provided"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="SalesOrderHeaderType">
+		<xsd:annotation>
+			<xsd:documentation>SalesOrder Header</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocumentId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The unique Identifier assigned to this business transaction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DocumentDateTime" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which this service request is created or recorded</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SalesOrderRequestType">
+		<xsd:sequence>
+			<xsd:element name="CustomerAccountNumber" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SalesOrderResponseType">
+		<xsd:annotation>
+			<xsd:documentation>A data typa to represent a response to SalesOrderRequest.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Result"/>
+			<xsd:element name="SalesOrder" type="IntuitSalesOrderABOType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!--  =====       Basic Elements                                                                                    ======= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="Result" type="cc:ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Error" type="cc:ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Represents error information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Header" type="cc:HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the header information that can be supplied to DigiComms</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="TransactionInfoType">
+		<xsd:annotation>
+			<xsd:documentation>Transaction Info</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionDatetime" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Datetime</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SalesOrganization" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Sales Organization requesting the service</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

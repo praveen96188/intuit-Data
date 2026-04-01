@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   version="1.0"
+		   elementFormDefault="qualified">
+
+	<xs:element name="PayrollDesktop">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" name="Business" type="Business"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PayrollPlus">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" name="Business" type="Business"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Payroll">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="businesses" nillable="true" type="ArrayOfBusiness"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="ArrayOfBusiness">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="Business" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Business">
+		<xs:sequence>
+			<xs:element name="address" nillable="true" type="Address" />
+			<xs:element ref="Addr1" minOccurs="0" />
+			<xs:element ref="Addr2" minOccurs="0" />
+			<xs:element ref="City" minOccurs="0" />
+			<xs:element ref="State" minOccurs="0" />
+			<xs:element ref="Zip" minOccurs="0" />
+			<xs:element ref="CompanyName" minOccurs="0" />
+			<xs:element ref="EmailAddress" minOccurs="0" />
+			<xs:element ref="EmployeeCount" minOccurs="0" />
+			<xs:element name="email" nillable="true" type="xs:string"  minOccurs="0" />
+			<xs:element ref="ExternalClientId"  minOccurs="0" />
+			<xs:element name="employees" nillable="true" type="ArrayOfEmployee" />
+			<xs:element name="companyId" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" ref="fax"/>
+			<xs:element minOccurs="0" ref="featureSetName"/>
+			<xs:element ref="fein"  minOccurs="0" />
+			<xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" name="partner" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" ref="PreviousFEIN"/>
+			<xs:element minOccurs="0" ref="PayrollFrequency"/>
+			<xs:element minOccurs="0" name="phone" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" ref="Phone"/>
+			<xs:element minOccurs="0" name="product" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" ref="Status"/>
+			<xs:element minOccurs="0" ref="ShutdownInd"/>
+			<xs:element minOccurs="0" ref="ShutdownRem"/>
+			<xs:element minOccurs="0" name="sicCode" nillable="true" type="xs:string" />
+
+			<xs:element minOccurs="0" ref="SICCode"/>
+			<xs:element minOccurs="0" ref="StatusDate"/>
+			<xs:element minOccurs="0" name="source" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" name="status" nillable="true" type="xs:string" />
+			<xs:element minOccurs="0" name="statusDate" nillable="true" type="xs:string" />
+
+			<xs:element minOccurs="0" ref="TotalPayroll"/>
+			<xs:element minOccurs="0" ref="Product"/>
+			<xs:element minOccurs="0" ref="Partner"/>
+			<xs:element minOccurs="0" ref="Source"/>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="Employee" type="Employee" />
+		</xs:sequence>
+		<xs:attribute name="id" use="optional" type="xs:integer" />
+	</xs:complexType>
+
+	<xs:complexType name="Employee">
+		<xs:sequence>
+			<xs:element ref="annualGrossSalary" />
+			<xs:element minOccurs="0" ref="CheckDate" />
+			<xs:element minOccurs="0" ref="department" />
+			<xs:element ref="employeeID" />
+			<xs:element minOccurs="0" ref="PreviousEmployeeId" />
+			<xs:element minOccurs="0" ref="firstName" />
+			<xs:element minOccurs="0" ref="Hours" />
+			<xs:element minOccurs="0" ref="isExempt" />
+			<xs:element minOccurs="0" ref="isOfficer" />
+			<xs:element minOccurs="0" ref="jobDesc" />
+			<xs:element minOccurs="0" ref="lastName" />
+			<xs:element minOccurs="0" ref="middleInitial" />
+			<xs:element minOccurs="0" ref="periodStartDate" />
+			<xs:element minOccurs="0" ref="periodEndDate" />
+			<xs:element minOccurs="0" ref="State" />
+			<xs:element minOccurs="0" ref="TotalPayrollIncluded" />
+			<xs:element minOccurs="0" ref="TotalPayrollExcluded" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" ref="PayrollItem" />
+			<xs:element name="workState" nillable="true" type="xs:string" />
+			<xs:element name="paychecks" nillable="true" type="ArrayOfPaycheck" />
+		</xs:sequence>
+		<xs:attribute name="ID" use="optional" type="xs:integer" />
+		<xs:attribute name="paycheckId" use="optional" type="xs:integer" />
+	</xs:complexType>
+
+	<xs:element name="annualGrossSalary" type="xs:decimal" />
+	<xs:element name="CheckDate" type="xs:string" />
+	<xs:element name="department" type="xs:string" nillable="true" />
+	<xs:element name="employeeID" type="xs:string" />
+	<xs:element name="PreviousEmployeeId" type="xs:string" />
+	<xs:element name="firstName" type="xs:string" />
+	<xs:element name="lastName" type="xs:string" />
+	<xs:element name="middleInitial" type="xs:string" />
+	<xs:element name="Hours" type="xs:decimal" />
+	<xs:element name="isExempt" type="xs:integer" />
+	<xs:element name="isOfficer" type="xs:integer" />
+	<xs:element name="jobDesc" type="xs:string" nillable="true" />
+	<xs:element name="periodEndDate" type="xs:string" />
+	<xs:element name="periodStartDate" type="xs:string" />
+	<xs:element name="TotalPayrollIncluded" type="xs:decimal" />
+	<xs:element name="TotalPayrollExcluded" type="xs:decimal" />
+	<xs:element name="PayrollItem">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" ref="PayCode" />
+				<xs:element minOccurs="0" ref="PayDesc" />
+				<xs:element minOccurs="0" ref="PayAmount" />
+				<xs:element minOccurs="0" ref="DeductionCode" />
+				<xs:element minOccurs="0" ref="DeductionDesc" />
+				<xs:element minOccurs="0" ref="DeductionCategory" />
+				<xs:element minOccurs="0" ref="DeductionAmount" />
+			</xs:sequence>
+			<xs:attribute name="id" use="optional" type="xs:integer" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Addr1" type="xs:string"/>
+	<xs:element name="Addr2" type="xs:string"/>
+	<xs:element name="City" type="xs:string"/>
+	<xs:element name="State" type="xs:string" />
+	<xs:element name="Zip" type="xs:string"/>
+	<xs:element name="CompanyName" type="xs:string"/>
+	<xs:element name="EmailAddress" type="xs:string"/>
+	<xs:element name="EmployeeCount" type="xs:integer"/>
+	<xs:element name="ExternalClientId" type="xs:string"/>
+	<xs:element name="fein" type="xs:string"/>
+	<xs:element name="PreviousFEIN" type="xs:string"/>
+	<xs:element name="PayrollFrequency" type="xs:string"/>
+	<xs:element name="Phone" type="xs:string"/>
+	<xs:element name="fax" type="xs:string" nillable="true" />
+	<xs:element name="Status" type="xs:string"/>
+	<xs:element name="ShutdownInd" type="xs:string"/>
+	<xs:element name="ShutdownRem" type="xs:string"/>
+	<xs:element name="SICCode" type="xs:string"/>
+	<xs:element name="StatusDate" type="xs:string"/>
+	<xs:element name="TotalPayroll" type="xs:decimal"/>
+	<xs:element name="Product" type="xs:string"/>
+	<xs:element name="featureSetName" type="xs:string" nillable="true" />
+	<xs:element name="Partner" type="xs:string"/>
+	<xs:element name="Source" type="xs:string"/>
+	<xs:element name="PayCode" type="xs:string" />
+	<xs:element name="PayDesc" type="xs:string" />
+	<xs:element name="PayAmount" type="xs:decimal" />
+	<xs:element name="DeductionCode" type="xs:string" />
+	<xs:element name="DeductionDesc" type="xs:string" />
+	<xs:element name="DeductionCategory" type="xs:string" />
+	<xs:element name="DeductionAmount" type="xs:decimal" />
+
+	<xs:complexType name="Address">
+		<xs:sequence>
+			<xs:element name="addressLineOne" nillable="true" type="xs:string" />
+			<xs:element name="addressLineTwo" nillable="true" type="xs:string" />
+			<xs:element name="city" nillable="true" type="xs:string" />
+			<xs:element name="state" nillable="true" type="xs:string" />
+			<xs:element name="zip" nillable="true" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ArrayOfEmployee">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item"	type="Employee" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ArrayOfPaycheck">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="Paycheck" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Paycheck">
+		<xs:sequence>
+			<xs:element name="paycheckId" nillable="true" type="xs:string" />
+			<xs:element name="checkStatus" nillable="true" type="xs:string" />
+			<xs:element name="checkDate" nillable="true" type="xs:string" />
+			<xs:element name="hours" type="xs:double" />
+			<xs:element name="periodEndDate" nillable="true" type="xs:string" />
+			<xs:element name="periodStartDate" nillable="true" type="xs:string" />
+			<xs:element name="paycheckItems" nillable="true" type="ArrayOfPaycheckItem" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ArrayOfPaycheckItem">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="PaycheckItem" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="PaycheckItem">
+		<xs:sequence>
+			<xs:element name="type" type="xs:string" />
+			<xs:element name="deductionAmount" type="xs:double" />
+			<xs:element name="deductionCode" type="xs:string" minOccurs="0"  />
+			<xs:element name="deductionDesc" nillable="true" type="xs:string" minOccurs="0" />
+			<xs:element name="deductionCustomItemName" nillable="true" type="xs:string" minOccurs="0" />
+			<xs:element name="deductionItemName" nillable="true" type="xs:string" minOccurs="0" />
+			<xs:element name="payAmount" type="xs:double" />
+			<xs:element name="payCode" type="xs:string" minOccurs="0" />
+			<xs:element name="payDesc" nillable="true" type="xs:string" minOccurs="0" />
+			<xs:element name="payItemName" nillable="true" type="xs:string" minOccurs="0"  />
+			<xs:element name="payCustomItemName" nillable="true" type="xs:string" minOccurs="0" />
+			<xs:element name="overTimeMultiplier" nillable="true" type="xs:string" minOccurs="0"  />
+			<xs:element name="payCodeId" nillable="true" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

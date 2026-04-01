@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete();">
+
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.viewmodel.CompanyQuickBooksInfoViewModel;
+
+        private var mViewModel:CompanyQuickBooksInfoViewModel;
+        private var mTempViewModel:CompanyQuickBooksInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private const COLUMN_1_WIDTH:int = 225;
+
+        [Bindable]
+        public function get viewModel():CompanyQuickBooksInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyQuickBooksInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+	</mx:Script>
+	
+	<mx:HBox>
+		<mx:Label text="Registration #:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.quickbooksInfo.licenseNumber}"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:Label text="Version #:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.quickbooksInfo.applicationVersion}"
+                 color="{viewModel.isDiscoing ? 0xFF0000 : 0x000000}"
+                 toolTip="{viewModel.isDiscoing ? 'Company\'s version of Quickbooks is being discontinued or has been discontinued. \'' + viewModel.minSupportedQBVersion + '\' is the minimum supported version' : ''}"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:Label text="Tax Table #:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text  text="{viewModel.quickbooksInfo.taxTable}"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:Label text="Fee Chart of Accounts:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.quickbooksInfo.coaFeeAccountName}"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:Label text="Sales Tax Chart of Accounts:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.quickbooksInfo.coaSalesTaxAccountName}"/>
+	</mx:HBox>
+
+    <mx:HBox>
+        <mx:Label text="File ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <mx:Text text="{viewModel.quickbooksInfo.fileId}"/>
+    </mx:HBox>
+    
+</mx:VBox>

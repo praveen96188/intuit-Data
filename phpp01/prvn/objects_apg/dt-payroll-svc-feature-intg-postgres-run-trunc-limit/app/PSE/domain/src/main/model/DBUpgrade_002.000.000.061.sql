@@ -1,0 +1,57 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--                                                                      --
+-- Please review the script before using it to make sure it won't       --
+-- cause any unacceptable data loss.                                    --
+--                                                                      --
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+Prompt TABLE PSP_TAX_CREDITS_APPLICATION;
+--
+-- PSP_TAX_CREDITS_APPLICATION  (Table) 
+--
+CREATE TABLE PSP_TAX_CREDITS_APPLICATION
+(
+  TAX_CREDITS_APPLICATION_SEQ  VARCHAR2(255 CHAR) NOT NULL,
+  VERSION                      NUMBER(19)       NOT NULL,
+  CREATOR_ID                   VARCHAR2(30 CHAR),
+  CREATED_DATE                 TIMESTAMP(6)     NOT NULL,
+  MODIFIER_ID                  VARCHAR2(30 CHAR),
+  MODIFIED_DATE                TIMESTAMP(6)     NOT NULL,
+  REALM_ID                     NUMBER(19)       DEFAULT -1                    NOT NULL,
+  UNSIGNED_DOCUMENT            CLOB,
+  SIGNED_DOCUMENT              CLOB,
+  DOCUMENT_KEY                 VARCHAR2(4000 CHAR),
+  SIGNERS_REMAINING            VARCHAR2(4000 CHAR),
+  DOCUMENT_PASSWORD            VARCHAR2(4000 CHAR),
+  EMPLOYER_EMAIL               VARCHAR2(4000 CHAR),
+  EMPLOYEE_EMAIL               VARCHAR2(4000 CHAR)
+)
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+ALTER TABLE PSP_TAX_CREDITS9061
+ ADD (TAX_CREDITS_APPLICATION_FK  VARCHAR2(255 CHAR));
+
+--
+-- PSP_TAX_CREDITS9061_FK1  (Index) 
+--
+CREATE INDEX PSP_TAX_CREDITS9061_FK1 ON PSP_TAX_CREDITS9061
+(TAX_CREDITS_APPLICATION_FK, REALM_ID)
+LOGGING
+NOPARALLEL;
+
+ALTER TABLE PSP_TAX_CREDITS_APPLICATION
+ ADD PRIMARY KEY
+ (TAX_CREDITS_APPLICATION_SEQ, REALM_ID);
+
+ALTER TABLE PSP_TAX_CREDITS9061
+ ADD CONSTRAINT PSP_TAX_CREDITS9061_FK1 
+ FOREIGN KEY (TAX_CREDITS_APPLICATION_FK, REALM_ID) 
+ REFERENCES PSP_TAX_CREDITS_APPLICATION (TAX_CREDITS_APPLICATION_SEQ,REALM_ID);
+
+
+PROMPT finishedDBUpgrade_002.000.000.061.sql

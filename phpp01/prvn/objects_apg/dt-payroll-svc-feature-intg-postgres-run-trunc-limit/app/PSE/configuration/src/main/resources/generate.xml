@@ -1,0 +1,1008 @@
+<project name="generate-configuration-files" default="all">
+
+    <property name="env.dir" location="${base.dir}/env"/>
+    <property name="templates.dir" location="${base.dir}/templates"/>
+
+    <target name="all" depends="generate, copykeys"/>
+
+    <target name="copykeys" if="include.keys">
+        <property name="generated.dir" location="${base.dir}/${generated.dir}"/>
+
+        <copy todir="${base.dir}/${generated.dir}">
+            <fileset dir="${templates.dir}">
+                <include name="*.key"/>
+                <include name="*.pem"/>
+                <include name="*.jks"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="generate">
+        <xmlproperty file="${env.dir}/${substitution.file}" keepRoot="false"/>
+
+        <fail unless="generated.dir" message="Property generated.dir not found in file ${substitution.file}"/>
+        <fail unless="conf.dir" message="Property conf.dir not found in file ${substitution.file}"/>
+        <fail unless="dataAccess.connection.username" message="Property dataAccess.connection.username not found in file ${substitution.file}"/>
+        <fail unless="dataAccess.connection.password" message="Property dataAccess.connection.password not found in file ${substitution.file}"/>
+        <fail unless="dataAccess.connection.url" message="Property dataAccess.connection.url not found in file ${substitution.file}"/>
+        <fail unless="dataAccess.installRoot" message="Property dataAccess.installRoot not found in file ${substitution.file}"/>
+        <fail unless="dataAccess.env" message="Property dataAccess.env not found in file ${substitution.file}"/>
+        <fail unless="dataAccessSecondary.connection.username" message="Property dataAccessSecondary.connection.username not found in file ${substitution.file}"/>
+        <fail unless="dataAccessSecondary.connection.password" message="Property dataAccessSecondary.connection.password not found in file ${substitution.file}"/>
+        <fail unless="dataAccessSecondary.connection.url" message="Property dataAccessSecondary.connection.url not found in file ${substitution.file}"/>
+        <fail unless="dataAccessSecondary.installRoot" message="Property dataAccessSecondary.installRoot not found in file ${substitution.file}"/>
+        <fail unless="dataAccessSecondary.env" message="Property dataAccessSecondary.env not found in file ${substitution.file}"/>
+        <fail unless="as400.host" message="Property as400.host not found in file ${substitution.file}"/>
+        <fail unless="as400.library" message="Property as400.library not found in file ${substitution.file}"/>
+        <fail unless="as400.cris.port" message="Property as400.cris.port not found in file ${substitution.file}"/>
+        <fail unless="as400.cris.syncLoginId" message="Property as400.host.syncLoginId not found in file ${substitution.file}"/>
+        <fail unless="as400.cris.syncPassword" message="Property as400.host.syncPassword not found in file ${substitution.file}"/>
+        <fail unless="as400.cris.insertLoginId" message="Property as400.cris.insertLoginId not found in file ${substitution.file}"/>
+        <fail unless="as400.cris.insertPassword" message="Property as400.cris.insertPassword not found in file ${substitution.file}"/>
+        <fail unless="as400.ews.username" message="Property as400.ews.username not found in file ${substitution.file}"/>
+        <fail unless="as400.ews.password" message="Property as400.ews.password not found in file ${substitution.file}"/>
+        <fail unless="as400.ews.rpcPath" message="Property as400.ews.rpcPath not found in file ${substitution.file}"/>
+        <fail unless="as400.qbdt.ports" message="Property as400.qbdt.ports not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.servicename" message="Property email.ias.notificationservice.servicename not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.serviceurl" message="Property email.ias.notificationservice.serviceurl not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.namespace" message="Property email.ias.notificationservice.namespace not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.senderid" message="Property email.ias.notificationservice.senderid not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.sendername" message="Property email.ias.notificationservice.sendername not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.senderaddress" message="Property email.ias.notificationservice.senderaddress not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.keystore" message="Property email.ias.notificationservice.keystore not found in file ${substitution.file}"/>
+        <fail unless="email.ias.notificationservice.keystorepassword" message="Property email.ias.notificationservice.keystorepassword not found in file ${substitution.file}"/>
+        <fail unless="email.internaldistributiononly" message="Property email.internaldistributiononly not found in file ${substitution.file}"/>
+        <fail unless="email.internaldistributionlist" message="Property email.internaldistributionlist not found in file ${substitution.file}"/>
+        <fail unless="email.internalemailserver" message="Property email.internalemailserver not found in file ${substitution.file}"/>
+        <fail unless="email.emailfailurealertlist" message="Property email.emailfailurealertlist not found in file ${substitution.file}"/>
+        <fail unless="email.emailerrorfilelocation" message="Property email.emailerrorfilelocation not found in file ${substitution.file}"/>
+        <fail unless="email.qboefooterlink" message="Property email.qboefooterlink not found in file ${substitution.file}"/>
+        <fail unless="email.qbdtfooterlink" message="Property email.qbdtfooterlink not found in file ${substitution.file}"/>
+        <fail unless="email.tokEmailAddress" message="Property email.tokEmailAddress not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.username" message="Property batchjobs.flux.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.password" message="Property batchjobs.flux.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.db.type" message="Property batchjobs.flux.db.type not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.db.driver" message="Property batchjobs.flux.db.driver not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.db.username" message="Property batchjobs.flux.db.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.db.password" message="Property batchjobs.flux.db.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.flux.db.url" message="Property batchjobs.flux.db.url not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.host" message="Property batchjobs.bank.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.username" message="Property batchjobs.bank.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.password" message="Property batchjobs.bank.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.send.dir" message="Property batchjobs.bank.send.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.recv.dir" message="Property batchjobs.bank.recv.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.encrypted.host" message="Property batchjobs.bank.encrypted.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.encrypted.username" message="Property batchjobs.bank.encrypted.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.encrypted.password" message="Property batchjobs.bank.encrypted.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.encrypted.send.dir" message="Property batchjobs.bank.encrypted.send.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.encrypted.recv.dir" message="Property batchjobs.bank.encrypted.recv.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.max.retry" message="Property batchjobs.bank.max.retry not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.retry.delay" message="Property batchjobs.bank.retry.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.bank.void.check.notify" message="Property batchjobs.bank.void.check.notify not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.backdate.received.notify" message="Property batchjobs.backdate.received.notify not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.host" message="Property batchjobs.reconplus.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.username" message="Property batchjobs.reconplus.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.password" message="Property batchjobs.reconplus.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.send.dir" message="Property batchjobs.reconplus.send.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.returns.file.name" message="Property batchjobs.reconplus.returns.file.name not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.s3.bucket" message="Property batchjobs.reconplus.s3.bucket not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.s3.folder" message="Property batchjobs.reconplus.s3.folder not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.email.toAddress" message="Property batchjobs.reconplus.email.toAddress not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.reconplus.email.subject" message="Property batchjobs.reconplus.email.subject not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.alt-ach.host" message="Property batchjobs.alt-ach.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.alt-ach.username" message="Property batchjobs.alt-ach.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.alt-ach.password" message="Property batchjobs.alt-ach.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.ftp.debug" message="Property batchjobs.ftp.debug not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.ftp.send.dir" message="Property batchjobs.ftp.send.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.ftp.recv.dir" message="Property batchjobs.ftp.recv.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.ftp.arcv.dir" message="Property batchjobs.ftp.arcv.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.notify.list" message="Property batchjobs.offload.notify.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.notify.subject" message="Property batchjobs.offload.notify.subject not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.alert.list" message="Property batchjobs.offload.alert.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.alert.subject" message="Property batchjobs.offload.alert.subject not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.dicr.receive.delay" message="Property batchjobs.offload.dicr.receive.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.ach.start.monitor.delay" message="Property batchjobs.offload.ach.start.monitor.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.ach.complete.monitor.delay" message="Property batchjobs.offload.ach.complete.monitor.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.ach.send.start.monitor.delay" message="Property batchjobs.offload.ach.send.start.monitor.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.ach.send.complete.monitor.delay" message="Property batchjobs.offload.ach.send.complete.monitor.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.dicr.received.monitor.delay" message="Property batchjobs.offload.dicr.received.monitor.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.confirmation.monitor.delay" message="Property batchjobs.offload.confirmation.monitor.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.offload.useBankLineEndChar" message="Property batchjobs.offload.useBankLineEndChar not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.ftp.host" message="Property batchjobs.gems.ftp.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.ftp.username" message="Property batchjobs.gems.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.ftp.password" message="Property batchjobs.gems.ftp.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.ftp.max.retry" message="Property batchjobs.gems.ftp.max.retry not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.ftp.retry.delay" message="Property batchjobs.gems.ftp.retry.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.scp.username" message="Property batchjobs.gems.scp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.scp.private.key" message="Property batchjobs.gems.scp.private.key not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.scp.destination" message="Property batchjobs.gems.scp.destination not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.scp.backup.destination" message="Property batchjobs.gems.scp.backup.destination not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.ftp.host" message="Property batchjobs.raf.ftp.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.ftp.username" message="Property batchjobs.raf.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.ftp.key" message="Property batchjobs.raf.ftp.key not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.ftp.srcdir" message="Property batchjobs.raf.ftp.srcdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.ftp.archdir" message="Property batchjobs.raf.ftp.archdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.ftp.destdir" message="Property batchjobs.raf.ftp.destdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.email.list" message="Property batchjobs.raf.email.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.email.subject" message="Property batchjobs.raf.email.subject not found in file ${substitution.file}"/>
+        <!--
+        <fail unless="batchjobs.raf.enrollment.sender" message="Property batchjobs.raf.enrollment.sender not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.enrollment.authcode" message="Property batchjobs.raf.enrollment.authcode not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.raf.enrollment.notification.list" message="Property batchjobs.raf.enrollment.notification.list not found in file ${substitution.file}"/>
+        -->
+        <fail unless="batchjobs.customemail.s3.rootdir" message="Property batchjobs.customemail.s3.rootdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.s3.inputdir" message="Property batchjobs.customemail.s3.inputdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.s3.archdir" message="Property batchjobs.customemail.s3.archdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.s3.errordir" message="Property batchjobs.customemail.s3.errordir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.local.rootdir" message="Property batchjobs.customemail.local.rootdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.local.inputdir" message="Property batchjobs.customemail.local.inputdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.config.filename" message="Property batchjobs.customemail.config.filename not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.l2sm.privatekey" message="Property batchjobs.customemail.l2sm.privatekey not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.l2sm.privatekeypassword" message="Property batchjobs.customemail.l2sm.privatekeypassword not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.customemail.l2sm.publickey" message="Property batchjobs.customemail.l2sm.publickey not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.s3.bucket.region" message="Property batchjobs.s3.bucket.region not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.temp" message="Property batchjobs.temp not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.events.url" message="Property batchjobs.events.url not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.events.max.try" message="Property batchjobs.events.max.try not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.events.source.system" message="Property batchjobs.events.source.system not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.nsf.dist.list" message="Property batchjobs.nsf.dist.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.psp.ach.action.alert" message="Property batchjobs.psp.ach.action.alert not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.state.coupon.dist.list" message="Property batchjobs.state.coupon.dist.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.sui.checkpayments.dist.list" message="Property batchjobs.sui.checkpayments.dist.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.dd.dist.list" message="Property batchjobs.dd.dist.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.missed.transactions.notify.subject" message="Property batchjobs.missed.transactions.notify.subject not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.monthly.notify.list" message="Property batchjobs.gems.monthly.notify.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.gems.monthly.notify.subject" message="Property batchjobs.gems.monthly.notify.subject not found in file ${substitution.file}"/>
+        <fail unless="ddrepui-ws.url" message="Property ddrepui-ws.url not found in file ${substitution.file}"/>
+        <fail unless="ews.url" message="Property ews.url not found in file ${substitution.file}"/>
+        <fail unless="ewsAdapter.schemaUrl" message="Property ewsAdapter.schemaUrl not found in file ${substitution.file}"/>
+        <fail unless="ewsAdapter.runDebugCode" message="Property ewsAdapter.runDebugCode not found in file ${substitution.file}"/>
+        <fail unless="taxCreditsAdapter.proxyAddress" message="Property taxCreditsAdapter.proxyAddress not found in file ${substitution.file}"/>
+        <fail unless="taxCreditsAdapter.proxyPort" message="Property taxCreditsAdapter.proxyPort not found in file ${substitution.file}"/>
+        <fail unless="taxCreditsAdapter.echoSignApiKey" message="Property taxCreditsAdapter.echoSignApiKey not found in file ${substitution.file}"/>
+        <fail unless="qbdtAdapter.compressionenabled" message="Property qbdtAdapter.compressionenabled not found in file ${substitution.file}"/>
+        <fail unless="salestax.url" message="Property salestax.url not found in file ${substitution.file}"/>
+        <fail unless="salestax.awsurl" message="Property salestax.awsurl not found in file ${substitution.file}"/>
+        <fail unless="salestax.msConnectTimeout" message="Property salestax.msConnectTimeout not found in file ${substitution.file}"/>
+        <fail unless="salestax.msReadTimeout" message="Property salestax.msReadTimeout not found in file ${substitution.file}"/>
+        <fail unless="psplogging.environmentId" message="Property psplogging.environmentId not found in file ${substitution.file}"/>
+        <fail unless="psplogging.jmsfail.File" message="Property psplogging.jmsfail.File not found in file ${substitution.file}"/>
+        <fail unless="psplogging.jmsfail.Threshold" message="Property psplogging.jmsfail.Threshold not found in file ${substitution.file}"/>
+        <fail unless="psplogging.priorityLevel" message="Property psplogging.priorityLevel not found in file ${substitution.file}"/>
+        <fail unless="psplogging.psplogfilename" message="Property psplogging.psplogfilename not found in file ${substitution.file}"/>
+        <fail unless="psplogging.hibernatelogfilename" message="Property psplogging.hibernatelogfilename not found in file ${substitution.file}"/>
+        <fail unless="aiaGateway.server.awsurl" message="Property aiaGateway.server.awsurl not found in file ${substitution.file}"/>
+        <fail unless="aiaGateway.local.url" message="Property aiaGateway.local.url not found in file ${substitution.file}"/>
+        <fail unless="aiaGateway.billingProfile.server.awsurl" message="Property aiaGateway.billingProfile.server.awsurl not found in file ${substitution.file}"/>
+        <fail unless="efeGateway.url" message="Property efeGateway.url not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.ftp.host" message="Property batchjobs.atf.ftp.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.ftp.username" message="Property batchjobs.atf.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.ftp.password" message="Property batchjobs.atf.ftp.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.send.dir" message="Property batchjobs.atf.send.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.ftp.destdir" message="Property batchjobs.atf.ftp.destdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.ftp.max.retry" message="Property batchjobs.atf.ftp.max.retry not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.messaging.default.url" message="Property batchjobs.atf.messaging.default.url not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.messaging.default.msgname" message="Property batchjobs.atf.messaging.default.msgname not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.messaging.default.username" message="Property batchjobs.atf.messaging.default.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.messaging.default.password" message="Property batchjobs.atf.messaging.default.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.messaging.default.ackmode" message="Property batchjobs.atf.messaging.default.ackmode not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.ftp.host" message="Property batchjobs.atf.secondary.ftp.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.ftp.username" message="Property batchjobs.atf.secondary.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.ftp.password" message="Property batchjobs.atf.secondary.ftp.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.ftp.destdir" message="Property batchjobs.atf.secondary.ftp.destdir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.ftp.max.retry" message="Property batchjobs.atf.secondary.ftp.max.retry not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.messaging.default.url" message="Property batchjobs.atf.secondary.messaging.default.url not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.messaging.default.msgname" message="Property batchjobs.atf.secondary.messaging.default.msgname not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.messaging.default.username" message="Property batchjobs.atf.secondary.messaging.default.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.messaging.default.password" message="Property batchjobs.atf.secondary.messaging.default.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.atf.secondary.messaging.default.ackmode" message="Property batchjobs.atf.secondary.messaging.default.ackmode not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.tfs.s3.folder" message="Property batchjobs.tfs.s3.folder not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.tfs.s3.bucket" message="Property batchjobs.tfs.s3.bucket not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.amendments.email.list" message="Property batchjobs.amendments.email.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.amendments.email.subject" message="Property batchjobs.amendments.email.subject not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.irsdepositfrequency.recv.dir" message="Property batchjobs.irsdepositfrequency.recv.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.irsdepositfrequency.archive.dir" message="Property batchjobs.irsdepositfrequency.archive.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.irsdepositfrequency.notification.list" message="Property batchjobs.irsdepositfrequency.notification.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.achenrollment.response.errors.notify.list" message="Property batchjobs.achenrollment.response.errors.notify.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.achenrollment.response.errors.notify.subject" message="Property batchjobs.achenrollment.response.errors.notify.subject not found in file ${agency.achenrollment.response.errors.notify.subject}"/>
+
+        <fail unless="agency.achenrollment.agent.id" message="Property agency.achenrollment.agent.id not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.agent.name" message="Property agency.achenrollment.agent.name not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.contact.first.name" message="Property agency.achenrollment.contact.first.name not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.contact.middle.name" message="Property agency.achenrollment.contact.middle.name not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.contact.last.name" message="Property agency.achenrollment.contact.last.name not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.contact.phone" message="Property agency.achenrollment.contact.phone not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.contact.fax" message="Property agency.achenrollment.contact.fax not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.contact.email" message="Property agency.achenrollment.contact.email not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.address.attn.line" message="Property agency.achenrollment.address.attn.line not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.address.line" message="Property agency.achenrollment.address.line not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.address.city" message="Property agency.achenrollment.address.city not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.address.state" message="Property agency.achenrollment.address.state not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.address.zip" message="Property agency.achenrollment.address.zip not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.address.zip.extn" message="Property agency.achenrollment.address.zip.extn not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.credit.justification" message="Property agency.achenrollment.credit.justification not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.work.dir" message="Property agency.achenrollment.work.dir not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.send.dir" message="Property agency.achenrollment.send.dir not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.recv.dir" message="Property agency.achenrollment.recv.dir not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.arcv.dir" message="Property agency.achenrollment.arcv.dir not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.err.dir" message="Property agency.achenrollment.err.dir not found in file ${substitution.file}"/>
+        <fail unless="agency.achenrollment.test.filename" message="Property agency.achenrollment.test.filename not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.jpmc.csi.ftp.host" message="Property batchjobs.jpmc.csi.ftp.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.csi.ftp.username" message="Property batchjobs.jpmc.csi.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.csi.ftp.password" message="Property batchjobs.jpmc.csi.ftp.password not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.csi.ftp.max.retry" message="Property batchjobs.jpmc.csi.ftp.max.retry not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.csi.ftp.retry.delay" message="Property batchjobs.jpmc.csi.ftp.retry.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.csi.email.notify.list" message="Property batchjobs.jpmc.csi.email.notify.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.csi.destination.dir" message="Property batchjobs.jpmc.csi.destination.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.csi.public.key" message="Property batchjobs.jpmc.csi.public.key not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.csi.encrypt.file" message="Property batchjobs.jpmc.csi.encrypt.file not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.jpmc.g2.ftp.host" message="Property batchjobs.jpmc.g2.ftp.host not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.ftp.username" message="Property batchjobs.jpmc.g2.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.private.key" message="Property batchjobs.jpmc.g2.private.key not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.destination.dir" message="Property batchjobs.jpmc.g2.destination.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.ftp.max.retry" message="Property batchjobs.jpmc.g2.ftp.max.retry not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.ftp.retry.delay" message="Property batchjobs.jpmc.g2.ftp.retry.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.email.notify.list" message="Property batchjobs.jpmc.g2.email.notify.list not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.g2.email.subject" message="Property batchjobs.jpmc.g2.email.subject not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.jpmc.aml.ftp.host1" message="Property batchjobs.jpmc.aml.ftp.host1 not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.ftp.host2" message="Property batchjobs.jpmc.aml.ftp.host2 not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.aml.ftp.username" message="Property batchjobs.jpmc.aml.ftp.username not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.private.key" message="Property batchjobs.jpmc.aml.private.key not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.destination.dir" message="Property batchjobs.jpmc.aml.destination.dir not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.public.key" message="Property batchjobs.jpmc.aml.public.key not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.aml.ftp.max.retry" message="Property batchjobs.jpmc.aml.ftp.max.retry not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.ftp.retry.delay" message="Property batchjobs.jpmc.aml.ftp.retry.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.email.notify.list" message="Property batchjobs.jpmc.aml.email.notify.list not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.aml.ftp.retry.delay" message="Property batchjobs.jpmc.aml.ftp.retry.delay not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.s3.folder" message="Property batchjobs.jpmc.aml.s3.folder not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.s3.bucket" message="Property batchjobs.jpmc.aml.s3.bucket not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.aml.email.subject" message="Property batchjobs.jpmc.aml.email.subject not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.jpmc.ofac.partnerCode" message="Property batchjobs.jpmc.ofac.partnerCode not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.billingGUID" message="Property batchjobs.jpmc.ofac.billingGUID not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.clientCode" message="Property batchjobs.jpmc.ofac.clientCode not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.version" message="Property batchjobs.jpmc.ofac.version not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.batchName" message="Property batchjobs.jpmc.ofac.batchName not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.fileExtension" message="Property batchjobs.jpmc.ofac.fileExtension not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.gclFilter" message="Property batchjobs.jpmc.ofac.gclFilter not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.generateCustomerID" message="Property batchjobs.jpmc.ofac.generateCustomerID not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.threshold" message="Property batchjobs.jpmc.ofac.threshold not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.addressDisqualification" message="Property batchjobs.jpmc.ofac.addressDisqualification not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.dobDisqualification" message="Property batchjobs.jpmc.ofac.dobDisqualification not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.dobRange" message="Property batchjobs.jpmc.ofac.dobRange not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.deliveryProcessor" message="Property batchjobs.jpmc.ofac.deliveryProcessor not found in file ${substitution.file}"/>
+        <fail unless="batchjobs.jpmc.ofac.listName" message="Property batchjobs.jpmc.ofac.listName not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.ofac.translatorProcessor" message="Property batchjobs.jpmc.ofac.translatorProcessor not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.jpmc.tpsu.destination.dir" message="Property batchjobs.jpmc.tpsu.destination.dir not found in file ${substitution.file}"/>
+		<fail unless="batchjobs.jpmc.tpsu.public.key" message="Property batchjobs.jpmc.tpsu.public.key not found in file ${substitution.file}"/>
+
+
+        <fail unless="alert.financialtransaction.emaillist" message="Property alert.financialtransaction.emaillist not found in file ${substitution.file}"/>
+        <fail unless="alert.dataadapter.authusers.emaillist" message="Property alert.dataadapter.authusers.emaillist not found in file ${substitution.file}"/>
+        <fail unless="keys.atp.qbapp" message="Property keys.atp.qbapp not found in file ${substitution.file}"/>
+
+        <fail unless="launchdarkly.base-uri" message="Property launchdarkly.base-uri not found in file ${substitution.file}"/>
+        <fail unless="launchdarkly.events-uri" message="Property launchdarkly.events-uri not found in file ${substitution.file}"/>
+        <fail unless="launchdarkly.stream-uri" message="Property launchdarkly.stream-uri not found in file ${substitution.file}"/>
+        <fail unless="launchdarkly.proxy.host" message="Property launchdarkly.proxy.host not found in file ${substitution.file}"/>
+        <fail unless="launchdarkly.proxy.port" message="Property launchdarkly.proxy.port not found in file ${substitution.file}"/>
+        <fail unless="launchdarkly.sdk-key" message="Property launchdarkly.sdk-key not found in file ${substitution.file}"/>
+
+        <fail unless="agency.eftps.s3.bucket" message="Property agency.eftps.s3.bucket not found in file ${substitution.file}"/>
+        <fail unless="agency.eftps.s3.folder.inbound" message="Property agency.eftps.s3.folder.inbound not found in file ${substitution.file}"/>
+        <fail unless="agency.eftps.s3.folder.outbound" message="Property agency.eftps.s3.folder.outbound not found in file ${substitution.file}"/>
+        <fail unless="agency.eftps.s3.folder.archive" message="Property agency.eftps.s3.folder.archive not found in file ${substitution.file}"/>
+
+        <fail unless="batchjobs.writecrons.sql.dir" message="Property batchjobs.writecrons.sql.dir not found in file ${substitution.file}"/>
+
+        <fail unless="lma.target.audience" message="Property lma.target.audience not found in file ${substitution.file}"/>
+        <fail unless="lma.keystore.password" message="Property lma.keystore.password not found in file ${substitution.file}"/>
+        <fail unless="lma.keystore.path" message="Property lma.keystore.path not found in file ${substitution.file}"/>
+        <fail unless="lma.ignore.path" message="Property lma.ignore.path not found in file ${substitution.file}"/>
+    	<!-- TODO Uncomment once all the unused environment config files are deleted from repo
+    	<fail unless="batchjobs.jss.base.url" message="Property batchjobs.jss.base.url not found in file ${substitution.file}"/>
+	    <fail unless="batchjobs.jss.app.id" message="Property batchjobs.jss.app.id not found in file ${substitution.file}"/>
+	    <fail unless="batchjobs.jss.group.name" message="Property batchjobs.jss.group.name not found in file ${substitution.file}"/>
+    	<fail unless="batchjobs.jss.base.application.url" message="Property batchjobs.jss.base.application.url not found in file ${substitution.file}"/>
+		-->
+
+        <property name="generated.dir" location="${generated.dir}"/>
+        <delete dir="${base.dir}/${generated.dir}" quiet="true"/>
+        <mkdir dir="${base.dir}/${generated.dir}"/>
+
+        <copy todir="${base.dir}/${generated.dir}">
+            <fileset dir="${templates.dir}">
+                <include name="*.xml"/>
+                <include name="*.fec"/>
+                <include name="*.properties"/>
+                <include name="**/*.xml"/>
+            </fileset>
+            <filterchain>
+                <replacetokens>
+                    <token key="conf.dir" value="${conf.dir}"/>
+                    <!--postgres db tokens-->
+                    <token key="dataAccess.postgres.connection.username" value="${dataAccess.postgres.connection.username}"/>
+                    <token key="dataAccess.postgres.connection.password" value="${dataAccess.postgres.connection.password}"/>
+                    <token key="dataAccess.postgres.connection.url" value="${dataAccess.postgres.connection.url}"/>
+                    <!-- postgres read replica db tokens start -->
+                    <token key="dataAccess.postgres.connection.readOnly.username" value="${dataAccess.postgres.connectionReadOnly.username}"/>
+                    <token key="dataAccess.postgres.connection.readOnly.password" value="${dataAccess.postgres.connectionReadOnly.password}"/>
+                    <token key="dataAccess.postgres.connection.readOnly.url" value="${dataAccess.postgres.connectionReadOnly.url}"/>
+                    <!-- postgres read replica db tokens finish -->
+                    <token key="dataAccess.postgres.installRoot" value="${dataAccess.postgres.installRoot}"/>
+                    <token key="dataAccess.postgres.env" value="${dataAccess.postgres.env}"/>
+                    <token key="dataAccessSecondary.postgres.connection.username" value="${dataAccessSecondary.postgres.connection.username}"/>
+                    <token key="dataAccessSecondary.postgres.connection.password" value="${dataAccessSecondary.postgres.connection.password}"/>
+                    <token key="dataAccessSecondary.postgres.connection.url" value="${dataAccessSecondary.postgres.connection.url}"/>
+                    <token key="dataAccessSecondary.postgres.installRoot" value="${dataAccessSecondary.postgres.installRoot}"/>
+                    <token key="dataAccessSecondary.postgres.env" value="${dataAccessSecondary.postgres.env}"/>
+                    <!--postgres db tokens finish-->
+                    <!--oracle db tokens-->
+                    <token key="dataAccess.connection.username" value="${dataAccess.connection.username}"/>
+                    <token key="dataAccess.connection.password" value="${dataAccess.connection.password}"/>
+                    <token key="dataAccess.connection.url" value="${dataAccess.connection.url}"/>
+                    <!-- oracle read replica db tokens start -->
+                    <token key="dataAccess.connection.readOnly.username" value="${dataAccess.connectionReadOnly.username}"/>
+                    <token key="dataAccess.connection.readOnly.password" value="${dataAccess.connectionReadOnly.password}"/>
+                    <token key="dataAccess.connection.readOnly.url" value="${dataAccess.connectionReadOnly.url}"/>
+                    <!-- oracle read replica db tokens finish -->
+                    <token key="dataAccess.installRoot" value="${dataAccess.installRoot}"/>
+                    <token key="dataAccess.env" value="${dataAccess.env}"/>
+                    <token key="dataAccessSecondary.connection.username" value="${dataAccessSecondary.connection.username}"/>
+                    <token key="dataAccessSecondary.connection.password" value="${dataAccessSecondary.connection.password}"/>
+                    <token key="dataAccessSecondary.connection.url" value="${dataAccessSecondary.connection.url}"/>
+                    <token key="dataAccessSecondary.installRoot" value="${dataAccessSecondary.installRoot}"/>
+                    <token key="dataAccessSecondary.env" value="${dataAccessSecondary.env}"/>
+                    <!--oracle db tokens finish-->
+                    <token key="as400.host" value="${as400.host}"/>
+                    <token key="as400.library" value="${as400.library}"/>
+                    <token key="as400.cris.port" value="${as400.cris.port}"/>
+                    <token key="as400.cris.syncLoginId" value="${as400.cris.syncLoginId}"/>
+                    <token key="as400.cris.syncPassword" value="${as400.cris.syncPassword}"/>
+                    <token key="as400.cris.insertLoginId" value="${as400.cris.insertLoginId}"/>
+                    <token key="as400.cris.insertPassword" value="${as400.cris.insertPassword}"/>
+                    <token key="as400.ews.username" value="${as400.ews.username}"/>
+                    <token key="as400.ews.password" value="${as400.ews.password}"/>
+                    <token key="as400.ews.rpcPath" value="${as400.ews.rpcPath}"/>
+                    <token key="as400.qbdt.ports" value="${as400.qbdt.ports}"/>
+                    <token key="as400.as400BadDataAlertList" value="${as400.as400BadDataAlertList}"/>
+                    <token key="cris.ems.url" value="${cris.ems.url}"/>
+                    <token key="cris.ems.securityprincipal" value="${cris.ems.securityprincipal}"/>
+                    <token key="cris.ems.securitycredential" value="${cris.ems.securitycredential}"/>
+                    <token key="cris.ems.queuename" value="${cris.ems.queuename}"/>
+                    <token key="cris.ems.readtimeout" value="${cris.ems.readtimeout}"/>
+                    <token key="email.ias.notificationservice.servicename" value="${email.ias.notificationservice.servicename}"/>
+                    <token key="email.ias.notificationservice.serviceurl" value="${email.ias.notificationservice.serviceurl}"/>
+                    <token key="email.ias.notificationservice.servicepath" value="${email.ias.notificationservice.servicepath}"/>
+                    <token key="email.ias.notificationservice.namespace" value="${email.ias.notificationservice.namespace}"/>
+                    <token key="email.ias.notificationservice.senderid" value="${email.ias.notificationservice.senderid}"/>
+                    <token key="email.ias.notificationservice.sendername" value="${email.ias.notificationservice.sendername}"/>
+                    <token key="email.ias.notificationservice.senderaddress" value="${email.ias.notificationservice.senderaddress}"/>
+                    <token key="email.ias.notificationservice.keystore" value="${email.ias.notificationservice.keystore}"/>
+                    <token key="email.ias.notificationservice.truststore" value="${email.ias.notificationservice.truststore}"/>
+                    <token key="email.ias.notificationservice.keystorepassword" value="${email.ias.notificationservice.keystorepassword}"/>
+                    <token key="email.internaldistributiononly" value="${email.internaldistributiononly}"/>
+                    <token key="email.internaldistributionlist" value="${email.internaldistributionlist}"/>
+                    <token key="email.internalemailserver" value="${email.internalemailserver}"/>
+                    <token key="email.emailfailurealertlist" value="${email.emailfailurealertlist}"/>
+                    <token key="email.emailerrorfilelocation" value="${email.emailerrorfilelocation}"/>
+                    <token key="email.qboefooterlink" value="${email.qboefooterlink}"/>
+                    <token key="email.qbdtfooterlink" value="${email.qbdtfooterlink}"/>
+                    <token key="email.tokEmailAddress" value="${email.tokEmailAddress}"/>
+                    <token key="email.txe.serviceurl" value="${email.txe.serviceurl}"/>
+                    <token key="email.txe.fromemaildisplayname" value="${email.txe.fromemaildisplayname}"/>
+                    <token key="email.txe.api.sendgrid" value="${email.txe.api.sendgrid}"/>
+                    <token key="email.txe.api.sendgridwithattachment" value="${email.txe.api.sendgridwithattachment}"/>
+                    <token key="email.txe.api.exacttarget" value="${email.txe.api.exacttarget}"/>
+                    <token key="email.txe.retry.count" value="${email.txe.retry.count}"/>
+                    <token key="email.txe.retry.intervalexp" value="${email.txe.retry.intervalexp}"/>
+                    <token key="email.txe.et.retry.count" value="${email.txe.et.retry.count}"/>
+                    <token key="email.txe.et.retry.intervalexp" value="${email.txe.et.retry.intervalexp}"/>
+                    <token key="batchjobs.flux.username" value="${batchjobs.flux.username}"/>
+                    <token key="batchjobs.flux.password" value="${batchjobs.flux.password}"/>
+                    <token key="batchjobs.flux.db.type" value="${batchjobs.flux.db.type}"/>
+                    <token key="batchjobs.flux.db.driver" value="${batchjobs.flux.db.driver}"/>
+                    <token key="batchjobs.flux.db.username" value="${batchjobs.flux.db.username}"/>
+                    <token key="batchjobs.flux.db.password" value="${batchjobs.flux.db.password}"/>
+                    <token key="batchjobs.flux.db.url" value="${batchjobs.flux.db.url}"/>
+                    <token key="batchjobs.bank.host" value="${batchjobs.bank.host}"/>
+                    <token key="batchjobs.bank.username" value="${batchjobs.bank.username}"/>
+                    <token key="batchjobs.bank.password" value="${batchjobs.bank.password}"/>
+                    <token key="batchjobs.bank.send.dir" value="${batchjobs.bank.send.dir}"/>
+                    <token key="batchjobs.bank.recv.dir" value="${batchjobs.bank.recv.dir}"/>
+                    <token key="batchjobs.noc.host" value="${batchjobs.noc.host}"/>
+                    <token key="batchjobs.noc.username" value="${batchjobs.noc.username}"/>
+                    <token key="batchjobs.noc.password" value="${batchjobs.noc.password}"/>
+                    <token key="batchjobs.noc.recv.dir" value="${batchjobs.noc.recv.dir}"/>
+                    <token key="batchjobs.bank.encrypted.host" value="${batchjobs.bank.encrypted.host}"/>
+                    <token key="batchjobs.bank.encrypted.username" value="${batchjobs.bank.encrypted.username}"/>
+                    <token key="batchjobs.bank.encrypted.password" value="${batchjobs.bank.encrypted.password}"/>
+                    <token key="batchjobs.bank.encrypted.send.dir" value="${batchjobs.bank.encrypted.send.dir}"/>
+                    <token key="batchjobs.bank.encrypted.recv.dir" value="${batchjobs.bank.encrypted.recv.dir}"/>
+                    <token key="batchjobs.noc.encrypted.host" value="${batchjobs.noc.encrypted.host}"/>
+                    <token key="batchjobs.noc.encrypted.username" value="${batchjobs.noc.encrypted.username}"/>
+                    <token key="batchjobs.noc.encrypted.password" value="${batchjobs.noc.encrypted.password}"/>
+                    <token key="batchjobs.noc.encrypted.recv.dir" value="${batchjobs.noc.encrypted.recv.dir}"/>
+                    <token key="batchjobs.bank.max.retry" value="${batchjobs.bank.max.retry}"/>
+                    <token key="batchjobs.bank.retry.delay" value="${batchjobs.bank.retry.delay}"/>
+                    <token key="batchjobs.bank.void.check.notify" value="${batchjobs.bank.void.check.notify}"/>
+                    <token key="batchjobs.bank.jpmc.public.key" value="${batchjobs.bank.jpmc.public.key}"/>
+                    <token key="batchjobs.bank.intuit.public.key" value="${batchjobs.bank.intuit.public.key}"/>
+                    <token key="batchjobs.bank.intuit.private.key" value="${batchjobs.bank.intuit.private.key}"/>
+                    <token key="batchjobs.bank.intuit.private.key.password" value="${batchjobs.bank.intuit.private.key.password}"/>
+                    <token key="batchjobs.backdate.received.notify" value="${batchjobs.backdate.received.notify}"/>
+                    <token key="batchjobs.reconplus.host" value="${batchjobs.reconplus.host}"/>
+                    <token key="batchjobs.reconplus.username" value="${batchjobs.reconplus.username}"/>
+                    <token key="batchjobs.reconplus.password" value="${batchjobs.reconplus.password}"/>
+                    <token key="batchjobs.reconplus.send.dir" value="${batchjobs.reconplus.send.dir}"/>
+                    <token key="batchjobs.reconplus.returns.file.name" value="${batchjobs.reconplus.returns.file.name}"/>
+                    <token key="batchjobs.reconplus.s3.bucket" value="${batchjobs.reconplus.s3.bucket}"/>
+                    <token key="batchjobs.reconplus.s3.folder" value="${batchjobs.reconplus.s3.folder}"/>
+                    <token key="batchjobs.reconplus.email.toAddress" value="${batchjobs.reconplus.email.toAddress}"/>
+                    <token key="batchjobs.reconplus.email.subject" value="${batchjobs.reconplus.email.subject}"/>
+
+
+
+                    <token key="batchjobs.alt-ach.host" value="${batchjobs.alt-ach.host}"/>
+                    <token key="batchjobs.alt-ach.username" value="${batchjobs.alt-ach.username}"/>
+                    <token key="batchjobs.alt-ach.password" value="${batchjobs.alt-ach.password}"/>
+                    <token key="batchjobs.tp401k.host" value="${batchjobs.tp401k.host}"/>
+                    <token key="batchjobs.tp401k.username" value="${batchjobs.tp401k.username}"/>
+                    <token key="batchjobs.tp401k.password" value="${batchjobs.tp401k.password}"/>
+                    <token key="batchjobs.tp401k.census.dir" value="${batchjobs.tp401k.census.dir}"/>
+                    <token key="batchjobs.tp401k.payroll.dir" value="${batchjobs.tp401k.payroll.dir}"/>
+                    <token key="batchjobs.tp401k.signup.username" value="${batchjobs.tp401k.signup.username}"/>
+                    <token key="batchjobs.tp401k.signup.password" value="${batchjobs.tp401k.signup.password}"/>
+                    <token key="batchjobs.tp401k.signup.dir" value="${batchjobs.tp401k.signup.dir}"/>
+                    <token key="batchjobs.tp401k.max.retry" value="${batchjobs.tp401k.max.retry}"/>
+                    <token key="batchjobs.tp401k.retry.delay" value="${batchjobs.tp401k.retry.delay}"/>
+                    <token key="batchjobs.tp401k.notify.to.address" value="${batchjobs.tp401k.notify.to.address}"/>
+                    <token key="batchjobs.tp401k.notify.from.address" value="${batchjobs.tp401k.notify.from.address}"/>
+                    <token key="batchjobs.tp401k.truncate.file.name" value="${batchjobs.tp401k.truncate.file.name}"/>
+                    <token key="batchjobs.ftp.debug" value="${batchjobs.ftp.debug}"/>
+                    <token key="batchjobs.ftp.send.dir" value="${batchjobs.ftp.send.dir}"/>
+                    <token key="batchjobs.ftp.recv.dir" value="${batchjobs.ftp.recv.dir}"/>
+                    <token key="batchjobs.ftp.arcv.dir" value="${batchjobs.ftp.arcv.dir}"/>
+                    <token key="batchjobs.offload.notify.list" value="${batchjobs.offload.notify.list}"/>
+                    <token key="batchjobs.offload.notify.subject" value="${batchjobs.offload.notify.subject}"/>
+                    <token key="batchjobs.offload.alert.list" value="${batchjobs.offload.alert.list}"/>
+                    <token key="batchjobs.offload.alert.subject" value="${batchjobs.offload.alert.subject}"/>
+                    <token key="batchjobs.offload.dicr.receive.delay" value="${batchjobs.offload.dicr.receive.delay}"/>
+                    <token key="batchjobs.offload.ach.start.monitor.delay" value="${batchjobs.offload.ach.start.monitor.delay}"/>
+                    <token key="batchjobs.offload.ach.complete.monitor.delay" value="${batchjobs.offload.ach.complete.monitor.delay}"/>
+                    <token key="batchjobs.offload.ach.send.start.monitor.delay" value="${batchjobs.offload.ach.send.start.monitor.delay}"/>
+                    <token key="batchjobs.offload.ach.send.complete.monitor.delay" value="${batchjobs.offload.ach.send.complete.monitor.delay}"/>
+                    <token key="batchjobs.offload.dicr.received.monitor.delay" value="${batchjobs.offload.dicr.received.monitor.delay}"/>
+                    <token key="batchjobs.offload.confirmation.monitor.delay" value="${batchjobs.offload.confirmation.monitor.delay}"/>
+                    <token key="batchjobs.offload.useBankLineEndChar" value="${batchjobs.offload.useBankLineEndChar}"/>
+                    <token key="batchjobs.gems.ftp.host" value="${batchjobs.gems.ftp.host}"/>
+                    <token key="batchjobs.gems.ftp.username" value="${batchjobs.gems.ftp.username}"/>
+                    <token key="batchjobs.gems.ftp.password" value="${batchjobs.gems.ftp.password}"/>
+                    <token key="batchjobs.gems.ftp.max.retry" value="${batchjobs.gems.ftp.max.retry}"/>
+                    <token key="batchjobs.gems.ftp.retry.delay" value="${batchjobs.gems.ftp.retry.delay}"/>
+                    <token key="batchjobs.gems.new.scp.host" value="${batchjobs.gems.new.scp.host}"/>
+                    <token key="batchjobs.gems.scp.username" value="${batchjobs.gems.scp.username}"/>
+                    <token key="batchjobs.gems.scp.private.key" value="${batchjobs.gems.scp.private.key}"/>
+                    <token key="batchjobs.gems.scp.destination" value="${batchjobs.gems.scp.destination}"/>
+                    <token key="batchjobs.gems.scp.backup.destination" value="${batchjobs.gems.scp.backup.destination}"/>
+                    <token key="batchjobs.raf.ftp.host" value="${batchjobs.raf.ftp.host}"/>
+                    <token key="batchjobs.raf.ftp.username" value="${batchjobs.raf.ftp.username}"/>
+                    <token key="batchjobs.raf.ftp.key" value="${batchjobs.raf.ftp.key}"/>
+                    <token key="batchjobs.raf.ftp.pkfile" value="${batchjobs.raf.ftp.pkfile}"/>
+                    <token key="batchjobs.raf.ftp.srcdir" value="${batchjobs.raf.ftp.srcdir}"/>
+                    <token key="batchjobs.raf.ftp.archdir" value="${batchjobs.raf.ftp.archdir}"/>
+                    <token key="batchjobs.raf.ftp.destdir" value="${batchjobs.raf.ftp.destdir}"/>
+                    <token key="batchjobs.raf.email.list" value="${batchjobs.raf.email.list}"/>
+                    <token key="batchjobs.raf.email.subject" value="${batchjobs.raf.email.subject}"/>
+                    <token key="batchjobs.raf.enrollment.sender" value="${batchjobs.raf.enrollment.sender}"/>
+                    <token key="batchjobs.raf.enrollment.authcode" value="${batchjobs.raf.enrollment.authcode}"/>
+                    <token key="batchjobs.raf.enrollment.notification.list" value="${batchjobs.raf.enrollment.notification.list}"/>
+                    <token key="batchjobs.customemail.s3.rootdir" value="${batchjobs.customemail.s3.rootdir}"/>
+                    <token key="batchjobs.customemail.s3.inputdir" value="${batchjobs.customemail.s3.inputdir}"/>
+                    <token key="batchjobs.customemail.s3.archdir" value="${batchjobs.customemail.s3.archdir}"/>
+                    <token key="batchjobs.customemail.s3.errordir" value="${batchjobs.customemail.s3.errordir}"/>
+                    <token key="batchjobs.customemail.local.rootdir" value="${batchjobs.customemail.local.rootdir}"/>
+                    <token key="batchjobs.customemail.local.inputdir" value="${batchjobs.customemail.local.inputdir}"/>
+                    <token key="batchjobs.customemail.config.filename" value="${batchjobs.customemail.config.filename}"/>
+                    <token key="batchjobs.customemail.l2sm.privatekey" value="${batchjobs.customemail.l2sm.privatekey}"/>
+                    <token key="batchjobs.customemail.l2sm.privatekeypassword" value="${batchjobs.customemail.l2sm.privatekeypassword}"/>
+                    <token key="batchjobs.customemail.l2sm.publickey" value="${batchjobs.customemail.l2sm.publickey}"/>
+                    <token key="batchjobs.temp" value="${batchjobs.temp}"/>
+                    <token key="batchjobs.events.url" value="${batchjobs.events.url}"/>
+                    <token key="batchjobs.events.max.try" value="${batchjobs.events.max.try}"/>
+                    <token key="batchjobs.events.source.system" value="${batchjobs.events.source.system}"/>
+                    <token key="batchjobs.crisadapter.crisprocess.loopcounter" value="${batchjobs.crisadapter.crisprocess.loopcounter}"/>
+                    <token key="batchjobs.nsf.dist.list" value="${batchjobs.nsf.dist.list}"/>
+                    <token key="batchjobs.psp.ach.action.alert" value="${batchjobs.psp.ach.action.alert}"/>
+                    <token key="batchjobs.state.coupon.dist.list" value="${batchjobs.state.coupon.dist.list}"/>
+                    <token key="batchjobs.sui.checkpayments.dist.list" value="${batchjobs.sui.checkpayments.dist.list}"/>
+                    <token key="batchjobs.dd.dist.list" value="${batchjobs.dd.dist.list}"/>
+                    <token key="batchjobs.missed.transactions.notify.subject" value="${batchjobs.missed.transactions.notify.subject}"/>
+                    <token key="batchjobs.gems.monthly.notify.list" value="${batchjobs.gems.monthly.notify.list}"/>
+                    <token key="batchjobs.gems.monthly.notify.subject" value="${batchjobs.gems.monthly.notify.subject}"/>
+                    <token key="ddrepui-ws.url" value="${ddrepui-ws.url}"/>
+                    <token key="ews.url" value="${ews.url}"/>
+                    <token key="ewsAdapter.schemaUrl" value="${ewsAdapter.schemaUrl}"/>
+                    <token key="ewsAdapter.runDebugCode" value="${ewsAdapter.runDebugCode}"/>
+                    <token key="taxCreditsAdapter.proxyAddress" value="${taxCreditsAdapter.proxyAddress}"/>
+                    <token key="taxCreditsAdapter.proxyPort" value="${taxCreditsAdapter.proxyPort}"/>
+                    <token key="taxCreditsAdapter.echoSignApiKey" value="${taxCreditsAdapter.echoSignApiKey}"/>
+                    <token key="qbdtAdapter.compressionenabled" value="${qbdtAdapter.compressionenabled}"/>
+                    <token key="salestax.url" value="${salestax.url}"/>
+                    <token key="salestax.awsurl" value="${salestax.awsurl}"/>
+                    <token key="salestax.msConnectTimeout" value="${salestax.msConnectTimeout}"/>
+                    <token key="salestax.msReadTimeout" value="${salestax.msReadTimeout}"/>
+                    <token key="psplogging.environmentId" value="${psplogging.environmentId}"/>
+                    <token key="psplogging.jmsfail.File" value="${psplogging.jmsfail.File}"/>
+                    <token key="psplogging.jmsfail.Threshold" value="${psplogging.jmsfail.Threshold}"/>
+                    <token key="psplogging.priorityLevel" value="${psplogging.priorityLevel}"/>
+                    <token key="psplogging.psplogfilename" value="${psplogging.psplogfilename}"/>
+                    <token key="psplogging.hibernatelogfilename" value="${psplogging.hibernatelogfilename}"/>
+                    <token key="batchjobs.atf.ftp.host" value="${batchjobs.atf.ftp.host}"/>
+                    <token key="batchjobs.atf.ftp.username" value="${batchjobs.atf.ftp.username}"/>
+                    <token key="batchjobs.atf.ftp.password" value="${batchjobs.atf.ftp.password}"/>
+                    <token key="batchjobs.atf.send.dir" value="${batchjobs.atf.send.dir}"/>
+                    <token key="batchjobs.atf.ftp.destdir" value="${batchjobs.atf.ftp.destdir}"/>
+                    <token key="batchjobs.atf.ftp.max.retry" value="${batchjobs.atf.ftp.max.retry}"/>
+                    <token key="batchjobs.atf.messaging.default.url" value="${batchjobs.atf.messaging.default.url}"/>
+                    <token key="batchjobs.atf.messaging.default.msgname" value="${batchjobs.atf.messaging.default.msgname}"/>
+                    <token key="batchjobs.atf.messaging.default.username" value="${batchjobs.atf.messaging.default.username}"/>
+                    <token key="batchjobs.atf.messaging.default.password" value="${batchjobs.atf.messaging.default.password}"/>
+                    <token key="batchjobs.atf.messaging.default.ackmode" value="${batchjobs.atf.messaging.default.ackmode}"/>
+                    <token key="batchjobs.atf.secondary.ftp.host" value="${batchjobs.atf.secondary.ftp.host}"/>
+                    <token key="batchjobs.atf.secondary.ftp.username" value="${batchjobs.atf.secondary.ftp.username}"/>
+                    <token key="batchjobs.atf.secondary.ftp.password" value="${batchjobs.atf.secondary.ftp.password}"/>
+                    <token key="batchjobs.atf.secondary.ftp.destdir" value="${batchjobs.atf.secondary.ftp.destdir}"/>
+                    <token key="batchjobs.atf.secondary.ftp.max.retry" value="${batchjobs.atf.secondary.ftp.max.retry}"/>
+                    <token key="batchjobs.atf.secondary.messaging.default.url" value="${batchjobs.atf.secondary.messaging.default.url}"/>
+                    <token key="batchjobs.atf.secondary.messaging.default.msgname" value="${batchjobs.atf.secondary.messaging.default.msgname}"/>
+                    <token key="batchjobs.atf.secondary.messaging.default.username" value="${batchjobs.atf.secondary.messaging.default.username}"/>
+                    <token key="batchjobs.atf.secondary.messaging.default.password" value="${batchjobs.atf.secondary.messaging.default.password}"/>
+                    <token key="batchjobs.atf.secondary.messaging.default.ackmode" value="${batchjobs.atf.secondary.messaging.default.ackmode}"/>
+                    <token key="batchjobs.tfs.ftp.host" value="${batchjobs.tfs.ftp.host}"/>
+                    <token key="batchjobs.tfs.ftp.port" value="${batchjobs.tfs.ftp.port}"/>
+                    <token key="batchjobs.tfs.ftp.username" value="${batchjobs.tfs.ftp.username}"/>
+                    <token key="batchjobs.tfs.ftp.private.key" value="${batchjobs.tfs.ftp.private.key}"/>
+                    <token key="batchjobs.tfs.ftp.destdir" value="${batchjobs.tfs.ftp.destdir}"/>
+                    <token key="batchjobs.tfs.s3.bucket" value="${batchjobs.tfs.s3.bucket}"/>
+                    <token key="batchjobs.tfs.s3.folder" value="${batchjobs.tfs.s3.folder}"/>
+                    <token key="batchjobs.s3.bucket" value="${batchjobs.s3.bucket}"/>
+                    <token key="batchjobs.s3.bucket.region" value="${batchjobs.s3.bucket.region}"/>
+                    <token key="batchjobs.iks.s3.iamrole" value="${batchjobs.iks.s3.iamrole}"/>
+
+                    <token key="efeGateway.url" value="${efeGateway.url}"/>
+                    <token key="efeGateway.efe.local.url" value="${efeGateway.efe.local.url}"/>
+                    <token key="efeGateway.efe.host" value="${efeGateway.efe.host}"/>
+                    <token key="efeGateway.appid" value="${efeGateway.appid}"/>
+                    <token key="efeGateway.offeringid" value="${efeGateway.offeringid}"/>
+                    <token key="efeGateway.appsecret" value="${efeGateway.appsecret}"/>
+                    <token key="efeGateway.username" value="${efeGateway.username}"/>
+                    <token key="efeGateway.password" value="${efeGateway.password}"/>
+                    <token key="efeGateway.assetid" value="${efeGateway.assetid}"/>
+                    <token key="efeGateway.audiences" value="${efeGateway.audiences}"/>
+                    <token key="efeGateway.swimlane" value="${efeGateway.swimlane}"/>
+                    <token key="efeGateway.offlineticket.external.endpoint" value="${efeGateway.offlineticket.external.endpoint}"/>
+                    <token key="efeGateway.proxy.url" value="${efeGateway.proxy.url}"/>
+                    <token key="efeGateway.proxy.port" value="${efeGateway.proxy.port}"/>
+
+                    <token key="batchjobs.amendments.email.list" value="${batchjobs.amendments.email.list}"/>
+                    <token key="batchjobs.amendments.email.subject" value="${batchjobs.amendments.email.subject}"/>
+                    <token key="batchjobs.ers.server.url" value="${batchjobs.ers.server.url}"/>
+                    <token key="batchjobs.ers.server.awsurl" value="${batchjobs.ers.server.awsurl}"/>
+                    <token key="batchjobs.ers.local.url" value="${batchjobs.ers.local.url}"/>
+
+                    <!--offline ticket parameters-->
+                    <token key="offline.appid" value="${offline.appid}"/>
+                    <token key="offline.offeringid" value="${offline.offeringid}"/>
+                    <token key="offline.appsecret" value="${offline.appsecret}"/>
+                    <token key="offline.username" value="${offline.username}"/>
+                    <token key="offline.password" value="${offline.password}"/>
+                    <token key="offline.assetid" value="${offline.assetid}"/>
+                    <token key="offline.audiences" value="${offline.audiences}"/>
+                    <token key="offline.offlineticket.external.endpoint" value="${offline.offlineticket.external.endpoint}"/>
+                    <token key="offline.customerwiderealmid" value="${offline.customerwiderealmid}"/>
+                    <token key="offline.intuitfixedrealmid" value="${offline.intuitfixedrealmid}"/>
+
+                    <token key="batchjobs.ebs.server.url" value="${batchjobs.ebs.server.url}"/>
+                    <token key="batchjobs.ebs.server.app.secret" value="${batchjobs.ebs.server.app.secret}"/>
+                    <token key="batchjobs.ebs.server.app.id" value="${batchjobs.ebs.server.app.id}"/>
+                    <token key="batchjobs.brm.server.url" value="${batchjobs.brm.server.url}"/>
+                    <token key="batchjobs.brm.local.url" value="${batchjobs.brm.local.url}"/>
+                    <token key="batchjobs.brm.scp.server.port" value="${batchjobs.brm.scp.server.port}"/>
+                    <token key="batchjobs.brm.scp.server.address" value="${batchjobs.brm.scp.server.address}"/>
+                    <token key="batchjobs.brm.scp.client.username" value="${batchjobs.brm.scp.client.username}"/>
+                    <token key="batchjobs.brm.scp.client.password" value="${batchjobs.brm.scp.client.password}"/>
+                    <token key="batchjobs.brm.scp.client.privateKey" value="${batchjobs.brm.scp.client.privateKey}"/>
+                    <token key="batchjobs.brm.scp.server.destFolder" value="${batchjobs.brm.scp.server.destFolder}"/>
+                    <token key="batchjobs.brm.scp.server.errorFolder" value="${batchjobs.brm.scp.server.errorFolder}"/>
+                    <token key="batchjobs.brm.scp.client.workFolder" value="${batchjobs.brm.scp.client.workFolder}"/>
+                    <token key="batchjobs.brm.scp.client.recvFolder" value="${batchjobs.brm.scp.client.recvFolder}"/>
+                    <token key="batchjobs.brm.scp.client.arcvFolder" value="${batchjobs.brm.scp.client.arcvFolder}"/>
+                    <token key="batchjobs.brm.scp.client.errorFolder" value="${batchjobs.brm.scp.client.errorFolder}"/>
+
+                    <token key="batchjobs.brm.s3.server.bucket" value="${batchjobs.brm.s3.server.bucket}"/>
+                    <token key="batchjobs.brm.s3.server.destFolder" value="${batchjobs.brm.s3.server.destFolder}"/>
+                    <token key="batchjobs.brm.s3.server.errorFolder" value="${batchjobs.brm.s3.server.errorFolder}"/>
+                    <token key="batchjobs.brm.s3.server.errorArchiveFolder" value="${batchjobs.brm.s3.server.errorArchiveFolder}"/>
+                    <token key="batchjobs.brm.s3.client.workFolder" value="${batchjobs.brm.s3.client.workFolder}"/>
+                    <token key="batchjobs.brm.s3.client.recvFolder" value="${batchjobs.brm.s3.client.recvFolder}"/>
+                    <token key="batchjobs.brm.s3.client.arcvFolder" value="${batchjobs.brm.s3.client.arcvFolder}"/>
+                    <token key="batchjobs.brm.s3.client.errorFolder" value="${batchjobs.brm.s3.client.errorFolder}"/>
+
+
+                    <token key="batchjobs.sftp.proxy.host" value="${batchjobs.sftp.proxy.host}"/>
+                    <token key="batchjobs.sftp.knownHosts" value="${batchjobs.sftp.knownHosts}"/>
+
+                    <token key="batchjobs.amo.message.dir" value="${batchjobs.amo.message.dir}"/>
+                    <token key="batchjobs.amo.jms.url" value="${batchjobs.amo.jms.url}"/>
+                    <token key="batchjobs.amo.jms.initial.context" value="${batchjobs.amo.jms.initial.context}"/>
+                    <token key="batchjobs.amo.jms.user" value="${batchjobs.amo.jms.user}"/>
+                    <token key="batchjobs.amo.jms.password" value="${batchjobs.amo.jms.password}"/>
+                    <token key="batchjobs.amo.jms.connection.factory" value="${batchjobs.amo.jms.connection.factory}"/>
+                    <token key="batchjobs.amo.jms.destination" value="${batchjobs.amo.jms.destination}"/>
+
+                    <token key="batchjobs.amo.ws.server.awsurl" value="${batchjobs.amo.ws.server.awsurl}"/>
+                    <token key="batchjobs.amo.ws.local.url" value="${batchjobs.amo.ws.local.url}"/>
+
+                    <token key="batchjobs.irsdepositfrequency.recv.dir" value="${batchjobs.irsdepositfrequency.recv.dir}"/>
+                    <token key="batchjobs.irsdepositfrequency.archive.dir" value="${batchjobs.irsdepositfrequency.archive.dir}"/>
+                    <token key="batchjobs.irsdepositfrequency.notification.list" value="${batchjobs.irsdepositfrequency.notification.list}"/>
+                    <token key="batchjobs.tfs.server.awshost" value="${batchjobs.tfs.server.awshost}"/>
+                    <token key="batchjobs.tfs.server.awsbillingPath" value="${batchjobs.tfs.server.awsbillingPath}"/>
+                    <token key="batchjobs.tfs.server.awsfilingPath" value="${batchjobs.tfs.server.awsfilingPath}"/>
+                    <token key="batchjobs.tfs.local.url" value="${batchjobs.tfs.local.url}"/>
+
+
+                    <token key="batchjobs.entity.jms.pulsar.broker.url" value="${batchjobs.entity.jms.pulsar.broker.url}"/>
+                    <token key="batchjobs.entity.jms.user" value="${batchjobs.entity.jms.user}"/>
+                    <token key="batchjobs.entity.jms.password" value="${batchjobs.entity.jms.password}"/>
+                    <token key="batchjobs.entity.jms.destination" value="${batchjobs.entity.jms.destination}"/>
+
+                    <token key="agency.notify.list" value="${agency.notify.list}"/>
+                    <token key="agency.stability.delay" value="${agency.stability.delay}"/>
+                    <token key="agency.retry.attempts" value="${agency.retry.attempts}"/>
+                    <token key="agency.retry.delay" value="${agency.retry.delay}"/>
+                    <token key="agency.eftps.sender.id" value="${agency.eftps.sender.id}"/>
+                    <token key="agency.eftps.receiver.id" value="${agency.eftps.receiver.id}"/>
+                    <token key="agency.eftps.edi.mode" value="${agency.eftps.edi.mode}"/>
+                    <token key="agency.eftps.ftp.host" value="${agency.eftps.ftp.host}"/>
+                    <token key="agency.eftps.ftp.username" value="${agency.eftps.ftp.username}"/>
+                    <token key="agency.eftps.ftp.password" value="${agency.eftps.ftp.password}"/>
+                    <token key="agency.eftps.ftp.work.dir" value="${agency.eftps.ftp.work.dir}"/>
+                    <token key="agency.eftps.ftp.tfa.dir" value="${agency.eftps.ftp.tfa.dir}"/>
+                    <token key="agency.eftps.ftp.arcv.dir" value="${agency.eftps.ftp.arcv.dir}"/>
+                    <token key="agency.eftps.ftp.err.dir" value="${agency.eftps.ftp.err.dir}"/>
+                    <token key="agency.eftps.ftp.as400.dir" value="${agency.eftps.ftp.as400.dir}"/>
+                    <token key="agency.eftps.ftp.upload.delay" value="${agency.eftps.ftp.upload.delay}"/>
+                    <token key="agency.eftps.ftp.edi838.filename" value="${agency.eftps.ftp.edi838.filename}"/>
+                    <token key="agency.eftps.ftp.edi813.filename" value="${agency.eftps.ftp.edi813.filename}"/>
+                    <token key="agency.eftps.ftp.edi821.filename" value="${agency.eftps.ftp.edi821.filename}"/>
+                    <token key="agency.eftps.ftp.edi997.filename" value="${agency.eftps.ftp.edi997.filename}"/>
+                    <token key="agency.eftps.enrollment.ageout.days" value="${agency.eftps.enrollment.ageout.days}"/>
+                    <token key="agency.eftps.s3.bucket" value="${agency.eftps.s3.bucket}"/>
+                    <token key="agency.eftps.s3.folder.inbound" value="${agency.eftps.s3.folder.inbound}"/>
+                    <token key="agency.eftps.s3.folder.outbound" value="${agency.eftps.s3.folder.outbound}"/>
+                    <token key="agency.eftps.s3.folder.archive" value="${agency.eftps.s3.folder.archive}"/>
+
+                    <token key="agency.edi.sender.id" value="${agency.edi.sender.id}"/>
+                    <token key="agency.edi.sender.tin" value="${agency.edi.sender.tin}"/>
+                    <token key="agency.edi.sender.name" value="${agency.edi.sender.name}"/>
+                    <token key="agency.edi.sender.addressLine1" value="${agency.edi.sender.addressLine1}"/>
+                    <token key="agency.edi.sender.city" value="${agency.edi.sender.city}"/>
+                    <token key="agency.edi.sender.state" value="${agency.edi.sender.state}"/>
+                    <token key="agency.edi.sender.zip" value="${agency.edi.sender.zip}"/>
+                    <token key="agency.edi.receiver.id" value="${agency.edi.receiver.id}"/>
+                    <token key="agency.edi.receiver.code" value="${agency.edi.receiver.code}"/>
+                    <token key="agency.edi.account.number" value="${agency.edi.account.number}"/>
+                    <token key="agency.edi.edi.mode" value="${agency.edi.edi.mode}"/>
+                    <token key="agency.edi.scp.port" value="${agency.edi.scp.port}"/>
+                    <token key="agency.edi.scp.host" value="${agency.edi.scp.host}"/>
+                    <token key="agency.edi.scp.username" value="${agency.edi.scp.username}"/>
+                    <token key="agency.edi.scp.private.key" value="${agency.edi.scp.private.key}"/>
+                    <token key="agency.edi.scp.destination" value="${agency.edi.scp.destination}"/>
+                    <token key="agency.edi.scp.backup.destination" value="${agency.edi.scp.backup.destination}"/>
+                    <token key="agency.edi.scp.work.dir" value="${agency.edi.scp.work.dir}"/>
+                    <token key="agency.edi.scp.van.dir" value="${agency.edi.scp.van.dir}"/>
+                    <token key="agency.edi.scp.arcv.dir" value="${agency.edi.scp.arcv.dir}"/>
+                    <token key="agency.edi.scp.err.dir" value="${agency.edi.scp.err.dir}"/>
+                    <token key="agency.edi.scp.as400.dir" value="${agency.edi.scp.as400.dir}"/>
+                    <token key="agency.edi.scp.upload.delay" value="${agency.edi.scp.upload.delay}"/>
+                    <token key="agency.edi.scp.edi813.filename" value="${agency.edi.scp.edi813.filename}"/>
+                    <token key="agency.edi.ftp.as400.dir" value="${agency.edi.ftp.as400.dir}"/>
+
+                    <token key="agency.fset.sender.efin" value="${agency.fset.sender.efin}"/>
+                    <token key="agency.fset.sender.etin" value="${agency.fset.sender.etin}"/>
+                    <token key="agency.fset.sender.etin.alternate" value="${agency.fset.sender.etin.alternate}"/>
+                    <token key="agency.fset.sender.agent.id" value="${agency.fset.sender.agent.id}"/>
+                    <token key="agency.fset.notify.list" value="${agency.fset.notify.list}"/>
+                    <token key="agency.fset.fset.mode" value="${agency.fset.fset.mode}"/>
+                    <token key="agency.fset.send.dir" value="${agency.fset.send.dir}"/>
+                    <token key="agency.fset.recv.dir" value="${agency.fset.recv.dir}"/>
+                    <token key="agency.fset.arcv.dir" value="${agency.fset.arcv.dir}"/>
+                    <token key="agency.fset.err.dir" value="${agency.fset.err.dir}"/>
+                    <token key="agency.fset.sftp.host" value="${agency.fset.sftp.host}"/>
+                    <token key="agency.fset.sftp.username" value="${agency.fset.sftp.username}"/>
+                    <token key="agency.fset.sftp.password" value="${agency.fset.sftp.password}"/>
+                    <token key="agency.fset.sftp.send.dir" value="${agency.fset.sftp.send.dir}"/>
+                    <token key="agency.fset.sftp.recv.dir" value="${agency.fset.sftp.recv.dir}"/>
+                    <token key="agency.fset.sftp.retry.max" value="${agency.fset.sftp.retry.max}"/>
+                    <token key="agency.fset.sftp.retry.delay" value="${agency.fset.sftp.retry.delay}"/>
+                    <token key="agency.fset.sftp.connection.timeout" value="${agency.fset.sftp.connection.timeout}"/>
+
+                    <token key="agency.ade.directory.root" value="${agency.ade.directory.root}"/>
+
+                    <!-- ACH Enrollment Details -->
+                    <token key="agency.achenrollment.agent.id" value="${agency.achenrollment.agent.id}"/>
+                    <token key="agency.achenrollment.agent.name" value="${agency.achenrollment.agent.name}"/>
+                    <token key="agency.achenrollment.contact.first.name" value="${agency.achenrollment.contact.first.name}"/>
+                    <token key="agency.achenrollment.contact.middle.name" value="${agency.achenrollment.contact.middle.name}"/>
+                    <token key="agency.achenrollment.contact.last.name" value="${agency.achenrollment.contact.last.name}"/>
+                    <token key="agency.achenrollment.contact.phone" value="${agency.achenrollment.contact.phone}"/>
+                    <token key="agency.achenrollment.contact.fax" value="${agency.achenrollment.contact.fax}"/>
+                    <token key="agency.achenrollment.contact.email" value="${agency.achenrollment.contact.email}"/>
+                    <token key="agency.achenrollment.address.attn.line" value="${agency.achenrollment.address.attn.line}"/>
+                    <token key="agency.achenrollment.address.line" value="${agency.achenrollment.address.line}"/>
+                    <token key="agency.achenrollment.address.city" value="${agency.achenrollment.address.city}"/>
+                    <token key="agency.achenrollment.address.state" value="${agency.achenrollment.address.state}"/>
+                    <token key="agency.achenrollment.address.zip" value="${agency.achenrollment.address.zip}"/>
+                    <token key="agency.achenrollment.address.zip.extn" value="${agency.achenrollment.address.zip.extn}"/>
+                    <token key="agency.achenrollment.credit.justification" value="${agency.achenrollment.credit.justification}"/>
+
+                    <token key="agency.achenrollment.work.dir" value="${agency.achenrollment.work.dir}"/>
+                    <token key="agency.achenrollment.send.dir" value="${agency.achenrollment.send.dir}"/>
+                    <token key="agency.achenrollment.recv.dir" value="${agency.achenrollment.recv.dir}"/>
+                    <token key="agency.achenrollment.arcv.dir" value="${agency.achenrollment.arcv.dir}"/>
+                    <token key="agency.achenrollment.err.dir" value="${agency.achenrollment.err.dir}"/>
+                    <token key="agency.achenrollment.test.filename" value="${agency.achenrollment.test.filename}"/>
+
+
+                    <token key="as400.eftps.sftp.host" value="${as400.eftps.sftp.host}"/>
+                    <token key="as400.eftps.sftp.username" value="${as400.eftps.sftp.username}"/>
+                    <token key="as400.eftps.sftp.password" value="${as400.eftps.sftp.password}"/>
+                    <token key="batchjobs.iop.server.url" value="${batchjobs.iop.server.url}"/>
+                    <token key="batchjobs.iop.local.url" value="${batchjobs.iop.local.url}"/>
+                    <token key="batchjobs.iop.cert.auth" value="${batchjobs.iop.cert.auth}"/>
+                    <token key="batchjobs.iop.basic.auth" value="${batchjobs.iop.basic.auth}"/>
+                    <token key="batchjobs.iop.username" value="${batchjobs.iop.username}"/>
+                    <token key="batchjobs.iop.password" value="${batchjobs.iop.password}"/>
+                    <token key="batchjobs.iop.to.address" value="${batchjobs.iop.to.address}"/>
+                    <token key="batchjobs.iop.from.address" value="${batchjobs.iop.from.address}"/>
+                    <token key="batchjobs.iop.cert.password" value="${batchjobs.iop.cert.password}"/>
+                    <token key="batchjobs.iop.gateway.request.time.out.second" value="${batchjobs.iop.gateway.request.time.out.second}"/>
+                    <token key="batchjobs.iop.gateway.connect.time.out.second" value="${batchjobs.iop.gateway.connect.time.out.second}"/>
+                    <token key="batchjobs.paused.jobs" value="${batchjobs.paused.jobs}"/>
+                    <token key="batchjobs.achenrollment.response.errors.notify.list" value="${batchjobs.achenrollment.response.errors.notify.list}"/>
+                    <token key="batchjobs.achenrollment.response.errors.notify.subject" value="${batchjobs.achenrollment.response.errors.notify.subject}"/>
+                    <token key="as400.eftps.sftp.as400.dir" value="${as400.eftps.sftp.as400.dir}"/>
+                    <token key="agency.eftps.batch.max.retry" value="${agency.eftps.batch.max.retry}"/>
+                    <token key="agency.eftps.batch.retry.delay" value="${agency.eftps.batch.retry.delay}"/>
+                    <token key="agency.eftps.enrollment.ageout.days" value="${agency.eftps.enrollment.ageout.days}"/>
+                    <token key="sap.company.topics.billing.disabled" value="${sap.company.topics.billing.disabled}"/>
+                    <token key="aiaGateway.billingProfile.server.awsurl" value="${aiaGateway.billingProfile.server.awsurl}"/>
+                    <token key="aiaGateway.local.url" value="${aiaGateway.local.url}"/>
+                    <token key="aiaGateway.server.awsurl" value="${aiaGateway.server.awsurl}"/>
+                    <token key="aiaGateway.maxbills" value="${aiaGateway.maxbills}"/>
+
+                    <token key="wc.gateway.wcService.aws.host" value="${wc.gateway.wcService.aws.host}"/>
+
+                    <token key="vmp.iam.keystore" value="${vmp.iam.keystore}"/>
+                    <token key="vmp.iam.keystore.password" value="${vmp.iam.keystore.password}"/>
+                    <token key="vmp.iam.key.password" value="${vmp.iam.key.password}"/>
+                    <token key="batchjobs.eoq.email.list" value="${batchjobs.eoq.email.list}"/>
+                    <token key="batchjobs.eoq.email.subject" value="${batchjobs.eoq.email.subject}"/>
+                    <token key="batchjobs.sox.email.list" value="${batchjobs.sox.email.list}"/>
+                    <token key="batchjobs.sox.header.endpoint" value="${batchjobs.sox.header.endpoint}"/>
+                    <token key="batchjobs.sox.batch.endpoint" value="${batchjobs.sox.batch.endpoint}"/>
+					<token key="authentication.dataadapter.oim.app.id" value="${authentication.dataadapter.oim.app.id}"/>
+                    <token key="authentication.dataadapter.oim.app.secret" value="${authentication.dataadapter.oim.app.secret}"/>
+                    <token key="authentication.dataadapter.oim.app.roles" value="${authentication.dataadapter.oim.app.roles}"/>
+
+                    <token key="batchjobs.jpmc.csi.ftp.host" value="${batchjobs.jpmc.csi.ftp.host}"/>
+                    <token key="batchjobs.jpmc.csi.ftp.username" value="${batchjobs.jpmc.csi.ftp.username}"/>
+                    <token key="batchjobs.jpmc.csi.ftp.password" value="${batchjobs.jpmc.csi.ftp.password}"/>
+                    <token key="batchjobs.jpmc.csi.ftp.max.retry" value="${batchjobs.jpmc.csi.ftp.max.retry}"/>
+					<token key="batchjobs.jpmc.csi.ftp.retry.delay" value="${batchjobs.jpmc.csi.ftp.retry.delay}"/>
+                    <token key="batchjobs.jpmc.csi.email.notify.list" value="${batchjobs.jpmc.csi.email.notify.list}"/>
+                    <token key="batchjobs.jpmc.csi.destination.dir" value="${batchjobs.jpmc.csi.destination.dir}"/>
+                    <token key="batchjobs.jpmc.csi.public.key" value="${batchjobs.jpmc.csi.public.key}"/>
+                    <token key="batchjobs.jpmc.csi.audit.key" value="${batchjobs.jpmc.csi.audit.key}"/>
+                    <token key="batchjobs.jpmc.csi.encrypt.file" value="${batchjobs.jpmc.csi.encrypt.file}"/>
+
+                    <token key="batchjobs.jpmc.g2.ftp.host" value="${batchjobs.jpmc.g2.ftp.host}"/>
+                    <token key="batchjobs.jpmc.g2.private.key" value="${batchjobs.jpmc.g2.private.key}"/>
+					<token key="batchjobs.jpmc.g2.ftp.username" value="${batchjobs.jpmc.g2.ftp.username}"/>
+                    <token key="batchjobs.jpmc.g2.destination.dir" value="${batchjobs.jpmc.g2.destination.dir}"/>
+					<token key="batchjobs.jpmc.g2.ftp.max.retry" value="${batchjobs.jpmc.g2.ftp.max.retry}"/>
+					<token key="batchjobs.jpmc.g2.ftp.retry.delay" value="${batchjobs.jpmc.g2.ftp.retry.delay}"/>
+                    <token key="batchjobs.jpmc.g2.email.notify.list" value="${batchjobs.jpmc.g2.email.notify.list}"/>
+                    <token key="batchjobs.jpmc.g2.email.subject" value="${batchjobs.jpmc.g2.email.subject}"/>
+
+					<token key="batchjobs.jpmc.aml.ftp.host1" value="${batchjobs.jpmc.aml.ftp.host1}"/>
+					<token key="batchjobs.jpmc.aml.ftp.host2" value="${batchjobs.jpmc.aml.ftp.host2}"/>
+					<token key="batchjobs.jpmc.aml.ftp.username" value="${batchjobs.jpmc.aml.ftp.username}"/>
+					<token key="batchjobs.jpmc.aml.private.key" value="${batchjobs.jpmc.aml.private.key}"/>
+					<token key="batchjobs.jpmc.aml.destination.dir" value="${batchjobs.jpmc.aml.destination.dir}"/>
+					<token key="batchjobs.jpmc.aml.ftp.max.retry" value="${batchjobs.jpmc.aml.ftp.max.retry}"/>
+					<token key="batchjobs.jpmc.aml.ftp.retry.delay" value="${batchjobs.jpmc.aml.ftp.retry.delay}"/>
+					<token key="batchjobs.jpmc.aml.public.key" value="${batchjobs.jpmc.aml.public.key}"/>
+					<token key="batchjobs.jpmc.aml.email.notify.list" value="${batchjobs.jpmc.aml.email.notify.list}"/>
+                    <token key="batchjobs.jpmc.aml.s3.bucket" value="${batchjobs.jpmc.aml.s3.bucket}"/>
+                    <token key="batchjobs.jpmc.aml.s3.folder" value="${batchjobs.jpmc.aml.s3.folder}"/>
+                    <token key="batchjobs.jpmc.aml.email.subject" value="${batchjobs.jpmc.aml.email.subject}"/>
+
+
+
+                    <token key="batchjobs.jpmc.ofac.partnerCode" value="${batchjobs.jpmc.ofac.partnerCode}"/>
+                    <token key="batchjobs.jpmc.ofac.billingGUID" value="${batchjobs.jpmc.ofac.billingGUID}"/>
+                    <token key="batchjobs.jpmc.ofac.clientCode" value="${batchjobs.jpmc.ofac.clientCode}" />
+                    <token key="batchjobs.jpmc.ofac.version" value="${batchjobs.jpmc.ofac.version}" />
+                    <token key="batchjobs.jpmc.ofac.batchName" value="${batchjobs.jpmc.ofac.batchName}"/>
+                    <token key="batchjobs.jpmc.ofac.fileExtension" value="${batchjobs.jpmc.ofac.fileExtension}" />
+                    <token key="batchjobs.jpmc.ofac.gclFilter" value="${batchjobs.jpmc.ofac.gclFilter}"/>
+                    <token key="batchjobs.jpmc.ofac.generateCustomerID" value="${batchjobs.jpmc.ofac.generateCustomerID}"/>
+                    <token key="batchjobs.jpmc.ofac.threshold" value="${batchjobs.jpmc.ofac.threshold}" />
+                    <token key="batchjobs.jpmc.ofac.addressDisqualification" value="${batchjobs.jpmc.ofac.addressDisqualification}"/>
+                    <token key="batchjobs.jpmc.ofac.dobDisqualification" value="${batchjobs.jpmc.ofac.dobDisqualification}"/>
+                    <token key="batchjobs.jpmc.ofac.dobRange" value="${batchjobs.jpmc.ofac.dobRange}"/>
+                    <token key="batchjobs.jpmc.ofac.listName" value="${batchjobs.jpmc.ofac.listName}"/>
+					<token key="batchjobs.jpmc.ofac.translatorProcessor" value="${batchjobs.jpmc.ofac.translatorProcessor}"/>
+                    <token key="batchjobs.jpmc.ofac.deliveryProcessor" value="${batchjobs.jpmc.ofac.deliveryProcessor}"/>
+					<token key = "batchjobs.jpmc.tpsu.destination.dir" value = "${batchjobs.jpmc.tpsu.destination.dir}"/>
+					<token key = "batchjobs.jpmc.tpsu.public.key" value = "${batchjobs.jpmc.tpsu.public.key}"/>
+
+                    <token key="batchjobs.jss.base.url" value="${batchjobs.jss.base.url}"/>
+
+                    <token key="batchjobs.jss.proxy.url" value="${batchjobs.jss.proxy.url}"/>
+                    <token key="batchjobs.jss.proxy.port" value="${batchjobs.jss.proxy.port}"/>
+
+                    <token key="batchjobs.jss.offeringid" value="${batchjobs.jss.offeringid}"/>
+                    <token key="batchjobs.jss.username" value="${batchjobs.jss.username}"/>
+                    <token key="batchjobs.jss.password" value="${batchjobs.jss.password}"/>
+                    <token key="batchjobs.jss.assetid" value="${batchjobs.jss.assetid}"/>
+                    <token key="batchjobs.jss.audiences" value="${batchjobs.jss.audiences}"/>
+                    <token key="batchjobs.jss.offlineticket.external.endpoint" value="${batchjobs.jss.offlineticket.external.endpoint}"/>
+
+                	<token key="batchjobs.jss.shutdown.wait.seconds" value="${batchjobs.jss.shutdown.wait.seconds}"/>
+                	<token key="batchjobs.jss.portal.entry.name" value="${batchjobs.jss.portal.entry.name}"/>
+                	<token key="batchjobs.jss.app.id" value="${batchjobs.jss.app.id}"/>
+                	<token key="batchjobs.jss.app.secret" value="${batchjobs.jss.app.secret}"/>
+                	<token key="batchjobs.jss.group.name" value="${batchjobs.jss.group.name}"/>
+                	<token key="batchjobs.jss.base.application.url" value="${batchjobs.jss.base.application.url}"/>
+                	<token key="batchjobs.jss.notification.failure.mailing.list" value="${batchjobs.jss.notification.failure.mailing.list}"/>
+                	<token key="batchjobs.jss.notification.completion.mailing.list" value="${batchjobs.jss.notification.completion.mailing.list}"/>
+                	<token key="batchjobs.jss.retry.maxcount" value="${batchjobs.jss.retry.maxcount}"/>
+                	<token key="batchjobs.jss.retry.delay.millisecs" value="${batchjobs.jss.retry.delay.millisecs}"/>
+                	<token key="batchjobs.jss.retry.internal.maxcount" value="${batchjobs.jss.retry.internal.maxcount}"/>
+                	<token key="batchjobs.jss.retry.internal.delay.millisecs" value="${batchjobs.jss.retry.internal.delay.millisecs}"/>
+                	<token key="batchjobs.jss.scheduler.host" value="${batchjobs.jss.scheduler.host}"/>
+
+                    <token key="batchjobs.dd.server.url" value="${batchjobs.dd.server.url}"/>
+                    <token key="batchjobs.dd.server.app.id" value="${batchjobs.dd.server.app.id}"/>
+                    <token key="batchjobs.dd.server.proxy.url" value="${batchjobs.dd.server.proxy.url}"/>
+                    <token key="batchjobs.dd.server.proxy.port" value="${batchjobs.dd.server.proxy.port}"/>
+                    <token key="batchjobs.dd.limit.path" value="${batchjobs.dd.limit.path}"/>
+                    <token key="batchjobs.dd.limit.errorcode" value="${batchjobs.dd.limit.errorcode}"/>
+                    <token key="batchjobs.dd.server.app.secret" value="${batchjobs.dd.server.app.secret}"/>
+                    <token key="batchjobs.dd.limit.app.id" value="${batchjobs.dd.limit.app.id}"/>
+                    <token key="batchjobs.dd.limit.app.secret" value="${batchjobs.dd.limit.app.secret}"/>
+                    <token key="batchjobs.dd.limit.assestid" value="${batchjobs.dd.limit.assestid}"/>
+                    <token key="batchjobs.dd.desktopApi.url" value="${batchjobs.dd.desktopApi.url}"/>
+                    <token key="batchjobs.dd.getSubmissions.path" value="${batchjobs.dd.getSubmissions.path}"/>
+                    <token key="batchjobs.dd.limit.retry.count" value="${batchjobs.dd.limit.retry.count}"/>
+                    <token key="batchjobs.dd.limit.retry.interval" value="${batchjobs.dd.limit.retry.interval}"/>
+                    <token key="batchjobs.dd.limit.ackretry.count" value="${batchjobs.dd.limit.ackretry.count}"/>
+                    <token key="batchjobs.dd.limit.ackretry.interval" value="${batchjobs.dd.limit.ackretry.interval}"/>
+                    <token key="batchjobs.sentinel.url" value="${batchjobs.sentinel.url}"/>
+                    <token key="batchjobs.dd.server.offeringid" value="${batchjobs.dd.server.offeringid}"/>
+                    <token key="batchjobs.jss.retry.response.code" value="${batchjobs.jss.retry.response.code}"/>
+                    <token key="batchjobs.jss.retry.response.code.post.calls" value="${batchjobs.jss.retry.response.code.post.calls}"/>
+                    <token key="batchjobs.jss.offline.job.id" value="${batchjobs.jss.offline.job.id}"/>
+                    <token key="batchjobs.jss.offline.env" value="${batchjobs.jss.offline.env}"/>
+
+                    <token key="alert.financialtransaction.emaillist" value="${alert.financialtransaction.emaillist}"/>
+                    <token key="alert.dataadapter.authusers.emaillist" value="${alert.dataadapter.authusers.emaillist}"/>
+                    <token key="keys.atp.qbapp" value="${keys.atp.qbapp}"/>
+                    <token key="keys.idps.api-key-id" value="${keys.idps.api-key-id}"/>
+                    <token key="keys.idps.api-secret-key" value="${keys.idps.api-secret-key}"/>
+                    <token key="keys.idps.api-policy" value="${keys.idps.api-policy}"/>
+                    <token key="keys.idps.access-type" value="${keys.idps.access-type}"/>
+                    <token key="keys.idps.endpoint" value="${keys.idps.endpoint}" />
+                    <token key="keys.idps.ptc.keyname" value="${keys.idps.ptc.keyname}"/>
+                    <token key="keys.idps.batchjobs.keyname" value="${keys.idps.batchjobs.keyname}"/>
+                    <token key="keys.idps.key-cache-max-size" value="${keys.idps.key-cache-max-size}"/>
+					<token key="vmp.teps.url" value="${vmp.teps.url}"/>
+                    <token key="vmp.teps.secret" value="${vmp.teps.secret}"/>
+
+                    <token key="launchdarkly.base-uri" value="${launchdarkly.base-uri}" />
+                    <token key="launchdarkly.events-uri" value="${launchdarkly.events-uri}" />
+                    <token key="launchdarkly.stream-uri" value="${launchdarkly.stream-uri}" />
+                    <token key="launchdarkly.proxy.host" value="${launchdarkly.proxy.host}" />
+                    <token key="launchdarkly.proxy.port" value="${launchdarkly.proxy.port}" />
+                    <token key="launchdarkly.sdk-key" value="${launchdarkly.sdk-key}" />
+                    <token key="sapsso.login.url" value="${sapsso.login.url}"/>
+                    <token key="sapsso.app.login.url" value="${sapsso.app.login.url}"/>
+                    <token key="sapsso.decryptKey" value="${sapsso.decryptKey}"/>
+                    <token key="sapsso.logout.url" value="${sapsso.logout.url}"/>
+
+                    <token key="maxEinsAllowed.diamond-assisted" value="${maxEinsAllowed.diamond-assisted}" />
+                    <token key="queryConsole.iksUrl" value="${queryConsole.iksUrl}" />
+                    <token key="batchjobs.writecrons.sql.dir" value="${batchjobs.writecrons.sql.dir}"/>
+                    <token key="pspldap.url" value="${pspldap.url}"/>
+                    <token key="lma.target.audience" value="${lma.target.audience}" />
+                    <token key="lma.keystore.password" value="${lma.keystore.password}"/>
+                    <token key="lma.keystore.path" value="${lma.keystore.path}"/>
+                    <token key="lma.ignore.path" value="${lma.ignore.path}"/>
+                    <token key="batchjobs.dupemp.sendemail.beforedelete.days" value="${batchjobs.dupemp.sendemail.beforedelete.days}"/>
+                    <token key="batchjobs.dupemp.sendemail.afterdelete.days" value="${batchjobs.dupemp.sendemail.afterdelete.days}"/>
+                    <token key="batchjobs.rtbautomation.eventtypes" value="${batchjobs.rtbautomation.eventtypes}"/>
+
+                    <token key="mcn.send.dir" value="${mcn.send.dir}"/>
+                    <token key="mcn.arcv.dir" value="${mcn.arcv.dir}"/>
+                    <token key="mcn.notify.tolist" value="${mcn.notify.tolist}"/>
+                    <token key="mcn.notify.fromlist" value="${mcn.notify.fromlist}"/>
+                    <token key="mcn.notify.subject" value="${mcn.notify.subject}"/>
+                    <token key="mcn.decr.dir" value="${mcn.decr.dir}"/>
+
+
+                    <token key="batchjobs.brm.idps.endpoint" value="${batchjobs.brm.idps.endpoint}"/>
+                    <token key="batchjobs.brm.idps.apikey" value="${batchjobs.brm.idps.apikey}"/>
+                    <token key="batchjobs.brm.idps.apipolicy" value="${batchjobs.brm.idps.apipolicy}"/>
+                    <token key="batchjobs.brm.idps.accesstype" value="${batchjobs.brm.idps.accesstype}"/>
+
+                    <token key="batchjobs.mtl.s3.bucket" value="${batchjobs.mtl.s3.bucket}"/>
+                    <token key="batchjobs.mtl.s3.folder.outbound" value="${batchjobs.mtl.s3.folder.outbound}"/>
+                    <token key="batchjobs.mtl.s3.folder.archive" value="${batchjobs.mtl.s3.folder.archive}"/>
+                    <token key="batchjobs.mtl.folder.work" value="${batchjobs.mtl.folder.work}"/>
+                    <token key="batchjobs.mtl.partner.s3.bucket" value="${batchjobs.mtl.partner.s3.bucket}"/>
+                    <token key="batchjobs.mtl.partner.s3.folder.inbound" value="${batchjobs.mtl.partner.s3.folder.inbound}"/>
+                    <token key="batchjobs.initialLoad.topic.name" value="${batchjobs.initialLoad.topic.name}"/>
+                    <token key="workforce.invite.url.sign.up" value="${workforce.invite.url.sign.up}"/>
+                    <token key="workforce.invite.url.sign.in" value="${workforce.invite.url.sign.in}"/>
+                    <token key="batchjobs.argoevents.source.service.url" value="${batchjobs.argoevents.source.service.url}"/>
+                    <!--feature flag turned into config-->
+                    <token key="ff.entity.enabled.for.publish" value="${ff.entity.enabled.for.publish}"/>
+                    <token key="ff.entity.processing.detailed.logging" value="${ff.entity.processing.detailed.logging}"/>
+                    <token key="ff.DG.DISCOVERABILITY.FEATURE" value="${ff.DG.DISCOVERABILITY.FEATURE}"/>
+                    <token key="ff.LMA.ENABLED" value="${ff.LMA.ENABLED}"/>
+                    <token key="ff.ENABLE.PAYLOAD.LOGGING" value="${ff.ENABLE.PAYLOAD.LOGGING}"/>
+                    <token key="ff.IDV.IGNORED.EWS.EVENTS" value="${ff.IDV.IGNORED.EWS.EVENTS}"/>
+                    <token key="ff.IDV.IGNORED.UPDATES.FROM.USERS" value="${ff.IDV.IGNORED.UPDATES.FROM.USERS}"/>
+
+                    <token key="workerscomp.sftp.hostname" value="${workerscomp.sftp.hostname}"/>
+                    <token key="workerscomp.sftp.ppd.username" value="${workerscomp.sftp.ppd.username}"/>
+                    <token key="workerscomp.sftp.ppd.password" value="${workerscomp.sftp.ppd.password}"/>
+                    <token key="workerscomp.sftp.prd.username" value="${workerscomp.sftp.prd.username}"/>
+                    <token key="workerscomp.sftp.prd.password" value="${workerscomp.sftp.prd.password}"/>
+                    <token key="workerscomp.sftp.senddir" value="${workerscomp.sftp.senddir}"/>
+                    <token key="workerscomp.sftp.destinationdir" value="${workerscomp.sftp.destinationdir}"/>
+                    <token key="workerscomp.sftp.archivaldir" value="${workerscomp.sftp.archivaldir}"/>
+                    <token key="workerscomp.sftp.publickey" value="${workerscomp.sftp.publickey}"/>
+
+                    <token key="batchjobs.entity.jms.user" value="${batchjobs.entity.jms.user}"/>
+                    <token key="batchjobs.entity.jms.password" value="${batchjobs.entity.jms.password}"/>
+                    <token key="batchjobs.entity.pmo.oms.broker.url" value="${batchjobs.entity.pmo.oms.broker.url}"/>
+                    <token key="batchjobs.entity.pmo.oms.queue.name" value="${batchjobs.entity.pmo.oms.queue.name}"/>
+                    <token key="batchjobs.entity.pmo.oms.policy.id" value="${batchjobs.entity.pmo.oms.policy.id}"/>
+                    <token key="batchjobs.entity.pmo.oms.endpoint" value="${batchjobs.entity.pmo.oms.endpoint}"/>
+                    <token key="batchjobs.entity.pmo.oms.qualified.private.key.name" value="${batchjobs.entity.pmo.oms.qualified.private.key.name}"/>
+                    <token key="batchjobs.entity.pmo.oms.subscriber.namespace" value="${batchjobs.entity.pmo.oms.subscriber.namespace}"/>
+                    <token key="workerscomp.sftp.insurepay.prd.hostname" value="${workerscomp.sftp.insurepay.prd.hostname}"/>
+                    <token key="workerscomp.sftp.insurepay.ppd.hostname" value="${workerscomp.sftp.insurepay.ppd.hostname}"/>
+                    <token key="workerscomp.sftp.insurepay.username" value="${workerscomp.sftp.insurepay.username}"/>
+                    <token key="workerscomp.sftp.insurepay.prd.password" value="${workerscomp.sftp.insurepay.prd.password}"/>
+                    <token key="workerscomp.sftp.insurepay.ppd.password" value="${workerscomp.sftp.insurepay.ppd.password}"/>
+                    <token key="workerscomp.sftp.insurepay.senddir" value="${workerscomp.sftp.insurepay.senddir}"/>
+                    <token key="workerscomp.sftp.insurepay.destinationdir" value="${workerscomp.sftp.insurepay.destinationdir}"/>
+                    <token key="workerscomp.sftp.insurepay.archivaldir" value="${workerscomp.sftp.insurepay.archivaldir}"/>
+                    <token key="workerscomp.sftp.insurepay.ppd.publickey" value="${workerscomp.sftp.insurepay.ppd.publickey}"/>
+                    <token key="workerscomp.sftp.insurepay.prd.publickey" value="${workerscomp.sftp.insurepay.prd.publickey}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+</project>

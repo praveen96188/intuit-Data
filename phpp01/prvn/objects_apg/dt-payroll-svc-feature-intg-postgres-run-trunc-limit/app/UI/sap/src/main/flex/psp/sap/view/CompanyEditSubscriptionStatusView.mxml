@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:pspui="psp.sap.view.*"
+        xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        xmlns:flexlib="flexlib.controls.*"
+        height="100%"
+        verticalGap="-1"
+        >
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Button;
+
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.ServiceCodeEnum;
+        import psp.sap.model.ServiceSubStatus;
+
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.model.ServiceStatus;
+        import psp.sap.model.CompanyServiceStatus;
+        import psp.sap.viewmodel.CompanyEditSubscriptionStatusViewModel;
+
+        private var mViewModel:CompanyEditSubscriptionStatusViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanyEditSubscriptionStatusViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditSubscriptionStatusViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+            }
+        }
+
+        public function subStatusSelectionEvent(e:Event):void {
+            var button:Button = Button(e.currentTarget);
+            var subStatus:ServiceSubStatus = button.getRepeaterItem() as ServiceSubStatus;
+            subStatus.selected = button.selected;
+            viewModel.updateCanSave();
+        }
+
+        public function onRadioChange(e:Event):void {
+            var group:RadioButtonGroup = RadioButtonGroup(e.currentTarget);
+            var subStatus:ServiceSubStatus = group.selectedValue as ServiceSubStatus;
+            if (!viewModel.isMultipleSubStatusSelectionAllowed) {
+                viewModel.selectedSubStatus = subStatus;
+            }
+
+        }
+
+
+
+        private function confirmSave():void {
+                var alertMsg:String="Are you sure you want to edit this company's " + viewModel.serviceName + " Status?";
+                if(viewModel.hasOpenLedgerOperationFTs && (viewModel.selectedServiceStatus.serviceStatusCd.toString()=="Cancelled" || viewModel.selectedServiceStatus.serviceStatusCd.toString()=="Terminated") && viewModel.selectedCompanyServiceStatus.serviceCd=="Tax")
+                {
+                    alertMsg+="\n\nWARNING: This company has pending manual debits for tax that may have been paid. Cancelling the company will block these debits. Please resolve prior to clicking OK.";
+                }
+                Alert.show(alertMsg,
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (e:CloseEvent):void {
+                            if (e.detail == Alert.OK) {
+                                viewModel.save();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+
+        }
+
+        private function getServiceName(item:Object):String {
+            return item.serviceCodeEnum.label;
+        }
+
+        public function loadSignatureFile():void {
+            viewModel.openFileDialog();
+        }
+        ]]>
+	</mx:Script>
+
+    <controls:SAPTabBar
+            id="serviceTabBar"
+            dataProvider="{viewModel.companyStatus.serviceStatusCollection}"
+            labelFunction="getServiceName"/>
+    <mx:HBox
+            horizontalGap="0"
+            width="100%"
+            borderColor="#BDBABD"
+            borderSides="left, right"
+            borderStyle="solid"
+            id="tabBorderBox">
+        <mx:VBox
+                width="{serviceTabBar.selectedChild.x}"
+                borderColor="#BDBABD"
+                borderSides="top"
+                borderStyle="solid">
+            <mx:Spacer height="5"/>
+        </mx:VBox>
+        <mx:VBox
+                width="{serviceTabBar.selectedChild.width}">
+            <mx:Spacer height="5"/>
+        </mx:VBox>
+        <mx:VBox
+                width="100%"
+                borderColor="#BDBABD"
+                borderSides="top"
+                borderStyle="solid">
+            <mx:Spacer height="5"/>
+        </mx:VBox>
+    </mx:HBox>
+    <mx:VBox
+            borderStyle="solid"
+            borderSides="left, right, bottom"
+            width="100%">
+        <mx:HBox borderStyle="none" width="100%" paddingLeft="10" paddingRight="5">
+            <mx:Label text="{viewModel.serviceName} Service Status " fontWeight="bold" fontSize="12"/>
+        </mx:HBox>
+        <mx:HBox borderStyle="none" width="100%" paddingLeft="10" paddingRight="5">
+            <mx:ComboBox id="statusComboBox" dataProvider="{viewModel.serviceStatuses}" labelField="serviceStatusName"
+                         includeInLayout="{!viewModel.companyIsOnHold &amp;&amp; viewModel.canUpdateStatus}"
+                         visible="{!viewModel.companyIsOnHold &amp;&amp; viewModel.canUpdateStatus}"/>
+            <mx:Text id="statusText" text="{viewModel.selectedServiceStatus.serviceStatusName}"
+                     includeInLayout="{!viewModel.companyIsOnHold &amp;&amp; !viewModel.canUpdateStatus}"
+                     visible="{!viewModel.companyIsOnHold &amp;&amp; !viewModel.canUpdateStatus}"/>
+            <mx:Text id="holdText" text="On Hold" fontWeight="bold" color="red"
+                     includeInLayout="{viewModel.companyIsOnHold}" visible="{viewModel.companyIsOnHold}"/>
+        </mx:HBox>
+        <mx:VBox paddingLeft="10" verticalGap="0"
+                 visible="{!viewModel.selectedServiceStatus.serviceSubStatusList.length == 1}"
+                 includeInLayout="{!viewModel.selectedServiceStatus.serviceSubStatusList.length == 1}">
+            <mx:VBox verticalGap="0">
+                <mx:Label id="ddSubStatusLabel" text="{viewModel.serviceName} Substatus" fontWeight="bold"
+                          fontSize="12"/>
+            </mx:VBox>
+            <mx:VBox paddingLeft="5">
+                <mx:Label
+                        text="{ServiceSubStatus(viewModel.selectedServiceStatus.serviceSubStatusList.getItemAt(0)).subStatusName}"/>
+            </mx:VBox>
+        </mx:VBox>
+
+        <mx:VBox paddingLeft="10" verticalGap="0"
+                 visible="{viewModel.selectedServiceStatus.serviceSubStatusList.length >= 1}"
+                 includeInLayout="{viewModel.selectedServiceStatus.serviceSubStatusList.length >= 1}">
+            <mx:VBox visible="{viewModel.isMultipleSubStatusSelectionAllowed}"
+                     includeInLayout="{viewModel.isMultipleSubStatusSelectionAllowed}" verticalGap="0">
+                <mx:VBox verticalGap="0">
+                    <mx:Label text="{viewModel.serviceName} Substatus" fontWeight="bold" fontSize="12" paddingTop="5"/>
+                    <mx:Label text="select all that apply"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="2" paddingLeft="5">
+                    <mx:Repeater id="subStatusRepeater"
+                                 dataProvider="{viewModel.selectedServiceStatus.serviceSubStatusList}">
+                        <mx:CheckBox
+                                label="{subStatusRepeater.currentItem.subStatusName}"
+                                selected="{subStatusRepeater.currentItem.selected}"
+                                enabled="{viewModel.canUpdateStatus}"
+                                change="subStatusSelectionEvent(event)"
+                                />
+                    </mx:Repeater>
+                </mx:VBox>
+            </mx:VBox>
+            <mx:VBox visible="{!viewModel.isMultipleSubStatusSelectionAllowed}"
+                     includeInLayout="{!viewModel.isMultipleSubStatusSelectionAllowed}" verticalGap="0">
+                <mx:VBox verticalGap="0">
+                    <mx:Label text="{viewModel.serviceName} Substatus" fontWeight="bold" fontSize="12" paddingTop="5"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="2" paddingLeft="5">
+                    <mx:RadioButtonGroup id="mainGroup" change="onRadioChange(event)"/>
+                    <mx:Repeater id="radioButtonSubStatusRepeater"
+                                 dataProvider="{viewModel.selectedServiceStatus.serviceSubStatusList}">
+                        <mx:RadioButton groupName="mainGroup"
+                                        label="{radioButtonSubStatusRepeater.currentItem.subStatusName}"
+                                        enabled="{viewModel.canUpdateStatus}"
+                                        value="{radioButtonSubStatusRepeater.currentItem}"/>
+                    </mx:Repeater>
+                </mx:VBox>
+            </mx:VBox>
+
+        </mx:VBox>
+
+        <mx:HBox
+                paddingLeft="10"
+                visible="{viewModel.selectedCompanyServiceStatus.ddLimits != null}"
+                includeInLayout="{viewModel.selectedCompanyServiceStatus.ddLimits != null}">
+            <mx:VBox>
+                <mx:Label text="Per Payroll:" styleName="fieldLabel"/>
+                <mx:Label
+                        text="Per {viewModel.selectedCompanyServiceStatus.serviceCodeEnum == ServiceCodeEnum.BILL_PAYMENT ? 'Payee' : 'Employee'}:"
+                        styleName="fieldLabel"/>
+            </mx:VBox>
+            <mx:VBox>
+                <controls:SAPTextInput dataField="perPayrollLimit" isCurrency="true"
+                                       editable="{viewModel.canEditDdLimits}"/>
+                <controls:SAPTextInput dataField="perEmployeeLimit" isCurrency="true"
+                                       editable="{viewModel.canEditDdLimits}"
+                                       id="perEmployeeLimitInput"
+                                       errorString="{viewModel.isEEGreaterThanER ? perEmployeeLimitInput.errorString + 'The employee limit cannot be greater than the payroll limit.' : perEmployeeLimitInput.errorString}"/>
+            </mx:VBox>
+            <mx:VBox>
+
+                <mx:Label id="defaultPayrollLimitLabel1"
+                          text="(using default {SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedCompanyServiceStatus.ddLimits.defaultPayrollLimit)})"
+                          includeInLayout="{viewModel.isEmpty(viewModel.perPayrollLimit)}"
+                          visible="{viewModel.isEmpty(viewModel.perPayrollLimit)}"
+                          styleName="ddDefaultLimitTextStyle"/>
+                <mx:HBox verticalAlign="middle"
+                         horizontalGap="0"
+                         includeInLayout="{! viewModel.isEmpty(viewModel.perPayrollLimit)}"
+                         visible="{! viewModel.isEmpty(viewModel.perPayrollLimit)}">
+                    <mx:Label id="defaultPayrollLimitLabel2"
+                              text="default: {SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedCompanyServiceStatus.ddLimits.defaultPayrollLimit)}"
+                              styleName="ddDefaultNotUsingLimitTextStyle"/>
+                    <mx:LinkButton id="useDefaultPayrollButton"
+                                   label="Use"
+                                   styleName="inlineLinkButtonStyle"
+                                   visible="{viewModel.canEditDdLimits}"
+                                   click="viewModel.useDefaultPayrollLimit();"/>
+                </mx:HBox>
+
+
+                <mx:Label id="defaultEmployeeLimitLabel1"
+                          text="(using default {SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedCompanyServiceStatus.ddLimits.defaultEmployeeLimit)})"
+                          includeInLayout="{viewModel.isEmpty(viewModel.perEmployeeLimit)}"
+                          visible="{viewModel.isEmpty(viewModel.perEmployeeLimit)}"
+                          styleName="ddDefaultLimitTextStyle"
+                          color="{viewModel.isEEGreaterThanER ? 0xFF0000 : 0x008000}"/>
+                <mx:HBox verticalAlign="middle"
+                         horizontalGap="0"
+                         includeInLayout="{! viewModel.isEmpty(viewModel.perEmployeeLimit)}"
+                         visible="{! viewModel.isEmpty(viewModel.perEmployeeLimit)}">
+                    <mx:Label id="defaultEmployeeLimitLabel2"
+                              text="default: {SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedCompanyServiceStatus.ddLimits.defaultEmployeeLimit)}"
+                              styleName="ddDefaultNotUsingLimitTextStyle"/>
+                    <mx:LinkButton id="useDefaultEmployeeButton"
+                                   label="Use"
+                                   styleName="inlineLinkButtonStyle"
+                                   visible="{viewModel.canEditDdLimits}"
+                                   click="viewModel.useDefaultEmployeeLimit();"/>
+                </mx:HBox>
+
+
+            </mx:VBox>
+        </mx:HBox>
+
+        <mx:HBox
+                verticalAlign="middle"
+                paddingLeft="10"
+                horizontalGap="0"
+                visible="{viewModel.selectedCompanyServiceStatus.serviceCodeEnum == ServiceCodeEnum.CHECK_DISTRIBUTION}"
+                includeInLayout="{viewModel.selectedCompanyServiceStatus.serviceCodeEnum == ServiceCodeEnum.CHECK_DISTRIBUTION}">
+            <mx:Text
+                    text="Company Signature:"
+                    styleName="fieldLabel"/>
+            <mx:Spacer width="5"/>
+            <mx:Text
+                    styleName="fieldLabel"
+                    text="{viewModel.selectedCompanyServiceStatus.hasSignatureFile ? 'Present' : 'Absent'}"
+                    color="{viewModel.selectedCompanyServiceStatus.hasSignatureFile ? UIUtils.COLOR_GREEN : UIUtils.COLOR_RED}"/>
+            <mx:Spacer width="5"/>
+            <mx:Text text="("/>
+            <pspui:ActionLink
+                    paddingLeft="-5"
+                    paddingRight="-5"
+                    label="upload"
+                    click="loadSignatureFile()"
+                    enabled="{viewModel.canAddUpdateCheckPrintSignature}"/>
+            <mx:Text text=")"
+                     paddingRight="-5"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%" horizontalAlign="right" paddingBottom="5" paddingRight="5">
+            <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+        </mx:HBox>
+
+    </mx:VBox>
+
+    <mx:Binding source="statusComboBox.selectedItem as ServiceStatus" destination="viewModel.selectedServiceStatus"/>
+    <mx:Binding source="viewModel.selectedServiceStatus" destination="statusComboBox.selectedItem"/>
+
+    <mx:Binding source="viewModel.selectedServiceSubStatuses.getItemAt(0)" destination="mainGroup.selectedValue"/>
+
+    <mx:Binding source="serviceTabBar.selectedItem as CompanyServiceStatus"
+                destination="viewModel.selectedCompanyServiceStatus"/>
+    <mx:Binding source="viewModel.selectedCompanyServiceStatus" destination="serviceTabBar.selectedItem"/>
+
+</mx:VBox>

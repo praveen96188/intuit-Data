@@ -1,0 +1,100 @@
+l1: payroll
+l2: dtpayroll
+git_org: payroll-dtpayroll
+service_name: dt-payroll-svc
+asset_id: 6847740825712235356
+asset_alias: null
+
+code_repo: github.intuit.com/payroll-dtpayroll/dt-payroll-svc.git
+deploy_repo: github.intuit.com/payroll-dtpayroll/dt-payroll-svc-deployment.git
+
+# tracking revision
+#argocd_manifest_input_branch: feature-parallel-multiple-directories
+
+argocd_server: payroll.argocd.tools-k8s-prd.a.intuit.com:443
+argocd_password: argocd-dt-payroll-svc
+argocd_project: payroll-dtpayroll-dt-payroll-svc
+argocd_project_enabled: true
+
+registry: docker.intuit.com
+repo: payroll/dtpayroll/dt-payroll-svc/service
+
+# change this to false once ready for PRD
+preprodOnly: false
+snow_application_name: "TODO"
+
+# change this to true for enabling Jira stories to be transitioned
+enableJiraTransition: false
+# change this to true for enable Code Analysis stage
+SonarQubeAnalysis: false
+
+# change this to true for stop your pipeline in quality gate error
+SonarQubeEnforce: false
+
+# enable this to true once test suite has matured in confidence to help automate deployments
+enableScorecardReadinessCheck: false
+# to bypass the scorecard readiness check's fall back, gitOpsApproval, set this to true
+skipScorecardManualFallback: false
+
+# These variables only used for the master branch.
+deployToQAL: false
+deployToE2E: true
+deployToPRF: false
+
+environments:
+
+  ds2-usw2-eks:
+    ingress_endpoint: https://payroll-ds2-dt-payroll-svc.payrollppdusw2.iks2.a.intuit.com
+    cluster: https://eksapi-payroll-ppd-usw2-k8s-837d3f4c408b17b6.elb.us-west-2.amazonaws.com
+    namespace: payroll-dtpayrollsvc-usw2-ds2
+    region: usw2
+    iks_type: ppd
+    manifest_format: Kustomize
+
+  qal-usw2-eks:
+    ingress_endpoint: https://payroll-qal-dt-payroll-svc.payrollppdusw2.iks2.a.intuit.com
+    cluster: https://eksapi-payroll-ppd-usw2-k8s-837d3f4c408b17b6.elb.us-west-2.amazonaws.com
+    namespace: payroll-dtpayrollsvc-usw2-qal
+    region: usw2
+    iks_type: ppd
+    manifest_format: Kustomize
+
+  e2e-usw2-eks:
+    ingress_endpoint: https://payroll-e2e-dt-payroll-svc.payrollppdusw2.iks2.a.intuit.com
+    cluster: https://eksapi-payroll-ppd-usw2-k8s-837d3f4c408b17b6.elb.us-west-2.amazonaws.com
+    namespace: payroll-dtpayrollsvc-usw2-e2e
+    region: usw2
+    iks_type: ppd
+    manifest_format: Kustomize
+
+  e2e-use2-eks:
+      ingress_endpoint: https://payroll-e2e-dt-payroll-svc.payrollppduse2.iks2.a.intuit.com
+      cluster: https://eksapi-payroll-ppd-use2-k8s-f2912931b371f4a8.elb.us-east-2.amazonaws.com
+      namespace: payroll-dtpayrollsvc-use2-e2e
+      region: use2
+      iks_type: ppd
+      manifest_format: Kustomize
+
+  prf-usw2-eks:
+    ingress_endpoint: https://payroll-prf-dt-payroll-svc.payrollppdusw2.iks2.a.intuit.com
+    cluster: https://eksapi-payroll-ppd-usw2-k8s-837d3f4c408b17b6.elb.us-west-2.amazonaws.com
+    namespace: payroll-dtpayrollsvc-usw2-prf
+    region: usw2
+    iks_type: ppd
+    manifest_format: Kustomize
+
+  stg-usw2-eks:
+    ingress_endpoint: https://payroll-stg-dt-payroll-svc.payrollprdusw2.iks2.a.intuit.com
+    cluster: https://eksapi-payroll-prd-usw2-k8s-0e6c214834f21cae.elb.us-west-2.amazonaws.com
+    namespace: payroll-dtpayrollsvc-usw2-stg
+    region: usw2
+    iks_type: prd
+    manifest_format: Kustomize
+
+  prd-usw2-eks:
+    ingress_endpoint: https://payroll-prd-dt-payroll-svc.payrollprdusw2.iks2.a.intuit.com
+    cluster: https://eksapi-payroll-prd-usw2-k8s-0e6c214834f21cae.elb.us-west-2.amazonaws.com
+    namespace: payroll-dtpayrollsvc-usw2-prd
+    region: usw2
+    iks_type: prd
+    manifest_format: Kustomize

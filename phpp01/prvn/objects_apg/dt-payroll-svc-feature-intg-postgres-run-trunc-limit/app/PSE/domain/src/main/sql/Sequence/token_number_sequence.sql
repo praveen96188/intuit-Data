@@ -1,0 +1,12 @@
+/
+DECLARE
+   sequence_exists PLS_INTEGER;
+BEGIN
+   SELECT COUNT(*) INTO sequence_exists
+   FROM "USER_SEQUENCES"
+   WHERE SEQUENCE_NAME = 'SEQ_TXN_TOKEN_NBR';
+   IF sequence_exists = 0 THEN
+    EXECUTE IMMEDIATE 'create sequence SEQ_TXN_TOKEN_NBR INCREMENT BY 1 MINVALUE 400000';
+   END IF;
+end;
+/

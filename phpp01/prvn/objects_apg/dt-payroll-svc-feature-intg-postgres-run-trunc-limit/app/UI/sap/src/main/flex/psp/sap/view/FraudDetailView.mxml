@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ViewStack xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%"
+	resizeToContent="true"	
+	verticalGap="0"
+	creationComplete="onCreationComplete()" 
+	selectedIndex="{viewModel.fraudulentPayrollsCollection.isEmpty ? 1 : 0}">
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.FraudInspectorPageEnum;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatter;
+        import psp.sap.model.FraudEvent;
+        import psp.sap.viewmodel.FraudDetailViewModel;
+
+        private var mViewModel:FraudDetailViewModel;
+        private var mTempViewModel:FraudDetailViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():FraudDetailViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:FraudDetailViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            var temp:String = "";
+            temp += dateFormatterNoTime.format(item.payrollCheckDate);
+            temp += "\n";
+            temp += dateFormatter.format(item.payrollRunDate);
+            return temp;
+        }
+
+        private function formatCurrency(item:Object, dgc:DataGridColumn):String {
+            if (item.payrollAmount != SAP.instance.configuration.specialNumberForDefault) {
+                return SAPCurrencyFormatter.currencyFormatter.format(item[dgc.dataField]);
+            }
+            return "N/A";
+        }
+
+        public function showToolTip(item:Object): String {
+            if (String(item.details).indexOf("...") > 0) {
+                return "See company notes for more information.";
+            }
+            return "";
+        }
+
+        public function goToCompanyInfoView():void {
+            viewModel.goToCompanyInfoView();
+        }
+
+        public function onViewTransactions(event:ActionLinkEvent):void {
+            // close the suspect paycheck expander when the selected fraud event is changed
+            suspectPaycheckExpander.currentState = "panelClosed";
+            employeeBankAccountMatchExpander.currentState = "panelClosed";
+            viewModel.selectedPayrollFraudEvent = FraudEvent(event.data);
+        }
+			
+		]]>
+	</mx:Script>	
+	<mx:DateFormatter id="dateFormatter" formatString="MMM DD, YYYY L:NN A"/>	
+	<mx:DateFormatter id="dateFormatterNoTime" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+	<mx:VBox width="100%" verticalGap="0" id="fraudDetailContent" verticalScrollPolicy="off" paddingLeft="10">
+	    <mx:HBox width="100%" paddingBottom="10">
+			<mx:HBox horizontalAlign="left" verticalAlign="middle" width="68%" horizontalGap="3">
+				<mx:Label text="Company:" fontSize="16" fontWeight="bold"/>
+				<pspui:ActionLink 	id="companyNameLink"
+									label="{viewModel.company.legalName}" 
+									click="viewModel.goToCompanyInfoView()"
+									tabIndex="1"
+									toolTip="Click to go to company information" 
+									fontWeight="bold" fontSize="16" styleName="padderLeftRight"/>
+			</mx:HBox>
+
+			<mx:HBox horizontalAlign="right" verticalAlign="middle"  width="30%"
+				visible="{!viewModel.fraudulentPayrollsCollection.isEmpty}" 
+				includeInLayout="{!viewModel.fraudulentPayrollsCollection.isEmpty}">
+				<pspui:ActionLink 	label="Previous" 
+									click="viewModel.previousRecord();companyNameLink.focusManager.showFocus()"
+									tabIndex="2" 
+									enabled="{viewModel.fraudulentPayrollsCollection.canSelectPrevious}"/>
+				<mx:Label text="Record {viewModel.fraudulentPayrollsCollection.selectedIndex + 1} of {viewModel.fraudulentPayrollsCollection.length}"/>
+				<pspui:ActionLink  	label="Next" 
+									click="viewModel.nextRecord();companyNameLink.focusManager.showFocus();" 
+									tabIndex="3"
+									enabled="{viewModel.fraudulentPayrollsCollection.canSelectNext}"/>
+			</mx:HBox>
+
+		</mx:HBox>
+						
+			
+		<controls:Expander 
+            title="Legal Information"
+			label="{FraudInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander'}"
+			width="98%"> 
+			<mx:VBox width="100%" label="{FraudInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_box'}">
+                <pspui:CompanyDisplayLegalInfoView label="{FraudInspectorPageEnum.COMPANY_LEGAL_INFO}"/>
+                <controls:DisplayEditHistoryViewStack
+                        editEnabled="{viewModel.canPerformOperation(OperationsEnum.STATUS_UPDATE)}"
+                        historyVisible="false"
+                        historyEnabled="false"
+                        minWidth="300"
+                        horizontalAlign="left"
+                        label="{FraudInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_box_deh'}">
+                    <pspui:CompanyDisplaySubscriptionStatus label="{FraudInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_box_deh_display'}"
+                                                            horizontalAlign="left"/>
+                    <pspui:CompanyEditSubscriptionStatusView label="{FraudInspectorPageEnum.COMPANY_LEGAL_INFO+'_expander_box_deh_edit'}"
+                                                             horizontalAlign="left"/>
+                </controls:DisplayEditHistoryViewStack>
+            </mx:VBox>
+		</controls:Expander>
+	
+		<controls:Expander title="Contact Information"
+			width="98%" label="{CompanyInspectorPageEnum.COMPANY_CONTACT_INFO+'_expander'}">
+			<pspui:CompanyDisplayContactInfoView 	label="{CompanyInspectorPageEnum.COMPANY_CONTACT_INFO}"
+													showAddContactLink="false"/>
+		</controls:Expander>
+		
+		<controls:Expander title="Fraudulent Payrolls" width="98%" label="companyFraudulentPayrolls_expander">	
+			<controls:SAPDataGrid 
+				id="searchResults"
+				width="100%" 
+				dataProvider="{viewModel.companyFraudulentPayrolls}"  
+				selectable="false"
+				rowCount="{UIUtils.getRowCountFor(viewModel.companyFraudulentPayrolls)+1}"				
+				variableRowHeight="true"
+				paddingRight="10">
+				<controls:columns>
+					<mx:DataGridColumn
+						headerText="Check Date{String('\n')}Run Date"
+                        headerWordWrap="true"
+						minWidth="160"
+						labelFunction="formatDate"
+						dataField="payrollCheckDate">
+					</mx:DataGridColumn>						
+					<mx:DataGridColumn
+						minWidth="140"
+						dataField="payrollRunStatus">
+						<mx:headerRenderer>
+							<mx:Component>
+								<mx:VBox 
+									verticalGap="0" 
+									horizontalAlign="left" 
+									verticalScrollPolicy="off" 
+									horizontalScrollPolicy="off">
+									<mx:Label text="Payroll Run Status" styleName="padderLeftRight"/>
+								</mx:VBox>
+							</mx:Component>
+						</mx:headerRenderer>						
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+						headerText="Payroll Amount"
+						minWidth="125"							
+						textAlign="right"
+						labelFunction="formatCurrency" 
+						fontWeight="bold"
+						dataField="payrollAmount"/>																				
+					<mx:DataGridColumn
+						headerText="Action"
+						minWidth="150"
+						fontWeight="bold"
+						dataField="sourcePayRunId">
+						<mx:itemRenderer>		
+							<mx:Component>
+							<mx:VBox verticalGap="0" paddingTop="-2">
+								<pspui:ActionLink
+									label="View Transactions"
+									actionClick="{outerDocument.onViewTransactions}"
+									data="{data}"/>
+							</mx:VBox>
+							</mx:Component>
+						</mx:itemRenderer>
+	            	</mx:DataGridColumn>		
+					<mx:DataGridColumn
+						headerText="Trigger"
+					 	dataField="details"
+					 	textAlign="left"
+					 	wordWrap="true"
+					 	minWidth="300"
+					 	width="375"
+					 	sortable="false"
+					 	dataTipFunction="showToolTip"
+					 	showDataTips="true"/>												
+				</controls:columns>
+			</controls:SAPDataGrid>
+		</controls:Expander>
+	
+	
+		<controls:Expander title="Payroll Transactions" label="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_LIST+'_expander'}"
+			width="98%" 
+			visible="{viewModel.showPayrollTransactions}"  
+			includeInLayout="{viewModel.showPayrollTransactions}">
+		    <pspui:PayrollTransactionsListView 
+		    	label="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_LIST}"
+		    	showActions="false"
+		    	showBankAccount="false"
+		    	boldAmount="true"/>
+		</controls:Expander>
+        
+        <controls:Expander 
+			id="suspectPaycheckExpander"
+			title="{FraudInspectorPageEnum.SUSPECT_PAYCHECKS}"
+			label="{FraudInspectorPageEnum.SUSPECT_PAYCHECKS + '_expander'}" 			
+			width="98%" 
+			visible="{viewModel.showPayrollTransactions}"  
+			includeInLayout="{viewModel.showPayrollTransactions}">
+			<pspui:FraudSuspectPaycheckView label="{FraudInspectorPageEnum.SUSPECT_PAYCHECKS}"/>
+		</controls:Expander>
+		
+		<controls:Expander 
+			id="employeeBankAccountMatchExpander"
+			title="{FraudInspectorPageEnum.MATCHING_EMPLOYEE_BANK_ACCOUNTS}"
+			label="{FraudInspectorPageEnum.MATCHING_EMPLOYEE_BANK_ACCOUNTS + '_expander'}" 			
+			width="98%" 
+			visible="{viewModel.showPayrollTransactions}"  
+			includeInLayout="{viewModel.showPayrollTransactions}">
+			<pspui:FraudEmployeeBankAccountMatchView label="{FraudInspectorPageEnum.MATCHING_EMPLOYEE_BANK_ACCOUNTS}"/>
+		</controls:Expander>
+
+	</mx:VBox>
+	<mx:VBox width="100%" id="noContent">
+	    <mx:Label
+	    	 width="100%" 
+	         text="There are no Fraud Details to display" 
+			 fontWeight="bold"/>	
+	</mx:VBox>		
+</mx:ViewStack>
+
+

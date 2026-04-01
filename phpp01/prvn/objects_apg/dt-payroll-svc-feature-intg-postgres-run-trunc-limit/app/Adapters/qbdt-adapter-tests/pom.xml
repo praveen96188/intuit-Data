@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Adapters</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>qbdt-adapter-tests</artifactId>
+    <name>qbdt-adapter-tests</name>
+       
+    <dependencies>
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>testutils</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- End of Module dependency -->  
+        
+        <!-- Dependencies Read from Maven Repository -->          
+        <!--Easy Mock dependency-->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.2.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <!-- <version>1.0.6.3</version> -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis-tck</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency> 
+        <!-- End of Dependencies Read from Maven Repository -->           
+    </dependencies>
+    
+    <build>
+        <testResources>
+            <testResource>
+                <directory>${project.test.resources.dir}</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <targetPath>resources</targetPath>
+            </testResource>
+        </testResources>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>                                
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>qbdt-adapter</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <classifier>classes</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.target.test.classes}</outputDirectory>
+                                    <includes>**/*.html</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>qbdt-adapter</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>war</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                    <includes>**/com/intuit/sbd/payroll/psp/adapters/qbdt/**/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- For tests only to access truncateTables.sql-->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-remote-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>com.intuit.sbg.psp:domain:${psp.project.version}</resourceBundle>
+                                <resourceBundle>com.intuit.sbg.psp:domain-secondary:${psp.project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- Creating a test-jar with the test classess(src/test/java) in it -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> 
+
+		    <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resource-one</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${project.wars.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>${project.build.finalName}.war</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

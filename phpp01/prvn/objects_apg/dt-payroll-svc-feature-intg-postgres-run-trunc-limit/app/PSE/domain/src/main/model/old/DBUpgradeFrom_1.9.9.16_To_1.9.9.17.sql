@@ -1,0 +1,1 @@
+-- No differences were detected between schemas PSP_LOCAL@XE and PREVIOUS_PSP_LOCAL@XEPROMPT finishedDBUpgradeFrom_1.9.9.16_To_1.9.9.17.sql

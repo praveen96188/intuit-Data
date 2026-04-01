@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+    <query name="findCompanyAgency">
+        <![CDATA[
+            select ca
+			from com.intuit.sbd.payroll.psp.domain.CompanyAgency ca
+			where ca.Company.SourceSystemCd = :sourceSystemCd
+              and ca.Company.SourceCompanyId = :sourceCompanyId
+			  and ca.Agency.AgencyId = :agencyId
+			  and ca.IntuitResponsibilityStartDate <= :todayDate
+			  and (ca.IntuitResponsibilityEndDate is null or ca.IntuitResponsibilityEndDate >= :todayDate)
+			]]>
+    </query>
+
+    <query name="findCompanyLawsBySourceSystemAndService">
+        <![CDATA[
+            Select claw
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyLaw as claw
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and claw.CompanyAgency.Company=comp
+			  order by comp.CreatedDate,claw.CompanyAgency.Agency, cast(claw.Law.LawId as java.lang.Long)
+			]]>
+    </query>
+
+      <query name="findUpdatedCompanyLawsForATFDataExtract">
+        <![CDATA[
+            Select claw
+			from com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.CompanyLaw as claw
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Company=comp
+			  and cs.Service.ServiceCd = :serviceCd
+			  and claw.CompanyAgency.Company=comp			  
+			  and ( (claw.ModifiedDate >= :fromDate and claw.ModifiedDate < :toDate)
+                  or (claw.CompanyAgency.ModifiedDate >= :fromDate and claw.CompanyAgency.ModifiedDate < :toDate)
+			      )
+			 order by claw.CompanyAgency.Agency, cast(claw.Law.LawId as java.lang.Long)
+
+			]]>
+    </query>
+
+    <query name="findCompanyDepositFrequenciesBySourceSystemAndService">
+        <![CDATA[
+            Select depositFrequency
+			from com.intuit.sbd.payroll.psp.domain.EffectiveDepositFrequency as depositFrequency, 
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.CompanyAgencyPaymentTemplate paymentTemplate,
+			     com.intuit.sbd.payroll.psp.domain.CompanyAgency agency
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and agency.Company = comp
+			  and paymentTemplate.CompanyAgency = agency
+			  and depositFrequency.CompanyAgencyPaymentTemplate = paymentTemplate
+			  order by comp.SourceCompanyId,paymentTemplate.PaymentTemplate
+			]]>
+    </query>
+
+    <query name="findCompaniesForUpdatedDepositFrequencies">
+        <![CDATA[
+            Select distinct comp
+			from com.intuit.sbd.payroll.psp.domain.EffectiveDepositFrequency as depositFrequency,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.CompanyAgencyPaymentTemplate paymentTemplate,
+			     com.intuit.sbd.payroll.psp.domain.CompanyAgency agency
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and agency.Company = comp
+			  and paymentTemplate.CompanyAgency = agency
+			  and depositFrequency.CompanyAgencyPaymentTemplate = paymentTemplate
+			  and ( depositFrequency.ModifiedDate >= :fromDate and depositFrequency.ModifiedDate < :toDate )
+			  order by comp.SourceCompanyId
+			]]>
+    </query>
+
+    <query name="findUpdatedCompanyAgenciesForATFDataExtract">
+        <![CDATA[
+            select ca
+			from com.intuit.sbd.payroll.psp.domain.CompanyAgency ca,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+			where comp.SourceSystemCd = :sourceSystemCd
+              and cs.Service.ServiceCd = :serviceCd
+              and ca.Agency = :agency
+              and ca.Company = comp
+              and cs.Company = comp
+              and ( ca.ModifiedDate >= :fromDate and ca.ModifiedDate < :toDate )
+              order by comp.SourceCompanyId
+			]]>
+    </query>
+
+    <query name="findDepositFrequenciesByCompany">
+        <![CDATA[
+            Select depositFrequency
+			from com.intuit.sbd.payroll.psp.domain.EffectiveDepositFrequency as depositFrequency,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyAgencyPaymentTemplate paymentTemplate,
+			     com.intuit.sbd.payroll.psp.domain.CompanyAgency agency
+			where comp.Id = :companyId
+			  and agency.Company = comp
+			  and paymentTemplate.CompanyAgency = agency
+			  and depositFrequency.CompanyAgencyPaymentTemplate = paymentTemplate
+			  order by paymentTemplate.PaymentTemplate
+			]]>
+    </query>
+
+    <query name="findCompanyPaymentTemplateDates">
+        <![CDATA[
+            select capt, max(capt.PaymentTemplate.SupportStartDate), max(companyAgency.IntuitResponsibilityStartDate), max(companyAgency.IntuitResponsibilityEndDate)
+            from com.intuit.sbd.payroll.psp.domain.CompanyAgencyPaymentTemplate capt
+              join capt.CompanyAgency companyAgency
+            where companyAgency.Company = :company
+            and capt.PaymentTemplate.SupportStartDate is not null
+            group by capt.Id, capt.Version, capt.CreatorId, capt.CreatedDate, capt.ModifierId, capt.ModifiedDate, capt.RealmId, capt.CompanyAgency.Id, capt.PaymentTemplate.PaymentTemplateCd, capt.AgencyTaxpayerIdEnc, capt.RecordMetadata
+			]]>
+    </query>
+
+</hibernate-mapping>
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+
+    <Properties>
+        <Property name="layout">%d{yyyy-MM-dd'T'HH:mm:ss,SSSZ} %-5p [%t] %X{intuit_tid} %c{1} - %m%n</Property>
+        <!-- catalina.home -->
+        <Property name="logFileName">${sys:user.dir}/logs/log4j2-test.log</Property>
+        <Property name="logFilePattern">${sys:user.dir}/logs/$${date:yyyy-MM}/psp-%d{MM-dd-yyyy}-%i.log.zip</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Async Loggers will auto-flush in batches, so switch off immediateFlush. -->
+        <RollingRandomAccessFile name="RollingRandomAccessFile"
+                                 fileName="${logFileName}" filePattern="${logFilePattern}" append="true">
+            <PatternLayout pattern="${layout}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${layout}"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info" includeLocation="true">
+            <AppenderRef ref="RollingRandomAccessFile"/>
+<!--            <AppenderRef ref="Console"/>-->
+        </Root>
+
+        <Logger name="test-log-02" level="DEBUG"/>
+        <Logger name="com.intuit.identity.exptplatform" level="error"/>
+    </Loggers>
+</Configuration>

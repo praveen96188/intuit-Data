@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        backOffset="-2"
+                        continueOffset="0"
+                        showTag="false"
+                        titleText="{resourceManager.getString('interview','results_title')}"
+                        height="200">
+    <mx:Script>
+        <![CDATA[
+            private function onLink(e:TextEvent):void {
+                if (e.text == "hireactinformation") {
+                    model.tracker.trackEvent("Navigation","Click HIRE Act Information", "Ineligible");
+                    navigateToURL(new URLRequest("http://payroll.intuit.com/support/kb/kbitem/1012855.html"));
+                }
+            }
+        ]]>
+    </mx:Script>
+
+
+    <mx:HBox verticalAlign="middle" paddingLeft="20">
+        <mx:Image source="psp/taxcredits/view/assets/x_Error_Red_24x24.png"/>
+        <mx:Text selectable="false" styleName="resultsText" width="600"
+                 htmlText="{model.employee.unemployed60Set &amp;&amp; model.employee.unemployed60 ? resourceManager.getString('interview','ee_ineligible_hire') : resourceManager.getString('interview','ee_ineligible')}"/>
+    </mx:HBox>
+
+    <mx:Spacer height="15"/>
+    <mx:Image source="psp/taxcredits/view/assets/dotted_line_small.gif"/>
+
+    <controls:SupText selectable="true" styleName="pageEmphasis" width="600" paddingLeft="30" link="onLink(event);"
+             htmlText="{model.employee.unemployed60Set &amp;&amp; model.employee.unemployed60 ? resourceManager.getString('interview','ee_hire_try_again') : resourceManager.getString('interview','ee_try_again')}"/>             
+
+</controls:InterviewPage>

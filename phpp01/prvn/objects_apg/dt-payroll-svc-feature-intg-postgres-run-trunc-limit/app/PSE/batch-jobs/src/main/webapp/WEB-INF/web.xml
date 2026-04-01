@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app metadata-complete="true" version="2.5"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<display-name>PSP Batch Job</display-name>
+
+	<listener>
+		<listener-class>com.intuit.sbd.payroll.psp.jss.LogInitContextListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.intuit.sbd.payroll.psp.common.utils.ProxyContextListener</listener-class>
+	</listener>
+
+	<servlet>
+		<servlet-name>InitSpcfServlet</servlet-name>
+		<servlet-class>com.intuit.sbd.payroll.psp.web.InitSpcfServlet</servlet-class>
+		<load-on-startup>100</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>JerseyServlet</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>io.swagger.jaxrs.json,
+                io.swagger.jaxrs.listing,
+                com.intuit.sbd.payroll.psp.jss.api,com.intuit.sbg.shared.batchjob.resources,com.intuit.sbd.payroll.psp.jss,com.intuit.sbd.payroll.psp.jss.resources</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+
+	<servlet>
+		<servlet-name>BatchJobShutdownServlet</servlet-name>
+		<servlet-class>
+            com.intuit.sbg.shared.batchjob.servlets.BatchJobsManagerShutdownServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>JerseyServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+    <servlet>
+        <servlet-name>JerseyConfig</servlet-name>
+        <servlet-class>io.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
+        <init-param>
+            <param-name>api.version</param-name>
+            <param-value>1.1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>swagger.api.basepath</param-name>
+            <param-value>/batch-jobs/</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <filter>
+		<filter-name>LMAFilter</filter-name>
+		<filter-class>com.intuit.sbg.psp.filter.LastMileAuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>LMAFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+</web-app>

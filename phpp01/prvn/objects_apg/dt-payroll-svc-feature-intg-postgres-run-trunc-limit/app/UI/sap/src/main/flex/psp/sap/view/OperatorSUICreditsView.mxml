@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import psp.sap.application.SAP;
+        import psp.sap.model.SUICreditsJob;
+        import psp.sap.model.Quarter;
+        import psp.sap.viewmodel.OperatorSUICreditViewModel;
+        import psp.app.util.CommonUtil;
+
+        private var mViewModel:OperatorSUICreditViewModel;
+        private var mTempViewModel:OperatorSUICreditViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():OperatorSUICreditViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:OperatorSUICreditViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public static function formatQuarter(item:Object, dgc:DataGridColumn):String {
+            return Quarter(item[dgc.dataField]).label;
+        }
+        
+        public function viewFile(job:SUICreditsJob, viewProcessed:Boolean):void {
+            var urlRequest:URLRequest = new URLRequest("DownloadSUICreditsJob?jobId=" + job.id + "&token=" + SAP.instance.session.user.authorizationToken);
+            if(CommonUtil.isDTApp()) {
+                CommonUtil.downloadFromSAPURL(urlRequest.url, "SUICreditsJob.csv");
+            } else {
+                navigateToURL(urlRequest, '_blank');
+            }
+        }
+        
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Apply SUI Credits" styleName="h3" paddingTop="6"/>
+    <mx:Form paddingTop="0">
+        <mx:FormItem label="Year">
+            <controls:SAPTextInput restrict="0-9"
+                                   maxChars="4"
+                                   dataField="selectedYear"/>
+        </mx:FormItem>
+        <mx:FormItem label="Quarter">
+            <controls:SAPComboBox
+                    dataField="selectedQuarter"
+                    dataProvider="{viewModel.quarterList}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Payment Type">
+            <controls:SAPComboBox
+                    dataField="selectedPaymentTemplate"
+                    dataProvider="{viewModel.availableTemplates}"/>
+        </mx:FormItem>
+        <mx:Button enabled="{viewModel.canSave}" label="Apply SUI Credits" click="viewModel.save()"/>
+    </mx:Form>
+
+    <mx:Label text="Existing Jobs" styleName="h3" paddingTop="6"/>
+
+    <controls:SAPDataGrid
+            dataProvider="{viewModel.currentJobs}"
+            draggableColumns="false"
+            selectable="false"
+            maxRows="8"
+            width="700">
+        <controls:columns>
+            <controls:SAPDataGridColumn headerText="Created Time" dataField="createdDate"
+                                        labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"/>
+            <controls:SAPDataGridColumn headerText="Status" dataField="status"/>
+            <controls:SAPDataGridColumn headerText="Quarter" dataField="quarter" labelFunction="formatQuarter"/>
+            <controls:SAPDataGridColumn headerText="Payment Type" dataField="paymentTemplate"/>
+            <controls:SAPDataGridColumn headerText="Changed Time" dataField="modifiedDate"
+                                        labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"/>
+            <controls:SAPDataGridColumn headerText="Processed">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:Box>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.SUICreditsJob;
+                                ]]></mx:Script>
+                            <mx:LinkButton label="Download" styleName="inlineLinkButtonStyleBoldNoUnderline"
+                                           click="outerDocument.viewFile(SUICreditsJob(data), true)"
+                                           enabled="{SUICreditsJob(data).isProcessed() &amp;&amp; SUICreditsJob(data).isDownloadEnabled()}"/>
+                        </mx:Box>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+        </controls:columns>
+    </controls:SAPDataGrid>
+
+
+
+
+</mx:VBox>

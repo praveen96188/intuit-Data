@@ -1,0 +1,66 @@
+Timing is on.
+set search_path=pspadm;
+SET
+Time: 1.103 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-06 06:58:19.843186-07
+(1 row)
+
+Time: 1.121 ms
+drop index psp_bill_u1 ;
+DROP INDEX
+Time: 94.875 ms
+create unique index concurrently psp_bill_u1 on psp_bill (company_usage_fk, bill_date);
+CREATE INDEX
+Time: 64403.126 ms (01:04.403)
+drop index psp_company_u1;
+DROP INDEX
+Time: 19.640 ms
+create unique index concurrently psp_company_u1 on psp_company (source_company_id, source_system_cd);
+CREATE INDEX
+Time: 18728.669 ms (00:18.729)
+drop index psp_company_usage_u1;
+DROP INDEX
+Time: 9.010 ms
+create unique index concurrently psp_company_usage_u1 on psp_company_usage (source_company_id, source_system_cd, license_id, entitlement_id);
+CREATE INDEX
+Time: 2539.644 ms (00:02.540)
+drop index psp_employee_usage_u1;
+DROP INDEX
+Time: 1031.659 ms (00:01.032)
+create unique index concurrently psp_employee_usage_u1 on psp_employee_usage (usage_period_fk, source_employee_id);
+CREATE INDEX
+Time: 705104.247 ms (11:45.104)
+drop index psp_entitlement_u1;
+DROP INDEX
+Time: 1269.456 ms (00:01.269)
+create unique index concurrently psp_entitlement_u1 on psp_entitlement (license_number, entitlement_offering_code);
+CREATE INDEX
+Time: 5154.687 ms (00:05.155)
+drop index psp_payroll_run_u1;
+DROP INDEX
+Time: 297.995 ms
+create unique index concurrently psp_payroll_run_u1 on psp_payroll_run (company_fk, source_pay_run_id);
+CREATE INDEX
+Time: 1078202.514 ms (17:58.203)
+drop index psp_system_parameter_spcode_u1;
+DROP INDEX
+Time: 18.747 ms
+create unique index concurrently psp_system_parameter_spcode_u1 on psp_system_parameter (system_parameter_cd);
+CREATE INDEX
+Time: 47.848 ms
+drop index psp_usage_period_u1;
+DROP INDEX
+Time: 98.236 ms
+create unique index concurrently psp_usage_period_u1 on psp_usage_period (company_usage_fk, start_date, end_date);
+CREATE INDEX
+Time: 71247.314 ms (01:11.247)
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-06 07:30:48.113175-07
+(1 row)
+
+Time: 1.098 ms

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        width="100%"
+        height="100%">
+
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.model.User;
+            import psp.sap.viewmodel.DDEditRoleViewModel;
+            import psp.sap.application.IApplicationItem;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.events.DataGridEvent;
+            import mx.events.ListEvent;
+            import psp.sap.application.SAP;
+            import mx.events.ValidationResultEvent;
+
+            private var mViewModel:DDEditRoleViewModel;
+
+            [Bindable]
+            public function get viewModel():DDEditRoleViewModel{
+                return mViewModel;
+            }
+
+            public function set viewModel(value:DDEditRoleViewModel):void {
+                if(value != null) {
+                    mViewModel = value;
+                    mViewModel.nameValidator.listener = this.name;
+                }
+            }					
+		]]>
+	</mx:Script>
+
+    <mx:HBox width="450" height="60"  paddingLeft="22" verticalAlign="top">
+        <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+            <mx:HBox styleName="padderBox" paddingRight="18" width="360" horizontalAlign="left">
+                <mx:Label text="Name:" width="60" />
+                <mx:TextInput id="nameInput" text="{viewModel.name}" width="160"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:HBox>
+    <mx:Spacer height="5"/>
+    <mx:HBox width="450"  height="400" paddingLeft="22" >
+        <mx:DataGrid id="dgRoles"
+                     paddingLeft="22"
+                     paddingRight="18"
+                     width="400"
+                     selectable="false"
+                     variableRowHeight="true"
+                     textAlign="left"
+                     showHeaders="false"
+                     dataProvider="{viewModel.rolePermissions}" >
+            <mx:columns>
+                <mx:DataGridColumn
+                        minWidth="120" textAlign="left"
+                        paddingLeft="0"
+                        dataField="role">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:Label
+                                        id="roleLabel"
+                                        enabled="true"
+                                        text="{data.role}"
+                                        data="{data}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                        minWidth="30"
+                        paddingLeft="0"
+                        width="50">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%"
+                                     horizontalAlign="left"
+                                     verticalGap="0"
+                                     verticalScrollPolicy="off"
+                                     horizontalScrollPolicy="off">
+                                <mx:CheckBox
+                                        id="selectedRoleBox"
+                                        enabled="true"
+                                        selected="{data.selected}"
+                                        data="{data}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </mx:columns>
+        </mx:DataGrid>
+    </mx:HBox>
+    <mx:HBox width="430" height="60"  paddingLeft="22" verticalAlign="top" horizontalAlign="right" paddingRight="8">
+        <mx:Button id="submitButton" label="Submit" click="viewModel.save()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+        <mx:Button id="cancelButton" label="Cancel" />
+    </mx:HBox>
+</mx:VBox>

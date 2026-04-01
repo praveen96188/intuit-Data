@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://wsimpl.dd.pse.osp.intuit" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://wsimpl.dd.pse.osp.intuit" xmlns:intf="http://wsimpl.dd.pse.osp.intuit" xmlns:tns2="http://base.wsf.common.osp.intuit" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.3
+Built on Oct 05, 2005 (05:23:37 EDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://base.wsf.common.osp.intuit" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://xml.apache.org/xml-soap"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="WSException">
+    <sequence/>
+   </complexType>
+  </schema>
+ </wsdl:types>
+   <wsdl:message name="clearCacheResponse">
+      <wsdl:part name="clearCacheReturn" type="apachesoap:Element"/>
+   </wsdl:message>
+
+   <wsdl:message name="WSException">
+      <wsdl:part name="fault" type="tns2:WSException"/>
+   </wsdl:message>
+
+   <wsdl:message name="clearCacheRequest">
+      <wsdl:part name="requestDoc" type="apachesoap:Element"/>
+   </wsdl:message>
+
+   <wsdl:portType name="DDInitTesting">
+      <wsdl:operation name="clearCache" parameterOrder="requestDoc">
+         <wsdl:input message="impl:clearCacheRequest" name="clearCacheRequest"/>
+         <wsdl:output message="impl:clearCacheResponse" name="clearCacheResponse"/>
+         <wsdl:fault message="impl:WSException" name="WSException"/>
+      </wsdl:operation>
+   </wsdl:portType>
+
+   <wsdl:binding name="DDInitTestingSoapBinding" type="impl:DDInitTesting">
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <wsdl:operation name="clearCache">
+         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input name="clearCacheRequest">
+            <wsdlsoap:body namespace="empty" use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="clearCacheResponse">
+            <wsdlsoap:body namespace="urn:intuit.osp.pse.dd.wsapi.xsd.clearcachers.ClearCacheRs" use="literal"/>
+         </wsdl:output>
+         <wsdl:fault name="WSException">
+            <wsdlsoap:fault name="WSException" use="literal"/>
+         </wsdl:fault>
+      </wsdl:operation>
+   </wsdl:binding>
+
+   <wsdl:service name="DDInitTesting">
+      <wsdl:port binding="impl:DDInitTestingSoapBinding" name="DDInitTesting">
+         <wsdlsoap:address location="${wsdlsoap.address.location.root}/services/DDInitTesting"/>
+      </wsdl:port>
+   </wsdl:service>
+</wsdl:definitions>

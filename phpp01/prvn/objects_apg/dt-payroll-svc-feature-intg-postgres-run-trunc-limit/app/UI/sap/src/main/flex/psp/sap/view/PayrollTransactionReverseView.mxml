@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        xmlns:pspui="psp.sap.view.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.CheckBox;
+        import mx.events.CloseEvent;
+        import mx.formatters.CurrencyFormatter;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.PayrollRun;
+        import psp.sap.model.SettlementTypeEnum;
+        import psp.sap.viewmodel.PayrollTransactionReverseViewModel;
+
+        private var mCreationComplete:Boolean = false;
+        private var mViewModel:PayrollTransactionReverseViewModel;
+        private var mTempViewModel:PayrollTransactionReverseViewModel;
+
+        [Bindable]
+        public function get viewModel():PayrollTransactionReverseViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollTransactionReverseViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                viewModel.dateValidator.listener = transactionDateInput;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        /**
+         * Confirmation dialog
+         */
+        private function confirm():void {
+            var msgString:String = "Are you sure you want to reverse the selected transactions?";
+            if (!viewModel.initiateReversal) {
+                if (viewModel.chargeReversalFee) {
+                    msgString += "\n\nReminder: A reversal fee will be charged unless you uncheck the charge reversal fee checkbox.";
+                }
+                else {
+                    msgString += "\n\nReminder: The charge reversal fee checkbox is unchecked so this fee will not be charged.";
+                }
+            }
+            Alert.show(msgString, "Confirmation", Alert.OK | Alert.CANCEL, null, confirmVerifyHandler, null, Alert.OK);
+        }
+
+        private function checkFocus(e:FocusEvent):void {
+            if (!(e.currentTarget as ComboBox).visible) {
+                focusManager.getNextFocusManagerComponent().setFocus();
+                focusManager.showFocus();
+            }
+        }
+
+        private function updateCustRequested(value:CheckBox):void {
+            if (value.selected) {
+                chkChargeReversal.selected = false;
+                chkChargeReversal.enabled = false;
+                settlementTypeCombo.selectedIndex = 0;
+                settlementTypeCombo.enabled = false;
+            }
+            else {
+                if (viewModel.hasActiveBankAccount) {
+                    chkChargeReversal.selected = true;
+                    chkChargeReversal.enabled = true;
+                }
+                settlementTypeCombo.enabled = true;
+            }
+        }
+
+        private function boolSettlementTypeVisible():Boolean {
+            var retVal:Boolean = false;
+            if ((viewModel.canSelectNonStandardSettlementTypes) && (chkCollections.selected = false)) {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        private function confirmVerifyHandler(e:CloseEvent):void {
+            if (e.detail == Alert.OK) {
+                viewModel.save();
+            }
+            // I don't think this is a very good user experience, but the spec says to do this
+            // additional note:  if initiateReversal = true then the rule is all ees will remain checked.
+            else if (e.detail == Alert.CANCEL) {
+                if (!viewModel.initiateReversal) {
+                    viewModel.selectAll = false;
+                }
+            }
+        }
+
+        [Bindable] public var currencyFormatter:CurrencyFormatter = SAPCurrencyFormatters.defaultFormatter;
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox
+            height="100%"
+            verticalGap="0"
+            width="100%"
+            id="dataContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+        <!-- Employee Transactions -->
+        <mx:VBox visible="{viewModel.employeeTransactions.length == 0}" includeInLayout="{viewModel.employeeTransactions.length == 0}" verticalGap="0" minWidth="900" id="noEmployeeTransactionsPanel" verticalAlign="middle" horizontalAlign="center" styleName="grayDataGridVBox" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+            <mx:HBox width="100%" textAlign="left" verticalAlign="middle">
+                <mx:Label id="eeDDTxns1" text="Direct Deposit Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <mx:Text id="noEEDDTxnsText" text="This Payroll does not have any direct deposit transactions that can be reversed" fontWeight="bold"/>
+        </mx:VBox>
+
+        <mx:VBox verticalGap="5" visible="{viewModel.employeeTransactions.length > 0}" includeInLayout="{viewModel.employeeTransactions.length > 0}" id="employeeTransactionsPanel" height="100%" width="100%">
+
+            <mx:VBox styleName="grayDataGridVBox" verticalScrollPolicy="off" horizontalScrollPolicy="off" width="100%">
+                <mx:HBox width="100%" textAlign="left" verticalAlign="middle" horizontalGap="0">
+                    <mx:Label id="intuitInitiatedReversalsLabel" text="Intuit-Initiated Reversals" styleName="grayDataGridHeading"/>
+                    <mx:Label text="{viewModel.custRequested}" fontSize="14" color="gray" id="lblRequested"/>
+                </mx:HBox>
+                <mx:HBox width="100%" verticalAlign="middle" horizontalGap="0" backgroundColor="#ffffff">
+                    <mx:Spacer width="10"/>
+                    <mx:CheckBox label="Initiate Reversals for Collections?"
+                                 id="chkCollections"
+                                 click="updateCustRequested(this.chkCollections)"
+                                 enabled="{viewModel.payrollRunStatus.allowInitiateReversal}"
+                                 selected="{viewModel.initiateReversal}"/>
+                    <mx:Spacer width="380"/>
+                    <mx:Label text="Reversals Expected Date " id="lblExpectedDate" visible="{chkCollections.selected}"/>
+                    <mx:Label id="rvrslExpectedDateLabel" text="{viewModel.reversalExpectedDate}" visible="{chkCollections.selected}"/>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:Spacer height="5"/>
+
+            <mx:VBox styleName="grayDataGridVBox" verticalScrollPolicy="off" horizontalScrollPolicy="off" width="100%">
+                <mx:HBox width="100%" textAlign="left" verticalAlign="middle" horizontalGap="0">
+                    <mx:Label id="eeDDTxns2" text="Direct Deposit Transactions" styleName="grayDataGridHeading"/>
+                    <mx:Label id="paycheckDateLabel" text="(for paycheck date {dateFormatter.format(viewModel.payrollRun.paycheckDate)})" fontSize="14" color="gray"/>
+                </mx:HBox>
+                <mx:HBox
+                        paddingTop="3"
+                        paddingBottom="3"
+                        width="100%" textAlign="left" verticalAlign="middle" horizontalGap="0" backgroundColor="#ffffff">
+                    <mx:Spacer width="10"/>
+                    <mx:CheckBox label="Charge Reversal Fee" id="chkChargeReversal"
+                                 selected="{viewModel.chargeReversalFee? viewModel.hasActiveBankAccount : false}"
+                                 enabled="{(chkCollections.selected) ? false : (viewModel.hasActiveBankAccount)}"/>
+                    <mx:Spacer width="30"/>
+                    <mx:Label text="Settlement Type:" id="lblSettleType" styleName="inputLabels"/>
+                    <mx:ComboBox id="settlementTypeCombo"
+                                 width="100"
+                                 dataProvider="{viewModel.settlementTypes}"
+                                 focusIn="checkFocus(event)"
+                                 visible="{viewModel.canSelectNonStandardSettlementTypes}"
+                                 includeInLayout="{viewModel.canSelectNonStandardSettlementTypes}"/>
+                    <mx:Label
+                            id="settlementTypeLabel"
+                            fontWeight="bold"
+                            textAlign="center"
+                            width="100"
+                            visible="{!viewModel.canSelectNonStandardSettlementTypes}"
+                            includeInLayout="{!viewModel.canSelectNonStandardSettlementTypes}"/>
+                    <mx:Spacer width="30"/>
+                    <mx:HBox horizontalGap="0" visible="{viewModel.isACHType}" includeInLayout="{viewModel.isACHType}">
+                        <mx:Label id="bankAccountLabel" text="Bank Account: "  styleName="inputLabels"/>
+                        <mx:Label id="accountNumberLabel" text="{UIUtils.maskBankAccountNumbers(viewModel.accountNumber)}" />
+                    </mx:HBox>
+                    <mx:HBox horizontalGap="0" visible="{!viewModel.isACHType}" includeInLayout="{!viewModel.isACHType}">
+                        <mx:Label id="dateLabel" text="Date: " styleName="inputLabels" />
+                        <pspui:SAPDateField width="100" id="transactionDateInput" editable="true" focusOut="viewModel.updateSelectAllAndCanSave()"/>
+                    </mx:HBox>
+                </mx:HBox>
+                <controls:SAPDataGrid
+                        id="eeTransactionsData"
+                        dataProvider="{viewModel.employeeTransactions}"
+                        maxRows="10"
+                        selectable="false"
+                        width="100%"
+                        backgroundColor="#ffffff">
+                    <controls:columns>
+                        <pspui:CheckBoxHeaderColumn
+                                id='eeTxnSelectedColumn'
+                                headerText=""
+                                textAlign="center"
+                                dataField="selected"
+                                sortable="false"
+                                headerRenderer="psp.sap.view.CheckBoxHeaderRenderer"
+                                viewModel="{viewModel}"
+                                selected="{viewModel.selected}"
+                                enabled="{viewModel.checkBoxEnabled}"
+                                minWidth="24">
+                            <pspui:itemRenderer>
+                                <mx:Component>
+                                    <mx:HBox horizontalAlign="center">
+                                        <!-- this is tricky the data bindind is inline a.s. onClick -->
+                                        <mx:CheckBox id="eeTxnSelectedBox" enabled="{data.enabled}" selected="{data.selected}" click="data.selected = CheckBox(event.currentTarget).selected" />
+                                    </mx:HBox>
+                                </mx:Component>
+                            </pspui:itemRenderer>
+                        </pspui:CheckBoxHeaderColumn>
+                        <mx:DataGridColumn
+                                id="eligibleEEsColumn"
+                                headerText="Eligible Individual *"
+                                textAlign="left"
+                                dataField="employeeName"
+                                minWidth="250">
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn
+                                id="ddACHAmountColumn"
+                                headerText="DD ACH Amount"
+                                textAlign="right"
+                                dataField="amount"
+                                minWidth="100">
+                            <mx:itemRenderer>
+                                <mx:Component id="amountText">
+                                    <mx:Text text="{outerDocument.currencyFormatter.format(data.amount)}"/>
+                                </mx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn
+                                id='eeBankAccountNumberColumn'
+                                headerText="Bank Account #"
+                                textAlign="center"
+                                dataField="employeeBankAccountNumber"
+                                sortable="false"
+                                minWidth="150">
+                            <mx:itemRenderer>
+                                <mx:Component id="eeBANumberText">
+                                    <mx:Text text="{UIUtils.maskBankAccountNumbers(data.employeeBankAccountNumber)}" />
+                                </mx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn
+                                id="eeBankRoutingNumberColumn"
+                                headerText="Bank Routing #"
+                                textAlign="center"
+                                dataField="employeeBankRoutingNumber"
+                                sortable="false"
+                                minWidth="150">
+                        </mx:DataGridColumn>
+                    </controls:columns>
+                </controls:SAPDataGrid>
+            </mx:VBox>
+
+            <mx:Spacer height="5"/>
+
+            <mx:HBox width="100%">
+                <mx:HBox horizontalAlign="left" verticalAlign="top">
+                    <mx:Label id="eesNotReversedLabel" text="* - Currently in 'Executed' state or do NOT have a 'Reversal' associated with them"/>
+                </mx:HBox>
+                <mx:HBox width="100%" horizontalAlign="right">
+                    <mx:Button id="reverseEETxnsButton" label="Reverse Transactions" click="{confirm()}" enabled="{viewModel.canSave}"/>
+                </mx:HBox>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Binding source="settlementTypeCombo.selectedItem as SettlementTypeEnum" destination="viewModel.settlementType" />
+    <mx:Binding source="viewModel.settlementType" destination="settlementTypeCombo.selectedItem"/>
+
+    <mx:Binding source="chkChargeReversal.selected" destination="viewModel.chargeReversalFee" />
+    <mx:Binding source="viewModel.chargeReversalFee" destination="chkChargeReversal.selected" />
+
+    <mx:Binding source="chkCollections.selected" destination="viewModel.initiateReversal" />
+    <mx:Binding source="viewModel.initiateReversal" destination="chkCollections.selected" />
+
+    <mx:Binding source="lblRequested.text" destination="viewModel.custRequested" />
+    <mx:Binding source="viewModel.custRequested" destination="lblRequested.text" />
+
+    <mx:Binding source="transactionDateInput.text" destination="viewModel.transactionDate" />
+    <mx:Binding source="viewModel.transactionDate" destination="transactionDateInput.text" />
+    <mx:Binding source="viewModel.dateValidator.validDateRange" destination="transactionDateInput.selectableRange" />
+
+    <mx:Binding source="settlementTypeCombo.selectedLabel" destination="settlementTypeLabel.text" />    
+
+</mx:Canvas>

@@ -1,0 +1,105 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns="http://www.w3.org/1999/xhtml"
+          version="2.0">
+
+    <jsp:directive.page isELIgnored="false"/>
+
+    <html>
+    <head>
+        <title>IP Based Fraud Filtering Report</title>
+        <style type="text/css">
+            BODY {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            TABLE {
+                margin-bottom:30px;
+            }
+
+            TD {
+                text-align: left;
+                padding-right: 20px;
+                vertical-align: text-top;
+            }
+
+            .tableHeader TD {
+                padding-right: 20px;
+                text-align: left;
+                vertical-align: text-top;
+                border-bottom: 1px solid #00529B;
+                border-spacing:0px;
+            }
+
+            .indentTable {
+                width: 100%;
+                padding-left: 10px;
+            }
+
+            .indentTable TD {
+                color: #00529B;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            .even TD {
+                background-color: #BDE5F8;
+            }
+
+            @media print {
+                .companyInfo TD {
+                    color: black;
+                }
+
+                .tableHeader TD {
+                    border-bottom: 1px solid black;
+                }
+
+                .indentTable TD {
+                    color: black;
+                }
+
+                .even TD {
+                    border-bottom: 1px solid gray;
+                }
+                .odd TD {
+                    border-bottom: 1px solid gray;
+                }
+
+            }
+        </style>
+    </head>
+    <body>
+    <h2>IP Based Fraud Filtering Report</h2><br/>
+    <b>IP Address:</b>${ipAddress}<br/>
+    <b>Start Date:</b>${startDate}<br/>
+    <b>End Date:</b>${endDate}<br/>
+    <c:choose>
+        <c:when test="${searchResults.totalRecords > 0}">
+            <div class="indentTable">
+                <table cellspacing="0" width="100%">
+                    <tr class="tableHeader">
+                        <td nowrap="nowrap">Company Legal Name</td>
+                        <td nowrap="nowrap">Company PSID</td>
+                        <td nowrap="nowrap">IP Address</td>
+                        <td nowrap="nowrap">Last Login Time</td>
+                    </tr>
+                    <c:forEach items="${searchResults.returnsList}" var="list" varStatus="listStatus">
+                        <tr class="${listStatus.index % 2 == 0 ? 'even' : 'odd'}">
+                            <td nowrap="nowrap">${list.companyName}</td>
+                            <td nowrap="nowrap">${list.psid}</td>
+                            <td nowrap="nowrap">${list.ipAddress}</td>
+                            <td nowrap="nowrap">${list.loginTime}</td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="statusMessage">No records were found for the search criteria.</div>
+        </c:otherwise>
+    </c:choose>
+
+    </body>
+    </html>
+</jsp:root>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 3 sp1 (http://www.altova.com) by April Branson (ASC X12) -->
+<xsd:schema xmlns="http://www.irs.gov/efile" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.06">
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>Date Exchange Schema</Description>
+			<TaxYear>2008</TaxYear>
+			<Version>Draft Release</Version>
+			<ReleaseDate>November 19, 2008</ReleaseDate>
+		</xsd:documentation>
+	</xsd:annotation>
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="efileTypes.xsd"/>
+	<xsd:include schemaLocation="FSETeFileTypes.xsd"/>
+	<xsd:element name="RequestExchangeDataState" type="ExchangeDataStateType">
+		<xsd:annotation>
+			<xsd:documentation>"State Data exchange"</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ExchangeDataStateType">
+		<xsd:annotation>
+			<xsd:documentation>Content model for Data Exchange</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="RequestPurpose">
+				<xsd:annotation>
+					<xsd:documentation>The porpose of the request for data, check all that apply</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="WHFrequency" type="CheckboxType">
+							<xsd:annotation>
+								<xsd:documentation>Agent requests data on Employers Withholding status</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="RequestStateEIN">
+				<xsd:annotation>
+					<xsd:documentation>If the Agent has the state Employer Identification Number, include it here or check the AppliedFor box</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:choice>
+						<xsd:element name="StateEIN" type="StateEINType">
+							<xsd:annotation>
+								<xsd:documentation>Agent lists the State EIN on their records</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="AppliedFor" type="CheckboxType">
+							<xsd:annotation>
+								<xsd:documentation>Indicates Agent does not have a State Employer Identification Number, Employer may have reciently applied for that number</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:choice>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.events.DataGridEvent;
+        import mx.events.MenuEvent;
+
+        import psp.sap.application.SAP;
+
+        import psp.sap.application.enums.EINManagementInspectorPageEnum;
+        import psp.sap.model.EntitlementSearchResult;
+        import psp.sap.viewmodel.EINSearchViewModel;
+        import psp.app.util.CommonUtil;
+
+        [Bindable]
+        public var viewModel:EINSearchViewModel;
+
+        public function onCompanyClick(e:DataGridEvent):void {
+            var searchResult:EntitlementSearchResult = EntitlementSearchResult(e.itemRenderer.data);
+            searchResult.key.display();
+        }
+
+        public function onActionClicked(data:EntitlementSearchResult, e:MenuEvent):void {
+            var action:String = String(e.item);
+
+            if (action == EINSearchViewModel.ACTION_DEACTIVATE) {
+                Alert.show("Are you sure you want to deactivate this entitlement unit?",
+                        "Deactivate Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.deactivateEntitlementUnit(data);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action == EINSearchViewModel.ACTION_REACTIVATE) {
+                Alert.show("Are you sure you want to reactivate this entitlement unit?",
+                        "Reactivate Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.reactivateEntitlementUnit(data);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action == EINSearchViewModel.ACTION_MOVE) {
+                viewModel.moveEntitlementUnit(data);
+            } else if (action == EINSearchViewModel.ACTION_COPY) {
+                viewModel.addCompanyFrom(data);
+            }
+
+        }
+
+        public function printResults(isForExport:Boolean = false):void {
+            var callString:String = "?report=einListReport&" +
+                    "&licenseNumber=" + blankIfNull(viewModel.licenseNumber) +
+                    "&eoc=" + blankIfNull(viewModel.eoc) +
+                    "&token=" + blankIfNull(SAP.instance.session.user.authorizationToken) +
+                    "&export=" + isForExport;
+
+            if(CommonUtil.isDTApp()) {
+                CommonUtil.showPrintWindow(callString, "Print");
+            } else {
+                ExternalInterface.call("showPrintWindow", callString);
+            }
+        }
+
+        public function blankIfNull(c:*):* {
+            return (c == null) ? "" : c;
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:VBox visible="{viewModel.usingOrderNumberLookup}"
+             includeInLayout="{viewModel.usingOrderNumberLookup}">
+        <mx:Text text="A license number and EOC are required to find an Asset's associated EINs.&#13;Please enter the Asset's Order Number to find these fields."/>
+        <mx:HBox paddingTop="15">
+            <mx:Text text="Order Number:"/>
+            <controls:SAPTextInput dataField="orderNumber" enter="viewModel.findByOrderNumber();"/>
+            <mx:Button label="Show EINs" click="viewModel.findByOrderNumber();"/>
+        </mx:HBox>
+        <mx:Spacer height="10"/>
+        <mx:HRule width="700"
+                  visible="{viewModel.licenseNumberEocLoaded}"
+                  includeInLayout="{viewModel.licenseNumberEocLoaded}"/>
+    </mx:VBox>
+
+    <mx:VBox visible="{viewModel.licenseNumberEocLoaded}"
+             includeInLayout="{viewModel.licenseNumberEocLoaded}">
+
+        <mx:Form paddingLeft="0">
+            <mx:FormItem label="License Number">
+                <mx:Text text="{viewModel.licenseNumber}"/>
+            </mx:FormItem>
+            <mx:FormItem label="EOC">
+                <mx:Text text="{viewModel.eoc}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Asset Item Code">
+                <mx:Text text="{viewModel.assetInfo.assetCode}"/>
+            </mx:FormItem>
+        </mx:Form>
+
+        <controls:LoadingBox viewModel="{viewModel}">
+            <mx:VBox visible="{!viewModel.saveFaulted}"
+                     includeInLayout="{!viewModel.saveFaulted}">
+                <mx:HBox visible="{viewModel.searchResults != null}"
+                         includeInLayout="{viewModel.searchResults != null}"
+                         width="100%" horizontalAlign="right">
+                    <mx:Text text="Exceeds Active EIN count" visible="{viewModel.hasMaxActiveEINLimitExceeded}"/>
+                    <mx:Button label="Move EIN Here" click="viewModel.moveCompanyHere();" visible="{viewModel.canMoveTo}" includeInLayout="{viewModel.canMoveTo}" enabled="{viewModel.mayMoveTo &amp;&amp; !viewModel.hasMaxActiveEINLimitExceeded}"/>
+                    <mx:Button label="Add to EIN" click="viewModel.addEntitlementUnit();" toolTip="Add this entitlement to an existing EIN" visible="{viewModel.canAddTo}" includeInLayout="{viewModel.canAddTo}" enabled="{viewModel.mayAddTo &amp;&amp; !viewModel.hasMaxActiveEINLimitExceeded}"/>
+                    <mx:Button label="Add EIN" click="viewModel.addCompany();" visible="{viewModel.canAddEIN}" includeInLayout="{viewModel.canAddEIN}" enabled="{viewModel.mayAddEIN &amp;&amp; !viewModel.hasMaxActiveEINLimitExceeded}"/>
+                </mx:HBox>
+                <mx:VBox visible="{viewModel.searchResults.length > 0 || viewModel.isDataLoading}"
+                         includeInLayout="{viewModel.searchResults.length > 0 || viewModel.isDataLoading}">
+                    <controls:SAPDataGrid
+                            width="100%"
+                            dataProvider="{viewModel.searchResults}"
+                            selectable="false"
+                            sortableColumns="false"
+                            maxRows="8">
+                        <controls:columns>
+                            <controls:CompanyDataGridColumn
+                                    minWidth="250"
+                                    width="250"
+                                    headerText="Company Legal Name"
+                                    textAlign="center"
+                                    dataField="legalName"
+                                    companyClick="onCompanyClick(event);"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    width="90"
+                                    resizable="false"
+                                    headerText="EIN"
+                                    textAlign="center"
+                                    dataField="fein"
+                                    itemRenderer="mx.controls.Text"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="PSID"
+                                    textAlign="center"
+                                    dataField="PSID"
+                                    width="90"
+                                    itemRenderer="mx.controls.Text"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="EU Status"
+                                    textAlign="center"
+                                    dataField="entitlementUnitStatus"
+                                    width="125"
+                                    itemRenderer="mx.controls.Text"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="Service Key"
+                                    textAlign="center"
+                                    dataField="serviceKey"
+                                    width="160"
+                                    itemRenderer="mx.controls.Text"/>
+
+                            <mx:DataGridColumn
+                                    editable="false"
+                                    headerText="Actions"
+                                    sortable="false"
+                                    textAlign="left"
+                                    width="144"
+                                    dataField="actionCollection">
+                                <mx:itemRenderer>
+                                    <mx:Component>
+                                        <mx:VBox height="100%" width="130" paddingLeft="5" paddingRight="5" horizontalScrollPolicy="off">
+                                            <mx:Script>
+                                    <![CDATA[
+                                                import psp.sap.model.EntitlementSearchResult;
+                                                ]]>
+                                </mx:Script>
+                                            <mx:PopUpMenuButton
+                                                    dataProvider="{EntitlementSearchResult(data).actionCollection}"
+                                                    visible="{EntitlementSearchResult(data).actionCollection.length > 0}"
+                                                    includeInLayout="{EntitlementSearchResult(data).actionCollection.length > 0}"
+                                                    width="130"
+                                                    paddingLeft="5"
+                                                    paddingRight="5"
+                                                    textAlign="left"
+                                                    itemClick="outerDocument.onActionClicked(EntitlementSearchResult(data), event)"
+                                                    fontWeight="normal"
+                                                    popUpStyleName="payrollPopUpMenu"/>
+                                        </mx:VBox>
+                                    </mx:Component>
+                                </mx:itemRenderer>
+                            </mx:DataGridColumn>
+                        </controls:columns>
+                    </controls:SAPDataGrid>
+                    <pspui:ActionLink click="printResults(true);" icon="{SAP.instance.icons.exportIcon}" paddingTop="2"
+                                      labelPlacement="right" label="Export EINs"/>
+                </mx:VBox>
+                <mx:Text visible="{viewModel.searchResults &amp;&amp; viewModel.searchResults.length == 0 &amp;&amp; !viewModel.isDataLoading}"
+                         includeInLayout="{viewModel.searchResults &amp;&amp; viewModel.searchResults.length == 0 &amp;&amp; !viewModel.isDataLoading}"
+                         text="No EINs currently exist for this license key and entitlement"/>
+            </mx:VBox>
+        </controls:LoadingBox>
+
+    </mx:VBox>
+
+    <controls:PopUpPart label="{EINManagementInspectorPageEnum.MOVE_EIN+'_pup'}"
+                        showCloseButton="true"
+                        loadingMessage="{null}"
+                        horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false" >
+        <pspui:EINMoveView label="{EINManagementInspectorPageEnum.MOVE_EIN}"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart label="{EINManagementInspectorPageEnum.MOVE_TO+'_pup'}"
+                        showCloseButton="true"
+                        loadingMessage="{null}"
+                        horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false" >
+        <pspui:EINMoveToView label="{EINManagementInspectorPageEnum.MOVE_TO}" moveAddText="Move"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart label="{EINManagementInspectorPageEnum.ADD_TO+'_pup'}"
+                        showCloseButton="true"
+                        loadingMessage="{null}"
+                        horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false" >
+        <pspui:EINMoveToView label="{EINManagementInspectorPageEnum.ADD_TO}" moveAddText="Add"/>
+    </controls:PopUpPart>
+
+</mx:VBox>

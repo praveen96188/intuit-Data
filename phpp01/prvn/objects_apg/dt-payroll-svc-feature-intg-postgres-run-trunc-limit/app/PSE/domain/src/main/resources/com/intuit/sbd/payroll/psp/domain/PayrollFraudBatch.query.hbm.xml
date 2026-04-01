@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <sql-query name="deletePayrollFraudBatch">
+        <![CDATA[
+                    DELETE FROM PSP_PAYROLL_FRAUD_BATCH
+                    where created_Date < sysdate-2
+			]]>
+    </sql-query>
+
+    <sql-query name="deletePayrollFraudBatch_postgres">
+        <![CDATA[
+                	DELETE FROM PSP_PAYROLL_FRAUD_BATCH
+	                where created_Date < CURRENT_TIMESTAMP - INTERVAL '2 DAYS'
+			]]>
+    </sql-query>
+
+</hibernate-mapping>
+
+
+
+

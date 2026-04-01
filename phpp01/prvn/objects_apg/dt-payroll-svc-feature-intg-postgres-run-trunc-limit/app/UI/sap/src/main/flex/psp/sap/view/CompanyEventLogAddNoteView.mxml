@@ -1,0 +1,141 @@
+<mx:Canvas styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:controls="psp.sap.view.controls.*" horizontalScrollPolicy="off" 
+	height="100%" show="onShow()" creationComplete="onShow()"
+	>
+
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.CompanyNote;
+        import psp.sap.viewmodel.CompanyEventLogAddNoteViewModel;
+
+        private var mViewModel:CompanyEventLogAddNoteViewModel;
+
+        private const MAX_NOTE_LENGTH:Number = 3998;
+
+        [Bindable("propertyChange")]
+        public function set localShow(value:Boolean):void {
+            onShow();
+        }
+
+        [Bindable]
+        public function get viewModel():CompanyEventLogAddNoteViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEventLogAddNoteViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+            }
+        }
+
+        public function onShow():void {
+            noteTextArea.setFocus();
+            focusManager.showFocus();
+            noteTextArea.setFocus();
+        }
+        ]]>
+	</mx:Script>	
+
+	<controls:DataLoadFade id="postLoadFadeIn" target="{notesVBox}" isLoading="{viewModel.isDataLoading}" />
+	<controls:DataLoadFade id="postLoadFadeIn2" target="{noResultsPanel}" isLoading="{viewModel.isDataLoading}" />
+
+	<mx:DateFormatter id="df" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+	
+	
+		<mx:VBox width="100%">
+			<mx:HBox width="100%">
+					<mx:Label text="Notes:" fontWeight="bold" fontSize="12" />
+				</mx:HBox>	
+				
+			<mx:VBox width="100%" styleName="grayMiniBoxWithMinimalPadding">	
+			
+			
+			<pspui:SaveStatusMessage id="saveMessage"/>
+			
+			<mx:VBox id="addNote" paddingTop="5" paddingBottom="10" width="100%">
+	      		
+		      	<mx:VBox id="addNoteInner" borderStyle="solid" dropShadowEnabled="false" width="100%"  paddingBottom="5" paddingTop="5" paddingRight="5" paddingLeft="5">
+	    			<mx:Label text="Add Note:" fontWeight="bold"/>
+	    			
+	    			<mx:HBox width="100%" verticalGap="0" verticalAlign="bottom">
+	    				<mx:VBox verticalGap="0">
+		    				<mx:Label text="Type your note below and press &quot;Save&quot;" fontWeight="bold"/>
+		    				<mx:Label text="Each note can be max. 3,998 characters."/>
+	    				</mx:VBox>
+	    				<mx:Spacer width="90%"/>
+	    				<mx:TextInput id="charsLeftText" tabEnabled="false" text="{viewModel.charactersRemaining}" width="54" dropShadowEnabled="false" editable="false"/>
+	    				<mx:Label text="characters remaining" fontWeight="bold"/>
+	    			</mx:HBox>
+	    			<mx:VBox paddingLeft="10" paddingRight="10" width="100%">
+	    				<mx:TextArea id="noteTextArea" width="100%" height="100" maxChars="{MAX_NOTE_LENGTH}"/>
+	    			</mx:VBox>
+	    			<mx:HBox paddingLeft="10" horizontalAlign="right" paddingRight="20" width="100%">
+	    				<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancelNote()" />
+	    				<mx:Button id="saveButton" label="Save" click="viewModel.addCompanyNote()" enabled="{viewModel.canSave}"/>
+					</mx:HBox>
+					
+				</mx:VBox>			
+	      	</mx:VBox>
+	      	
+	      		      	
+	      	
+	      	<mx:Spacer height="2"/>
+					
+			<mx:VBox id="notesVBox" horizontalScrollPolicy="off" 
+				includeInLayout="{viewModel.hasNotes}"
+				visible="{viewModel.hasNotes}"
+				dropShadowEnabled="false" 
+				verticalGap="3" maxHeight="180">				
+				
+				<mx:Repeater id="notesGrid" dataProvider="{viewModel.notes}">
+					<mx:VBox backgroundColor="#dddddd" borderStyle="solid" borderColor="#000000" paddingLeft="3" paddingTop="5" paddingBottom="5" paddingRight="3">
+		                <mx:VBox styleName="companyNoteFieldStyle" width="750">
+                            <mx:HBox>
+                                <mx:Text fontWeight="bold" text="{SAPDateFormatters.dateFormatShort.format(CompanyNote(notesGrid.currentItem).createdDate)} - {CompanyNote(notesGrid.currentItem).insertUserId}"/>
+                                <mx:LinkButton icon="{SAP.instance.icons.bell}"
+                                               click="{viewModel.removeNoteAlert(CompanyNote(LinkButton(event.target).getRepeaterItem()).id)}"
+                                               visible="{CompanyNote(notesGrid.currentItem).alert}"
+                                               toolTip="Stop this note from showing in the banner"/>
+                            </mx:HBox>
+                            <mx:Text fontWeight="normal" width="750" text="{CompanyNote(notesGrid.currentItem).notes}"/>
+		                </mx:VBox>
+		          	</mx:VBox>
+				</mx:Repeater>
+			
+			</mx:VBox>	
+			
+			<mx:VBox width="750" visible="{viewModel.showNotes}">
+
+				<mx:VBox verticalGap="0" visible="{!viewModel.isDataLoading}" includeInLayout="{!viewModel.isDataLoading}" width="100%">			
+					<mx:VBox 
+						id="noResultsPanel" 
+						visible="{!viewModel.hasNotes}" 
+						includeInLayout="{!viewModel.hasNotes}" 
+						dropShadowEnabled="false" 
+						verticalGap="3" 
+						width="100%" 
+						fontWeight="bold">
+						
+						<mx:VBox width="100%" backgroundColor="#dddddd" borderStyle="solid" borderColor="#000000" paddingLeft="3" paddingTop="5" paddingBottom="5" paddingRight="3" horizontalAlign="center">
+							<mx:Text id="noCompanyNotesText" text="No company notes"/>
+						</mx:VBox>
+					</mx:VBox>						
+				</mx:VBox>
+	      	
+	      	</mx:VBox>
+	      	
+	      </mx:VBox>	
+	      </mx:VBox>
+	
+	<mx:Binding source="this.noteTextArea.text" destination="viewModel.noteText" />
+	<mx:Binding source="viewModel.noteText" destination="this.noteTextArea.text" />
+
+	<mx:Binding source="viewModel.saveMsg" destination="saveMessage.text" />
+	<mx:Binding source="viewModel.saveFaulted" destination="saveMessage.isError" />
+	
+	<mx:Binding source="{! viewModel.isDataLoading}" destination="localShow"/>	
+</mx:Canvas>

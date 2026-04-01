@@ -1,0 +1,16 @@
+payroll:
+  security:
+    authentication:
+      ignore-authentication-failure: true
+    authorization:
+      ignore-access-failure: true
+      filters:
+        -
+          pattern: "/**"
+          filterBeanNames:
+            - "requestContextFilter"
+            - "intuitRequestContextFilter"
+      expressions:
+        -
+          pattern: "**"
+          configAttributes: "#intuit.isIntuitUser()"

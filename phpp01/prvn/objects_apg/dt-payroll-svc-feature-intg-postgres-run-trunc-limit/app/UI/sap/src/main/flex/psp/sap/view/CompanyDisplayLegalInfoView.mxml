@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         creationComplete="onCreationComplete();"
+         width="100%"
+         height="100%"
+         horizontalGap="50"
+        >
+    <mx:Script>
+		<![CDATA[
+        import mx.events.PropertyChangeEvent;
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.CompanyEditLegalInfoViewModel;
+
+
+        private static const labelWidth:int = 115;
+
+        private var mViewModel:CompanyEditLegalInfoViewModel;
+        private var mTempViewModel:CompanyEditLegalInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyEditLegalInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditLegalInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function displayEffectiveDate(effDate:Date):String {
+            if (effDate != null) {
+                return SAPDateFormatters.dateFormatShort.format(effDate);
+            } else {
+                return "";
+            }
+        }
+        ]]>
+	</mx:Script>
+    <mx:VBox height="100%" verticalGap="0">
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Legal Name:"/>
+            <mx:Text id="legalNameText" text="{viewModel.legalInfo.legalName}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Business Name:"/>
+            <mx:Text id="businessNameText" text="{viewModel.legalInfo.doingBusinessAs}"/>
+        </mx:HBox>
+        <mx:Spacer height="10"/>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="EIN:"/>
+            <mx:Text id="einText" text="{viewModel.legalInfo.ein}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Effective Date:"/>
+            <mx:Text id="effectiveDateText" text="{displayEffectiveDate(viewModel.legalInfo.einEffectiveDate)}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="PSID:"/>
+            <mx:Text id="psidText" text="{viewModel.legalInfo.psid}"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:VBox height="100%">
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Legal Address:"/>
+            <mx:Text id="legalAddressText" text="{viewModel.legalInfo.address.toString()}"/>
+        </mx:HBox>
+        <mx:HBox includeInLayout="{viewModel.isDirectDepositCustomer()}"  visible="{viewModel.isDirectDepositCustomer()}">
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Industry :"/>
+            <mx:Text id="industryType" text="{viewModel.legalInfo.industryType}"
+                    includeInLayout="{viewModel.legalInfo.industryType != null  }"
+                    visible="{ viewModel.legalInfo.industryType != null}"/>
+        </mx:HBox>
+    </mx:VBox>
+
+</mx:HBox>
+

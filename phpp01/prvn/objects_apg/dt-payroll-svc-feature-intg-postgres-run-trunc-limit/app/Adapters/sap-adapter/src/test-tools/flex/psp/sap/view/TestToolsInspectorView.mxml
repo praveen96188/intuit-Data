@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:intuit="intuit.sbd.flex.framework.view.*"
+        width="100%" height="100%" creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.application.collections.InspectorTopicPagesCollection;
+			import mx.containers.ViewStack;
+			import mx.events.ItemClickEvent;
+			import psp.sap.application.enums.TestToolsPageEnum;
+			import psp.sap.viewmodel.TestToolsInspectorViewModel;
+			import psp.sap.viewmodel.IPartViewModelAdapter;
+			import psp.sap.application.ViewModelSync;
+			import mx.events.FlexEvent;
+            import psp.sap.viewmodel.InspectorTopicViewModel;
+            import mx.core.Container;
+            import mx.collections.ArrayCollection;
+            import psp.sap.viewmodel.AbstractInspectorPageViewModel;
+            import psp.sap.application.enums.OperatorPageEnum;
+
+            private var mViewModel:TestToolsInspectorViewModel;
+
+            [Bindable]
+            public function get viewModel():TestToolsInspectorViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:TestToolsInspectorViewModel):void {
+                mViewModel = value;
+
+                var pageSet:Boolean = false;
+
+                var pages:ArrayCollection = value.getAllPages();
+                for each (var page:AbstractInspectorPageViewModel in pages) {
+                    var pageView:Container = testToolsInspectorPagesControl.getChildByLabel(page.label);
+                    pageView["viewModel"] = page;
+                    ViewModelSync.associatePageViewModels(pageView,(page as IPartViewModelAdapter).partViewModel);
+					ViewModelSync.findTopLevelControls(pageView,(page as IPartViewModelAdapter).partViewModel,ViewModelSync.setupActivationOn);
+                }
+            }	
+            
+			private function onTopicClicked(e:ItemClickEvent):void {
+				viewModel.activeTopic = InspectorTopicViewModel(e.item);
+			}
+			
+			public function set selectedChild(value:Container):void {
+				var pages:InspectorTopicPagesCollection = mViewModel.getAllPages();
+				var page:AbstractInspectorPageViewModel = pages.getPage(value.label) as AbstractInspectorPageViewModel;
+				
+				
+				ViewModelSync.setupActivationOnNewSelectedPage(pages,page as IPartViewModelAdapter,value);
+				
+			}
+			
+			private function onCreationComplete():void {
+			}
+
+            		
+		]]>
+	</mx:Script>
+
+	<mx:Style source="TestToolsInspectorView.css"/>
+
+	<mx:HBox horizontalGap="0" height="100%" width="100%" backgroundColor="#F4F4F4">
+
+		<mx:VBox verticalGap="0" >
+			<mx:Spacer height="10"/>
+			<mx:HBox horizontalGap="0" height="100%">
+				<pspui:InspectorLinkBarExt id="topicNavigationMenu"
+					trackSelectionState="true" separatorWidth="0"
+					height="100%" itemClick="onTopicClicked(event)"
+					direction="vertical"
+					linkButtonStyleName="leftNavigation" paddingRight="0"
+					paddingLeft="10" paddingTop="10" buttonMinWidth="115" buttonPercentWidth="100"/>
+				<mx:VBox verticalGap="0" height="100%" id="topicMenuBox">
+					<pspui:GradientBox
+						width="5"
+						verticalAlign="middle"
+						gradientDirection="horizontal"
+						colors="[#F4F4F4, #000000]"
+						direction="horizontal"
+						height="{ViewStack(testToolsInspectorPagesControl).height > (topicNavigationMenu.selectedChild.y - topicMenuBox.y) ? (topicNavigationMenu.selectedChild.y - topicMenuBox.y) : ViewStack(testToolsInspectorPagesControl).height}"
+						cornerRadius="3"/>
+					<mx:VBox
+						width="5"
+						height="{topicNavigationMenu.selectedChild.height}"
+						backgroundColor="#FFFFFF"
+						borderStyle="solid"
+						borderColor="#EEEEEE"
+						borderSides="top, bottom"
+						borderThickness="1"/>
+					<pspui:GradientBox
+						width="5"
+						verticalAlign="middle"
+						gradientDirection="horizontal"
+						colors="[#F4F4F4, #000000]"
+						cornerRadius="3"
+						direction="horizontal"
+						height="{ViewStack(testToolsInspectorPagesControl).height - (topicNavigationMenu.selectedChild.y + topicNavigationMenu.selectedChild.height + 15) > 0 ? ViewStack(testToolsInspectorPagesControl).height - (topicNavigationMenu.selectedChild.y + topicNavigationMenu.selectedChild.height + 15) : 0}"/>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:Canvas id="inspectorCanvas" height="100%" width="100%">
+	
+			<pspui:GradientVDividedBox
+				gradientDirection="horizontal"
+				colors="[#F4F4F4, #CED5E5]"
+				direction="horizontal" 
+				id="contentArea" 
+				height="100%" 
+				width="100%" 
+				liveDragging="false" 
+				styleName="dividedVBox">
+	
+				<pspui:ViewStackControlEx
+					id="testToolsInspectorPagesControl"
+					width="100%" height="100%"
+					backgroundColor="#F4F4F4"
+					borderThickness="0" borderStyle="none"
+					paddingTop="1"
+					paddingLeft="0"
+					creationPolicy="auto"
+					historyManagementEnabled="true">
+	
+					<pspui:SinglePartPageView
+						label="{TestToolsPageEnum.OFFLOAD_GROUP}"
+						id="offloadGroupsView"
+						styleName="companyInspector">
+						<pspui:TTOffloadGroupView/>					
+					</pspui:SinglePartPageView>	
+					
+					<pspui:SinglePartPageView
+						label="{TestToolsPageEnum.BANK_SIMULATOR}"
+						id="bankSimulatorsView"
+						styleName="companyInspector">
+						<pspui:TTBankSimulatorView/>					
+					</pspui:SinglePartPageView>	
+
+				</pspui:ViewStackControlEx>
+	
+			</pspui:GradientVDividedBox>
+	
+		</mx:Canvas>
+	</mx:HBox>
+
+	<mx:Binding source="testToolsInspectorPagesControl.selectedChild" destination="this.selectedChild"/>	
+
+	<mx:Binding source="viewModel.topics" destination="topicNavigationMenu.dataProvider" />
+	<mx:Binding source="viewModel.activeTopic" destination="topicNavigationMenu.selectedItem" />
+
+    <mx:Binding source="viewModel.activePageLabel" destination="testToolsInspectorPagesControl.selectedChildLabel" />
+    <mx:Binding source="testToolsInspectorPagesControl.selectedChildLabel" destination="viewModel.activePageLabel" />
+
+</mx:VBox>

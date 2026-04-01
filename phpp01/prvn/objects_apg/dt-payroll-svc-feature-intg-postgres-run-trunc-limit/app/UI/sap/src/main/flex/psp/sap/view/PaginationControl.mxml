@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	verticalAlign="middle" 
+	visible="{totalRecords > 0}" 
+	includeInLayout="{totalRecords > 0}">
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.application.SAP;
+            import psp.sap.formatters.SAPCurrencyFormatters;
+
+            [Bindable]
+			public var totalRecords:Number = 0;
+			
+			[Bindable]
+			public var startIndex:Number = 0;
+			
+			[Bindable]
+			public var lastIndex:Number = 0;
+			
+			[Bindable]
+			public var recordsPerPage:int;
+
+            [Bindable]
+			public var totalAmount:Number = 0;
+						 
+			[Bindable]									
+			public var previousFunction:Function; 
+			
+			[Bindable]									
+			public var nextFunction:Function;
+
+            [Bindable]
+			public var displayTotal:Boolean=true;
+			
+			private function onPreviousClick(event:ActionLinkEvent):void {				
+				previousFunction();				  
+			}
+			
+			private function onNextClick(event:ActionLinkEvent):void {				
+				nextFunction();				  
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label 
+		text="Displaying {startIndex + 1} to {lastIndex}{displayTotal ? (' of ' + (totalRecords) +' records') : ''}
+		{totalAmount != 0 ? '('+SAPCurrencyFormatters.defaultFormatter.format(totalAmount)+')': ''}"/>
+	<mx:HBox 
+		horizontalGap="0" 
+		styleName="padderBox" 
+		horizontalScrollPolicy="off" 
+		verticalAlign="middle">																	        
+		<mx:HBox
+        	borderStyle="solid"
+        	borderColor="black" 
+        	borderSides="right"
+        	borderThickness="0.5"
+        	width="100%"
+        	horizontalScrollPolicy="off">			        	
+        	<pspui:ActionLink
+        		id="previousLink" 
+        		label="Previous"			        		
+        		icon="{previousLink.enabled ? SAP.instance.icons.backGreenArrow16 : null}" 
+        		enabled="{startIndex > 0}"
+        		actionClick="onPreviousClick"
+        		themeColor="white"/>
+        </mx:HBox>			        
+        <pspui:ActionLink
+        	id="nextLink"
+        	label="Next"
+        	labelPlacement="left"
+        	icon="{nextLink.enabled ? SAP.instance.icons.fowardGreenArrow16 : null}" 
+        	enabled="{totalRecords > lastIndex}"
+        	actionClick="onNextClick"
+        	themeColor="white"/>			                
+    </mx:HBox>
+</mx:HBox>

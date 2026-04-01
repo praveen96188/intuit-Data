@@ -1,0 +1,143 @@
+22:24:58 SQL> --  disable online index rebuild cleanup job
+22:24:58 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+24-FEB-23 03.00.41.741445 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.11
+22:24:58 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.02
+22:24:58 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+24-FEB-23 03.00.41.741445 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+22:24:58 SQL> 
+22:24:58 SQL> Prompt Index PSP_COMPANY_EVENT_EMAIL_FK2;
+Index PSP_COMPANY_EVENT_EMAIL_FK2
+22:24:58 SQL> CREATE INDEX PSPADM.PSP_COMPANY_EVENT_EMAIL_FK2 ON PSPADM.PSP_COMPANY_EVENT_EMAIL (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:04:58.56
+22:29:57 SQL> alter index PSPADM. PSP_COMPANY_EVENT_EMAIL_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:29:57 SQL> 
+22:29:57 SQL> Prompt Index PSP_PSTUB_PAID_TIMEOFF_ITE_FK2;
+Index PSP_PSTUB_PAID_TIMEOFF_ITE_FK2
+22:29:57 SQL> CREATE INDEX PSPADM.PSP_PSTUB_PAID_TIMEOFF_ITE_FK2 ON PSPADM.PSP_PSTUB_PAID_TIMEOFF_ITEM (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:03:22.07
+22:33:19 SQL> alter index PSPADM.PSP_PSTUB_PAID_TIMEOFF_ITE_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:33:19 SQL> 
+22:33:19 SQL> Prompt Index PSP_PSTUB_MSG_FK2;
+Index PSP_PSTUB_MSG_FK2
+22:33:19 SQL> CREATE INDEX PSPADM.PSP_PSTUB_MSG_FK2 ON PSPADM.PSP_PSTUB_MSG (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:01:42.17
+22:35:01 SQL> alter index PSPADM.PSP_PSTUB_MSG_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+22:35:01 SQL> 
+22:35:01 SQL> Prompt Index PSP_PSTUB_DDITEM_FK2;
+Index PSP_PSTUB_DDITEM_FK2
+22:35:01 SQL> CREATE INDEX PSPADM.PSP_PSTUB_DDITEM_FK2 ON PSPADM.PSP_PSTUB_DDITEM (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:01:56.29
+22:36:57 SQL> alter index PSPADM.PSP_PSTUB_DDITEM_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:36:57 SQL> 
+22:36:57 SQL> --  enable online index rebuild cleanup job
+22:36:57 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+24-FEB-23 03.00.41.741445 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+22:36:57 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+22:36:57 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+24-FEB-23 03.00.41.801851 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+22:36:57 SQL> 
+22:36:57 SQL> spool off

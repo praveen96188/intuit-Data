@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="620"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.viewmodel.CompanyAgencyHistoryPopUpViewModel;
+
+        private var mViewModel:CompanyAgencyHistoryPopUpViewModel;
+        private var mTempViewModel:CompanyAgencyHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyAgencyHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyAgencyHistoryPopUpViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Company Agency History" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="13" paddingTop="5"/>
+
+    <controls:SAPDataGrid dataProvider="{viewModel.audits}"
+                          width="100%" maxRows="10"
+                          selectable="false"
+                          draggableColumns="false">
+        <controls:columns>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Changed On"
+                               width="150"
+                               dataField="createdDate"
+                               labelFunction="SAPDataGrid.formatDateTimeMedium"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Old Value"
+                               width="120"
+                               dataField="oldPropertyValue"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="New Value"
+                               width="120"
+                               dataField="newPropertyValue"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Modified By"
+                               width="120"
+                               dataField="userId"
+                               paddingLeft="5"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

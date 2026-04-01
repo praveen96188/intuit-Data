@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>PSE</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>payroll-services-api-tests</artifactId>
+    <name>payroll-services-api-tests</name>
+  
+    <dependencies>
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>processes-core-tests</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+      
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>testutils</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.4</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- End of Module dependency --> 
+    </dependencies>
+  
+    <build>
+        <plugins>
+            <!-- For tests only to access truncateTables.sql-->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-remote-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>com.intuit.sbg.psp:domain:${psp.project.version}</resourceBundle>
+                                <resourceBundle>com.intuit.sbg.psp:domain-secondary:${psp.project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>payroll-services-api</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                    <includes>**/com/intuit/sbd/payroll/psp/api/**/*.class</includes>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.intuit.sbg.psp</groupId>
+                                    <artifactId>payroll-services-api-impl</artifactId>
+                                    <version>${psp.project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.target.classes.dir}</outputDirectory>
+                                    <includes>**/com/intuit/sbd/payroll/psp/api/impl/**/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>  
+</project>

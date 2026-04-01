@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*">
+    <mx:Script><![CDATA[
+        import mx.controls.Alert;
+
+        import mx.events.CloseEvent;
+
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.viewmodel.ApplyERPayableToBalanceDueViewModel;
+
+        [Bindable] public var viewModel:ApplyERPayableToBalanceDueViewModel;
+
+        private function confirmSave():void
+        {
+            var msgString:String = "Are you sure you want to apply ER Payable to balance due?";
+            Alert.show(msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+
+        ]]></mx:Script>
+    <mx:Form styleName="standardTabContainer">
+        <mx:FormItem label="Uncollected tax amount:">
+            <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.taxAmount)}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Available ERPayable amount:">
+            <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.erPayableAmount)}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Amount to apply:" required="true">
+            <controls:SAPTextInput dataField="appliedAmountText"/>
+        </mx:FormItem>
+        <mx:FormItem direction="horizontal">
+            <mx:Button label="Cancel" click="viewModel.cancel()" />
+            <mx:Button label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+        </mx:FormItem>
+    </mx:Form>
+</mx:VBox>

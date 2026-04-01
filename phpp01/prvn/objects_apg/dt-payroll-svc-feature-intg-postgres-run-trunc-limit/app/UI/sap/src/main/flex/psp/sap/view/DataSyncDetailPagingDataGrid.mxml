@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+        creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.CollectionEvent;
+        import mx.events.PropertyChangeEvent;
+
+        import psp.sap.application.collections.PaginationCollection;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.DataSyncDetail;
+        import psp.sap.viewmodel.DataSyncSearchViewModel;
+
+        //template stuff...
+        private var mColumns:Array = [];
+        private var mColumnsChanged:Boolean = false;
+
+        public function get dataGridColumns():Array {
+            return mColumns;
+        }
+
+        public function set dataGridColumns(value:Array):void {
+            mColumns = value;
+            mColumnsChanged = true;
+            if (pagingDataGrid != null) {
+                addColumns();
+            }
+        }
+
+        public function onCreationComplete():void {
+            addColumns();
+        }
+
+        private function addColumns():void {
+            if (mColumnsChanged) {
+                var cols:Array = pagingDataGrid.columns;
+                for each(var column:DataGridColumn in dataGridColumns) {
+                    cols.push(column);
+                }
+                pagingDataGrid.columns = cols;
+                pagingDataGrid.dispatchEvent(PropertyChangeEvent.createUpdateEvent(pagingDataGrid, "columns", null, cols));
+                mColumnsChanged = false;
+            }
+        }
+
+        private var mDataProvider:PaginationCollection;
+
+        [Bindable]
+        public function set dataProvider(value:PaginationCollection):void {
+            if (mDataProvider != null) {
+                mDataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onCollectionChanged);
+            }
+
+            mDataProvider = value;
+
+            if (mDataProvider != null) {
+                mDataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCollectionChanged, false, 0, true);
+            }
+        }
+
+        public function get dataProvider():PaginationCollection {
+            return mDataProvider;
+        }
+
+
+        [Bindable]
+        public var viewModel:DataSyncSearchViewModel;
+
+        private function onCollectionChanged(e:CollectionEvent):void {
+            dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "dataProvider", null, dataProvider));
+            selectAllSelected = true;
+            var itemsOnPage:Array = dataProvider.source;
+            for (var i:int = 0; i < itemsOnPage.length; i++) {
+                if (!DataSyncDetail(itemsOnPage[i]).selected) {
+                    selectAllSelected = false;
+                    break;
+                }
+            }
+        }
+
+        public function doSelectAll(selected:Boolean, dataProvider:ArrayCollection):void {
+            for (var i:int = 0; i < dataProvider.length; i++) {
+                var dataSyncDetail:DataSyncDetail = DataSyncDetail(dataProvider.getItemAt(i));
+                if (selected) {
+                    viewModel.addItemToSelection(dataSyncDetail);
+                } else {
+                    viewModel.removeItemFromSelection(dataSyncDetail);
+                }
+            }
+        }
+
+        public function doSelect(detail:DataSyncDetail, selected:Boolean):void {
+            if (selected) {
+                viewModel.addItemToSelection(detail);
+            } else {
+                viewModel.removeItemFromSelection(detail);
+            }
+        }
+
+        public function loadData():void {
+            viewModel.onGridChange(label);
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+
+        [Bindable]
+        public var selectAllSelected:Boolean = false;
+        ]]>
+    </mx:Script>
+    <pspui:PagingDataGrid id="pagingDataGrid"
+                          width="100%" height="100%"
+                          paddingRight="0"
+                          horizontalAlign="right"
+                          verticalGap="0"
+                          dataProvider="{dataProvider}"
+                          loadDataFunction="{loadData}"
+                          rowCount="6"
+                          fixWidths="true">
+        <pspui:columns>
+            <controls:SAPDataGridColumn width="10" resizable="false" draggable="false" sortable="false"
+                                        dataField="isItemSelected" headerText="">
+                <controls:headerRenderer>
+                    <mx:Component>
+                        <mx:VBox horizontalAlign="center">
+                            <mx:CheckBox toolTip="Select page" id="headerSelectAll"
+                                         change="outerDocument.doSelectAll(headerSelectAll.selected, outerDocument.dataProvider)"
+                                         selected="{outerDocument.selectAllSelected}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </controls:headerRenderer>
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox horizontalAlign="center">
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.DataSyncDetail;
+                                ]]></mx:Script>
+                            <mx:CheckBox id="checkBox"
+                                    change="outerDocument.doSelect(DataSyncDetail(data), checkBox.selected)"
+                                    selected="{DataSyncDetail(data).selected}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+            <controls:SAPDataGridColumn
+                    headerText="Token"
+                    width="80"
+                    draggable="false"
+                    resizable="true"
+                    dataField="token"/>
+        </pspui:columns>
+    </pspui:PagingDataGrid>
+</mx:VBox>

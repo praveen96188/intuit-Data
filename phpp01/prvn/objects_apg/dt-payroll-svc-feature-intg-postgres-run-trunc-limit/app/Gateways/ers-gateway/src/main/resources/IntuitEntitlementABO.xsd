@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by XMLSpy 2007 Enterprise Ed., Concurrent for 14 users (with SMP from 2007-04-24 to 2009-04-24) (Intuit) -->
+<xs:schema xmlns="http://www.intuit.com/iep/entitlement/EntitlementService/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.intuit.com/iep/entitlement/EntitlementService/xsd" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="ActivatedProductType">
+		<xs:annotation>
+			<xs:documentation>Activated Product Type</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PropertyId" type="IdType" minOccurs="0"/>
+			<xs:element name="PropertyTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="PropertyValue" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Activation">
+		<xs:annotation>
+			<xs:documentation>Activation</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ActivatedProduct" type="ActivatedProductType" minOccurs="0"/>
+				<xs:element name="InteractionProperties" type="OfferingPropertyDataType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="DoReactivationOnly" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="IsReactivation" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="WasPreviouslyActivated" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="ActivationStatus" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="AgentTypeDataType">
+		<xs:annotation>
+			<xs:documentation>Agent Type Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			<!-- xs:element name="AgentTypeRole" type="AgentTypeRoleDataType" minOccurs="0" maxOccurs="unbounded"/ -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AgentTypeRoleType">
+		<xs:annotation>
+			<xs:documentation>Agent Type Role</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RoleId" type="IdType" minOccurs="0"/>
+			<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			<xs:element name="AgentType" type="AgentTypeDataType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="AllowableExtProperty">
+		<xs:annotation>
+			<xs:documentation>Allowable Extended Property</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="OfferingPropertyTypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="OfferingPropertyId" type="IdType" minOccurs="0"/>
+				<xs:element name="OfferingPropertyValue" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="OfferingMaxValue" type="xs:long" minOccurs="0"/>
+				<xs:element name="OfferingMinValue" type="xs:long" minOccurs="0"/>
+				<xs:element name="EntitlementMaxValue" type="xs:long" minOccurs="0"/>
+				<xs:element name="EntitlementMinValue" type="xs:long" minOccurs="0"/>
+				<xs:element name="IsDefault" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="AgentRule" type="xs:string" minOccurs="0"/>
+				<xs:element name="OrderRule" type="xs:string" minOccurs="0"/>
+				<xs:element name="AgentTypeRole" type="AgentTypeRoleType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="AllowableExtPropertyType">
+		<xs:annotation>
+			<xs:documentation>Allowable Extended Property Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="RangeType" minOccurs="0"/>
+				<xs:element ref="AllowableExtProperty" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="ApplicationDataType">
+		<xs:annotation>
+			<xs:documentation>Application Data</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Data" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Application Data</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LastUpdateDate" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>Last Update Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactType">
+		<xs:annotation>
+			<xs:documentation>Contact Party Info</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Type" use="optional">
+					<xs:annotation>
+						<xs:documentation>Contact Type</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Individual"/>
+							<xs:enumeration value="Organization"/>
+							<xs:enumeration value="CompanyId"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ContactIdType">
+		<xs:annotation>
+			<xs:documentation>Contact Party Info</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g. PRS</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="MDM"/>
+							<xs:enumeration value="PRS"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="Type">
+					<xs:annotation>
+						<xs:documentation>Contact Type e.g. Individual, Organization, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="CustomerAccountContactId"/>
+							<xs:enumeration value="Individual"/>
+							<xs:enumeration value="Organization"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="CoreOffering">
+		<xs:annotation>
+			<xs:documentation>Core Offering</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CoreOfferingId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="WorkflowState" type="xs:string" minOccurs="0"/>
+				<xs:element ref="OfferingGroup" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="ProductGroup" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="CoreStaticProperty" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="AllowableExtProperty" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="SupportCategory" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="CoreOfferingProperty" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="CoreOfferingPropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="LastUpdateDate" type="xs:dateTime" minOccurs="0"/>
+				<xs:element name="Status" type="xs:string" minOccurs="0"/>
+				<xs:element name="IncludeOnlyActiveOfferings" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="UpdateToken" type="xs:string" minOccurs="0"/>
+				<!-- Handshake V4.2 updates  -->
+				<xs:element name="RequiresApplicationData" type="xs:boolean" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CoreOfferingProperty">
+		<xs:annotation>
+			<xs:documentation>Core Offering Property</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyId" type="IdType" minOccurs="0"/>
+				<xs:element name="PropertyValue" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="IsDefault" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="CoreOfferingPropertyType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CoreOfferingPropertyType">
+		<xs:annotation>
+			<xs:documentation>Core Offering Property Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyTypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="DisplayName" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="SortOrder" type="xs:integer" minOccurs="0"/>
+				<xs:element name="SystemRange" type="SystemRangeType" minOccurs="0"/>
+				<xs:element name="OfferingRange" type="SystemRangeType" minOccurs="0"/>
+				<xs:element name="EntitlementRange" type="SystemRangeType" minOccurs="0"/>
+				<xs:element name="IsCoreStatic" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="RequiredRule" type="xs:string" minOccurs="0"/>
+				<xs:element name="AgentRule" type="xs:string" minOccurs="0"/>
+				<xs:element name="OrderRule" type="xs:string" minOccurs="0"/>
+				<xs:element name="AgentTypeRole" type="AgentTypeRoleType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="DomainType" minOccurs="0"/>
+				<xs:element name="IsDerived" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="UsageType" minOccurs="0"/>
+				<xs:element ref="CoreOfferingProperty" minOccurs="0" maxOccurs="unbounded"/>
+				<!-- Allow reference of property from property type in IRS -->
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CoreStaticProperty">
+		<xs:annotation>
+			<xs:documentation>Core Static Property</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="OfferingPropertyTypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="OfferingPropertyId" type="IdType" minOccurs="0"/>
+				<xs:element name="OfferingPropertyValue" type="StringType200CharLength" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="CustomerIdType">
+		<xs:annotation>
+			<xs:documentation>Customer Id Info</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="optional">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g. PRS, IAM, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="IAM"/>
+							<xs:enumeration value="MDM"/>
+							<xs:enumeration value="PRS"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="Type" use="optional">
+					<xs:annotation>
+						<xs:documentation>Owner Type e.g. Individual, Organization, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="CustomerAccountNumber"/>
+							<xs:enumeration value="CompanyId"/>
+							<xs:enumeration value="Individual"/>
+							<xs:enumeration value="Organization"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="DomainType">
+		<xs:annotation>
+			<xs:documentation>Domain Info</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Id" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="DurationType">
+		<xs:annotation>
+			<xs:documentation>Duration Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Duration">
+				<xs:annotation>
+					<xs:documentation>Duration</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="unit" use="required">
+								<xs:annotation>
+									<xs:documentation>Unit of Measure</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="DAY"/>
+										<xs:enumeration value="MONTH"/>
+										<xs:enumeration value="YEAR"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Entitlement">
+		<xs:annotation>
+			<xs:documentation>Entitlement</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="LicenseNumber" type="xs:string" minOccurs="0"/>
+				<xs:element ref="EntitlementOffering" minOccurs="0"/>
+				<xs:element name="CreationSkuNumber" type="xs:string" minOccurs="0"/>
+				<xs:element ref="EntitlementOfferingCode" minOccurs="0"/>
+				<xs:element name="ReasonCode" type="xs:string" minOccurs="0"/>
+				<xs:element name="ReasonDescription" type="xs:string" minOccurs="0"/>
+				<xs:element ref="InstantiatedExtendedProperty" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="EntitlementState" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Activation" minOccurs="0"/>
+				<xs:element name="EndDate" type="xs:date" minOccurs="0"/>
+				<xs:element name="GoodThroughDate" type="xs:date" minOccurs="0"/>
+				<xs:element name="LastUpdateDate" type="xs:dateTime" minOccurs="0"/>
+				<!-- Handshake V3 updates  -->
+				<xs:element name="SupportCategoryState" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="EntitlementAttributeType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Attributes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attribute Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Value" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attribute Value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IsAgentUpdateable" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Flag to indicate if the property is Agent Updateable</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IsOrderUpdateable" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Flag to indicate if the property is Order Updateable</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntitlementDetailsType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Details</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EntitlementOffering">
+				<xs:annotation>
+					<xs:documentation>Entitlement Offering</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EntitlementId" type="EntitlementIdType">
+							<xs:annotation>
+								<xs:documentation>Entitlement Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="SupportCategory" type="SupportCategoryType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Support Category</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Item" type="ItemIdType">
+				<xs:annotation>
+					<xs:documentation>Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementAttributes" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>EntitlementAttribute List</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EntitlementAttribute" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="EntitlementAttributeType"/>
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="EntitlementState" type="StateType">
+				<xs:annotation>
+					<xs:documentation>Entitlement State</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementEndDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement End Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GoodThroughDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The date at which the entitlement will become invalid</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LastUpdateDate" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>Last Update Date for the entitlement</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementUnit" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Represents zero or more Entitlement Units.  This notde is published only for the Activation and Deactivation event</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="IdentifiedResourceValue" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Identified Resource Value for the Entitlement Unit</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="UnitState" type="EntitlementUnitStateType">
+							<xs:annotation>
+								<xs:documentation>Current state of the Entitlement Unit</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Activation" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Container for the details of the Activated Product information</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ActivatedProduct" type="EntitlementUnitActivatedProductType">
+										<xs:annotation>
+											<xs:documentation>Activated Product</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="LastUpdateDate" type="xs:dateTime">
+							<xs:annotation>
+								<xs:documentation>The date/time this Entitlement Unit was last updated</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntitlementEffectiveDatesType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Effective Dates</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EntitlementStartDate" type="xs:dateTime" nillable="true" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement Start Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementEndDate" type="xs:dateTime" nillable="true" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement End Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntitlementIdType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Id</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g. ERS for EOC</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="ERS"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="EntitlementOffering">
+		<xs:annotation>
+			<xs:documentation>Entitlement Offering</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EntitlementOfferingCode" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="WorkflowState" type="xs:string" minOccurs="0"/>
+				<xs:element ref="CoreOffering" minOccurs="0"/>
+				<xs:element name="EntitlementOfferingType" type="xs:string" minOccurs="0"/>
+				<!-- xs:element name="EntitlementOfferingLicenseType" type="EntitlementOfferingLicenseTypeDataType" minOccurs="0"/ -->
+				<xs:element ref="SupportCategory" minOccurs="0"/>
+				<xs:element ref="SKU" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="EntitlementOfferingProperty" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="OfferingStatus" type="xs:string" minOccurs="0"/>
+				<xs:element name="IncludeDisabled" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="LastUpdateDate" type="xs:dateTime" minOccurs="0"/>
+				<xs:element name="UpdateToken" type="xs:string" minOccurs="0"/>
+				<xs:element name="EndDate" type="xs:date" minOccurs="0"/>
+				<xs:element name="OfferingProperty" type="OfferingPropertyDataType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EntitlementOfferingCode" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Entitlement Offering Code</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="EntitlementOfferingProperty">
+		<xs:annotation>
+			<xs:documentation>Entitlement Offering Property</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EntitlementOfferingPropertyType"/>
+				<xs:element name="PropertyId" type="IdType" minOccurs="0"/>
+				<xs:element name="PropertyValueForId" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="PropertyValue" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="PropertyFormula" type="FormulaType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EntitlementOfferingPropertyType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Offering Property Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyTypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+				<xs:element name="DisplayName" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="SortOrder" type="xs:integer" minOccurs="0"/>
+				<xs:element ref="DomainType" minOccurs="0"/>
+				<xs:element name="IsCoreStatic" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="IsRequired" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="IsAgentUpdateable" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="IsOrderUpdateable" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="SystemRange" type="SystemRangeType" minOccurs="0"/>
+				<xs:element name="EntitlementRange" type="SystemRangeType" minOccurs="0"/>
+				<xs:element name="OfferingRange" type="SystemRangeType" minOccurs="0"/>
+				<xs:element name="AgentTypeRole" type="AgentTypeRoleType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="IsDerived" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="UsageType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="EntitlementOfferingStatusType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Offering Status Info</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="New"/>
+			<xs:enumeration value="Active"/>
+			<xs:enumeration value="Inactive"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EntitlementStateType">
+		<xs:annotation>
+			<xs:documentation>Entitlement State Info</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Enabled"/>
+			<xs:enumeration value="Disabled"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="EntitlementType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Entitlement Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Entitlement Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementId" type="EntitlementIdType">
+				<xs:annotation>
+					<xs:documentation>Entitlement Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementAttributes" type="EntitlementAttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Entitlement Attributes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" type="StateType">
+				<xs:annotation>
+					<xs:documentation>Entitlement Status: Enabled, Disabled</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="EntitlementUnit">
+		<xs:annotation>
+			<xs:documentation>Entitlement Unit</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="IdentifiedResourceValue" type="xs:string" minOccurs="0"/>
+				<xs:element name="UnitCurrentState" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="EntitlementOfferingCode" minOccurs="0"/>
+				<xs:element ref="Activation" minOccurs="0"/>
+				<xs:element name="LastUpdateDate" type="xs:dateTime" minOccurs="0"/>
+				<!-- Handshake V3 updates -->
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="EntitlementUnitStateType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Unit State Info</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Activated"/>
+			<xs:enumeration value="Deactivated"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="EntitlementUnitActivatedProductType">
+		<xs:annotation>
+			<xs:documentation>Activated Product Info for the Entitlement Unit</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="ActivatedProductType">
+				<xs:sequence>
+					<xs:element name="PropertyId" type="IdType">
+						<xs:annotation>
+							<xs:documentation>Identifier for the Activated Product</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="PropertyValue" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Activated Product Name</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Error Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Category">
+				<xs:annotation>
+					<xs:documentation>Error Categories e.g. SYSTEM,INPUT,BUSINESS_LOGIC</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:annotation>
+						<xs:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xs:documentation>
+					</xs:annotation>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Functional"/>
+						<xs:enumeration value="Input"/>
+						<xs:enumeration value="Operational"/>
+						<xs:enumeration value="Transitory"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Code" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Error Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Error Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EventSourceType">
+		<xs:annotation>
+			<xs:documentation>Event Source</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Event Source Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Event Source Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EventType">
+		<xs:annotation>
+			<xs:documentation>Event Type</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EventId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Event Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EventType" type="EventTypeDataType">
+				<xs:annotation>
+					<xs:documentation>Type of event</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EventSource" type="EventSourceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Event Source</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="EventTypeDataType">
+		<xs:annotation>
+			<xs:documentation>Event Type</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Activation"/>
+			<xs:enumeration value="Deactivation"/>
+			<xs:enumeration value="Re-Activation"/>
+			<xs:enumeration value="Registration"/>
+			<xs:enumeration value="Re-Registration"/>
+			<xs:enumeration value="Enablement"/>
+			<xs:enumeration value="Disablement"/>
+			<xs:enumeration value="OrderCancellation"/>
+			<xs:enumeration value="RMAReturn"/>
+			<xs:enumeration value="EntitlementTransfer"/>
+			<xs:enumeration value="EntitlementCreation"/>
+			<xs:enumeration value="EntitlementUpdate"/>
+			<xs:enumeration value="PartyMerge"/>
+			<xs:enumeration value="PartyChange"/>
+			<xs:enumeration value="BillingFailure"/>
+			<xs:enumeration value="ApplicationDataUpdate"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="FormulaType">
+		<xs:annotation>
+			<xs:documentation>Formula Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FormulaElement" type="FormulaElementType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FormulaElementType">
+		<xs:annotation>
+			<xs:documentation>Formula Element</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FormulaParticle" type="FormulaParticleType" minOccurs="0"/>
+			<xs:element name="Position" type="IdType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FormulaParticleType">
+		<xs:annotation>
+			<xs:documentation>Formula Particle</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PropertyTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="PropertyTypeName" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="ConstantValue" type="IdType" minOccurs="0"/>
+			<xs:element name="Operator" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GenericAttributeDataType">
+		<xs:annotation>
+			<xs:documentation>Generic Attribute type</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="StringType80CharLength"/>
+			<xs:element name="Value" type="StringType200CharLength"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GenericSourceType">
+		<xs:annotation>
+			<xs:documentation>Generic Source</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="Type">
+					<xs:annotation>
+						<xs:documentation>Generic Type</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string"/>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="IdNameType">
+		<xs:annotation>
+			<xs:documentation>ID Name</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="IdType" minOccurs="0"/>
+			<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="IdType">
+		<xs:annotation>
+			<xs:documentation>Identity</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:long">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ItemAttributeType">
+		<xs:annotation>
+			<xs:documentation>Item Attributes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attribute Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DisplayName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Atribute Display Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Value" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attribute Value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ItemIdType">
+		<xs:annotation>
+			<xs:documentation>Item Id</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id">
+				<xs:annotation>
+					<xs:documentation>ItemId</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="schemeName">
+						<xs:annotation>
+							<xs:documentation>Scheme Name</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="ItemAlias"/>
+								<xs:enumeration value="OracleSKU"/>
+								<xs:enumeration value="PIM"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ItemType">
+		<xs:annotation>
+			<xs:documentation>Item Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ItemNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Item Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemAttribute" type="ItemAttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Item Attributes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="InstantiatedCoreProperty">
+		<xs:annotation>
+			<xs:documentation>Instantiated Core Property</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyId" type="IdType" minOccurs="0"/>
+				<xs:element name="PropertyValue" type="xs:string" minOccurs="0"/>
+				<xs:element ref="InstantiatedCorePropertyType" minOccurs="0"/>
+				<xs:element name="LastUpdateDate" type="xs:dateTime" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedCorePropertyType">
+		<xs:annotation>
+			<xs:documentation>Instantiated Core Property Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyTypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
+				<xs:element name="DisplayName" type="xs:string" minOccurs="0"/>
+				<xs:element name="SortOrder" type="xs:integer" minOccurs="0"/>
+				<xs:element ref="DomainType" minOccurs="0"/>
+				<xs:element ref="AllowableExtPropertyType" minOccurs="0"/>
+				<xs:element name="IsAgentUpdateable" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="IsOrderUpdateable" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="InstantiatedCorePropertyTypeAgentTypeRole" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="IsDerived" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="UsageType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedCorePropertyTypeAgentTypeRole">
+		<xs:annotation>
+			<xs:documentation>Instantiated Core Property Type - Agent Type Role</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="RoleId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
+				<xs:element ref="InstantiatedCorePropertyTypeAgentType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedCorePropertyTypeAgentType">
+		<xs:annotation>
+			<xs:documentation>Instantiated Core property Type - Agent Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="TypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedExtendedProperty">
+		<xs:annotation>
+			<xs:documentation>Instantiated Extended Property</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyId" type="IdType" minOccurs="0"/>
+				<xs:element name="PropertyValue" type="xs:string" minOccurs="0"/>
+				<xs:element ref="InstantiatedExtendedPropertyType" minOccurs="0"/>
+				<xs:element name="LastUpdateDate" type="xs:dateTime" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedExtendedPropertyType">
+		<xs:annotation>
+			<xs:documentation>Instantiated Extended Property Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropertyTypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
+				<xs:element name="DisplayName" type="xs:string" minOccurs="0"/>
+				<xs:element name="SortOrder" type="xs:integer" minOccurs="0"/>
+				<xs:element ref="DomainType" minOccurs="0"/>
+				<xs:element ref="AllowableExtPropertyType" minOccurs="0"/>
+				<xs:element name="IsAgentUpdateable" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="IsOrderUpdateable" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="InstantiatedExtendedPropertyTypeAgentTypeRole" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="IsDerived" type="xs:boolean" minOccurs="0"/>
+				<xs:element ref="UsageType" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedExtendedPropertyTypeAgentTypeRole">
+		<xs:annotation>
+			<xs:documentation>Instantiated Extended Property Type - Agent Type Role</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="RoleId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
+				<xs:element ref="InstantiatedExtendedPropertyTypeAgentType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InstantiatedExtendedPropertyTypeAgentType">
+		<xs:annotation>
+			<xs:documentation>Instantiated Extended Property Type - Agent Type</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="TypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="LicenseType">
+		<xs:annotation>
+			<xs:documentation>License Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LicenseId" type="LicenseIdType">
+				<xs:annotation>
+					<xs:documentation>License Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OwnerId" type="OwnerIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Owner Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ContactId" type="ContactIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Contact Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Entitlements" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A list of entitlements</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Entitlement" type="EntitlementType" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Entitlement</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="EntitlementUnits" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EntitlementUnit" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="CurrentState" type="xs:string"/>
+									<xs:element name="EntitlementOfferingCode" type="xs:string"/>
+									<xs:element name="LastUpdateDate" type="xs:dateTime"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LicenseIdType">
+		<xs:annotation>
+			<xs:documentation>License Id</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g. ERS</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="ERS"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="LineItemType">
+		<xs:annotation>
+			<xs:documentation>Order Line Item Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OrderLineNumber" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Order Line Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU">
+				<xs:annotation>
+					<xs:documentation>SKU Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="SKUType"/>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Quantity" type="xs:nonNegativeInteger">
+				<xs:annotation>
+					<xs:documentation>Quantity</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineItemStatus" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line item status</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PriorityCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Priority Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LicenseId" type="LicenseIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>License Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EndDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>End Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemAttributes" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item Attribute List</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ItemAttribute" type="ItemAttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Item Attribute</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="EffectiveDates" type="EntitlementEffectiveDatesType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement Effective Dates</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="MapData">
+		<xs:annotation>
+			<xs:documentation>Map Data</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="OID" type="IdType" minOccurs="0"/>
+				<xs:element name="TypeId" type="IdType" minOccurs="0"/>
+				<xs:element name="TypeName" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="Index" type="IdType" minOccurs="0"/>
+				<xs:element ref="EntitlementOfferingCode" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="OfferingGroup">
+		<xs:annotation>
+			<xs:documentation>Offering Group</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Id" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element name="ConsolidateLicenses" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="WorkflowState" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="OfferingGroupType">
+		<xs:annotation>
+			<xs:documentation>Offering Group Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Offering Group Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OfferingPropertyDataType">
+		<xs:annotation>
+			<xs:documentation>Offering Property Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OfferingPropertyType" type="OfferingPropertyTypeDataType" minOccurs="0"/>
+			<xs:element name="OfferingPropertyId" type="IdType" minOccurs="0"/>
+			<xs:element name="OfferingGroupId" type="IdType" minOccurs="0"/>
+			<xs:element name="OfferingGroupName" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="OfferingPropertyValue" type="StringType200CharLength" minOccurs="0"/>
+			<xs:element name="Validation" type="ValidationType" minOccurs="0"/>
+			<xs:element name="UpdateToken" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OfferingPropertyTypeDataType">
+		<xs:annotation>
+			<xs:documentation>Offering Property Type Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OfferingPropertyTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="OfferingGroupId" type="IdType" minOccurs="0"/>
+			<xs:element name="OfferingGroupName" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="DisplayName" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			<xs:element name="DomainTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="DomainTypeName" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="SortOrder" type="xs:integer" minOccurs="0"/>
+			<xs:element name="SystemRange" type="SystemRangeType" minOccurs="0"/>
+			<xs:element name="Formula" type="FormulaType" minOccurs="0"/>
+			<xs:element name="PropertyTypeRule" type="PropertyTypeRuleType" minOccurs="0"/>
+			<xs:element name="ChangeDate" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="WorkflowState" type="xs:string" minOccurs="0"/>
+			<xs:element name="Status" type="xs:string" minOccurs="0"/>
+			<xs:element name="UpdateToken" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="OfferingPropertyTypeUsageTypeDataType">
+		<xs:annotation>
+			<xs:documentation>Offering Property Type - Usage Type Info</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Manifest"/>
+			<xs:enumeration value="UserEntered"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="OrderType">
+		<xs:annotation>
+			<xs:documentation>Order Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SourceOrderNumber" type="OrderNumberType">
+				<xs:annotation>
+					<xs:documentation>Source Order Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderSource" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Order Source</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineItem" type="LineItemType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Line Item(s)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Order Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OrderNumberType">
+		<xs:annotation>
+			<xs:documentation>Order Number</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g Intuit, Partner, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Intuit"/>
+							<xs:enumeration value="Partner"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="OrderOutcomeType">
+		<xs:annotation>
+			<xs:documentation>Order Outcome</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OrderLineNumber" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Order Line Number</xs:documentation>
+				</xs:annotation>
+
+			</xs:element>
+			<xs:element name="LicenseId" type="LicenseIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>License Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementId" type="EntitlementIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OwnerIdType">
+		<xs:annotation>
+			<xs:documentation>Owner Party Info</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g. PRS, IAM, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="IAM"/>
+							<xs:enumeration value="MDM"/>
+							<xs:enumeration value="PRS"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="Type" use="optional">
+					<xs:annotation>
+						<xs:documentation>Owner Type e.g. Individual, Organization, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="CustomerAccountNumber"/>
+							<xs:enumeration value="CompanyId"/>
+							<xs:enumeration value="Individual"/>
+							<xs:enumeration value="Organization"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="ResponseStatusType">
+		<xs:annotation>
+			<xs:documentation>Response Status: Success or Failure.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Success"/>
+			<xs:enumeration value="Failure"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="ProductGroup">
+		<xs:annotation>
+			<xs:documentation>Product Group</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Id" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element ref="OfferingGroup" minOccurs="0"/>
+				<xs:element name="WorkflowState" type="xs:string" minOccurs="0"/>
+				<xs:element ref="PropertyTypeMap" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PropertyTypeMap">
+		<xs:annotation>
+			<xs:documentation>Property Type Map</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Id" type="IdType" minOccurs="0"/>
+				<xs:element name="Name" type="StringType80CharLength" minOccurs="0"/>
+				<xs:element ref="ProductGroup" minOccurs="0"/>
+				<xs:element ref="OfferingGroup" minOccurs="0"/>
+				<xs:element name="UpdateToken" type="xs:string" minOccurs="0"/>
+				<xs:element name="WorkflowState" type="xs:string" minOccurs="0"/>
+				<xs:element ref="MapData" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="PropertyTypeRuleType">
+		<xs:annotation>
+			<xs:documentation>Property Type Rule</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RuleCategory" type="RuleCategoryType" minOccurs="0"/>
+			<xs:element name="AgentTypeRole" type="AgentTypeRoleType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="AllowOverride" type="xs:string" minOccurs="0"/>
+			<xs:element name="Extensible" type="xs:string" minOccurs="0"/>
+			<xs:element name="Required" type="xs:string" minOccurs="0"/>
+			<xs:element name="Agent" type="UpdateableRuleType" minOccurs="0"/>
+			<xs:element name="Order" type="UpdateableRuleType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="RangeType">
+		<xs:annotation>
+			<xs:documentation>Range Info</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="OfferingMaxValue" type="xs:integer" minOccurs="0"/>
+				<xs:element name="OfferingMinValue" type="xs:integer" minOccurs="0"/>
+				<xs:element name="EntitlementMaxValue" type="xs:integer" minOccurs="0"/>
+				<xs:element name="EntitlementMinValue" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="ReturnLineItemType">
+		<xs:annotation>
+			<xs:documentation>Return Line Item Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RMALineNumber" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>RMA Line Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU" type="SKUType">
+				<xs:annotation>
+					<xs:documentation>SKU</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Quantity" type="xs:short">
+				<xs:annotation>
+					<xs:documentation>Return Quantity</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LicenseId" type="LicenseIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>License id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SourceOrderNumber" type="OrderNumberType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Source Order Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SourceOrderLineNumber" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Source Order Line Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RegistrationType">
+		<xs:annotation>
+			<xs:documentation>License Registration Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LicenseId" type="LicenseIdType">
+				<xs:annotation>
+					<xs:documentation>License Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RegistrationStatus">
+				<xs:annotation>
+					<xs:documentation>Registration Status e.g. Registered, Unregistered</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="RegistrationStatusType"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="RegistrationDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>License Registration Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ApplicationData" type="ApplicationDataType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Application Data</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="RegistrationStatusType">
+		<xs:annotation>
+			<xs:documentation>Registration Status Info</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Registered"/>
+			<xs:enumeration value="Unregistered"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="RuleCategoryType">
+		<xs:annotation>
+			<xs:documentation>Rule Category</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RuleCategoryId" type="IdType" minOccurs="0"/>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			<xs:element name="RuleType" type="RuleTypeDataType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RuleDataType">
+		<xs:annotation>
+			<xs:documentation>Rule Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RuleId" type="IdType" minOccurs="0"/>
+			<xs:element name="Value" type="xs:string" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RuleTypeDataType">
+		<xs:annotation>
+			<xs:documentation>Rule Type Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RuleTypeId" type="IdType" minOccurs="0"/>
+			<xs:element name="Name" type="xs:string" minOccurs="0"/>
+			<xs:element name="DisplayName" type="StringType80CharLength" minOccurs="0"/>
+			<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			<xs:element name="Rule" type="RuleDataType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RMANumberType">
+		<xs:annotation>
+			<xs:documentation>RMA Number</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="SchemeName" use="required">
+					<xs:annotation>
+						<xs:documentation>RMA Scheme e.g. Intuit, Partner, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Intuit"/>
+							<xs:enumeration value="Partner"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="StateType">
+		<xs:annotation>
+			<xs:documentation>State</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Disabled"/>
+			<xs:enumeration value="Enabled"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="SKU">
+		<xs:annotation>
+			<xs:documentation>SKU</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EntitlementOfferingCode" minOccurs="0"/>
+				<xs:element name="SKUNumber" type="xs:string" minOccurs="0"/>
+				<xs:element name="LicenseType" type="xs:string" minOccurs="0"/>
+				<xs:element name="ProductAlias" type="xs:string" minOccurs="0"/>
+				<xs:element name="ItemId" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="StringType200CharLength" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="SKUType">
+		<xs:annotation>
+			<xs:documentation>SKU Info</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="SKUNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>SKU Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProductAlias" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Product Alias</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>PIM Item Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="NonEmptyStringType">
+		<xs:annotation>
+			<xs:documentation>Non-empty string</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:pattern value="[ ]*[0-9a-zA-Z!#$%()*+,-./:;=?@\[\\\]\^_`{|}~&amp;&apos;&quot;&gt;&lt;]+[0-9a-zA-Z !#$%()*+,-./:;=?@\[\\\]\^_`{|}~&amp;&apos;&quot;&gt;&lt;]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringType20CharLength">
+		<xs:annotation>
+			<xs:documentation>String with 20 Characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringType80CharLength">
+		<xs:annotation>
+			<xs:documentation>String with 80 Characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="80"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StringType200CharLength">
+		<xs:annotation>
+			<xs:documentation>String with 200 Characters</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="200"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="SupportCategory" type="IdNameType">
+		<xs:annotation>
+			<xs:documentation>Support Category</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="SupportCategoryType">
+		<xs:annotation>
+			<xs:documentation>Support Category Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Support Category (Registration SKU) Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SupportCategoryState" type="StateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>State for the Support Category</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SystemRangeType">
+		<xs:annotation>
+			<xs:documentation>System Range Info</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="Min" type="xs:long" minOccurs="0"/>
+			<xs:element name="Max" type="xs:long" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="TransactionInfoType">
+		<xs:annotation>
+			<xs:documentation>Transaction Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TransactionId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Transaction Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionDatetime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction Datetime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesOrganization" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Sales Organization requesting the service</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UpdateableRuleType">
+		<xs:annotation>
+			<xs:documentation>Updateable Rule Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Rule" type="xs:string" minOccurs="0"/>
+			<xs:element name="Behavior" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="UsageType">
+		<xs:annotation>
+			<xs:documentation>Usage Info</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Value" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="ValidationType">
+		<xs:annotation>
+			<xs:documentation>Validation Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CreateValidationCode" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="ValidationCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="ApplicationDataHashCode" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

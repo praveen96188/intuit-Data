@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Web Services" default="reload-all">
+  <property name="qboedd-ws.name" value="qboedd-ws"/>
+  <property name="qboedd-ws.id" value="-408053781"/>
+
+  <property name="ddrepui-ws.name" value="ddrepui-ws"/>
+  <property name="ddrepui-ws.id" value="963589915"/>
+
+  <property name="jboss.user" value="admin"/>
+  <property name="jboss.password" value="admin"/>
+  <property name="jboss.adminUrl" value="http://localhost:8080/jmx-console/HtmlAdaptor"/>
+
+  <target name="start-qboedd-ws" description="Start qboedd-ws">
+    <exec executable="wget">
+      <arg value="--http-user=${jboss.user}"/>
+      <arg value="--http-passwd=${jboss.password}"/>
+      <arg value="--output-document=/dev/null"/>
+      <arg value="${jboss.adminUrl}?action=invokeOp&amp;name=jboss.web.deployment:war=${qboedd-ws.name}.war,id=${qboedd-ws.id}&amp;methodIndex=0"/>
+    </exec>
+  </target>
+  <target name="stop-qboedd-ws" description="Stop qboedd-ws">
+    <exec executable="wget">
+      <arg value="--http-user=${jboss.user}"/>
+      <arg value="--http-passwd=${jboss.password}"/>
+      <arg value="--output-document=/dev/null"/>
+      <arg value="${jboss.adminUrl}?action=invokeOp&amp;name=jboss.web.deployment:war=${qboedd-ws.name}.war,id=${qboedd-ws.id}&amp;methodIndex=3"/>
+    </exec>
+  </target>
+  <target name="reload-qboedd-ws" depends="stop-qboedd-ws, start-qboedd-ws" description="Reload qboedd-ws"/>
+    <target name="start-ddrepui-ws" description="Start ddrepui-ws">
+    <exec executable="wget">
+      <arg value="--http-user=${jboss.user}"/>
+      <arg value="--http-passwd=${jboss.password}"/>
+      <arg value="--output-document=/dev/null"/>
+      <arg value="${jboss.adminUrl}?action=invokeOp&amp;name=jboss.web.deployment:war=${ddrepui-ws.name}.war,id=${ddrepui-ws.id}&amp;methodIndex=0"/>
+    </exec>
+  </target>
+  <target name="stop-ddrepui-ws" description="Stop ddrepui-ws">
+    <exec executable="wget">
+      <arg value="--http-user=${jboss.user}"/>
+      <arg value="--http-passwd=${jboss.password}"/>
+      <arg value="--output-document=/dev/null"/>
+      <arg value="${jboss.adminUrl}?action=invokeOp&amp;name=jboss.web.deployment:war=${ddrepui-ws.name}.war,id=${ddrepui-ws.id}&amp;methodIndex=3"/>
+    </exec>
+  </target>
+  <target name="reload-ddrepui-ws" depends="stop-ddrepui-ws, start-ddrepui-ws" description="Reload ddrepui-ws"/>
+  <target name="reload-all" depends="reload-qboedd-ws, reload-ddrepui-ws" description="Reload all"/>
+</project>

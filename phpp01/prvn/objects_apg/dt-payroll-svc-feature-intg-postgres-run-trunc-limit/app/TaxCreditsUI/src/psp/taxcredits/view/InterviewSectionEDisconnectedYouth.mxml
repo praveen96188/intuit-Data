@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','page_2_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        [Bindable]
+        public var question1MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question2345Enabled:Boolean = false;
+
+        public function onCreationComplete():void {
+            validators.addItem(disconnectedEver.validator);
+            validators.addItem(disconnectedHighSchool.validator);
+            validators.addItem(disconnectedAttend.validator);
+            validators.addItem(disconnectedAdmitted.validator);
+            validators.addItem(disconnectedJob6.validator);
+
+        }
+
+
+        public function writeToModel():void {
+            writeYesNoToModel("disconnectedEver");
+            writeYesNoToModel("disconnectedHighSchool");
+            writeYesNoToModel("disconnectedAttend");
+            writeYesNoToModel("disconnectedAdmitted");
+            writeYesNoToModel("disconnectedJob6");
+
+        }
+
+
+        override public function readFromModel():void {
+            readYesNoFromModel("disconnectedEver");
+            readYesNoFromModel("disconnectedHighSchool");
+            readYesNoFromModel("disconnectedAttend");
+            readYesNoFromModel("disconnectedAdmitted");
+            readYesNoFromModel("disconnectedJob6");
+
+            question1MoveOnEnabled = model.employee.disconnectedEverSet && ! model.employee.disconnectedEver;
+            question2345Enabled = model.employee.disconnectedEverSet && model.employee.disconnectedEver;
+
+            syncValidators();
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','disconnected_subheader')}"/>
+
+
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                 text="1." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="375"
+                 text="{resourceManager.getString('interview','disconnected_ever')}"/>
+    </mx:HBox>
+    <controls:YesNoRadio id="disconnectedEver" paddingLeft="40" yesNoChange="writeToModel()"/>
+    <mx:VBox paddingLeft="40">
+        <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question1MoveOnEnabled}"
+                 htmlText="{resourceManager.getString('interview','disconnected_move_on')}"/>
+        <mx:VBox enabled="{question2345Enabled}">
+            <mx:HBox horizontalGap="0" paddingTop="0">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                         text="2." paddingRight="0"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="500"
+                         htmlText="{resourceManager.getString('interview','disconnected_high_school')}"/>
+            </mx:HBox>
+            <controls:YesNoRadio id="disconnectedHighSchool" paddingLeft="40" yesNoChange="writeToModel()"/>
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                     text="{resourceManager.getString('interview','disconnected_last_6')}" paddingRight="0"/>
+            <mx:VBox paddingLeft="40">
+                <mx:HBox horizontalGap="0" paddingTop="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="3." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="500"
+                             htmlText="{resourceManager.getString('interview','disconnected_attend')}"/>
+                </mx:HBox>
+                <controls:YesNoRadio id="disconnectedAttend" paddingLeft="40" yesNoChange="writeToModel()"/>
+                <mx:HBox horizontalGap="0" paddingTop="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="4." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="500"
+                             htmlText="{resourceManager.getString('interview','disconnected_admitted')}"/>
+                </mx:HBox>
+                <controls:YesNoRadio id="disconnectedAdmitted" paddingLeft="40" yesNoChange="writeToModel()"/>
+                <mx:HBox horizontalGap="0" paddingTop="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="5." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="500"
+                             htmlText="{resourceManager.getString('interview','disconnected_job_6')}"/>
+                </mx:HBox>
+                <controls:YesNoRadio id="disconnectedJob6" paddingLeft="40" yesNoChange="writeToModel()"/>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+
+</controls:InterviewPage>

@@ -1,0 +1,2077 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by XMLSpy 2007 Enterprise Ed., Concurrent for 14 users (with SMP from 2007-04-24 to 2009-04-24) (Intuit) -->
+<xs:schema xmlns="http://www.intuit.com/iep/order/payauth/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.intuit.com/iep/order/payauth/xsd" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:element name="PayAuthRequest">
+		<xs:annotation>
+			<xs:documentation>Payment Authorization Request for the Charge Amount</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DocumentId" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The unique Identifier assigned to this business transaction</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentDateTime" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>The Date Time at which this service request is created or recorded</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Parties" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Party Info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BillToParty" type="PartyType">
+								<xs:annotation>
+									<xs:documentation>Bill To Party</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SalesContext" type="SalesContextType">
+					<xs:annotation>
+						<xs:documentation>Sales Context</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Payment">
+					<xs:annotation>
+						<xs:documentation>Payment Info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ChargeAmount" type="AmountType">
+								<xs:annotation>
+									<xs:documentation>Charge Amount</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="PaymentMethod" type="PaymentMethodType">
+								<xs:annotation>
+									<xs:documentation>Payment Method</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CreditCard" type="CreditCardType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Credit Card Payment</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="EFT" type="BankAccountType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Electronic Funds Transfer Payment, also known as Wire Transfer.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="PaperCheck" type="BankAccountType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Paper Check Payment</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="BillingDestination" type="xs:string" default="Intuit" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Destination receiving the fund</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="AuthorizationInfo" type="AuthorizationInfoType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Payment Authorization Info</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PayAuthResponse">
+		<xs:annotation>
+			<xs:documentation>Payment Authorization Response for the Charge Amount</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DocumentId" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The unique Identifier assigned to this business transaction</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DocumentDateTime" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>The Date Time at which this service request is created or recorded</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="AuthorizationApproval" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Boolean flag indicating if the payment authorization request was approved</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Error" type="ErrorType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Error Info</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Payment">
+					<xs:annotation>
+						<xs:documentation>Payment Info</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PaymentMethod" type="PaymentMethodType">
+								<xs:annotation>
+									<xs:documentation>Payment Method</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="AuthorizationInfo" type="AuthorizationInfoType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Payment Authorization Info</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SalesOrderPayAuthRequest">
+		<xs:annotation>
+			<xs:documentation>Payment Authorization Request for the Sales Order</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="HeaderType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>metadata</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DataArea">
+					<xs:annotation>
+						<xs:documentation>Payment Authorization Data</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Process">
+								<xs:annotation>
+									<xs:documentation>Process Info</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="operation" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>Operation Type</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ProcessSalesOrderFulfillment" type="ProcessSalesOrderFulfillmentType">
+								<xs:annotation>
+									<xs:documentation>Sales Order Fulfillment</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SalesOrderPayAuthResponse">
+		<xs:annotation>
+			<xs:documentation>Payment Authorization Response for the Sales Order</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header" type="HeaderType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Metadata</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DataArea">
+					<xs:annotation>
+						<xs:documentation>Payment Authorization Response Data</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ProcessSalesOrderFulfillmentResponse">
+								<xs:annotation>
+									<xs:documentation>Sales Order Fulfillment</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="PaymentMethodCode" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Payment Method for the Sales Order</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="listID" type="xs:string">
+															<xs:annotation>
+																<xs:documentation>List Id</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="SalesOrderCreditCardPayment" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Credit Card Payment</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="CreditChargeAuthorizationResponse" type="SalesOrderCreditChargeAuthorizationResponseType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Credit Card Authorization Response</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="BankPayment" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Bank Payment</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="BankPaymentAuthorizationResponse" type="SalesOrderBankPaymentAuthorizationResponseType" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Bank Payment Authorization Response</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="AddressType">
+		<xs:annotation>
+			<xs:documentation>Address</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AddressId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Address</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeName" use="required">
+								<xs:annotation>
+									<xs:documentation>Scheme Name</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value=""/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddressLine" type="xs:string" minOccurs="0" maxOccurs="4">
+				<xs:annotation>
+					<xs:documentation>The Lines of the Address.  The first Address Line is typically the number and street.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="City" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The City of the Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="County" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The County of the Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="StateOrProvince" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The State or the Province of the address, depending on which is pertinent.  Required for all US addresses.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Country" type="xs:string" default="US" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Country of the Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Postal Code or Zip Code of the address, if applicable.  An extended zip+4 code includes the five digits of the ZIP code, a hyphen, and four more digits that determine a more precise location than the ZIP code alone.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AmountType">
+		<xs:annotation>
+			<xs:documentation>Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="AuthorizationInfoType">
+		<xs:annotation>
+			<xs:documentation>Payment Authorization Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RefOrderNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique number assigned to the authorization transaction. This field is also referred to as PSON (Payment Server Order Number).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Response Code returned by the Authorization Provider to indicate the outcome of the payment authorization request.  The values are defined in the specifications of the payment gateway.  For Paymentech, refer to the Paymentech Online Processing Spec.pdf.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which the payment was authorized</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationUTCTimestamp" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time expressed in UTC at which the payment was authorized</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizedAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Authorized Charge Amount in the currency of the credit card issuer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Pay Auth Service Response Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDescription" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Textual Description of the Authorization Response</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AVSResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Address Verification Service Response Code for partial or fiull AVS</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CVVResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Response Code for the CVV3/4 Verification</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="VoiceAuthorizationInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates whether authorization was conducted mannually over phone</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BankAccountType">
+		<xs:annotation>
+			<xs:documentation>General bank account information that may be used in various payment method scenarios.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AccountName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Full Name of the Account Holder</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountType" default="Checking" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Bank Account Type.  This field is required for the EFT Payment Method but optional for paper checks.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Checking"/>
+						<xs:enumeration value="Savings"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The International Bank Account Number (IBAN).  This field is required for EFT but is optional for paper checks.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the Bank</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BranchLocation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Branch Location of the Bank providing this account</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankRoutingNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Bank Routing number.  This field is required for EFT but is optional for paper checks.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SWIFTCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Bank Identification Code, an internationally-recognized system of codes for identifying banks (see ISO 9362). These codes are commonly used to identify the banks involved in an international wire transfer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CheckNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Check Number associated with the payment.  This field is required for Paper Check PaymentMethods but optional for EFT.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MethodOption" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identify whether the payment was Immediate, On-Demand or AutoPay</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BusinessType">
+		<xs:annotation>
+			<xs:documentation>Business</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The full Business Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LegalName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Legal Name of the Business</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="TelephoneType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The business's telephone number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="TelephoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The business's fax number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Type" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Type of Business</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactType">
+		<xs:annotation>
+			<xs:documentation>Contact</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PersonName" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Person Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Title" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Business or Professional Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedTitle" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Free-form Title that may be identified to describe the Contact's Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Role" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Role of this Contact e.g. the Primary Contact)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="TelephoneType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The Contact's telephone number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="TelephoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The contact's fax number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EmailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The Contact's Email Address.  This field is not validated, but it is highly recommended to be in the canonical format of aaa@aaaaa.aaa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PreferredCorrespondenceMethod" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Party's Preferred Method of Correspondence.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Email"/>
+						<xs:enumeration value="Fax"/>
+						<xs:enumeration value="Mail"/>
+						<xs:enumeration value="Phone"/>
+						<xs:enumeration value="SMS"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CreditCardType">
+		<xs:annotation>
+			<xs:documentation>Credit Card Account Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AuthLevel" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation>The Extended Verifications to be perform beyond the basic authorization.  These includes the fraud deterrant such as the Address Validation Service and the Card Security Verification. Note: The conflicting combination of "Partial AVS" and "Full AVS" is not allowed.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Card Security Verification"/>
+						<xs:enumeration value="Partial AVS"/>
+						<xs:enumeration value="Full AVS"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountName" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The Full Name of the Cardholder, as appeared on the card</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditCardType">
+				<xs:annotation>
+					<xs:documentation>Credit Card Account Type</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Visa"/>
+						<xs:enumeration value="MasterCard"/>
+						<xs:enumeration value="American Express"/>
+						<xs:enumeration value="Discover"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CreditCardNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Credit Card Number or PCI Token</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TokenInd" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Indicates if the cardholder account is a credit card number or token</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExpirationMonth" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expiration Month</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="12"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ExpirationYear" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expiration Year</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="2000"/>
+						<xs:maxInclusive value="9999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ExpirationDate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expiration Date</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="31"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CardSecurityValue" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The non-embossed 3- or 4- digit numeric code on the credit card for fraud protection.  For PCI compliance, CVV code shall never be stored.  It can only be used during the lifetime of the transaction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MethodOption" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicate whether the payment was Immediate, On-Demand or AutoPay</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Error" type="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Error</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Error Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Category">
+				<xs:annotation>
+					<xs:documentation>Error Category</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Functional"/>
+						<xs:enumeration value="Input"/>
+						<xs:enumeration value="Operational"/>
+						<xs:enumeration value="Transitory"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Code" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Error Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Error Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="HeaderType">
+		<xs:annotation>
+			<xs:documentation>Header Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CreationDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Creation Datatime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Sender" type="SenderType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sender Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IdentificationType">
+		<xs:annotation>
+			<xs:documentation>Identification Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ID" type="IdentifierType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ApplicationObjectKey" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Application specific Identifier</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ID" type="IdentifierType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Key Identifier</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ContextID" type="IdentifierType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Context Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="IdentifierType">
+		<xs:annotation>
+			<xs:documentation>Identifier Type</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="schemeID" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Scheme Name</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="NameType">
+		<xs:annotation>
+			<xs:documentation>Name</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Salutation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Phrase that may prefix the name.  Examples: Mr., Mrs., Ms., Dr., etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GivenName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>First Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MiddleName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Middle Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FamilyName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Last Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Suffix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Phrase that may suffix the name.  Examples: Jr., Sr., I, II, III, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NonNegativeAmountType">
+		<xs:annotation>
+			<xs:documentation>Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="NonNegativeDecimal">
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="NonNegativeDecimal">
+		<xs:annotation>
+			<xs:documentation>The non-negative-decimal type specifies a non-negative decimal value.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PartyType">
+		<xs:annotation>
+			<xs:documentation>Party Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Business" type="BusinessType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Business-related Information</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="AddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Addresses pertaining to this Party or Contact.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Contact" type="ContactType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Contact Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyIdType">
+		<xs:annotation>
+			<xs:documentation>Party Id</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="schemeName" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Scheme Name</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="PaymentMethodType">
+		<xs:annotation>
+			<xs:documentation>Payment Method</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Credit Card"/>
+			<xs:enumeration value="EFT"/>
+			<xs:enumeration value="Paper Check"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ProcessSalesOrderFulfillmentType">
+		<xs:annotation>
+			<xs:documentation>Process Sales Order Fulfillment</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Identification" type="IdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sales Order Identification</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total value of the Items on the Sales Order including taxes or charges</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total value of the Items on the Sales Order not including taxes or charges. This is the sum of all the Line Item Extended Amounts.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Descripiton of the Sales Order</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Order Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentMethodCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Method for the Sales Order</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SalesOrderCreditCardPayment" type="SalesOrderCreditCardPaymentType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Card Payment</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankPayment" type="SalesOrderBankPaymentType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>EFT or Paper Check Payment</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesOrderLine" type="SalesOrderLineType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Sales Order Line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="QuantityType">
+		<xs:annotation>
+			<xs:documentation>Quantity</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:nonNegativeInteger">
+				<xs:attribute name="uom" use="required">
+					<xs:annotation>
+						<xs:documentation>Unit of Measure  Count by unit (e.g. Each) or Time-based (e.g. Day, Month and Year).</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Day"/>
+							<xs:enumeration value="Each"/>
+							<xs:enumeration value="Month"/>
+							<xs:enumeration value="Year"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="SalesContextType">
+		<xs:annotation>
+			<xs:documentation>Sales Context</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesOrganization" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The Sales Organization (or System) that originated this transaction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReferenceId" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Additional Reference Id for the transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which the sales transaction was created or recorded.  This field must be provided if the transaction datetime is different from the document datetime.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Channel">
+				<xs:annotation>
+					<xs:documentation>The Channel through which the sale took place</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Fax"/>
+						<xs:enumeration value="In-Product"/>
+						<xs:enumeration value="Mail"/>
+						<xs:enumeration value="Mobile"/>
+						<xs:enumeration value="Partner"/>
+						<xs:enumeration value="Phone"/>
+						<xs:enumeration value="Retail"/>
+						<xs:enumeration value="Web"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="RecurrenceInd" type="xs:boolean" default="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if the sale is part of a recurring agreement, such as subscription, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderAmountType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="currency" use="optional">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderBankPaymentAuthorizationResponseType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Bank Payment Authorization Response Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PayAuthApproval" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Approval</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Identification" type="IdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank Payment Identification</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization DateTime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationUTCTimestamp" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time expressed in UTC at which the payment was authorized</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActionTypeCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Action Type Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ResponseCode" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PaymentSystemCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RefOrderNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique number assigned to the authorization transaction.  In Oracle 11i, this field is referred to as PSON (Payment Server Order Number).  It is required in all cases except when multiple payment methods are provided or if an auth was obtained through manual (voice) channels.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDescription" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderBankPaymentType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Bank (EFT or Paper Check) Payment</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PayFromBankAccount" type="SalesOrderPayFromBankAccountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank Account Payment Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Check" type="SalesOrderCheckType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Check Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RefOrderNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique number assigned to the authorization transaction.  In Oracle 11i, this field is referred to as PSON (Payment Server Order Number).  It is required in all cases except when multiple payment methods are provided or if an auth was obtained through manual (voice) channels.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionTypeIndicator" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction Type</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BillingDestination" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Billing Destination</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderChargeType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Charge Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Charge">
+				<xs:annotation>
+					<xs:documentation>Line Item Charge</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Amount" type="SalesOrderAmountType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Charge Amount in the transactional currency</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Description" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Line Item Charge Description</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TypeCode" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Type of Charge</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ReasonCode" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Charge Reason</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="UnitListPrice" type="SalesOrderPriceType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Unit price of an item or service  on a price list, expressed per quantity</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="UnitSalePrice" type="SalesOrderPriceType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Unit price at which an item or service was sold, expressed per quantity</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="NetPrice" type="SalesOrderAmountType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Net Price before freight and tax</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DiscountMethodCode" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Discount Method</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="listID" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>List Id</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:choice>
+							<xs:element name="DiscountAmount" type="SalesOrderAmountType" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>The Amount by which the price is discounted</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DiscountPercent" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>The percentage by which the price is discounted</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="FutureChargesIndicator" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCheckType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Check Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TypeCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of Account </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RoutingNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Routing Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SWIFTCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Bank Identification Code, an internationally-recognized system of codes for identifying banks (ISO 9362)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Number" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Check Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCreditCardAddressType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Credit Card Address Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LineOne" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>First Line of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineTwo" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Second Line of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineThree" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Third Line of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineFour" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Fourth Line of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CityName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>City Name of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CountyName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>County Name of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="StateName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>State Name of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProvinceName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Province Name of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CountryCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unique identifier of the country for the Billing Address (ISO 3166)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Postal Code of the Billing Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCreditCardPaymentType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Credit Card Payment Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CreditChargeAuthorization" type="SalesOrderCreditChargeAuthorizationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Charge Authorization</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditChargeAuthorizationResponse" type="SalesOrderCreditChargeAuthorizationResponseReauthType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Charge Authorization Response</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCreditChargeAuthorizationResponseType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Credit Charge Authorization Response Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PayAuthApproval" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Approval</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Identification" type="IdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sales Order Identification</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization DateTime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationUTCTimestamp" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time expressed in UTC at which the payment was authorized</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActionTypeCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Action Type Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ResponseCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization Response Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PaymentSystemCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AVSResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Address Verification Service response code for swiped transactions where the zip code or address line information was provided as part of the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SecurityCheckResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>CVV Response Code </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RefOrderNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique number assigned to the authorization transaction.  In Oracle 11i, this field is referred to as PSON (Payment Server Order Number).  It is required in all cases except when multiple payment methods are provided or if an auth was obtained through manual (voice) channels.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDescription" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCreditChargeAuthorizationResponseReauthType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Credit Charge Authorization Response Re-auth Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PayAuthApproval" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Approval</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentSystemCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment authorization code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization DateTime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationUTCTimestamp" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time expressed in UTC at which the payment was authorized</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizedAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Authorization Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AVSResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Address Verification Service response code for swiped transactions where the zip code or address line information was provided as part of the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SecurityCheckResponseCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>CVV Response Code </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RefOrderNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique number assigned to the authorization transaction.  In Oracle 11i, this field is referred to as PSON (Payment Server Order Number).  It is required in all cases except when multiple payment methods are provided or if an auth was obtained through manual (voice) channels.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCreditChargeAuthorizationType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Credit Charge Authorization Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TypeCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of Credit Card e.g. AUTHORIZATION, AUTHCAPTURE, VOICEAUTH, CAPTURE, CREDIT, RETURN, VOID</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="listID" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>List Id</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="VoiceAuthorizationIndicator" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates whether Authorization was done manually over the phone</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ChargeAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ChargeDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Payment Authorization Datetime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionTypeIndicator" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction Type</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BillingDestination" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Billing Destination</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditCard" type="SalesOrderCreditCardType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Card Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderCreditCardType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Credit Card Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TypeCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Card Type</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string"/>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Number" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Card Number</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string"/>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CardHolderName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the Credit Card Holder</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CompanyName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Business Name for the Credit Card</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExpirationDate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expiration Date of the Credit Card</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="31"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ExpirationMonth" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expiration Month of the Credit Card</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="12"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ExpirationYear" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expiration Year of the Credit Card</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="2000"/>
+						<xs:maxInclusive value="9999"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CardHolderAddress" type="SalesOrderCreditCardAddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Address of the Credit Card Holder</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SecurityCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Crad Security Value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationLevel" minOccurs="0" maxOccurs="2">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Card Security Verification"/>
+						<xs:enumeration value="Full AVS"/>
+						<xs:enumeration value="Partial AVS"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderLineType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Line Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Identification" type="IdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sales Order Line Identification</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line Item Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderQuantity" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line Item Quantity</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:long">
+							<xs:attribute name="unitCode" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Unit of Measure</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ServiceActionCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Service Action Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" type="SalesOrderStatusType" minOccurs="0"/>
+			<xs:element name="ParentSalesOrderLineIdentification" type="IdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifier for the Parent Component Line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RootParentSalesOrderLineIdentification" type="IdentificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identifier for the Configuration Top Parent Line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesOrderSchedule" type="SalesOrderScheduleType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Destination, pricing and quantity details  for the sales order line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FirstProcessingDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>First Processing Datetime</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalTaxAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Tax Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalFreightAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Freight Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OfferingPrice" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering Price</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AssetOfferingPrice" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Asset Offering Price</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ServiceIndicator" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Service Indicator</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderPayFromBankAccountType">
+		<xs:annotation>
+			<xs:documentation>Bank Account Payment Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank Account Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank Account Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BankBranchReference" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Bank Branch Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="BankBranchIdentification" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Bank Branch Identification</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ID" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Bank Branch Id</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderPriceType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Price Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Amount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PerQuantity" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Per Quantity of thie Amount</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:long">
+							<xs:attribute name="unitCode" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Unit of Measure</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderScheduleType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Schedule Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TotalAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Net line total</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesOrderScheduleCharge" type="SalesOrderChargeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Details about the Charges applicable on the sales order schedule line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesOrderScheduleTax" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Sales Order Tax for the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Tax" type="SalesOrderTaxType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Tax Details</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderTaxExemptionType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Tax Exemption Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ReasonCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Exemption Reason</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description of the Tax Exemption</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CertificateNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Exemption Certificate Number</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeID">
+								<xs:annotation>
+									<xs:documentation>Scheme Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="IssueDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date Time at which the exemption was issued</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExpirationDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>DateTime of expiration of the exemption</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EffectiveTimePeriod" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A period of time for which something is effective</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="StartDateTime" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Start DateTtime of the Time Period</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="EndDateTime" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>End Date Time of the Time Period</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Status" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Exemption Status</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Code" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Status Code</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Description" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Status Description</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderTaxType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Tax Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Code" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TypeCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of Tax</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxJurisdictionCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Code used to identify the taxing authority that is applicable for a specific location</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxRate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Rate</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:decimal">
+							<xs:attribute name="unitCode" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Unit of Measure</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TaxAuthorityAmount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The tax amount in the currency of the taxing authority in addition to the transactional tax amount which may be in a different currency</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Amount" type="SalesOrderAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Amount in the transactional currency</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxExemption" type="SalesOrderTaxExemptionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Exemption</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesOrderStatusType">
+		<xs:annotation>
+			<xs:documentation>Sales Order Status Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Code" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Status Coide</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ReasonCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Status Reason</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Status Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubStatusCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>SubSttaus Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SenderType">
+		<xs:annotation>
+			<xs:documentation>Sender Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ID" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sender Id</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="schemeID">
+						<xs:annotation>
+							<xs:documentation>Scheme Id</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction Code</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="listID" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>List Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Application" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Application Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ID" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Application Id</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="schemeID">
+									<xs:annotation>
+										<xs:documentation>Scheme Id</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Version" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TelephoneType">
+		<xs:annotation>
+			<xs:documentation>Telephone</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type">
+					<xs:annotation>
+						<xs:documentation>Phone Type</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Day"/>
+							<xs:enumeration value="Evening"/>
+							<xs:enumeration value="Home"/>
+							<xs:enumeration value="Mobile"/>
+							<xs:enumeration value="Work"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="ZeroOrNegativeDecimal">
+		<xs:annotation>
+			<xs:documentation>The zero or negative-decimal type specifies a zero/negative decimal value.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:maxInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ZeroOrNegativeAmountType">
+		<xs:annotation>
+			<xs:documentation>Zero or negative Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="ZeroOrNegativeDecimal">
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

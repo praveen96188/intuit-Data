@@ -1,0 +1,276 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*" verticalGap="0" creationComplete="onCreationComplete();" visible="{!viewModel.isDataLoading}">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.PropertyChangeEvent;
+        import mx.validators.Validator;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.LawAmount;
+        import psp.sap.viewmodel.EditPaymentAmountViewModel;
+        import psp.sap.application.enums.OperationsEnum;
+
+        [Bindable]
+        public var viewModel:EditPaymentAmountViewModel;
+
+        private function onCreationComplete():void {
+            if (viewModel != null) {
+                viewModel.splitAmountValidator.listener = splitsTotal;
+            } else {
+                this.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, function(e:PropertyChangeEvent):void {
+                    if (e.property == "viewModel") {
+                        onCreationComplete();
+                        this.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, arguments.callee);
+                    }
+                }, false, 0, false)
+            }
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Update Payment Amount" styleName="heading" paddingLeft="2" paddingBottom="3" paddingTop="5"/>
+    <mx:Grid verticalGap="0">
+        <mx:GridRow>
+            <mx:GridItem>
+                <mx:Label text="EIN: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{viewModel.payment.ein}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Payment Type: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{viewModel.payment.paymentType}"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+            <mx:GridItem>
+                <mx:Label text="Legal Name: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{viewModel.payment.companyName}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Initiation Date: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{SAPDateFormatters.dateFormatMedium.format(viewModel.payment.initiationDate)}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Quarter: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{viewModel.payment.quarter.label}"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+            <mx:GridItem>
+                <mx:Label text="PSID: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{viewModel.payment.psId}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Settlement Date: " fontWeight="bold" />
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{SAPDateFormatters.dateFormatMedium.format(viewModel.payment.settlementDate)}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Due Date: " fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{SAPDateFormatters.dateFormatMedium.format(viewModel.payment.dueDate)}"/>
+            </mx:GridItem>
+        </mx:GridRow>
+    </mx:Grid>
+    <mx:Label text="Transactions in This Payment" fontWeight="bold" paddingTop="5" paddingBottom="0"/>
+    <controls:SAPDataGrid id="statusChangesGrid" maxRows="5"
+                          dataProvider="{viewModel.financialTransactions}"
+                          selectable="false"
+                          draggableColumns="false">
+        <controls:columns>
+            <mx:DataGridColumn headerText="Split" width="50" sortable="false">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox horizontalAlign="center">
+                            <mx:Script>
+                                    <![CDATA[
+                                import psp.sap.model.PaymentDetails;
+                                ]]>
+                                </mx:Script>
+                            <mx:CheckBox id="checkBox"
+                                         change="outerDocument.viewModel.onSplitSelected(PaymentDetails(data), checkBox.selected)"
+                                         selected="{PaymentDetails(data).selected}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Created Date"
+                               width="100"
+                               dataField="createdDate"
+                               labelFunction="SAPDataGrid.formatDateShort"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Check date"
+                               width="100"
+                               dataField="checkDate"
+                               labelFunction="SAPDataGrid.formatDateShort"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Amount"
+                               width="100"
+                               dataField="amount"
+                               labelFunction="SAPDataGrid.formatCurrency"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Law"
+                               width="180"
+                               dataField="law"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Txn Type"
+                               width="100"
+                               dataField="txnType"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+    <mx:Grid horizontalGap="20" paddingTop="10">
+        <mx:GridRow>
+            <mx:GridItem>
+                <mx:Label text="Law" fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Current Amount" fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Splits" fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="+/- Liability" fontWeight="bold"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="New Amount" fontWeight="bold"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:Repeater id="lawAmountsRepeater" dataProvider="{viewModel.lawAmounts}">
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Text text="{LawAmount(lawAmountsRepeater.currentItem).law}"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(LawAmount(lawAmountsRepeater.currentItem).amount)}"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="{SAPCurrencyFormatters.defaultFormatterHideZero.format(LawAmount(lawAmountsRepeater.currentItem).splitAmount)}"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:TextInput
+                            text="{LawAmount(lawAmountsRepeater.currentItem).liabilityAdjustmentAmount}"
+                            width="80"
+                            restrict="\-.0-9"
+                            change="LawAmount(TextInput(event.currentTarget).getRepeaterItem()).liabilityAdjustmentAmount = TextInput(event.currentTarget).text; viewModel.calculate(true)"
+                            creationComplete="Validator(viewModel.liabilityAmountValidators.getItemAt(TextInput(event.currentTarget).repeaterIndex)).listener = TextInput(event.currentTarget)"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:TextInput
+                        activate="viewModel.calculate(false);"
+                        text="{LawAmount(lawAmountsRepeater.currentItem).newAmount}"
+                        restrict="\-.0-9"
+                        width="80"
+                        change="LawAmount(TextInput(event.currentTarget).getRepeaterItem()).newAmount = TextInput(event.currentTarget).text;
+                            viewModel.calculate(false)"
+                        creationComplete="Validator(viewModel.newLiabilityAmountValidators.getItemAt(TextInput(event.currentTarget).repeaterIndex)).listener = TextInput(event.currentTarget)"/>
+                </mx:GridItem>
+            </mx:GridRow>
+        </mx:Repeater>
+        <mx:GridRow>
+            <mx:GridItem/>
+            <mx:GridItem>
+                <mx:HRule width="100"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:HRule width="100" visible="{viewModel.splitsTotal != 0}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:HRule width="100"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:HRule width="80"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+            <mx:GridItem/>
+            <mx:GridItem>
+                <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.currentAmountTotal)}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <pspui:ErrorLabel id="splitsTotal" text="{SAPCurrencyFormatters.defaultFormatterHideZero.format(viewModel.splitsTotal)}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.liabilityAdjustmentsTotal)}"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label id="newAmountTotal" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.newAmountTotal)}"/>
+            </mx:GridItem>
+        </mx:GridRow>
+    </mx:Grid>
+
+
+    <!-- intentionally included in layout always to not make screen resize all the time-->
+    <mx:HBox visible="{0 > viewModel.splitsTotal}" horizontalGap="0" verticalAlign="middle">
+        <mx:Image source="{SAP.instance.icons.blackBullet}"/>
+        <controls:SupText styleName="noPadding" bbText="An additional, unfinalized payment in the amount of [b]{SAPCurrencyFormatters.defaultFormatter.format(viewModel.splitsTotal * -1)}[/b] will created for this company."/>
+    </mx:HBox>
+
+    <mx:HBox horizontalGap="0" verticalAlign="middle">
+        <mx:Image source="{SAP.instance.icons.blackBullet}"/>
+        <controls:SupText visible="{0 > viewModel.liabilityAdjustmentsTotal}" paddingTop="0" paddingBottom="0"
+                          includeInLayout="{0 > viewModel.liabilityAdjustmentsTotal}"
+                          bbText="An additional [b]{SAPCurrencyFormatters.defaultFormatter.format(viewModel.liabilityAdjustmentsTotal * -1)}[/b] will be owed to the customer."/>
+        <controls:SupText visible="{viewModel.liabilityAdjustmentsTotal > 0}" paddingTop="0" paddingBottom="0"
+                          includeInLayout="{viewModel.liabilityAdjustmentsTotal > 0}"
+                          bbText="An additional [b]{SAPCurrencyFormatters.defaultFormatter.format(viewModel.liabilityAdjustmentsTotal)}[/b] will be owed to Intuit."/>
+        <controls:SupText text="How should this be accounted for?"
+                          visible="{viewModel.liabilityAdjustmentsTotal != 0}"
+                          includeInLayout="{viewModel.liabilityAdjustmentsTotal != 0}"/>
+        <controls:SupText visible="{viewModel.liabilityAdjustmentsTotal == 0}" paddingTop="0" paddingBottom="0"
+                          includeInLayout="{viewModel.liabilityAdjustmentsTotal == 0}"
+                          bbText="No additional money will be owed"/>
+    </mx:HBox>
+
+    <controls:SAPRadioButtonGroup id="accountingOption"/>
+
+    <mx:HBox paddingLeft="30">
+        <mx:VBox visible="{viewModel.liabilityAdjustmentsTotal != 0}" verticalGap="0" paddingTop="0">
+            <mx:RadioButton styleName="noPadding" label="Initiate {viewModel.liabilityAdjustmentsTotal > 0 ? 'debit' : 'refund' }" group="{accountingOption}" value="{EditPaymentAmountViewModel.ACCOUNTING_IMMEDIATE}"/>
+            <mx:RadioButton styleName="noPadding" label="Apply to EOQ Variance Account" group="{accountingOption}" value="{EditPaymentAmountViewModel.ACCOUNTING_VARIANCE}"/>
+        </mx:VBox>
+        <mx:VBox verticalGap="0" visible="{viewModel.selectedAccountingOption == EditPaymentAmountViewModel.ACCOUNTING_VARIANCE &amp;&amp; viewModel.liabilityAdjustmentsTotal != 0}">
+            <mx:Label text="Current Balance"/>
+            <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.varianceAccountAmount)}"/>
+        </mx:VBox>
+        <mx:VBox verticalGap="0" visible="{viewModel.selectedAccountingOption == EditPaymentAmountViewModel.ACCOUNTING_VARIANCE &amp;&amp; viewModel.liabilityAdjustmentsTotal != 0}">
+            <mx:Label text="New Balance"/>
+            <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.newVarianceAccountAmount)}"/>
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:HBox verticalAlign="middle" paddingTop="8">
+        <controls:RequiredLabel validator="{viewModel.memoValidator}" text="Memo:" fontWeight="bold"/>
+        <controls:SAPTextInput width="400" height="60" dataField="memo"/>
+    </mx:HBox>
+
+    <mx:VBox paddingLeft="5" visible="{SAP.canPerformOperation(OperationsEnum.SAP_LIMIT_OVERRIDE)}">
+        <controls:SAPCheckBox label="Allow Payment Amount limit outside of boundaries" dataField="allowLimitOutsideOfBoundaries"/>
+    </mx:VBox>
+
+    <mx:HBox paddingTop="10">
+        <mx:Button id="cancelButton" label="Cancel" toolTip="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" toolTip="Save" enabled="{viewModel.canSave}" click="viewModel.save();"/>
+    </mx:HBox>
+
+    <mx:Binding source="viewModel.selectedAccountingOption" destination="accountingOption.selectedValue"/>
+    <mx:Binding source="String(accountingOption.selectedValue)" destination="viewModel.selectedAccountingOption"/>
+</mx:VBox>

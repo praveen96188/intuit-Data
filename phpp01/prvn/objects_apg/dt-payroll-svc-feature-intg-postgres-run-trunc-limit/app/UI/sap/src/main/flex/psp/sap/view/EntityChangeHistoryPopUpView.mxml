@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="910"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.application.enums.PartsEnum;
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.EntityChangeHistoryPopUpViewModel;
+
+        private var mViewModel:EntityChangeHistoryPopUpViewModel;
+        private var mTempViewModel:EntityChangeHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+
+        [Bindable]
+        public var showHeading:Boolean = true;
+
+        [Bindable]
+        public function get viewModel():EntityChangeHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EntityChangeHistoryPopUpViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+
+        public function getFormattedDate(value:Date):String {
+            return SAPDateFormatters.dateFormatMedium.format(value);
+        }
+
+        public function formatY_N(item:Object, column:DataGridColumn):String {
+            if (item[column.dataField] == null)
+                return 'N';
+            return (Boolean(item[column.dataField])) ? 'Y' : 'N';
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Entity Change History" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5" visible="{showHeading}" includeInLayout="{showHeading}"/>
+    <mx:Spacer height="10" includeInLayout="{showHeading}"/>
+    <controls:SAPDataGrid
+            id="historyResults" width="100%"
+            paddingRight="10"
+            maxHeight="500"
+            selectable="false"
+            dataProvider="{viewModel.entityChanges}"
+            maxRows="8">
+        <controls:columns>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Effective Date"
+                               width="140"
+                               dataField="effectiveDate"
+                               paddingLeft="5"
+                               draggable="false">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                horizontalAlign="left"
+                                verticalGap="0"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:HBox horizontalGap="0">
+                                <mx:Text text="{outerDocument.getFormattedDate(data.effectiveDate)}"/>
+                            </mx:HBox>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.EntityChange;
+                                ]]></mx:Script>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <controls:SAPDataGridColumn
+                    headerText="Change Date"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    dataField="changeDate"
+                    labelFunction="formatDate"/>
+            <controls:SAPDataGridColumn
+                    headerText="Changed By"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    dataField="agentId"/>
+            <controls:SAPDataGridColumn
+                    headerText="Old EIN"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    dataField="oldEIN"/>
+            <controls:SAPDataGridColumn
+                    headerText="New EIN"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    dataField="newEIN"/>
+
+            <controls:SAPDataGridColumn
+                    headerText="Successor"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    labelFunction="formatY_N"
+                    dataField="isSuccessor"/>
+
+            <controls:SAPDataGridColumn
+                    headerText="Error"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    labelFunction="formatY_N"
+                    dataField="isError"/>
+
+            <controls:SAPDataGridColumn
+                    headerText="New Data File?"
+                    width="130"
+                    draggable="false"
+                    resizable="false"
+                    labelFunction="formatY_N"
+                    dataField="hasNewDataFile"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Edit"
+                               width="140"
+                               paddingLeft="5"
+                               draggable="false">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                horizontalAlign="left"
+                                verticalGap="0"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:HBox horizontalGap="0">
+                                <mx:LinkButton id="editEffectiveDateButton"
+                                               label="Edit"
+                                               styleName="standardLinkButtonStyle"
+                                               click="outerDocument.viewModel.viewEditEffectiveDate(EntityChange(data))"
+                                               width="100%"
+                                               textAlign="right"/>
+                            </mx:HBox>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.EntityChange;
+                                ]]></mx:Script>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+        </controls:columns>
+    </controls:SAPDataGrid>
+    <controls:PopUpPart id="editEntityChangePopup" showCloseButton="true" horizontalResizeEnabled="false"
+                        resizeToContent="true"
+                        label="{PartsEnum.EDIT_ENTITY_CHANGE_EFFECTIVE_DATE +'_pup'}" deferAdd="false">
+        <pspui:EditEntityChangeEffectiveDateView label="{PartsEnum.EDIT_ENTITY_CHANGE_EFFECTIVE_DATE}"/>
+    </controls:PopUpPart>
+</mx:VBox>

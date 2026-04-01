@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.viewmodel.UpdateInitiationDatesViewModel;
+
+        private var mViewModel:UpdateInitiationDatesViewModel;
+        private var mTempViewModel:UpdateInitiationDatesViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():UpdateInitiationDatesViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:UpdateInitiationDatesViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.newInitiationDateValidator.listener = newInitiationDateInput;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+
+    </mx:Script>
+    <mx:VBox width="320">
+        <mx:Label text="Update Initiation Dates" styleName="heading" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+        <mx:HRule width="100%" height="13"/>
+        <mx:Grid verticalGap="0">
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="Payment Type: " fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="{viewModel.searchCriteria.paymentTemplate}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="Quarter: " fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="{viewModel.searchCriteria.quarter.label}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="Payment Method: " fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="{viewModel.searchCriteria.paymentMethod}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="Payments to Update: " fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="{viewModel.searchResults.totalRecords}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="Amount:" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Text text="${viewModel.searchResults.totalAmount}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow>
+                <mx:GridItem>
+                    <pspui:RequiredLabel validator="{viewModel.newInitiationDateValidator}" text="New Initiation Date:" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:FormItem paddingLeft="-10">
+                        <pspui:SAPDateField id="newInitiationDateInput" tabIndex="1" width="100" editable="true"/>
+                    </mx:FormItem>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow>
+                <mx:GridItem>
+                </mx:GridItem>
+                <mx:GridItem paddingTop="5">
+                    <mx:Button label="Cancel" click="viewModel.cancel()" toolTip="Cancel" />
+                    <mx:Button label="Save" toolTip="Save" click="viewModel.save()" enabled="{viewModel.canSave}" />
+                </mx:GridItem>
+            </mx:GridRow>
+        </mx:Grid>
+    </mx:VBox>
+    <mx:Binding source="newInitiationDateInput.text" destination="viewModel.newInitiationDate" />
+    <mx:Binding source="viewModel.newInitiationDate" destination="newInitiationDateInput.text" />
+</mx:VBox>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://contact.xsd.wsapi.dd.pse.osp.intuit" xmlns:ad="http://address.xsd.wsapi.dd.pse.osp.intuit" xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" targetNamespace="http://contact.xsd.wsapi.dd.pse.osp.intuit" elementFormDefault="qualified">
+	<xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+	<xs:import namespace="http://address.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="Address.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Data Transfer Object Contact</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="Contact">
+		<xs:sequence>
+			<xs:element name="LastName" type="dd:LastNameType" nillable="false"/>
+			<xs:element name="FirstName" type="dd:FirstNameType" nillable="false"/>
+			<xs:element name="MiddleName" type="dd:MiddleNameType" nillable="true" minOccurs="0"/>
+			<xs:element name="CommunicationPref" nillable="true" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value=""/>
+						<xs:enumeration value="EMAIL"/>
+						<xs:enumeration value="MAIL"/>
+						<xs:enumeration value="PHONE"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Email" type="dd:EmailType" nillable="false"/>
+			<xs:element name="PhoneNumber" type="dd:PhoneType" nillable="false"/>
+			<xs:element name="Address" type="ad:Address" nillable="true" minOccurs="0"/>
+			<xs:element name="ContactRoleCd" nillable="false">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="PRA"/>
+						<xs:enumeration value="OWNR"/>
+						<xs:enumeration value="OTHR"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="AccountSignatory" type="xs:boolean" nillable="false"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         xmlns:containers="flexlib.containers.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import flexlib.controls.tabBarClasses.SuperTab;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.model.EnrollmentFile;
+        import psp.sap.viewmodel.OperatorEnrollmentsViewModel;
+
+        private var mViewModel:OperatorEnrollmentsViewModel;
+        private var mTempViewModel:OperatorEnrollmentsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():OperatorEnrollmentsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:OperatorEnrollmentsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function onDeleteChange():void {
+            if (deleteFilesGrid.selectedItem != null) {
+                viewModel.selectedDeleteFile = EnrollmentFile(deleteFilesGrid.selectedItem);
+            }
+        }
+
+        private function onEnrollChange():void {
+            if (enrollFilesGrid.selectedItem != null) {
+                viewModel.selectedEnrollFile = EnrollmentFile(enrollFilesGrid.selectedItem);
+            }
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox>
+        <mx:Label text="Create New Enrollment Tapes/Files" fontWeight="bold"/>
+        <mx:HBox>
+            <mx:Spacer width="30"/>
+            <mx:VBox>
+                <mx:Button label="Create New RAF Enroll Tape"
+                           click="viewModel.createRAFTape('Add');"
+                           enabled="{SAP.canPerformOperation(OperationsEnum.CREATE_RAF_FILE)}"/>
+                <mx:Button label="Create New RAF Delete Tape"
+                           click="viewModel.createRAFTape('Delete');"
+                           enabled="{SAP.canPerformOperation(OperationsEnum.CREATE_RAF_FILE)}"/>
+
+                <mx:HBox>
+                    <controls:SAPComboBox dataProvider="{viewModel.addQuarterList}" dataField="addQuarter" rowCount="{viewModel.addQuarterList.length}" width="102"/>
+
+                    <mx:Button label="Create New ACH Enroll File"
+                               click="viewModel.createACHFile('Add');"
+                               enabled="{viewModel.canAdd()}" />
+                </mx:HBox>
+                <mx:HBox>
+                    <controls:SAPComboBox dataProvider="{viewModel.deleteQuarterList}" dataField="deleteQuarter" rowCount="{viewModel.deleteQuarterList.length}" width="102"/>
+
+                    <mx:Button label="Create New ACH Delete File"
+                               click="viewModel.createACHFile('Delete');"
+                               enabled="{viewModel.canDelete()}" />
+                </mx:HBox>
+            </mx:VBox>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:HRule width="100%" height="13"/>
+    <mx:VBox>
+        <mx:Label text="Recreate Archived Tapes" fontWeight="bold"/>
+        <mx:HBox>
+            <mx:Spacer width="30"/>
+            <containers:SuperTabNavigator height="440"
+                                          width="270"
+                                          horizontalGap="4"
+                                          minTabWidth="80"
+                                          closePolicy="{SuperTab.CLOSE_NEVER}"
+                                          borderSides="top">
+                <mx:VBox label="Enroll">
+                    <controls:SAPDataGrid id="enrollFilesGrid"
+                                          dataProvider="{viewModel.enrolledFilesList}"
+                                          width="240" maxRows="10" change="onEnrollChange();" draggableColumns="false">
+                        <controls:columns>
+                            <mx:DataGridColumn sortable="true"
+                                               headerText="Created On"
+                                               width="220"
+                                               dataField="createdDate"
+                                               itemRenderer="mx.controls.Text"
+                                               paddingLeft="5"
+                                               labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+                            <mx:DataGridColumn sortable="true"
+                                               headerText="Type"
+                                               dataField="type"
+                                               itemRenderer="mx.controls.Text"
+                                               paddingLeft="5"/>
+                        </controls:columns>
+                    </controls:SAPDataGrid>
+
+                    <mx:Button label="Recreate Archived RAF Enroll Tape" textAlign="center"
+                               click="viewModel.recreateRAFTape('Add');"
+                               enabled="{viewModel.selectedEnrollFile != null &amp;&amp; viewModel.selectedDeleteFile.type == 'RAF'}"/>
+                </mx:VBox>
+                <mx:VBox label="Delete">
+                    <controls:SAPDataGrid id="deleteFilesGrid"
+                                          dataProvider="{viewModel.deletedFilesList}"
+                                          width="240" maxRows="10" change="onDeleteChange();" draggableColumns="false">
+                        <controls:columns>
+                            <mx:DataGridColumn sortable="true"
+                                               headerText="Created On"
+                                               width="220"
+                                               dataField="createdDate"
+                                               itemRenderer="mx.controls.Text"
+                                               paddingLeft="5"
+                                               labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+                            <mx:DataGridColumn sortable="true"
+                                               headerText="Type"
+                                               dataField="type"
+                                               itemRenderer="mx.controls.Text"
+                                               paddingLeft="5"/>
+                        </controls:columns>
+                    </controls:SAPDataGrid>
+                    <mx:Button label="Recreate Archived RAF Delete Tape" textAlign="center"
+                               click="viewModel.recreateRAFTape('Delete');"
+                               enabled="{viewModel.selectedDeleteFile != null &amp;&amp; viewModel.selectedDeleteFile.type == 'RAF'}"/>
+                </mx:VBox>
+            </containers:SuperTabNavigator>
+        </mx:HBox>
+    </mx:VBox>
+</mx:VBox>

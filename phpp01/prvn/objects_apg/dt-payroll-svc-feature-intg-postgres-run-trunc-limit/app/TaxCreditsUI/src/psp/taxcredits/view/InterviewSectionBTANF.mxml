@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','page_2_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        [Bindable]
+        public var question1MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question2Enabled:Boolean = false;
+        [Bindable]
+        public var question3Enabled:Boolean = false;
+        [Bindable]
+        public var question4Enabled:Boolean = false;
+        [Bindable]
+        public var question5Enabled:Boolean = false;
+        [Bindable]
+        public var question6Enabled:Boolean = false;
+        [Bindable]
+        public var question6MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question7Enabled:Boolean = false;
+
+        public var questionStructure:Array =
+                [
+                    {label:"question1MoveOnEnabled", children: []},
+                    {label:"question2Enabled", children: [
+                        {label:"question3Enabled", children: []},
+                        {label:"question4Enabled", children: [
+                            {label:"question5Enabled", children: []},
+                            {label:"question6Enabled", children: [
+                                {label:"question6MoveOnEnabled", children: []},
+                                {label:"question7Enabled", children: []}
+                            ]}
+                        ]}
+                    ]}
+                ];
+
+
+        public function onCreationComplete():void {
+            validators.addItem(tanfEver.validator);
+            validators.addItem(tanfLast18.validator);
+            validators.addItem(benefits3Input.nameValidator);
+            validators.addItem(benefits3Input.cityValidator);
+            validators.addItem(benefits3Input.stateValidator);
+            validators.addItem(tanfStateLaw.validator);
+            validators.addItem(tanf9of18.validator);
+            validators.addItem(benefits7Input.nameValidator);
+            validators.addItem(benefits7Input.cityValidator);
+            validators.addItem(benefits7Input.stateValidator);
+        }
+
+
+        public function writeToModel():void {
+            if (tanfEver.selectedValue == null) {
+                model.employee.tanfEverSet = false;
+            } else {
+                model.employee.tanfEver = tanfEver.selectedValue as Boolean;
+                model.employee.tanfEverSet = true;
+            }
+
+            if (tanfLast18.selectedValue == null) {
+                model.employee.tanfLast18Set = false;
+            } else {
+                model.employee.tanfLast18 = tanfLast18.selectedValue as Boolean;
+                model.employee.tanfLast18Set = true;
+            }
+
+            if (tanfStateLaw.selectedValue == null) {
+                model.employee.tanfStateLawSet = false;
+            } else {
+                model.employee.tanfStateLaw = tanfStateLaw.selectedValue as Boolean;
+                model.employee.tanfStateLawSet = true;
+            }
+
+            if (tanf9of18.selectedValue == null) {
+                model.employee.tanf9of18Set = false;
+            } else {
+                model.employee.tanf9of18 = tanf9of18.selectedValue as Boolean;
+                model.employee.tanf9of18Set = true;
+            }
+
+            model.employee.tanf3Benefits.name = benefits3Input.nameValue;
+            model.employee.tanf3Benefits.city = benefits3Input.cityValue;
+            model.employee.tanf3Benefits.state = benefits3Input.stateValue;
+
+            model.employee.tanf5Benefits.name = benefits5Input.nameValue;
+            model.employee.tanf5Benefits.city = benefits5Input.cityValue;
+            model.employee.tanf5Benefits.state = benefits5Input.stateValue;
+
+            model.employee.tanf7Benefits.name = benefits7Input.nameValue;
+            model.employee.tanf7Benefits.city = benefits7Input.cityValue;
+            model.employee.tanf7Benefits.state = benefits7Input.stateValue;
+        }
+
+
+        override public function readFromModel():void {
+            if (! model.employee.tanfEverSet) {
+                tanfEver.selectedValue = null;
+            } else {
+                tanfEver.selectedValue = model.employee.tanfEver;
+            }
+
+            if (! model.employee.tanfLast18Set) {
+                tanfLast18.selectedValue = null;
+            } else {
+                tanfLast18.selectedValue = model.employee.tanfLast18;
+            }
+
+            if (! model.employee.tanfStateLawSet) {
+                tanfStateLaw.selectedValue = null;
+            } else {
+                tanfStateLaw.selectedValue = model.employee.tanfStateLaw;
+            }
+
+            if (! model.employee.tanf9of18Set) {
+                tanf9of18.selectedValue = null;
+            } else {
+                tanf9of18.selectedValue = model.employee.tanf9of18;
+            }
+
+            benefits3Input.nameValue = model.employee.tanf3Benefits.name;
+            benefits3Input.cityValue = model.employee.tanf3Benefits.city;
+            benefits3Input.stateValue = model.employee.tanf3Benefits.state;
+
+            benefits5Input.nameValue = model.employee.tanf5Benefits.name;
+            benefits5Input.cityValue = model.employee.tanf5Benefits.city;
+            benefits5Input.stateValue = model.employee.tanf5Benefits.state;
+
+            benefits7Input.nameValue = model.employee.tanf7Benefits.name;
+            benefits7Input.cityValue = model.employee.tanf7Benefits.city;
+            benefits7Input.stateValue = model.employee.tanf7Benefits.state;
+
+
+            var tempEnabled:Object = [];
+
+            tempEnabled.question1MoveOnEnabled = model.employee.tanfEverSet && ! model.employee.tanfEver;
+            tempEnabled.question2Enabled = model.employee.tanfEverSet && model.employee.tanfEver;
+            tempEnabled.question3Enabled = tempEnabled.question2Enabled && model.employee.tanfLast18Set && model.employee.tanfLast18;
+            tempEnabled.question4Enabled = tempEnabled.question2Enabled && model.employee.tanfLast18Set && ! model.employee.tanfLast18;
+            tempEnabled.question5Enabled = tempEnabled.question4Enabled && model.employee.tanfStateLawSet && model.employee.tanfStateLaw;
+            tempEnabled.question6Enabled = tempEnabled.question4Enabled && model.employee.tanfStateLawSet && ! model.employee.tanfStateLaw;
+            tempEnabled.question6MoveOnEnabled = tempEnabled.question6Enabled && model.employee.tanf9of18Set && ! model.employee.tanf9of18;
+            tempEnabled.question7Enabled = tempEnabled.question6Enabled && model.employee.tanf9of18Set && model.employee.tanf9of18;
+
+            recurseTest(tempEnabled, questionStructure);
+
+            for (var enabledVar:String in tempEnabled) {
+                this[enabledVar] = tempEnabled[enabledVar];
+            }
+
+            syncValidators();
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','tanf_subheader')}"/>
+
+
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="1." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4"
+                 text="{resourceManager.getString('interview','tanf_ever')}"/>
+        <controls:InlineHelp paddingLeft="2" help="{resourceManager.getString('interview','tanf_ever_help')}"/>        
+    </mx:HBox>
+    <mx:VBox paddingLeft="40">        
+        <controls:YesNoRadio id="tanfEver" yesNoChange="writeToModel()"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question1MoveOnEnabled}"
+                 htmlText="{resourceManager.getString('interview','tanf_move_on_no')}"/>
+    </mx:VBox>
+    <mx:VBox paddingLeft="40" enabled="{question2Enabled}">
+        <mx:HBox horizontalGap="0">
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="2." paddingRight="0"/>
+            <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="625"
+                     text="{resourceManager.getString('interview','tanf_last_18')}"/>
+        </mx:HBox>
+        <mx:VBox paddingLeft="40">
+            <controls:YesNoRadio id="tanfLast18" yesNoChange="writeToModel()"/>
+        </mx:VBox>
+        <mx:VBox paddingLeft="40" enabled="{question3Enabled}">
+            <mx:HBox horizontalGap="0">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                                     text="3." paddingRight="0"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                         htmlText="{resourceManager.getString('interview','tanf_enter_info')}"/>
+            </mx:HBox>
+            <controls:BenefitsInput id="benefits3Input" paddingLeft="40" paddingTop="0" change="writeToModel();"/>
+        </mx:VBox>
+        <mx:VBox paddingLeft="40" enabled="{question4Enabled}">
+            <mx:HBox horizontalGap="0">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                                     text="4." paddingRight="0"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="560"
+                         text="{resourceManager.getString('interview','tanf_state_law')}"/>
+            </mx:HBox>
+            <mx:VBox paddingLeft="40" paddingTop="0">
+                <controls:YesNoRadio id="tanfStateLaw" yesNoChange="writeToModel()"/>
+                <mx:VBox enabled="{question5Enabled}">
+                    <mx:HBox horizontalGap="0">
+                        <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="5." paddingRight="0"/>
+                        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="530"
+                                 htmlText="{resourceManager.getString('interview','tanf_enter_info')}"/>
+                    </mx:HBox>
+                    <controls:BenefitsInput id="benefits5Input" paddingLeft="40" paddingTop="0" change="writeToModel();"/>
+                </mx:VBox>
+            </mx:VBox>
+            <mx:VBox paddingLeft="40" enabled="{question6Enabled}">
+                <mx:HBox horizontalGap="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="6." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="520"
+                             text="{resourceManager.getString('interview','tanf_9_of_18')}"/>
+                </mx:HBox>
+                <mx:VBox paddingLeft="40" paddingTop="0">
+                    <controls:YesNoRadio id="tanf9of18" yesNoChange="writeToModel()"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question6MoveOnEnabled}"
+                             htmlText="{resourceManager.getString('interview','tanf_move_on_no')}"/>
+                </mx:VBox>
+                <mx:VBox paddingLeft="40" enabled="{question7Enabled}">
+                    <mx:HBox horizontalGap="0">
+                        <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="7." paddingRight="0"/>
+                        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="480"
+                                 htmlText="{resourceManager.getString('interview','tanf_enter_info')}"/>
+                    </mx:HBox>
+                    <controls:BenefitsInput id="benefits7Input" paddingLeft="40" paddingTop="0" change="writeToModel();"/>
+               </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+
+
+
+
+
+
+</controls:InterviewPage>

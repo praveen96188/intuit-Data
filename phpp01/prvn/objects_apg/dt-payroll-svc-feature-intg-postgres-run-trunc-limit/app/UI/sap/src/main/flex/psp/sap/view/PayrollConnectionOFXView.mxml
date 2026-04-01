@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*" 
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        height="100%"          
+        keyDown="keyCapture(event)">
+        
+	<mx:Script>
+        <![CDATA[
+        	import psp.sap.application.enums.OperationsEnum;
+        	//import org.alivepdf.viewing.
+        	import mx.printing.FlexPrintJobScaleType;
+        	import mx.printing.FlexPrintJob;
+        	import mx.controls.Text;
+        	import mx.controls.TextArea;
+        	import mx.controls.textClasses.TextRange;
+        	import mx.collections.ArrayCollection;
+        	import mx.events.ValidationResultEvent;
+        	import psp.sap.model.DateRangeEnum;
+        	import mx.controls.Alert;
+        	import mx.events.DataGridEvent;
+        	import psp.sap.model.Transmission;
+        	import psp.sap.application.SAP;
+        	import psp.sap.viewmodel.PayrollConnectionOFXViewModel;
+        	import psp.app.util.CommonUtil;
+	
+	        private var mViewModel:PayrollConnectionOFXViewModel;
+	
+	        [Bindable]
+	        public function get viewModel():PayrollConnectionOFXViewModel {
+	            return mViewModel;
+	        }
+	
+	        public function set viewModel(value:PayrollConnectionOFXViewModel):void {
+				mViewModel = value;
+	        }
+	        
+	        public function formatDate(value:Date):String{
+            	return viewModel.dateFormatter.format(value);
+            }    	 
+	    
+	    
+	    	/* functions for search */
+	    	private var foundIndexArray:ArrayCollection = new ArrayCollection();
+	    	private var textRangeArray:ArrayCollection = new ArrayCollection();
+	    	private var findWord:String;
+	    	private var findTarget:OFXTextArea;
+	    	private var currentBookmark:Number = -1;
+	    	
+	    	
+	    	public function keyCapture(event:KeyboardEvent):void {
+	    		//F3
+	    		if(event.keyCode == Keyboard.DOWN){
+	    			executeFindNext(finderText.text, transmissionTextBox);
+	    		}
+	    		//F2
+	    		if(event.keyCode == Keyboard.UP){
+	    			executeFindPrev(finderText.text, transmissionTextBox);
+	    		}
+	    	}
+	    	
+	    	public function executeFindNext(value:String, target:OFXTextArea):void {
+	    		if(value != findWord) currentBookmark = -1;
+	    		currentBookmark++;
+                if (currentBookmark >= foundIndexArray.length && foundIndexArray.length > 0) {
+                    currentBookmark = 0;
+                }
+                executeFind(value, target);
+	    	}
+	    	
+	    	public function executeFindPrev(value:String, target:OFXTextArea):void {
+	    		if(value != findWord) currentBookmark = 0;
+	    		currentBookmark--;
+	    		if(currentBookmark == -1) {
+	    			if(foundIndexArray.length == 0) {
+	    				executeFind(value, target);
+	    				currentBookmark = foundIndexArray.length;
+	    				if(currentBookmark != 0) executeFind(value, target);
+	    			} else {
+	    				currentBookmark = foundIndexArray.length - 1;
+	    				executeFind(value, target);
+	    			}
+	    		} else {
+	    			executeFind(value, target);
+	    		}
+	    	}
+	    	
+	    	private function executeFind(value:String, target:OFXTextArea):void {
+	    		if(value == null || value.length == 0) { 
+	    			resetSearch();
+	    			return;
+	    		}
+	    		
+	    		findTarget = target;
+	    		
+	    		if(value != findWord) {
+	    			findWord = value;
+	    			resetRanges();
+	    			calculateFinds();
+	    			calculateTextRanges();
+	    		} else {
+	    			findWord = value;
+	    		}
+	    		
+	    			    		
+	    		
+	    		selectCurrentBookmark();
+	    		
+	    		if(foundIndexArray.length == 0) {
+	    			finderText.errorString = "No results found.";
+	    			searchResultsBox.setStyle("backgroundColor", UIUtils.COLOR_RED);
+	    			searchResultsLabel.validateDisplayList()
+	    			searchResultsLabel.text = "No results found.";
+	    		} else {
+	    			finderText.errorString = "";
+	    			
+	    			if(foundIndexArray.length == 1) {
+	    				searchResultsLabel.text = "1 match found."; 
+	    			} else if(currentBookmark < foundIndexArray.length - 1)
+	    			{
+	    				searchResultsLabel.text = foundIndexArray.length.toString() +  " matches found. Press Down for next and Up for previous match (Item " + (currentBookmark + 1).toString() + " selected)";
+	    			} else {
+	    				searchResultsLabel.text = foundIndexArray.length.toString() +  " matches found. Press Down to return to the top. (Item " + (currentBookmark + 1).toString() + " selected)";
+	    			}
+	    			searchResultsBox.setStyle("backgroundColor", UIUtils.COLOR_GREEN);
+	    		}
+	    	}
+	    	
+	    	private function selectCurrentBookmark():Boolean {
+	    		if(foundIndexArray != null && foundIndexArray.length > currentBookmark)
+	    		{
+	    			var startRange:int = foundIndexArray[currentBookmark] as Number;
+	    			var endRange:int = foundIndexArray[currentBookmark] as Number;
+	    			endRange+= (findWord.length);
+	    			var tr:TextRange = new TextRange(findTarget, false, startRange, endRange);
+	    			tr.fontWeight = "bold";
+	    			tr.color = UIUtils.COLOR_RED;
+                    tr.textDecoration = "none";
+                    findTarget.setFocus();
+                    findTarget.setSelection(startRange, endRange);
+                    findTarget.scrollToSelection(startRange);
+                    //finderText.setFocus();
+	    			return true;
+	    		} else {
+	    			return false;
+	    		}
+	    	}
+	    	
+	    	
+	    	private function calculateFinds():void {
+	    		var findText:String = findTarget.text;
+	    		var foundWord:Boolean = true;
+	    		foundIndexArray = new ArrayCollection();
+	    		var caretPos:Number = -1; 
+	    		var findWordLower:String=findWord.toLowerCase();
+                var findTextLower:String=findText.toLowerCase();
+	    		while(foundWord)
+	    		{
+	    			caretPos = findTextLower.indexOf(findWordLower, caretPos + 1);
+	    			if(caretPos == -1)
+	    				foundWord = false;
+	    			else
+	    				foundIndexArray.addItem(caretPos);
+	    		}
+	    		
+	    	}
+	    	
+	    	private function resetRanges():void {
+	    		var tr:TextRange = new TextRange(findTarget, false, 0, findTarget.text.length);
+    			tr.fontWeight = "normal";
+    			tr.color = UIUtils.COLOR_BLACK;
+                tr.textDecoration = "none";
+	    	}
+	    	
+	    	private function calculateTextRanges():void {
+                // setting selections on another object so flash doesn't keep redrawing
+                var textField:TextField = new TextField();
+                textField.text = findTarget.text;
+                var oldTextFormat:TextFormat = findTarget.determineTextFormatFromStyles();
+                textField.setTextFormat(oldTextFormat);
+                var redBoldFormat:TextFormat = new TextFormat();
+                redBoldFormat.color = UIUtils.COLOR_RED;
+                redBoldFormat.bold = true;
+                for each(var foundWordIndex:int in foundIndexArray) {
+                    var startRange:int = foundWordIndex as Number;
+                    var endRange:int = foundWordIndex + findWord.length;
+                    textField.setTextFormat(redBoldFormat, startRange, endRange);
+                }
+                findTarget.htmlText = textField.htmlText;
+            }
+            
+            private function resetSearch():void {
+	    		finderText.errorString = "";
+	    		searchResultsBox.setStyle("backgroundColor", UIUtils.COLOR_GREEN);
+	    		searchResultsLabel.text = "Hit 'Enter' to search";
+	    	}
+	    	
+	    	private function resetSearchToNoMore():void {
+	    		finderText.errorString = "";
+	    		searchResultsBox.setStyle("backgroundColor", UIUtils.COLOR_RED);
+	    		searchResultsLabel.text = "No more results.";
+	    	}
+	    	
+	    	/* end functions for search */
+	    		    	
+	    	
+	    	
+	    	public function printOFX():void {
+                var printJob : FlexPrintJob = new FlexPrintJob();
+                if(printJob.start()){
+					var textObj:Text = new Text();
+					textObj.text = viewModel.transmissionText;
+					textObj.width = 800;
+                    this.addChild(textObj);
+					printJob.addObject(textObj);
+                    this.removeChild(textObj);
+                }
+                printJob.send();
+            }
+	    	
+	    	private function copyToClipboard():void {
+	    		System.setClipboard(transmissionTextBox.text);
+	    		Alert.show("The contents have been copied to the Clipboard.");
+	    	}
+	    	
+	    	
+	    	private function onCreationComplete():void {
+	    		finderText.addEventListener(KeyboardEvent.KEY_DOWN, kickFind, false, 0, true);
+			}
+			
+			private function kickFind(event:KeyboardEvent):void {
+				if(event.keyCode == 13)
+					executeFindNext(finderText.text, transmissionTextBox);
+				//	finderText.focusManager.defaultButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+
+            private function viewFullOFX(event:ActionLinkEvent):void {
+                var urlRequest:URLRequest = new URLRequest("ViewFullOFX");
+                urlRequest.method = "GET";
+                var uv:URLVariables = new URLVariables();
+                uv.transmissionId = Transmission(event.data).transmissionIdentifier;
+                uv.token = blankIfNull(SAP.instance.session.user.authorizationToken);
+                urlRequest.data = uv;
+
+                if(CommonUtil.isDTApp()) {
+                	CommonUtil.downloadFromSAPURL(urlRequest.url, "ViewFullOFX");
+                } else {
+                	navigateToURL(urlRequest, "_self");
+                }
+            }
+
+            public function blankIfNull(c:*):* {
+                return (c == null) ? "" : c;
+            }
+
+		]]>        
+    </mx:Script>
+    
+    <controls:DataLoadFade target="{ofxBox}" isLoading="{viewModel.isDataLoading}" />
+
+
+	<mx:VBox width="100%" height="100%" id="ofxBox" >
+		<mx:VBox width="800" id="connectionInfoBox" styleName="ddGrayMiniBoxStyle" dropShadowEnabled="false">
+			<mx:HBox>
+				<mx:Label textAlign="right" width="200" text="Connection Date / Time:" fontWeight="bold"/>
+				<mx:Label id="initializeDateLabel" text="{formatDate(viewModel.transmission.initializeDateTime)}" />
+			</mx:HBox>					
+		</mx:VBox>
+
+	
+		
+		
+		<mx:VBox id="connectionContentBox" width="100%" height="100%" styleName="ddGrayMiniBoxStyle" dropShadowEnabled="false">
+			<mx:VBox id="finderBox" width="100%"  verticalGap="0">
+				<mx:HBox width="100%" backgroundColor="#bbbbbb" cornerRadius="5" paddingBottom="5" paddingTop="5">
+					<mx:Label text="Find: " fontWeight="bold"/>
+					<mx:TextInput id="finderText" width="150" keyDown="kickFind(event)"/>
+					<!-- <mx:Button id="finderTextDefaultButton" label="Search" click="executeFind(finderText.text, transmissionTextBox)"/> -->
+					<mx:Button icon="{SAP.instance.icons.downGreenArrow}" label="Next" id="finderTextDefaultButton" click="executeFindNext(finderText.text, transmissionTextBox)"/>
+					<mx:Button icon="{SAP.instance.icons.upGreenArrow}" label="Previous" click="executeFindPrev(finderText.text, transmissionTextBox)"/>
+                    <mx:Spacer width="100%"/>
+                    <mx:VBox verticalGap="0" fontSize="9"  textAlign="center">
+                        <pspui:ActionLink label="Export OFX" actionClick="viewFullOFX" data="{viewModel.transmission}"/>
+                        <mx:Label text="(1 MB displayed)" visible="{viewModel.transmission.largerLog}" includeInLayout="{viewModel.transmission.largerLog}"/>
+                    </mx:VBox>
+				</mx:HBox>
+				<mx:VBox id="searchResultsBox" backgroundColor="{UIUtils.COLOR_GREEN}" width="100%">
+					<mx:Label id="searchResultsLabel" text="Hit 'Enter' to search" color="white" fontWeight="bold"/>
+				</mx:VBox>
+			</mx:VBox>
+			<mx:VBox height="100%" width="100%">
+			<!--
+				<mx:Text width="100%" id="transmissionTextBox" text="{viewModel.transmissionText}"/> -->
+				<pspui:OFXTextArea width="100%" height="100%" minHeight="300" id="transmissionTextBox" text="{viewModel.transmissionText}" editable="false"/>
+			</mx:VBox>
+		</mx:VBox>
+	
+		<mx:HBox>
+			<mx:Button id="printDocumentButton" label="Print Document" click="printOFX()" visible="{SAP.canPerformOperation(OperationsEnum.SAVE_PRINT_OFX)}"/>
+			<mx:Button id="copyButton" label="Copy to Clipboard" click="copyToClipboard()" visible="{SAP.canPerformOperation(OperationsEnum.SAVE_PRINT_OFX)}"/>
+		</mx:HBox>
+	
+	</mx:VBox>			
+    	
+</mx:VBox>

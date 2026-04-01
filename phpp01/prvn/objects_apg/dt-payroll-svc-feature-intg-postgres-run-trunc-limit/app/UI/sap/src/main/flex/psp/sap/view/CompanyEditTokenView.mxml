@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         width="100%" height="100%"
+         creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.viewmodel.CompanyEditTokenViewModel;
+
+        private const COLUMN_1_WIDTH:int = 200;
+        private const COLUMN_2_WIDTH:int = 100;
+        private const COLUMN_3_WIDTH:int = 100;
+        private const COLUMN_4_WIDTH:int = 100;
+
+        private var mViewModel:CompanyEditTokenViewModel;
+        private var mTempViewModel:CompanyEditTokenViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyEditTokenViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditTokenViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to edit this company's tokens?";
+
+            Alert.show(msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK) {
+                viewModel.save();
+            }
+        }
+        ]]>
+	</mx:Script>
+	
+	<mx:HBox>
+		<mx:Label text="High Token:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <controls:SAPTextInput dataField="syncTokens.highToken" textAlign="right" maxChars="13"/>
+	</mx:HBox>						
+		
+	<mx:HBox>
+        <mx:Label text="Payroll Txn Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <controls:SAPTextInput dataField="syncTokens.payrollTxNextId" textAlign="right" maxChars="13"/>
+	</mx:HBox>						
+	
+	<mx:HBox>
+        <mx:Label text="Paycheck Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <controls:SAPTextInput dataField="syncTokens.paycheckNextId" textAlign="right" maxChars="13"/>
+	</mx:HBox>
+
+    <mx:HBox visible="{viewModel.showAssistedTokens}" includeInLayout="{viewModel.showAssistedTokens}">
+        <mx:Label text="Employee Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <controls:SAPTextInput dataField="syncTokens.employeeNextId" textAlign="right" maxChars="13"/>
+    </mx:HBox>
+
+    <mx:HBox visible="{viewModel.showAssistedTokens}" includeInLayout="{viewModel.showAssistedTokens}">
+        <mx:Label text="Payroll Item Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <controls:SAPTextInput dataField="syncTokens.payrollItemNextId" textAlign="right" maxChars="13"/>
+    </mx:HBox>
+	
+	<mx:Spacer height="10"/>
+		
+	<mx:HBox horizontalAlign="right" width="100%">
+			<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+			<mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+	</mx:HBox>
+		
+</mx:VBox>

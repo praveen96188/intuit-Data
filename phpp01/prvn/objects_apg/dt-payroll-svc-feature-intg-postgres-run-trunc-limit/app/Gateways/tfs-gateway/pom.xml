@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Gateways</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>tfs-gateway</artifactId>
+    <name>tfs-gateway</name>
+  
+    <dependencies>
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+        <!-- End of Module dependency -->  
+      
+        <!-- Dependencies Read from Local Repository -->    
+        <dependency>
+            <groupId>localRepo.com.intuit.ems</groupId>
+            <artifactId>tfs-messages</artifactId> 
+            <version>2013-R9</version>
+        </dependency>
+        <!-- End of Dependencies Read from Local Repository -->        
+        
+        <!-- Dependencies Read from Maven Repository --> 
+        <!-- Jersey 1.1.2 -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>            
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>            
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>            
+        </dependency>
+        <!-- End of Dependencies Read from Maven Repository --> 
+    </dependencies>
+  
+    <build>
+        <plugins>
+            <!-- Creating a test-jar with the test classess(src/test/java) in it -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            
+            <!-- For tests only to access truncateTables.sql-->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-remote-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>com.intuit.sbg.psp:domain:${psp.project.version}</resourceBundle>
+                                <resourceBundle>com.intuit.sbg.psp:domain-secondary:${psp.project.version}</resourceBundle>
+                            </resourceBundles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

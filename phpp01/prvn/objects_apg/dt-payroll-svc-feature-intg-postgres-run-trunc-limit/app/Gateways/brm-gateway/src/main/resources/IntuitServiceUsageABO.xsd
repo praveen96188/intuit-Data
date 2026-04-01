@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by XMLSpy 2007 Enterprise Ed., Concurrent for 14 users (with SMP from 2007-04-24 to 2009-04-24) (Intuit) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.com/iep/ServiceUsage/IntuitServiceUsageABO/V1" xmlns:cc="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" targetNamespace="http://www.intuit.com/iep/ServiceUsage/IntuitServiceUsageABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00">
+    <xsd:import namespace="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" schemaLocation="CommonComponents.xsd"/>
+    <xsd:complexType name="AssetAccountInfoType">
+        <xsd:sequence>
+            <xsd:element name="AccountId" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServiceAccountId" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="AssetIntegrationId" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="BillingProfileId" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ServiceType" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="AssetAccountInfo" type="AssetAccountInfoType">
+        <xsd:annotation>
+            <xsd:documentation>Used internally by the service, not intended for service consumer</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:element name="CreateServiceUsage" type="CreateServiceUsageType"/>
+    <xsd:complexType name="CreateServiceUsageType">
+        <xsd:sequence>
+            <xsd:element name="TransactionInfo" type="TransactionInfoType"/>
+            <xsd:element name="ServiceUsage">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="LicenseId" type="cc:EntitlementIdType"/>
+                        <xsd:element name="EntitlementId" type="cc:EntitlementIdType"/>
+                        <xsd:element name="ActivityName" type="xsd:string">
+                            <xsd:annotation>
+                                <xsd:documentation>Fully qualified event type as defined in BRM</xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="QuantityUsed" type="xsd:nonPositiveInteger"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="CreateServiceUsageResponse" type="CreateServiceUsageResponseType"/>
+    <xsd:complexType name="CreateServiceUsageResponseType">
+        <xsd:sequence>
+            <xsd:element name="Result" type="ResponseTypeType">
+                <xsd:annotation>
+                    <xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="QueryUsageBalance" type="QueryUsageBalanceType"/>
+    <xsd:complexType name="QueryUsageBalanceType">
+        <xsd:sequence>
+            <xsd:element name="TransactionInfo" type="TransactionInfoType"/>
+            <xsd:element name="UsageBalance">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="LicenseId" type="cc:LicenseIdType"/>
+                        <xsd:element name="EntitlementId" type="cc:EntitlementIdType"/>
+                        <xsd:element name="ActivityName" type="xsd:string" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>Fully qualified event type as defined in BRM.  If not specified, ALL balances will be returned.</xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="QueryUsageBalanceResponse" type="QueryUsageBalanceResponseType"/>
+    <xsd:complexType name="QueryUsageBalanceResponseType">
+        <xsd:sequence>
+            <xsd:element name="Balance" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="ActivityName" type="xsd:string"/>
+                        <xsd:element name="Balance" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="Result" type="ResponseTypeType">
+                <xsd:annotation>
+                    <xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="TransactionInfoType">
+        <xsd:annotation>
+            <xsd:documentation>Transaction Info</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="TransactionId" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Transaction Id</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="TransactionDatetime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Transaction Datetime</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="SalesOrganization" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Sales Organization requesting the service</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="ErrorType">
+        <xsd:annotation>
+            <xsd:documentation>A data type to represent the error information.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Category">
+                <xsd:annotation>
+                    <xsd:documentation>The category of the error. i.e. Functional, Input, Operational, Transitory</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:annotation>
+                        <xsd:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="Functional"/>
+                        <xsd:enumeration value="Input"/>
+                        <xsd:enumeration value="Operational"/>
+                        <xsd:enumeration value="Transitory"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="Code" type="xsd:string"/>
+            <xsd:element name="Description" type="xsd:string"/>
+            <xsd:element name="Source" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Error" type="ErrorType">
+        <xsd:annotation>
+            <xsd:documentation>Represents error information.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="ResponseTypeType">
+        <xsd:annotation>
+            <xsd:documentation>A data type to represent the response retruned by DigiComms.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="Success" type="xsd:string"/>
+            <xsd:element name="Error" type="ErrorType"/>
+        </xsd:choice>
+    </xsd:complexType>
+</xsd:schema>

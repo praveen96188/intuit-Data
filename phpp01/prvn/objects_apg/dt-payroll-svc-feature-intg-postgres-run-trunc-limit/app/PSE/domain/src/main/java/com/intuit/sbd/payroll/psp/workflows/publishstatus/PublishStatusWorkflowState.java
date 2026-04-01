@@ -1,0 +1,57 @@
+package com.intuit.sbd.payroll.psp.workflows.publishstatus;
+
+import com.intuit.spc.foundations.primary.logging.SpcfLogManager;
+import com.intuit.spc.foundations.primary.logging.SpcfLogger;
+import java.util.HashSet;
+import java.util.Set;
+
+public enum PublishStatusWorkflowState {
+    INITIAL(0),
+    PUBLISHED_INTERNAL(1),
+    DONE(2),
+    ERROR(3),
+    REPUBLISH_DONE(4),
+    PENDING_PUBLISH(5);
+
+    private int bit;
+
+    PublishStatusWorkflowState(int bit) {
+        this.bit = bit;
+    }
+
+    public int getValue() {
+        return this.bit;
+    }
+
+    public static SpcfLogger logger = SpcfLogManager.getLogger(PublishStatusWorkflowState.class);
+
+    static {
+        checkForDuplicateWorkflowStateValue();
+    }
+
+    public static PublishStatusWorkflowState workflowState(int value) {
+        for (PublishStatusWorkflowState workflowState : PublishStatusWorkflowState.values()) {
+            if (workflowState.getValue() == value) {
+                return workflowState;
+            }
+        }
+        throw new IllegalArgumentException("No workflow found for given index");
+    }
+
+    /**
+     * throws Exception if there is any duplicate value for the workflow state
+     *
+     * @return
+     */
+    public static void checkForDuplicateWorkflowStateValue() {
+        final Set<Integer> bits = new HashSet<>();
+
+        for (final PublishStatusWorkflowState value : PublishStatusWorkflowState.values()) {
+            boolean added = bits.add(value.getValue());
+            if (!added) {
+                logger.info("Duplicate WorkflowState found " + value);
+                throw new RuntimeException("Duplicate WorkflowState Enum values are not allowed");
+            }
+        }
+    }
+}

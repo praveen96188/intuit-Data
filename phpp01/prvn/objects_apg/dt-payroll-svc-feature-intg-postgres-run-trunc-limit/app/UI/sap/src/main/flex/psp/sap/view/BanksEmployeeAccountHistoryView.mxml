@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns="*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="psp.sap.view.controls.*"
+	xmlns:pspui="psp.sap.view.*"
+	width="100%" height="100%"
+	creationComplete="onCreationComplete();">
+
+	<mx:Script>
+        <![CDATA[
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.EmployeeBankAccountHistory;
+        import psp.sap.model.EmployeeBankAccountHistoryItem;
+        import psp.sap.viewmodel.BanksEmployeeAccountHistoryViewModel;
+
+        private var mViewModel:BanksEmployeeAccountHistoryViewModel;
+        private var mTempViewModel:BanksEmployeeAccountHistoryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():BanksEmployeeAccountHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:BanksEmployeeAccountHistoryViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            } else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        [Bindable("propertyChange")]
+        private function get currentHistory():EmployeeBankAccountHistory {
+            return EmployeeBankAccountHistory(bankAccounts.currentItem);
+        }
+
+        [Bindable("propertyChange")]
+        private function get currentHistoryItem():EmployeeBankAccountHistoryItem {
+            return EmployeeBankAccountHistoryItem(accountHistoryItems[bankAccounts.currentIndex].currentItem);
+        }
+						
+			
+        ]]>        
+    </mx:Script>
+    
+    <controls:DataLoadFade id="postLoadFadeIn" target="{repeaterBox}" isLoading="{viewModel.isDataLoading}" />
+ 	
+		
+			
+	<mx:VBox id="repeaterBox" width="100%">
+		
+		<mx:Repeater id="bankAccounts" dataProvider="{viewModel.employeeBankAccountHistories}">
+		
+			<mx:VBox width="703" 
+					styleName="grayDataGridVBox" 
+					id="dataGrid" 
+					visible="{!viewModel.isDataLoading}"
+					includeInLayout="{!viewModel.isDataLoading}"
+	        		verticalScrollPolicy="off" 
+	        		horizontalScrollPolicy="off">
+				
+				<mx:VBox textAlign="left" verticalAlign="middle" verticalGap="0">	
+					<mx:Label text="Employee Bank Account Change History" styleName="grayDataGridHeading"/>
+					<mx:Label id="employeeNameLabel" text="{viewModel.employeeName}" color="blue" styleName="grayDataGridSubText"/>
+					<mx:Label text="(all history)" styleName="grayDataGridSubText"/>	
+				</mx:VBox>
+				
+				<mx:Grid horizontalGap="0" verticalGap="0" width="100%">
+			 	   <mx:GridRow>
+					 <mx:GridItem horizontalAlign="center" styleName="headerBorder" minWidth="100">
+					 	<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle">
+					 		<mx:Label text="Change Date"/>
+					 		<mx:Label text="Time"/>
+					 	</mx:VBox>
+		             </mx:GridItem>
+		             <mx:GridItem horizontalAlign="center"  styleName="headerBorderRight" minWidth="200">
+		                <mx:Label text="Changed By"/>
+		             </mx:GridItem>
+		             <mx:GridItem horizontalAlign="center"  styleName="headerBorderRight" minWidth="200">
+		                <mx:Label text="From"/>
+		             </mx:GridItem>
+		             <mx:GridItem horizontalAlign="center"  styleName="headerBorderRight" minWidth="200">
+		                <mx:Label text="To"/>
+		             </mx:GridItem>
+		          </mx:GridRow>
+		          <mx:Repeater id="accountHistoryItems" dataProvider="{currentHistory.employeeBankAccountHistoryItems}">
+                      <mx:GridRow backgroundColor="{UIUtils.getRowColor(accountHistoryItems.currentIndex)}">
+                          <mx:GridItem horizontalAlign="center"  styleName="borderBottomLeftRight">
+                              <mx:Text id="dateText" text="{SAPDateFormatters.dateTimeFormatDateOverTime.format(currentHistoryItem.changeDate)}"/>
+                          </mx:GridItem>
+                          <mx:GridItem horizontalAlign="center"  styleName="borderBottomRight">
+                              <mx:Text id="userText" text="{currentHistoryItem.changedBy}" color="green"/>
+                          </mx:GridItem>
+                          <mx:GridItem horizontalAlign="left"  styleName="borderBottomRight">
+                              <mx:VBox verticalGap="0">
+                                  <mx:Text
+                                          id="oldAccountTypeText"
+                                          text="Type: {currentHistoryItem.oldAccountTypeCd}"
+                                          visible="{currentHistoryItem.oldAccountTypeCd != null}"
+                                          includeInLayout="{currentHistoryItem.oldAccountTypeCd != null}"/>
+                                  <mx:Text
+                                          id="oldAccountNumberText"
+                                          text="Acct #: {UIUtils.maskBankAccountNumbers(currentHistoryItem.oldAccountNumber)}"
+                                          visible="{currentHistoryItem.oldAccountNumber != null}"
+                                          includeInLayout="{currentHistoryItem.oldAccountNumber != null}" />
+                                  <mx:Text
+                                          id="oldRoutingNumberText"
+                                          text="Rtng #: {currentHistoryItem.oldRoutingNumber}"
+                                          visible="{currentHistoryItem.oldRoutingNumber != null}"
+                                          includeInLayout="{currentHistoryItem.oldRoutingNumber != null}" />
+                              </mx:VBox>
+                          </mx:GridItem>
+                          <mx:GridItem horizontalAlign="left"  styleName="borderBottomRight">
+                              <mx:VBox verticalGap="0">
+                                  <mx:Text
+                                          id="accountTypeText"
+                                          text="Type: {currentHistoryItem.accountTypeCd}"
+                                          visible="{currentHistoryItem.accountTypeCd != null}"
+                                          includeInLayout="{currentHistoryItem.accountTypeCd != null}"
+                                          />
+                                  <mx:Text
+                                          id="accountNumberText"
+                                          text="Acct #: {UIUtils.maskBankAccountNumbers(currentHistoryItem.accountNumber)}"
+                                          visible="{currentHistoryItem.accountNumber != null}"
+                                          includeInLayout="{currentHistoryItem.accountNumber != null}"/>
+                                  <mx:Text
+                                          id="routingNumberText"
+                                          text="Rtng #: {currentHistoryItem.routingNumber}"
+                                          visible="{currentHistoryItem.routingNumber != null}"
+                                          includeInLayout="{currentHistoryItem.routingNumber != null}"/>
+                              </mx:VBox>
+                          </mx:GridItem>
+                      </mx:GridRow>
+                  </mx:Repeater>
+                </mx:Grid>
+			</mx:VBox>
+		
+		</mx:Repeater>
+		
+		<mx:VBox verticalGap="0" width="100%" visible="{!viewModel.isDataLoading}">			
+			<mx:VBox id="noEmployeeBankAccounts"
+					visible="{viewModel.employeeBankAccountHistories.length == 0}" 
+					includeInLayout="{viewModel.employeeBankAccountHistories.length == 0}" 
+					width="703" styleName="grayDataGridVBox" 
+					paddingTop="5" paddingBottom="5"  
+					verticalAlign="middle" horizontalAlign="center" 
+					verticalScrollPolicy="off" horizontalScrollPolicy="off">
+				<mx:Text id="noEEBankAccountsText" text="No Bank Accounts are associated with this employee." fontWeight="bold"/>
+            </mx:VBox>
+		</mx:VBox>
+	
+	</mx:VBox>		
+		
+	
+</mx:VBox>

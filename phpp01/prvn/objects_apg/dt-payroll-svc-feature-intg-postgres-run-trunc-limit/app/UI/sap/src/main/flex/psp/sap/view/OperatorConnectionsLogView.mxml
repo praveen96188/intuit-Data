@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script><![CDATA[
+        import mx.binding.utils.BindingUtils;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperatorPageEnum;
+        import psp.sap.model.Transmission;
+        import psp.sap.viewmodel.OperatorConnectionsLogViewModel;
+        import psp.sap.viewmodel.PayrollConnectionOFXViewModel;
+
+        private var mViewModel:OperatorConnectionsLogViewModel;
+        private var mTempViewModel:OperatorConnectionsLogViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():OperatorConnectionsLogViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:OperatorConnectionsLogViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                addEventListeners();
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function addEventListeners():void {
+            if (viewModel != null) {
+                //@see PayrollConnectionsLog for why this is needed
+                BindingUtils.bindProperty(sourceSystemCombo, "dataProvider", viewModel, "sourceSystems");
+                BindingUtils.bindProperty(sourceSystemCombo, "selectedItem", viewModel, "sourceSystem");
+                BindingUtils.bindProperty(viewModel, "sourceSystem", sourceSystemCombo, "selectedItem");
+            }
+        }
+
+        public function onTransmissionClick(e:ActionLinkEvent):void {
+            (viewModel.topic.findPart(OperatorPageEnum.CONNECTION_DETAILS_PAGE) as PayrollConnectionOFXViewModel).payrollTransmissionId = Transmission(e.data).transmissionIdentifier;
+            viewModel.changePage(OperatorPageEnum.CONNECTION_DETAILS_PAGE);
+        }
+
+        public function timeFunction(item:Object, dgc:SAPDataGridColumn):String {
+            if (item.connectionTime == SAP.instance.configuration.specialNumberForDefault) {
+                return "N/A";
+            }
+            return item.connectionTime.toString();
+        }
+
+        public function goToTarget(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var transmission:Transmission = link.data as Transmission;
+            viewModel.goToCompanyInfo(link.data as Transmission);
+        }
+
+        private function refreshGrid():void {
+            viewModel.refresh();
+        }
+
+        private function doSearch():void {
+            viewModel.searchTransmissions();
+        }
+
+        private function nextPreviousClicked():void {
+            viewModel.useEndDateFromData = true;
+        }
+
+        ]]></mx:Script>
+
+    <controls:DataLoadFade target="{searchResults}" isLoading="{viewModel.isDataLoading}"/>
+
+    <mx:VBox styleName="ddGrayMiniBoxStyle">
+        <mx:HBox styleName="padderBox">
+            <mx:HBox verticalAlign="middle">
+                <pspui:DateTimeSelectionView
+                        id="dateSelection"
+                        viewModel="{viewModel.dateSelectionViewModel}"
+                        direction="horizontal"/>
+                <mx:Label text="Source System:" fontWeight="bold"/>
+                <mx:ComboBox
+                        id="sourceSystemCombo"
+                        rowCount="{viewModel.sourceSystems.length}"/>
+                <mx:Button
+                        id="searchButton"
+                        label="Search"
+                        enabled="{viewModel.canSave}"
+                        click="doSearch()"/>
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:VBox width="100%" id="searchResults" visible="{!viewModel.isDataLoading}"
+
+             includeInLayout="{!viewModel.isDataLoading}">
+        <pspui:TransmissionPagingDataGrid id="searchResultsData"
+                                          width="100%"
+                                          paddingRight="10"
+                                          horizontalAlign="right"
+                                          verticalGap="0"
+                                          dataProvider="{viewModel.transmissionSearchResults}"
+                                          loadDataFunction="{refreshGrid}"
+                                          nextClicked="{nextPreviousClicked()}"
+                                          maxRows="{viewModel.transmissionSearchResults.pageSize}"
+                                          previousClicked="{nextPreviousClicked()}"
+                                          displayTotal="false"
+                                          sortableColumns="false">
+            <pspui:columns>
+
+                <controls:SAPDataGridColumn
+                        minWidth="120"
+                        width="120"
+                        dataField="initializeDateTime"
+                        exportTitle="Connection Time"
+                        headerText="Connection{String('\n')}Time"
+                        draggable="false"
+                        resizable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Script>
+                                    <![CDATA[
+                                    import psp.sap.formatters.SAPDateFormatters;
+                                    import psp.sap.model.Transmission;
+
+
+                                    ]]>
+                                </mx:Script>
+                                <pspui:ActionLink
+                                        label="{SAPDateFormatters.timeHourMinSecFormat.format(Transmission(data).initializeDateTime)}"
+                                        toolTip="{SAPDateFormatters.dateTimeFormatMedium.format(Transmission(data).initializeDateTime)}"
+                                        actionClick="{outerDocument.onTransmissionClick}"
+                                        data="{data}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn headerText="Description"
+                                            minWidth="150"
+                                            width="150"
+                                            dataField="description">
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        minWidth="160"
+                        dataField="companyName" headerText="Company Name" headerWordWrap="true">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Script>
+                                    <![CDATA[
+                                    import psp.sap.model.Transmission;
+                                    ]]>
+                                </mx:Script>
+                                <pspui:ActionLink
+                                        label="{Transmission(data).companyName}"
+                                        visible="{(Transmission(data).sourceSystemCd != '')}"
+                                        includeInLayout="{(Transmission(data).sourceSystemCd != '')}"
+                                        actionClick="{outerDocument.goToTarget}"
+                                        data="{data}"/>
+                                <mx:Text visible="{(Transmission(data).sourceSystemCd == '')}"
+                                         includeInLayout =  "{(Transmission(data).sourceSystemCd == '')}"
+                                         text="{Transmission(data).companyName}"/>
+
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        headerText="PSID"
+                        minWidth="30"
+                        width="60"
+                        dataField="companyId"/>
+
+                <controls:SAPDataGridColumn
+                        minWidth="50"
+                        width="60"
+                        dataField="requestToken">
+                    <controls:headerRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    verticalGap="0"
+                                    horizontalAlign="left"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Label text="Token" styleName="padderLeftRight"/>
+                                <mx:Label text="In" styleName="padderLeftRight"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:headerRenderer>
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        minWidth="50"
+                        width="50"
+                        dataField="responseToken">
+                    <controls:headerRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    verticalGap="0"
+                                    horizontalAlign="left"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Label text="Token" styleName="padderLeftRight"/>
+                                <mx:Label text="Out" styleName="padderLeftRight"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:headerRenderer>
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        minWidth="85"
+                        labelFunction="timeFunction"
+                        dataField="connectionTime">
+                    <controls:headerRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    verticalGap="0"
+                                    horizontalAlign="left"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Label text="Seconds" styleName="padderLeftRight"/>
+                                <mx:Label text="Connected" styleName="padderLeftRight"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:headerRenderer>
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        headerText="IP Address"
+                        minWidth="130"
+                        width="130"
+                        resizable="false"
+                        dataField="ipAddress"/>
+            </pspui:columns>
+        </pspui:TransmissionPagingDataGrid>
+
+    </mx:VBox>
+</mx:VBox>

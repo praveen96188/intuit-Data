@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         height="100%"
+         width="100%"
+         verticalGap="0"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.application.enums.OperatorPageEnum;
+        import psp.sap.viewmodel.CheckPrintingViewModel;
+
+        private var mViewModel:CheckPrintingViewModel;
+        private var mTempViewModel:CheckPrintingViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CheckPrintingViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CheckPrintingViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+		]]>
+	</mx:Script>
+    <controls:PartsTabNavigator label="{OperatorPageEnum.CHECK_PRINTING_VIEW + '_ptn'}">
+        <pspui:CheckPrintingQueueView label="{OperatorPageEnum.CHECK_PRINTING_QUEUE}"/>
+        <pspui:CheckPrintingAgencyChecksView label="{OperatorPageEnum.CHECK_PRINTING_AGENCY_CHECKS}"/>
+    </controls:PartsTabNavigator>
+
+</mx:VBox>

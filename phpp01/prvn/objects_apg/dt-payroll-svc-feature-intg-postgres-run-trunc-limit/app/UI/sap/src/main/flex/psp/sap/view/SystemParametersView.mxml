@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+        height="100%" width="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.messaging.events.MessageAckEvent;
+
+        import psp.sap.viewmodel.SystemParametersViewModel;
+
+        private var mViewModel:SystemParametersViewModel;
+        private var mTempViewModel:SystemParametersViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():SystemParametersViewModel{
+            return mViewModel;
+        }
+
+        public function set viewModel(value:SystemParametersViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function confirmSave():void {
+            var msgString:String = "Are you sure you want to submit these updated values?";
+            Alert.show(msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function (event:CloseEvent):void {
+                        if (event.detail == Alert.OK)
+                        {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+    ]]></mx:Script>
+
+    <mx:DataGrid id="systemParametersDG"
+                 dataProvider="{viewModel.systemParameters}"
+                 editable="true"
+                 width="95%" height="95%">
+        <mx:columns>
+            <mx:DataGridColumn dataField="code" editable="false"/>
+            <mx:DataGridColumn dataField="value" editable="true" />
+            <mx:DataGridColumn dataField="description" editable="false" />
+            <mx:DataGridColumn dataField="org" editable="false" />
+        </mx:columns>
+
+    </mx:DataGrid>
+
+    <mx:HBox width="95%" horizontalAlign="right">
+        <mx:Button label="Save" enabled="{viewModel.canSave}" click="confirmSave()"/>
+        <mx:Button label="Reset" enabled="{viewModel.canSave}" click="viewModel.refresh()"/>
+    </mx:HBox>
+
+</mx:VBox>

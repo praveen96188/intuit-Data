@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        verticalGap="0">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import mx.collections.ArrayCollection;
+        import psp.sap.model.UserRole;
+
+        [Bindable] public var role:UserRole;
+        [Bindable] public var operations:ArrayCollection;
+
+        // handle two way binding for toggle
+        public function toggleBinding(event:Event):void {
+            var button:Button = event.currentTarget as Button;
+            role.selected = button.selected;
+        }
+
+        public function getImage(operationId:String):Class {
+            return role.containsOperation(operationId) ? SAP.instance.icons.greenCircleWithCheckMark : null;
+        }
+		]]>
+	</mx:Script>
+    <mx:Button
+            id="roleNameButton"
+            textAlign="left"
+            label="{role.name}"
+            selected="{role.selected}"
+            click="toggleBinding(event)"
+            toggle="true"
+            width="400"
+            upIcon="{SAP.instance.icons.expand}"
+            downIcon="{SAP.instance.icons.expand}"
+            overIcon="{SAP.instance.icons.expand}"
+            selectedUpIcon="{SAP.instance.icons.collapse}"
+            selectedDownIcon="{SAP.instance.icons.collapse}"
+            selectedOverIcon="{SAP.instance.icons.collapse}"
+            skin="psp.sap.view.AdministrationButtonSkin"/>
+    <mx:VBox
+            visible="{role.selected}"
+            includeInLayout="{role.selected}"
+            width="100%"
+            paddingLeft="10"
+            borderSides="left, right"
+            borderColor="#CCCCCC"
+            borderThickness="1"
+            borderStyle="solid">
+        <mx:Label id="roleOperationsLabel" text="Role Operations:" fontWeight="bold" />
+        <mx:DataGrid
+                id="operationsData"
+                width="100%"
+                dataProvider="{operations}"
+                selectable="false"
+                variableRowHeight="true"
+                draggableColumns="false"
+                showHeaders="false"
+                borderColor="black">
+            <mx:columns>
+                <mx:DataGridColumn
+                        dataField="name"
+                        minWidth="100"
+                        textAlign="left"/>
+                <mx:DataGridColumn
+                        dataField="name"
+                        width="10"
+                        paddingLeft="5"
+                        textAlign="center">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox styleName="padderBox">
+                                <mx:Image
+                                        id="operationImage"
+                                        source="{outerDocument.getImage(data.operationId)}"
+                                        height="16"
+                                        width="16"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:Spacer height="10"/>
+    </mx:VBox>
+</mx:VBox>

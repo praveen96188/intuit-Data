@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+	targetNamespace="http://erfinancialtxret.xsd.wsapi.dd.pse.osp.intuit"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:erftr="http://erfinancialtxret.xsd.wsapi.dd.pse.osp.intuit"
+	xmlns:ba="http://bankaccount.xsd.wsapi.dd.pse.osp.intuit" xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit">
+
+	<import namespace="http://bankaccount.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="BankAccount.xsd"></import>
+	<import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"></import>
+
+	<complexType name="ERFinancialTxRet">
+		<sequence>
+			<element name="SourceSystemCd" type="dd:SourceSystemType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="CompanyID" type="dd:IDType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="PSETransactionID" type="dd:IDType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="DDTxBatchID" type="dd:IDType" nillable="false" minOccurs="0" maxOccurs="1"></element>
+			<element name="CompanyBankAccountID" type="dd:IDType" minOccurs="0" maxOccurs="1"></element>
+			<element name="BankAccount" type="ba:BankAccount" minOccurs="0" maxOccurs="1"></element>
+			<element name="TxTypeCd" type="dd:ERTxType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="TxTypeDesc" type="string" minOccurs="0" maxOccurs="1"></element>
+			<element name="TxSettlementTypeCd" type="dd:TxSettlementType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="TxDate" type="date" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="TxStatusCd" type="dd:TxStatusType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="TxStatusDesc" type="string" minOccurs="0" maxOccurs="1"></element>
+			<element name="FinancialTxAmt" type="dd:AmountType" minOccurs="1" maxOccurs="1"></element>
+			<element name="AllowedOperation" type="erftr:OperationType" minOccurs="0" maxOccurs="unbounded"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="OperationType">
+		<sequence>
+			<element name="OperationCd" type="erftr:OperationCdType" nillable="false" minOccurs="1" maxOccurs="1"></element>
+			<element name="OperationDesc" type="string" minOccurs="0" maxOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<simpleType name="OperationCdType">
+		<restriction base="string">
+			<enumeration value="FinancialTransactionVoidTx"></enumeration>		
+			<enumeration value="FinancialTransactionCancel"></enumeration>
+			<enumeration value="IssueReissueRefundEr"></enumeration>
+       		<enumeration value="ReissueFee"></enumeration>
+			<enumeration value="TxStateHistory"></enumeration>            		
+		</restriction>
+	</simpleType>
+	
+</schema>

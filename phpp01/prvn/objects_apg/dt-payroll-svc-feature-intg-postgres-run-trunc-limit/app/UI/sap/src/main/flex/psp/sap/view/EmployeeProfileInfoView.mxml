@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         creationComplete="onCreationComplete();"
+         width="100%"
+         height="100%"
+         horizontalGap="50"
+        >
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.formatters.SAPDateFormatters;
+
+        import psp.sap.viewmodel.EmployeeProfileInfoViewModel;
+        import mx.managers.PopUpManager;
+
+        private static const labelWidth:int = 125;
+        private var mViewModel:EmployeeProfileInfoViewModel;
+        private var mTempViewModel:EmployeeProfileInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EmployeeProfileInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeProfileInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+                mViewModel = value;
+            }
+        }
+        /*
+        PSP-18296 START
+         */
+        protected static var mSeasonalPopup:EditSeasonalView;
+
+        protected static function getSeasonalView():EditSeasonalView {
+            mSeasonalPopup = new EditSeasonalView();
+            return mSeasonalPopup;
+        }
+        private function editPopupSeasonal():void {
+            PopUpManager.addPopUp(getSeasonalView(), this, true);
+            PopUpManager.centerPopUp(mSeasonalPopup);
+            mSeasonalPopup.viewModel.employeeInfo = viewModel.employeeInfo;
+            mSeasonalPopup.viewModel.sourceCompanyId = viewModel.company.companyId;
+        }
+
+        /*
+        PSP-18296 END
+         */
+        public function onCreationComplete():void {
+            viewModel = mTempViewModel;
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:VBox height="100%" paddingTop="10" verticalGap="0">
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Address :" />
+            <mx:Text text="{viewModel.employeeInfo.mailingAddress.addressLine1}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="" />
+            <mx:Text id="businessNameText" text="{viewModel.employeeInfo.mailingAddress.addressLine2}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="City:" />
+            <mx:Text text="{viewModel.employeeInfo.mailingAddress.city}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="State:" />
+            <mx:Text text="{viewModel.employeeInfo.mailingAddress.state}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Zip:" />
+            <mx:Text text="{viewModel.employeeInfo.mailingAddress.zipCode}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="SSN:" />
+            <mx:Text text="{viewModel.employeeInfo.socialSecurityNumber}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Live State:" />
+            <mx:Text text="{viewModel.employeeInfo.stateLive}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Work State" />
+            <mx:Text text="{viewModel.employeeInfo.stateWork}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Source ID:" />
+            <mx:Text text="{viewModel.employeeInfo.employeeId}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Status:" />
+            <mx:Text text="{viewModel.employeeInfo.status}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Is Seasonal:" />
+            <mx:Text text="{viewModel.employeeInfo.isSeasonal}" />
+            <mx:LinkButton label="Edit Seasonal" click="editPopupSeasonal();" styleName="standardLinkButtonStyle"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:VBox height="100%" paddingTop="10" verticalGap="0">
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Hire Date:" />
+            <mx:Text  text="{SAPDateFormatters.dateFormatShort.format(viewModel.employeeInfo.hireDate)}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Termination Date:" />
+            <mx:Text  text="{SAPDateFormatters.dateFormatShort..format(viewModel.employeeInfo.termDate)}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Rehire Date:" />
+            <mx:Text  text="{SAPDateFormatters.dateFormatShort..format(viewModel.employeeInfo.rehireDate)}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="First Pay Date:" />
+            <mx:Text  text="{SAPDateFormatters.dateFormatShort..format(viewModel.employeeInfo.firstPayDate)}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Last Pay Date:" />
+            <mx:Text  text="{SAPDateFormatters.dateFormatShort..format(viewModel.employeeInfo.lastPayDate)}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Birth Date:" />
+            <mx:Text  text="{SAPDateFormatters.dateFormatShort..format(viewModel.employeeInfo.birthDate)}" />
+        </mx:HBox>
+        <mx:HBox>
+            <mx:LinkButton
+                    paddingTop="10"
+                    label="View DD Bank Account Information"
+                    styleName="standardLinkButtonStyle"
+                    click="{viewModel.goToEmployeeBankScreen()}"/>
+        </mx:HBox>
+    </mx:VBox>
+</mx:HBox>
+

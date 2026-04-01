@@ -1,0 +1,1 @@
+ BEGIN         update psp_failed_payroll_run  set status_token = 'Pending'  where status_token = 'Error';  dbms_output.put_line('Number of Rows Updated from Error to Pending : ' ||  SQL%ROWCOUNT);  commit;  END; 

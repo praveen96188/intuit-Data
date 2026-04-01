@@ -1,0 +1,104 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns="http://www.w3.org/1999/xhtml"
+          version="2.0">
+
+    <jsp:directive.page isELIgnored="false"/>
+
+    <html>
+    <head>
+        <title>Bank Account Search Report</title>
+        <style type="text/css">
+            BODY {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            TABLE {
+                margin-bottom:30px;
+            }
+
+            TD {
+                text-align: left;
+                padding-right: 20px;
+                vertical-align: text-top;
+            }
+
+            .tableHeader TD {
+                padding-right: 20px;
+                text-align: left;
+                vertical-align: text-top;
+                border-bottom: 1px solid #00529B;
+                border-spacing:0px;
+            }
+
+            .indentTable {
+                width: 100%;
+                padding-left: 10px;
+            }
+
+            .indentTable TD {
+                color: #00529B;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            .even TD {
+                background-color: #BDE5F8;
+            }
+
+            @media print {
+               .companyInfo TD {
+                    color: black;
+                }
+
+                .tableHeader TD {
+                    border-bottom: 1px solid black;
+                }
+
+                .indentTable TD {
+                    color: black;
+                }
+
+                .even TD {
+                    border-bottom: 1px solid gray;
+                }
+                .odd TD {
+                    border-bottom: 1px solid gray;
+                }
+
+            }
+        </style>
+    </head>
+    <body>
+    <h2>Bank Account Search Report</h2><br/>
+    <b>Routing Number:</b>${routingNumber}<br/>
+    <b>Account Number:</b>${accountNumber}<br/>
+    <c:choose>
+        <c:when test="${bankAccounts.totalRecords > 0}">
+            <div class="indentTable">
+                <table cellspacing="0" width="100%">
+                    <tr class="tableHeader">
+                        <td nowrap="nowrap">Company Legal Name</td>
+                        <td nowrap="nowrap">Account Owner Name</td>
+                        <td nowrap="nowrap">Account Type</td>
+                        <td nowrap="nowrap">Account Status</td>
+                    </tr>
+                    <c:forEach items="${bankAccounts.returnsList}" var="list" varStatus="listStatus">
+                        <tr class="${listStatus.index % 2 == 0 ? 'even' : 'odd'}">
+                            <td nowrap="nowrap">${list.companyLegalName}</td>
+                            <td nowrap="nowrap">${list.accountOwnerName}</td>
+                            <td nowrap="nowrap">${list.accountType}</td>
+                            <td nowrap="nowrap">${list.accountStatus}</td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="statusMessage">No bank accounts were found for the search criteria.</div>
+        </c:otherwise>
+    </c:choose>
+
+    </body>
+    </html>
+</jsp:root>

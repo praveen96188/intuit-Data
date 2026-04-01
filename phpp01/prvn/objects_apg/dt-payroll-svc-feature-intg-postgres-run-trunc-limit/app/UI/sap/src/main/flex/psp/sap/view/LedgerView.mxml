@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:pspui="psp.sap.view.*"
+	xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:controls="psp.sap.view.controls.*" 
+	width="100%" height="100%"
+	 creationComplete="onCreationComplete()">
+	<mx:Script>
+        <![CDATA[
+        	import psp.sap.application.SAP;
+            import psp.sap.application.enums.OperationsEnum;
+            import psp.sap.model.CompanyLedgerAccount;
+        	import mx.events.CloseEvent;
+        	import mx.controls.Alert;
+        	import psp.sap.viewmodel.LedgerViewModel;
+
+      	    private var mViewModel:LedgerViewModel;
+		 
+	        [Bindable]
+	        public function get viewModel():LedgerViewModel {
+	            return mViewModel;
+	        }
+	
+	        public function set viewModel(value:LedgerViewModel):void {
+				if(value != null) {
+					mViewModel = value;
+				}
+	        }
+       	  	
+        	/* Actions */  	       	  	       	  	
+			public function viewLedgerEntry(link:ActionLinkEvent):void {
+				viewModel.viewLedgerEntry(link.data as CompanyLedgerAccount);
+			}
+
+	        
+	        /* View logic */
+	        public function isNonZero(companyPayrollLedgerObject:Object): Boolean {
+	        	var companyPayrollLedger:CompanyLedgerAccount = companyPayrollLedgerObject as CompanyLedgerAccount;
+	        	return (companyPayrollLedger.balance != 0);
+	        } 		
+	        
+	        public function onCreationComplete():void {
+	        	//AutomationUtils.initRepeaterAutomation(ledgerAccounts as Repeater);
+	        }
+
+            public function confirmRecalculate():void {
+                var msgString:String = "Are you sure you want to recalculate the company ledger? \r\nThis will delete all previous transactions and recalculate up to the current day.";
+                Alert.show(msgString,
+                    "Recalc Confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.recalculateLedgerBalances();
+                        }
+                    },
+                    null,
+                    Alert.YES);
+            }
+	        
+        ]]>        
+    </mx:Script>
+    
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataGrid}" isLoading="{viewModel.isDataLoading}" />    
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox >
+	<mx:HBox id="dataGrid"
+		horizontalGap="0" verticalGap="0" 
+		styleName="grayDataGridVBox" 
+		paddingTop="0"
+		verticalScrollPolicy="off" horizontalScrollPolicy="off"
+		visible="{!viewModel.isDataLoading}" includeInLayout="{!viewModel.isDataLoading}">
+
+		<mx:Grid horizontalGap="0" verticalGap="0" height="100%" width="100%">
+			 <mx:GridRow  width="100%">
+				 <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorder">
+	                <mx:Label text="Account"/>
+	             </mx:GridItem>
+	             <mx:GridItem horizontalAlign="center" minWidth="200" styleName="headerBorderRight">
+	                <mx:Label text="Balance"/>
+	             </mx:GridItem>
+	             <mx:GridItem horizontalAlign="center" minWidth="130" styleName="headerBorderRight">
+	                <mx:Label text=""/>
+	             </mx:GridItem>
+	          </mx:GridRow>
+	          <mx:Repeater id="ledgerAccounts" dataProvider="{viewModel.ledgerAccounts}">
+	          		 <mx:GridRow id="ledgerAccountRow"  backgroundColor="{UIUtils.getRowColor(ledgerAccounts.currentIndex)}">
+	          		 		<mx:GridItem  horizontalAlign="left" height="100%" styleName="borderBottomLeftRight">
+                            	<pspui:ActionLink id="ledgerAccountLink" data="{ledgerAccounts.currentItem}" automationName="ledgerAccountLink_{ledgerAccounts.currentItem.name}" label="{ledgerAccounts.currentItem.name}" action="{ledgerAccounts.currentItem.ledgerAccountCode}" actionClick="viewLedgerEntry"/>
+                            </mx:GridItem>
+                            <mx:GridItem horizontalAlign="right" height="100%" styleName="borderBottomRight">
+                                <mx:Text id="ledgerBalanceText" automationName="ledgerBalanceText_{ledgerAccounts.currentItem.name}" text="{viewModel.currencyFormatter.format(Math.abs(ledgerAccounts.currentItem.balance))}"/>
+                            </mx:GridItem>
+                            <mx:GridItem horizontalAlign="left" height="100%" styleName="borderBottomRight" >
+                                <mx:VBox horizontalAlign="left" verticalGap="0" height="100%" verticalScrollPolicy="off">
+									<!--
+										0x000000 = black
+										0xff0000 = red
+									-->
+									<mx:Label 
+										id="ledgerAccountTypeLabel"
+                                        automationName="ledgerAccountTypeLabel_{ledgerAccounts.currentItem.name}"
+                                        text="{ledgerAccounts.currentItem.accountType}"
+										visible="{isNonZero(ledgerAccounts.currentItem)}"
+										includeInLayout="{isNonZero(ledgerAccounts.currentItem)}"
+										paddingLeft="5"
+										fontWeight="bold" 
+										color="{ledgerAccounts.currentItem.credit ? UIUtils.COLOR_BLACK : UIUtils.COLOR_RED}" />
+								</mx:VBox>
+                            </mx:GridItem>
+	          		 </mx:GridRow>
+	          </mx:Repeater>
+		</mx:Grid>
+
+
+	</mx:HBox>
+
+    <mx:HBox paddingTop="20" width="100%"  >
+
+        <mx:VBox horizontalAlign="left" width="50%" verticalGap="1">
+            <mx:LinkButton
+                    label="Create FLA Transaction"
+                    click="viewModel.viewFinancialLedgerAdjustment();"
+                    visible="{SAP.canPerformOperation(OperationsEnum.CREATE_FLA)}"
+                    includeInLayout="{SAP.canPerformOperation(OperationsEnum.CREATE_FLA)}"
+                    styleName="inlineLinkButtonStyleBoldNoUnderline"/>
+
+            <mx:LinkButton
+                    label="View/Create Penalties and Interest Refunds"
+                    click="viewModel.viewCreatePAndIRefunds();"
+                    visible="{SAP.canPerformOperation(OperationsEnum.CREATE_ER_PENALTIES_AND_INTEREST_REFUNDS)}"
+                    includeInLayout="{SAP.canPerformOperation(OperationsEnum.CREATE_ER_PENALTIES_AND_INTEREST_REFUNDS)}"
+                    styleName="inlineLinkButtonStyleBoldNoUnderline"/>
+
+            <mx:LinkButton
+                    label="View/Create Courtesy Refunds"
+                    click="viewModel.viewCreateCourtesyRefund();"
+                    visible="{SAP.canPerformOperation(OperationsEnum.CREATE_COURTESY_REFUNDS)}"
+                    includeInLayout="{SAP.canPerformOperation(OperationsEnum.CREATE_COURTESY_REFUNDS)}"
+                    styleName="inlineLinkButtonStyleBoldNoUnderline"/>
+        </mx:VBox>
+
+        <mx:VBox horizontalAlign="right" width="50%">
+            <mx:Button label="Recalculate"
+                       visible="{SAP.canPerformOperation(OperationsEnum.RECALCULATE_LEDGER_BALANCES)}"
+                       includeInLayout="{SAP.canPerformOperation(OperationsEnum.RECALCULATE_LEDGER_BALANCES)}"
+                       click="confirmRecalculate();" />
+        </mx:VBox>
+
+    </mx:HBox>
+
+    </mx:VBox>
+
+</mx:VBox>

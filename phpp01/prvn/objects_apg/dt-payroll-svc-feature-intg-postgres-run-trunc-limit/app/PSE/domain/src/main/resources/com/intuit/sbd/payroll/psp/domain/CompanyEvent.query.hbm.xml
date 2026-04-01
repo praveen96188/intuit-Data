@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	CompanyEvent.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findInvalidEmployeeInformationEvent">
+        <![CDATA[
+            Select ce
+              From com.intuit.sbd.payroll.psp.domain.CompanyEvent as ce,
+                   com.intuit.sbd.payroll.psp.domain.CompanyEventDetail as ed1,
+                   com.intuit.sbd.payroll.psp.domain.CompanyEventDetail as ed2
+             Where ce.Company = :company
+               and ce.EventTypeCd = :eventTypeCode
+               and ce.StatusCd = :companyEventStatus
+               and ed1.Company = :company
+               and ed1.CompanyEvent = ce
+               and ed2.Company = :company
+               and ed2.CompanyEvent = ed1.CompanyEvent
+               and ed1.EventDetailTypeCd = :eventDetailTypeCode1
+               and ed1.Value = :value1
+               and ed2.EventDetailTypeCd = :eventDetailTypeCode2
+               and ed2.Value = :value2
+			]]>
+    </query>
+
+    <sql-query name="findUserNameForCompanyEvents">
+        <return-scalar column="creator" type="string"/>
+        <return-scalar column="firstName" type="string"/>
+        <return-scalar column="lastName" type="string"/>
+        SELECT distinct ce.creator_id as creator, au.first_name as firstName, au.last_name as lastName
+        FROM psp_company_event ce
+        LEFT JOIN psp_auth_user au on ce.creator_id = au.CORP_ID
+        WHERE ce.company_fk = :companyId
+     </sql-query>
+
+</hibernate-mapping>
+

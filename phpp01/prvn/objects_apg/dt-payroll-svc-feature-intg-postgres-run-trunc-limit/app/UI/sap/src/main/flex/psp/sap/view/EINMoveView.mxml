@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         width="475"
+         paddingLeft="7"
+         paddingTop="7"
+         paddingBottom="7"
+         paddingRight="7">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.viewmodel.EINMoveViewModel;
+
+        [Bindable]
+        public var viewModel:EINMoveViewModel;
+
+        private function confirmMove():void
+        {
+            var msgString:String = "Are you sure you want to move this EIN ?";
+
+            Alert.show(msgString,
+                    "Move Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+        private function confirmVerifyHandler(e:CloseEvent):void {
+            if (e.detail == Alert.OK)
+            {
+                viewModel.save();
+            }
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Move EIN {viewModel.from.fein}" styleName="subheading"/>
+
+    <mx:Label text="Move from entitlement:"/>
+
+    <mx:Form paddingLeft="0" paddingTop="0">
+        <mx:FormItem label="License Number:">
+            <mx:Text text="{viewModel.from.licenseNumber}"/>
+        </mx:FormItem>
+        <mx:FormItem label="EOC:">
+            <mx:Text text="{viewModel.from.eoc}"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:Label text="To entitlement:"/>
+    <mx:HBox width="100%" backgroundColor="#EEEEEE">
+        <mx:Form defaultButton="{searchButton}">
+            <mx:FormItem label="License Number:">
+                <controls:SAPTextInput dataField="licenseNumber"/>
+            </mx:FormItem>
+            <mx:FormItem label="EOC:">
+                <controls:SAPTextInput dataField="eoc"/>
+            </mx:FormItem>
+        </mx:Form>
+        <mx:VBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom" paddingRight="10" paddingBottom="10">
+            <mx:Button id="searchButton" label="Find Entitlement" enabled="{viewModel.canSave}" click="viewModel.search();"/>
+        </mx:VBox>
+    </mx:HBox>
+
+    <controls:LoadingBox viewModel="{viewModel}">
+        <mx:Form verticalGap="1" visible="{!viewModel.entitlementNotFound}" includeInLayout="{!viewModel.entitlementNotFound}">
+            <mx:FormItem label="License Number:">
+                <mx:Text text="{viewModel.entitlementInfo.licenseNumber}"/>
+            </mx:FormItem>
+            <mx:FormItem label="EOC:">
+                <mx:Text text="{viewModel.entitlementInfo.eoc}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Order Number:">
+                <mx:Text text="{viewModel.entitlementInfo.orderNumber}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Customer Id:">
+                <mx:Text text="{viewModel.entitlementInfo.customerId}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Contact Email:">
+                <mx:Text text="{viewModel.entitlementInfo.contactEmail}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Next Charge Date:">
+                <mx:Text text="{viewModel.entitlementInfo.nextChargeDate}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Edition:">
+                <mx:Text text="{viewModel.entitlementInfo.entitlementCodeInfo.edition}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Number of Employees:">
+                <mx:Text text="{viewModel.entitlementInfo.entitlementCodeInfo.numberOfEmployees}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Quickbooks Subtype:">
+                <mx:Text text="{viewModel.entitlementInfo.entitlementCodeInfo.subtypeDescription}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Asset Item Code:">
+                <mx:Text text="{viewModel.entitlementInfo.entitlementCodeInfo.assetItemCode}"/>
+            </mx:FormItem>
+        </mx:Form>
+    </controls:LoadingBox>
+
+    <mx:VBox visible="{viewModel.entitlementNotFound}" includeInLayout="{viewModel.entitlementNotFound}">
+        <mx:Text text="Entitlement not found" styleName="errorMessageStyle"/>
+    </mx:VBox>
+
+    <mx:HBox width="100%" horizontalAlign="center">
+        <mx:Button label="Cancel" click="viewModel.cancel();"/>
+        <mx:Button label="Move" click="confirmMove()" enabled="{viewModel.entitlementInfo != null}"/>
+    </mx:HBox>
+
+</mx:VBox>

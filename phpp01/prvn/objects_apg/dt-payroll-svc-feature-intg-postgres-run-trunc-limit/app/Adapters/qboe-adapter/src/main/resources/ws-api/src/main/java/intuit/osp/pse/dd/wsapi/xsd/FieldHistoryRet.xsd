@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:fhr="http://fieldhistoryret.xsd.wsapi.dd.pse.osp.intuit"
+	xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit"
+	targetNamespace="http://fieldhistoryret.xsd.wsapi.dd.pse.osp.intuit"
+	elementFormDefault="qualified">
+	<xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Data Transfer Object FieldHistoryRet</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="FieldHistoryRet">
+		<xs:sequence>
+			<xs:element name="SourceSystemCd" type="dd:SourceSystemType" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="CompanyID" type="dd:IDType" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="FieldName" type="dd:FieldNameType" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="FieldChange" type="fhr:FieldChangeType" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="FieldChangeType">
+		<xs:sequence>
+			<xs:element name="OldValue" type="xs:string" nillable="true" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="NewValue" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Date" type="xs:dateTime" nillable="true" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="UserID" type="xs:string" nillable="true" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

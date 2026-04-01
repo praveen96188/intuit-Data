@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         creationComplete="onCreationComplete();"
+         minWidth="557"
+         verticalGap="0">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.model.LawFlags;
+        import psp.sap.viewmodel.EditLawFlagsViewModel;
+
+        private var mViewModel:EditLawFlagsViewModel;
+        private var mTempViewModel:EditLawFlagsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EditLawFlagsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EditLawFlagsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            } else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to update these flags?";
+            Alert.show(msgString,
+                    "Update Flags Confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Edit Law Flags for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="headerBorder" id="headerLabel" paddingLeft="2" paddingBottom="0"
+              paddingTop="5"/>
+
+
+
+    <mx:Grid paddingBottom="3">
+        <mx:GridRow>
+            <mx:GridItem>
+                <mx:Label text="Law" styleName="boldText"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Inactive" styleName="boldText"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Exempt" styleName="boldText"/>
+            </mx:GridItem>
+            <mx:GridItem>
+                <mx:Label text="Reimbursable" styleName="boldText"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:Repeater id="lawRepeater" dataProvider="{viewModel.lawFlags}">
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="{LawFlags(lawRepeater.currentItem).law.name}"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center">
+                    <mx:CheckBox selected="{LawFlags(lawRepeater.currentItem).inactive}"
+                                 change="LawFlags(CheckBox(event.currentTarget).getRepeaterItem()).inactive = (CheckBox(event.currentTarget).selected)"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center">
+                    <mx:CheckBox selected="{LawFlags(lawRepeater.currentItem).exempt}"
+                                 change="LawFlags(CheckBox(event.currentTarget).getRepeaterItem()).exempt = (CheckBox(event.currentTarget).selected)"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center">
+                    <mx:CheckBox selected="{LawFlags(lawRepeater.currentItem).reimbursable}"
+                                 change="LawFlags(CheckBox(event.currentTarget).getRepeaterItem()).reimbursable = (CheckBox(event.currentTarget).selected)"/>
+                </mx:GridItem>
+            </mx:GridRow>
+        </mx:Repeater>
+    </mx:Grid>
+
+    <mx:HBox horizontalAlign="right" width="500">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+
+
+</mx:VBox>

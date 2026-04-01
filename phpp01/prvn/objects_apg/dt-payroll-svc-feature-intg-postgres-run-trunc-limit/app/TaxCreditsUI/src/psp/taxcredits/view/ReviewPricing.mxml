@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+         xmlns:view="psp.taxcredits.view.*">
+    <mx:Script>
+        <![CDATA[
+
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private function onBack():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.ESTIMATE);
+        }
+
+        private function onContinue():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.COMPANY_INFO);
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+    <mx:VBox paddingLeft="31">
+
+        <controls:GreyscaleBox paddingTop="24" enableTo="2"/>
+
+        <mx:Text selectable="false" styleName="pageH3Alt" paddingTop="3" paddingLeft="-1"
+                 text="{resourceManager.getString('reviewPricing','page_tag_line')}"/>
+
+        <controls:SupText selectable="false" styleName="pageText" paddingTop="2" width="858"
+                          htmlText="{resourceManager.getString('reviewPricing','body', [model.price])}"/>
+
+        <controls:SupText selectable="false" styleName="pageText" paddingTop="10" width="858"
+                          htmlText="{resourceManager.getString('reviewPricing','for_this_fee')}"/>
+
+        <mx:HBox verticalAlign="middle" paddingLeft="10" horizontalGap="1">
+            <mx:Image source="psp/taxcredits/view/assets/longArrowRight.png"/>
+            <mx:Text selectable="false" styleName="bulletText" paddingTop="3" width="700"
+                     text="{resourceManager.getString('reviewPricing','bullet_1')}"/>
+        </mx:HBox>
+        <mx:HBox verticalAlign="middle" paddingLeft="10" horizontalGap="1">
+            <mx:Image source="psp/taxcredits/view/assets/longArrowRight.png"/>
+            <mx:Text selectable="false" styleName="bulletText" paddingTop="3" width="700"
+                     text="{resourceManager.getString('reviewPricing','bullet_2')}"/>
+        </mx:HBox>
+        <mx:HBox verticalAlign="middle" paddingLeft="10" horizontalGap="1">
+            <mx:Image source="psp/taxcredits/view/assets/longArrowRight.png"/>
+            <mx:Text selectable="false" styleName="bulletText" paddingTop="3" width="700"
+                     text="{resourceManager.getString('reviewPricing','bullet_3')}"/>
+        </mx:HBox>
+        <mx:HBox verticalAlign="middle" paddingLeft="10" horizontalGap="1">
+            <mx:Image source="psp/taxcredits/view/assets/longArrowRight.png"/>
+            <mx:Text selectable="false" styleName="bulletText" paddingTop="3" width="700"
+                     text="{resourceManager.getString('reviewPricing','bullet_4')}"/>
+        </mx:HBox>
+        <mx:HBox verticalAlign="middle" paddingLeft="10" horizontalGap="1">
+            <mx:Image source="psp/taxcredits/view/assets/longArrowRight.png"/>
+            <mx:Text selectable="false" styleName="bulletText" paddingTop="3" width="700"
+                     text="{resourceManager.getString('reviewPricing','bullet_5')}"/>
+        </mx:HBox>
+
+        <controls:SupText selectable="false" styleName="pageText" paddingTop="10" width="858"
+                          htmlText="{resourceManager.getString('reviewPricing','pricing', [model.price])}"/>
+
+        <controls:SupText selectable="false" styleName="pageText" paddingTop="10" width="858"
+                          htmlText="{resourceManager.getString('reviewPricing','savings')}"/>
+
+        <mx:Text selectable="false" styleName="pageH3Alt" paddingTop="5" paddingLeft="1"
+                 text="{resourceManager.getString('estimateSavings','estimator_tag_line')}"/>
+        <view:Estimator collapsed="true"/>
+
+        <mx:Spacer height="20"/>
+        <mx:HRule styleName="divider" width="852"/>
+
+        <mx:HBox styleName="noPadding" paddingTop="8" paddingLeft="31" verticalAlign="middle">
+            <mx:Button styleName="buttonBack" useHandCursor="true" buttonMode="true"
+                       click="onBack();"/>
+            <mx:HBox width="100%" paddingLeft="620">
+                <mx:Button styleName="buttonContinue" useHandCursor="true" buttonMode="true"
+                           click="onContinue();"/>
+            </mx:HBox>
+        </mx:HBox>
+
+        <controls:QASection width="860" paddingTop="20"
+                            title="{resourceManager.getString('eligibility','qa_subheader')}"
+                            items="{QAItemFactory.qaItems}"/>
+
+    </mx:VBox>
+
+</mx:VBox>
+

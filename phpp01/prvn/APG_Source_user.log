@@ -1,0 +1,82 @@
+psppp01=> 
+psppp01=> CREATE USER  dms_apg_src WITH PASSWORD 'e#xc91kggPGH';
+CREATE ROLE
+psppp01=> GRANT CONNECT ON DATABASE psppp01 to dms_apg_src;
+GRANT
+psppp01=> GRANT CREATE ON DATABASE psppp01 TO dms_apg_src;
+GRANT
+psppp01=> GRANT USAGE ON SCHEMA pspadm TO dms_apg_src;
+GRANT
+psppp01=> Grant  rds_superuser to dms_apg_src;
+GRANT ROLE
+psppp01=> Grant  rds_replication to dms_apg_src;
+GRANT ROLE
+psppp01=> 
+psppp01=> 
+psppp01=> \c psppp01 dms_apg_src
+Password for user dms_apg_src: 
+psql (14.8, server 15.3)
+WARNING: psql major version 14, server major version 15.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.2, cipher: AES128-SHA256, bits: 128, compression: off)
+You are now connected to database "psppp01" as user "dms_apg_src".
+psppp01=> Create schema awsdms_ddl_audit;
+CREATE SCHEMA
+psppp01=> GRANT USAGE ON SCHEMA awsdms_ddl_audit TO dms_apg_src;
+GRANT
+psppp01=> CREATE TABLE awsdms_ddl_audit.awsdms_ddl_audit
+psppp01-> (
+psppp01(>   c_key    bigserial primary key,
+psppp01(>   c_time   timestamp,    -- Informational
+psppp01(>   c_user   varchar(64),  -- Informational: current_user
+psppp01(>   c_txn    varchar(16),  -- Informational: current transaction
+psppp01(>   c_tag    varchar(24),  -- Either 'CREATE TABLE' or 'ALTER TABLE' or 'DROP TABLE'
+psppp01(>   c_oid    integer,      -- For future use - TG_OBJECTID
+psppp01(>   c_name   varchar(64),  -- For future use - TG_OBJECTNAME
+psppp01(>   c_schema varchar(64),  -- For future use - TG_SCHEMANAME. For now - holds current_schema
+psppp01(>   c_ddlqry  text         -- The DDL query associated with the current DDL event
+psppp01(> );
+CREATE TABLE
+psppp01=>                    
+psppp01=> 
+psppp01=> 
+psppp01=> CREATE OR REPLACE FUNCTION awsdms_ddl_audit.awsdms_intercept_ddl()
+psppp01->   RETURNS event_trigger
+psppp01-> LANGUAGE plpgsql
+psppp01-> SECURITY DEFINER
+psppp01->   AS $$
+psppp01$>   declare _qry text;
+psppp01$> BEGIN
+psppp01$>   if (tg_tag='CREATE TABLE' or tg_tag='ALTER TABLE' or tg_tag='DROP TABLE') then
+psppp01$>          SELECT current_query() into _qry;
+psppp01$>          insert into awsdms_ddl_audit.awsdms_ddl_audit
+psppp01$>          values
+psppp01$>          (
+psppp01$>          default,current_timestamp,current_user,cast(TXID_CURRENT()as varchar(16)),tg_tag,0,'',current_schema,_qry
+psppp01$>          );
+psppp01$>          delete from awsdms_ddl_audit.awsdms_ddl_audit;
+psppp01$> end if;
+psppp01$> END;
+psppp01$> $$;
+CREATE FUNCTION
+psppp01=> 
+psppp01=> 
+psppp01=> SELECT * FROM pg_event_trigger WHERE evtname = 'awsdms_intercept_ddl';
+ oid | evtname | evtevent | evtowner | evtfoid | evtenabled | evttags 
+-----+---------+----------+----------+---------+------------+---------
+(0 rows)
+
+psppp01=> CREATE EVENT TRIGGER awsdms_intercept_ddl ON ddl_command_end 
+psppp01-> EXECUTE PROCEDURE awsdms_ddl_audit.awsdms_intercept_ddl();
+CREATE EVENT TRIGGER
+psppp01=> grant all on awsdms_ddl_audit.awsdms_ddl_audit to public;
+GRANT
+psppp01=> grant all on awsdms_ddl_audit.awsdms_ddl_audit_c_key_seq to public;
+GRANT
+psppp01=> 
+psppp01=>  SELECT * FROM pg_event_trigger WHERE evtname = 'awsdms_intercept_ddl';
+    oid    |       evtname        |    evtevent     | evtowner |  evtfoid  | evtenabled | evttags 
+-----------+----------------------+-----------------+----------+-----------+------------+---------
+ 173699095 | awsdms_intercept_ddl | ddl_command_end |       10 | 173699094 | O          | 
+(1 row)
+

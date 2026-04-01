@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','page_2_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        public function onCreationComplete():void {
+            validators.addItem(ssi.validator);
+            validators.addItem(summerYouth.validator);
+            validators.addItem(conditional.validator);
+            validators.addItem(unemployed60.validator);
+
+        }
+
+
+        public function writeToModel():void {
+            writeYesNoToModel("ssi");
+            writeYesNoToModel("summerYouth");
+            writeYesNoToModel("conditional");
+            writeYesNoToModel("unemployed60");
+
+        }
+
+
+        override public function readFromModel():void {
+            readYesNoFromModel("ssi");
+            readYesNoFromModel("summerYouth");
+            readYesNoFromModel("conditional");
+            readYesNoFromModel("unemployed60");
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','other_subheader')}"/>
+
+
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="1." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                 text="{resourceManager.getString('interview','ssi')}"/>
+    </mx:HBox>
+    <controls:YesNoRadio id="ssi" paddingLeft="40" yesNoChange="writeToModel()"/>
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="2." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                 text="{resourceManager.getString('interview','summer_youth')}"/>
+    </mx:HBox>
+    <controls:YesNoRadio id="summerYouth" paddingLeft="40" yesNoChange="writeToModel()"/>
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="3." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                 text="{resourceManager.getString('interview','conditional')}"/>
+    </mx:HBox>
+    <controls:YesNoRadio id="conditional" paddingLeft="40" yesNoChange="writeToModel()"/>
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="4." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                 text="{resourceManager.getString('interview','unemployed_60')}"/>
+    </mx:HBox>
+    <controls:YesNoRadio id="unemployed60" paddingLeft="40" yesNoChange="writeToModel()"/>
+
+
+</controls:InterviewPage>

@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" close="onClose()" showCloseButton="true">
+    <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+             xmlns:controls="psp.sap.view.controls.*"
+             creationComplete="onCreationComplete();"
+             minWidth="350"
+             verticalGap="0">
+        <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.controls.Alert;
+            import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import mx.utils.StringUtil;
+
+            import psp.sap.viewmodel.EditSeasonalViewModel;
+
+            private var mTempViewModel:EditSeasonalViewModel;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            private var mViewModel:EditSeasonalViewModel = new EditSeasonalViewModel();
+
+            [Bindable]
+            public function get viewModel():EditSeasonalViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:EditSeasonalViewModel):void {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                } else {
+                    mViewModel = value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mViewModel;
+            }
+            //If viewModel is closed (currently, if window is closed)
+            private function onClose():void {
+                PopUpManager.removePopUp(this);
+            }
+            private function confirmSave():void {
+
+                var msgString:String = "Are you sure you want to update the Seasonal ?";
+                Alert.show(msgString,
+                        "Do you want to update Seasonal ?",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        confirmVerifyHandler,
+                        null,
+                        Alert.OK);
+            }
+            private function confirmVerifyHandler(event:CloseEvent):void {
+                if (event.detail == Alert.OK) {
+                    viewModel.canSave = true;
+                    viewModel.selectedSeason = seasonalCombo.selectedItem as String;
+                    viewModel.save();
+                    PopUpManager.removePopUp(this);
+                    viewModel.enableSave = false;
+                }
+            }
+
+            public function onChange():void {
+                if(viewModel.employeeInfo.isSeasonal != seasonalCombo.selectedItem as String){
+                    viewModel.enableSave = true;
+                }else{
+                    viewModel.enableSave = false;
+                }
+            }
+
+            ]]>
+    </mx:Script>
+
+        <mx:HBox width="100%" height="100%" styleName="expanderBar" >
+            <mx:VBox id="jobActionDiv" styleName="expanderBar" >
+                <mx:Form paddingTop="0">
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Label text="Edit Seasonal Flag for Employee : {viewModel.employeeInfo.employeeId}"
+                                  styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3" paddingTop="5"/>
+                    </mx:HBox>
+                    <mx:HRule width="100%" height="13"/>
+                    <mx:HBox verticalAlign="middle" paddingLeft="20">
+                        <mx:Label text="Is Seasonal" fontStyle="italic"/>
+                        <controls:SAPComboBox id="seasonalCombo" dataField="selectedSeason" selectedItem="{viewModel.employeeInfo.isSeasonal}" dataProvider="{viewModel.seasonalList}" change="onChange();"/>
+                    </mx:HBox>
+                    <mx:HBox horizontalAlign="right" width="100%" paddingBottom="15"  paddingTop="5">
+                        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.enableSave}"/>
+                    </mx:HBox>
+                </mx:Form>
+
+
+            </mx:VBox>
+        </mx:HBox>
+
+    </mx:VBox>
+
+</mx:TitleWindow>
+

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <sql-query name="achEnrollmentsForDelete">
+        <return-scalar column="source_system_cd" type="string"/>
+        <return-scalar column="source_company_id" type="string"/>
+        <![CDATA[
+select source_system_cd, source_company_id from (
+ select
+ first_value(ae.achenrollment_seq) over (partition by ae.company_agency_fk order by ae.status_effective_date desc) topenrollment,
+ ae.achenrollment_seq aeseq,
+ ae.status,
+ cs.status_cd,
+tci.last_quarter_to_file,
+cl.filing_status,
+ca.company_fk,
+comp.source_system_cd,
+comp.source_company_id
+  from psp_achenrollment ae
+ join psp_company_agency ca on ca.company_agency_seq = ae.company_agency_fk
+ join psp_company_law cl on cl.company_agency_fk = ca.company_agency_seq
+ join psp_company_service cs on cs.company_fk = ca.company_fk and cs.service_fk = 'Tax'
+ join psp_tax_company_service_info tci on tci.tax_company_service_info_seq = cs.company_service_seq
+ join psp_company comp on comp.company_seq = ca.company_fk
+ where ae.status <> 'Cancelled'
+ and cl.law_fk = '92' and (CASE WHEN (:excludeDeletedCompany = 1) THEN comp.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+ ) rec
+ where topenrollment = aeseq
+ and status = 'Enrolled'
+ and not exists (select 'T' from psp_money_movement_transaction mmt where mmt.company_fk = rec.company_fk and mmt.tax_payment_status in ('ReadyToSend', 'OnHold', 'ATFFinalized') and mmt.payment_template_fk = 'FL-UCT6-PAYMENT')
+ and (
+ (status_cd in ('Cancelled', 'Terminated') and (last_quarter_to_file = -1 or (last_quarter_to_file > 1 and last_quarter_to_file < to_char(fn_get_psp_timestamp, 'YYYYQ'))))
+ or (status_cd not in ('Cancelled', 'Terminated') and filing_status = 'Inactive' )
+ )
+        ]]>
+    </sql-query>
+
+    <sql-query name="achEnrollmentsForDelete_postgres">
+        <return-scalar column="source_system_cd" type="string"/>
+        <return-scalar column="source_company_id" type="string"/>
+        <![CDATA[
+select source_system_cd, source_company_id from (
+ select
+ first_value(ae.achenrollment_seq) over (partition by ae.company_agency_fk order by ae.status_effective_date desc) topenrollment,
+ ae.achenrollment_seq aeseq,
+ ae.status,
+ cs.status_cd,
+tci.last_quarter_to_file,
+cl.filing_status,
+ca.company_fk,
+comp.source_system_cd,
+comp.source_company_id
+  from psp_achenrollment ae
+ join psp_company_agency ca on ca.company_agency_seq = ae.company_agency_fk
+ join psp_company_law cl on cl.company_agency_fk = ca.company_agency_seq
+ join psp_company_service cs on cs.company_fk = ca.company_fk and cs.service_fk = 'Tax'
+ join psp_tax_company_service_info tci on tci.tax_company_service_info_seq = cs.company_service_seq
+ join psp_company comp on comp.company_seq = ca.company_fk
+ where ae.status <> 'Cancelled'
+ and cl.law_fk = '92' and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN comp.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+ ) rec
+ where topenrollment = aeseq
+ and status = 'Enrolled'
+ and not exists (select 'T' from psp_money_movement_transaction mmt where mmt.company_fk = rec.company_fk and mmt.tax_payment_status in ('ReadyToSend', 'OnHold', 'ATFFinalized') and mmt.payment_template_fk = 'FL-UCT6-PAYMENT')
+ and (
+ (status_cd in ('Cancelled', 'Terminated') and (last_quarter_to_file = -1 or (last_quarter_to_file > 1 and cast(last_quarter_to_file as varchar) < to_char(fn_get_psp_timestamp(1), 'YYYYQ'))))
+ or (status_cd not in ('Cancelled', 'Terminated') and filing_status = 'Inactive' )
+ )
+        ]]>
+    </sql-query>
+
+    <sql-query name="rafEnrollmentsForDelete">
+        <return-scalar column="source_system_cd" type="string"/>
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="reseq" type="string"/>
+        <![CDATA[
+select source_system_cd, source_company_id, reseq from (
+ select
+ first_value(re.rafenrollment_seq) over (partition by re.company_agency_fk order by re.status_effective_date desc) topenrollment,
+ re.rafenrollment_seq reseq,
+ re.status,
+ cs.status_cd,
+tci.last_quarter_to_file,
+ca.company_fk,
+comp.source_system_cd,
+comp.source_company_id
+  from psp_rafenrollment re
+ join psp_company_agency ca on ca.company_agency_seq = re.company_agency_fk
+ join psp_company_service cs on cs.company_fk = ca.company_fk and cs.service_fk = 'Tax'
+ join psp_tax_company_service_info tci on tci.tax_company_service_info_seq = cs.company_service_seq
+ join psp_company comp on comp.company_seq = ca.company_fk
+ where re.status <> 'Cancelled' and (CASE WHEN (:excludeDeletedCompany = 1) THEN comp.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+ ) rec
+ where topenrollment = reseq
+ and status = 'Enrolled'
+ and not exists (select 'T' from psp_money_movement_transaction mmt where mmt.company_fk = rec.company_fk and mmt.tax_payment_status in ('ReadyToSend', 'OnHold') and mmt.payment_template_fk in ('IRS-941-PAYMENT', 'IRS-940-PAYMENT'))
+ and status_cd in ('Cancelled', 'Terminated')
+  and (last_quarter_to_file = -1 or (last_quarter_to_file > 1 and last_quarter_to_file < to_char(fn_get_psp_timestamp, 'YYYYQ')))
+
+        ]]>
+    </sql-query>
+
+    <sql-query name="rafEnrollmentsForDelete_postgres">
+        <return-scalar column="source_system_cd" type="string"/>
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="reseq" type="string"/>
+        <![CDATA[
+select source_system_cd, source_company_id, reseq from (
+ select
+ first_value(re.rafenrollment_seq) over (partition by re.company_agency_fk order by re.status_effective_date desc) topenrollment,
+ re.rafenrollment_seq reseq,
+ re.status,
+ cs.status_cd,
+tci.last_quarter_to_file,
+ca.company_fk,
+comp.source_system_cd,
+comp.source_company_id
+  from psp_rafenrollment re
+ join psp_company_agency ca on ca.company_agency_seq = re.company_agency_fk
+ join psp_company_service cs on cs.company_fk = ca.company_fk and cs.service_fk = 'Tax'
+ join psp_tax_company_service_info tci on tci.tax_company_service_info_seq = cs.company_service_seq
+ join psp_company comp on comp.company_seq = ca.company_fk
+ where re.status <> 'Cancelled' and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN comp.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+ ) rec
+ where topenrollment = reseq
+ and status = 'Enrolled'
+ and not exists (select 'T' from psp_money_movement_transaction mmt where mmt.company_fk = rec.company_fk and mmt.tax_payment_status in ('ReadyToSend', 'OnHold') and mmt.payment_template_fk in ('IRS-941-PAYMENT', 'IRS-940-PAYMENT'))
+ and status_cd in ('Cancelled', 'Terminated')
+  and (last_quarter_to_file = -1 or (last_quarter_to_file > 1 and cast(last_quarter_to_file as varchar) < to_char(fn_get_psp_timestamp(1), 'YYYYQ')))
+
+        ]]>
+    </sql-query>
+
+    <sql-query name="paymentTemplateStatusChangesForActiveCompaniesENC">
+        <![CDATA[
+        select * from (
+            select /*+leading(pa)*/ PA.AUDIT_DATE,
+                C.SOURCE_COMPANY_ID,
+                C.FED_TAX_ID_ENC,
+                C.LEGAL_NAME,
+                CAPT.PAYMENT_TEMPLATE_FK,
+                CA.AGENCY_FK,
+                CAPT.AGENCY_TAXPAYER_ID_ENC,
+                PA.OLD_PROPERTY_VALUE,
+                PA.NEW_PROPERTY_VALUE,
+                row_number() over ( partition by c.source_company_id, ca.agency_fk, capt.payment_template_fk ORDER BY PA.AUDIT_DATE DESC ) rn
+            from psp_company c
+            join psp_company_service cs on CS.COMPANY_FK=C.COMPANY_SEQ
+            join  psp_property_audit pa on C.COMPANY_SEQ=PA.COMPANY_FK
+            -- to get the payment template and agency tax payer id
+            join psp_company_agency ca on CA.COMPANY_FK=C.COMPANY_SEQ
+            join psp_companyagency_pmttemplate capt on CAPT.COMPANY_AGENCY_FK=CA.COMPANY_AGENCY_SEQ
+            join psp_company_law cl on CL.COMPANY_LAW_SEQ=PA.OBJECT_IDENTIFIER and CL.COMPANY_AGENCY_FK = ca.company_agency_seq
+            where PA.CLASS_NAME='CompanyLaw' and PA.PROPERTY_NAME='FilingStatus'
+            -- Company is Active
+            and CS.SERVICE_FK='Tax' and CS.STATUS_CD='ActiveCurrent'
+            and CL.ADDITIONAL_COMPANY_LAW_FK is null
+            -- Data for the current month
+            and PA.AUDIT_DATE >= :firstDayOfMonth and PA.AUDIT_DATE <= :lastDayOfMonth
+            -- excluding NOCALC agency and federal (IRS) agency
+            and CA.AGENCY_FK not in ('NOCALC', 'IRS','FLDOR')
+            -- Condition for checking DGDeleted companies
+            and (CASE WHEN (:excludeDeletedCompany = 1) THEN c.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+            -- Condition to get payment templates that are inactive (all means companylaws are inactive for that payment template in CompanyLaw table)
+            and
+            (
+            PA.OLD_PROPERTY_VALUE='Inactive'
+             or
+                 (
+                 PA.OLD_PROPERTY_VALUE='Active'
+                 and not exists
+                             (
+                                        select '1' from psp_company_law compLaw
+                                        join psp_law l on compLaw.LAW_FK=L.LAW_ID
+                                       where compLaw.COMPANY_AGENCY_FK=CA.COMPANY_AGENCY_SEQ and L.PAYMENT_TEMPLATE_FK=CAPT.PAYMENT_TEMPLATE_FK and compLaw.FILING_STATUS='Active'
+                             )
+                 )
+            )
+            order by c.source_company_id, ca.agency_fk, capt.payment_template_fk, PA.OLD_PROPERTY_VALUE, PA.NEW_PROPERTY_VALUE, PA.AUDIT_DATE) result
+        WHERE RN=1
+                ]]>
+    </sql-query>
+    <sql-query name="paymentTemplateStatusChangesForActiveCompaniesENC_postgres">
+        <![CDATA[
+        select * from (
+            select /*+leading(pa)*/ PA.AUDIT_DATE,
+                C.SOURCE_COMPANY_ID,
+                C.FED_TAX_ID_ENC,
+                C.LEGAL_NAME,
+                CAPT.PAYMENT_TEMPLATE_FK,
+                CA.AGENCY_FK,
+                CAPT.AGENCY_TAXPAYER_ID_ENC,
+                PA.OLD_PROPERTY_VALUE,
+                PA.NEW_PROPERTY_VALUE,
+                row_number() over ( partition by c.source_company_id, ca.agency_fk, capt.payment_template_fk ORDER BY PA.AUDIT_DATE DESC ) rn
+            from psp_company c
+            join psp_company_service cs on CS.COMPANY_FK=C.COMPANY_SEQ
+            join  psp_property_audit pa on C.COMPANY_SEQ=PA.COMPANY_FK
+            -- to get the payment template and agency tax payer id
+            join psp_company_agency ca on CA.COMPANY_FK=C.COMPANY_SEQ
+            join psp_companyagency_pmttemplate capt on CAPT.COMPANY_AGENCY_FK=CA.COMPANY_AGENCY_SEQ
+            join psp_company_law cl on CL.COMPANY_LAW_SEQ=PA.OBJECT_IDENTIFIER and CL.COMPANY_AGENCY_FK = ca.company_agency_seq
+            where PA.CLASS_NAME='CompanyLaw' and PA.PROPERTY_NAME='FilingStatus'
+            -- Company is Active
+            and CS.SERVICE_FK='Tax' and CS.STATUS_CD='ActiveCurrent'
+            and CL.ADDITIONAL_COMPANY_LAW_FK is null
+            -- Data for the current month
+            and PA.AUDIT_DATE >= :firstDayOfMonth and PA.AUDIT_DATE <= :lastDayOfMonth
+            -- excluding NOCALC agency and federal (IRS) agency
+            and CA.AGENCY_FK not in ('NOCALC', 'IRS','FLDOR')
+            -- Condition for checking DGDeleted companies
+            and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN c.IS_DG_DISASSOCIATED ELSE 0 END) = 0
+            -- Condition to get payment templates that are inactive (all means companylaws are inactive for that payment template in CompanyLaw table)
+            and
+            (
+            PA.OLD_PROPERTY_VALUE='Inactive'
+             or
+                 (
+                 PA.OLD_PROPERTY_VALUE='Active'
+                 and not exists
+                             (
+                                        select '1' from psp_company_law compLaw
+                                        join psp_law l on compLaw.LAW_FK=L.LAW_ID
+                                       where compLaw.COMPANY_AGENCY_FK=CA.COMPANY_AGENCY_SEQ and L.PAYMENT_TEMPLATE_FK=CAPT.PAYMENT_TEMPLATE_FK and compLaw.FILING_STATUS='Active'
+                             )
+                 )
+            )
+            order by c.source_company_id, ca.agency_fk, capt.payment_template_fk, PA.OLD_PROPERTY_VALUE, PA.NEW_PROPERTY_VALUE, PA.AUDIT_DATE) result
+        WHERE RN=1
+                ]]>
+    </sql-query>
+
+</hibernate-mapping>

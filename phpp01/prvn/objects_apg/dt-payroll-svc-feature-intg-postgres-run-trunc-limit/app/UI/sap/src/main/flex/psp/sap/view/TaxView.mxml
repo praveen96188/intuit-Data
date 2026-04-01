@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	height="100%"
+	width="100%"	
+	verticalGap="0" 	
+	creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.viewmodel.TaxViewModel;
+
+        private var mViewModel:TaxViewModel;
+        private var mTempViewModel:TaxViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():TaxViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:TaxViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+	</mx:Script>
+	
+	<controls:PartsTabNavigator
+		label="{CompanyInspectorPageEnum.TAX_PAYMENTS_SUMMARY + '_ptn'}">						
+		<pspui:AgencyInfoView label="{CompanyInspectorPageEnum.AGENCY_INFO}"/>
+        <pspui:CompanyLawsView label="{CompanyInspectorPageEnum.TAX_LAWS}"/>
+        <pspui:TaxPaymentsSummaryView label="{CompanyInspectorPageEnum.TAX_PAYMENTS_SUMMARY}"/>
+		<pspui:TaxPaymentsDetailView label="{CompanyInspectorPageEnum.TAX_PAYMENTS_DETAIL}"/>
+		<pspui:TaxLedgerView label="{CompanyInspectorPageEnum.TAX_LEDGER}"/>
+        <pspui:ManualLedgerView label="{CompanyInspectorPageEnum.MANUAL_LEDGER}"/>
+	</controls:PartsTabNavigator>
+</mx:VBox>

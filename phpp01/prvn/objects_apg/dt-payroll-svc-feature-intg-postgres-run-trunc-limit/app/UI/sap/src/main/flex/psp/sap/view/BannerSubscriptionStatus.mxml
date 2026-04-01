@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        verticalGap="-2"
+        verticalAlign="top"
+        verticalScrollPolicy="off"
+        horizontalScrollPolicy="off">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.CompanyServiceStatus;
+        import psp.sap.model.ServiceCodeEnum;
+
+        public function goToLimitViolations(event:Event):void {
+            CompanyBannerView(parentDocument).viewModel.inspector.getPage(CompanyInspectorPageEnum.LIMIT_VIOLATIONS_HISTORY).activate();
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label textAlign="left" text="{data.serviceCodeEnum.label}"/>
+    <pspui:ServiceStatusLabel displayStatus="{data.displayStatus}" serviceCode="{data.serviceCd}"
+                              linkToSubscriptionStatus="true" paddingRight="0"/>
+    <mx:Label text="{data.displayStatus.displaySubStatus}"/>
+
+    <!-- for Direct Deposit only -->
+    <mx:HBox horizontalGap="0"
+             visible="{data.directDepositAdditionalInfo != null}"
+             includeInLayout="{data.directDepositAdditionalInfo != null}">
+        <mx:Label text="Underwriting System:"/>
+        <mx:Text text="{data.directDepositAdditionalInfo.underwritingPlatform}"/>
+    </mx:HBox>
+    <mx:HBox
+            visible="{data.directDepositAdditionalInfo != null}"
+            includeInLayout="{data.directDepositAdditionalInfo != null}"
+            horizontalGap="0" width="100%" verticalAlign="bottom">
+        <mx:Label text="Over DD Limit:"/>
+        <mx:Label id="consecutiveLimiViolationCountLabel"
+                  text="{data.directDepositAdditionalInfo.consecutiveLimitVoilationCount}" textAlign="right"
+                  width="100%"/>
+        <mx:PopUpButton
+                textAlign="right"
+                icon="{SAP.instance.icons.dropDown}" skin="{null}"
+                openAlways="true"
+                paddingLeft="0" paddingRight="0"
+                arrowButtonWidth="0"
+                useHandCursor="true"
+                buttonMode="true"
+                tabEnabled="false">
+            <mx:popUp>
+                <pspui:BannerSubscriptionStatusPopUp
+                        borderStyle="solid"
+                        borderColor="#9B9EA0"
+                        backgroundColor="#CED5E5"
+                        color="black"
+                        dropShadowEnabled="true"
+                        cornerRadius="5"
+                        verticalGap="0">
+                    <mx:Label text="History" textAlign="center" width="100%"/>
+                    <mx:Grid verticalGap="-2" fontWeight="normal" borderSides="top" borderStyle="solid">
+                        <mx:GridRow>
+                            <mx:GridItem>
+                                <mx:Label text="Over DD Limit:"/>
+                            </mx:GridItem>
+                            <mx:GridItem>
+                                <mx:LinkButton
+                                        id="totalLimitViolationCountButton"
+                                        enabled="{data.directDepositAdditionalInfo.totalLimitVoilationCount > 0}"
+                                        click="goToLimitViolations(event)"
+                                        label="{data.directDepositAdditionalInfo.totalLimitVoilationCount}"
+                                        paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
+                                        textAlign="right" width="100%"
+                                        styleName="standardLinkButtonStyle"/>
+                            </mx:GridItem>
+                        </mx:GridRow>
+                    </mx:Grid>
+                </pspui:BannerSubscriptionStatusPopUp>
+            </mx:popUp>
+        </mx:PopUpButton>
+    </mx:HBox>
+
+    <!-- for 401k only -->
+    <mx:HBox
+            visible="{data.serviceCodeEnum == ServiceCodeEnum.THIRD_PARTY_401K}"
+            includeInLayout="{data.serviceCodeEnum == ServiceCodeEnum.THIRD_PARTY_401K}"
+            horizontalGap="0" width="100%" verticalAlign="top">
+        <mx:Label text="Start Date:"/>
+        <mx:Label id="serviceStartDate" text="{SAPDateFormatters.dateFormatMedium.format(data.serviceStartDate)}"
+                  textAlign="right"/>
+    </mx:HBox>
+
+    <!-- for Vendor Payments only -->
+    <mx:HBox
+            visible="{data.billPaymentAdditionalInfo != null}"
+            includeInLayout="{data.billPaymentAdditionalInfo != null}"
+            horizontalGap="0" width="100%" verticalAlign="bottom">
+        <mx:Label text="Over DD Limit:"/>
+        <mx:Label text="{data.billPaymentAdditionalInfo.consecutiveLimitVoilationCount}" textAlign="right"
+                  width="100%"/>
+        <mx:PopUpButton
+                textAlign="right"
+                icon="{SAP.instance.icons.dropDown}" skin="{null}"
+                openAlways="true"
+                paddingLeft="0" paddingRight="0"
+                arrowButtonWidth="0"
+                useHandCursor="true"
+                buttonMode="true"
+                tabEnabled="false">
+            <mx:popUp>
+                <pspui:BannerSubscriptionStatusPopUp
+                        borderStyle="solid"
+                        borderColor="#9B9EA0"
+                        backgroundColor="#CED5E5"
+                        color="black"
+                        dropShadowEnabled="true"
+                        cornerRadius="5"
+                        verticalGap="0">
+                    <mx:Label text="History" textAlign="center" width="100%"/>
+                    <mx:Grid verticalGap="-2" fontWeight="normal" borderSides="top" borderStyle="solid">
+                        <mx:GridRow>
+                            <mx:GridItem>
+                                <mx:Label text="Over DD Limit:"/>
+                            </mx:GridItem>
+                            <mx:GridItem>
+                                <mx:LinkButton
+                                        enabled="{data.billPaymentAdditionalInfo.totalLimitVoilationCount > 0}"
+                                        click="goToLimitViolations(event)"
+                                        label="{data.billPaymentAdditionalInfo.totalLimitVoilationCount}"
+                                        paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
+                                        textAlign="right" width="100%"
+                                        styleName="standardLinkButtonStyle"/>
+                            </mx:GridItem>
+                        </mx:GridRow>
+                    </mx:Grid>
+                </pspui:BannerSubscriptionStatusPopUp>
+            </mx:popUp>
+        </mx:PopUpButton>
+    </mx:HBox>
+    <mx:HBox horizontalGap="0"
+             visible="{data.serviceCodeEnum == ServiceCodeEnum.CLOUD}"
+             includeInLayout="{data.serviceCodeEnum == ServiceCodeEnum.CLOUD}">
+        <mx:Text text="CAN: {CompanyBannerView(parentDocument).viewModel.company.customerId}" color="0x000000"/>
+    </mx:HBox>
+
+    <!-- for VMP only -->
+    <mx:HBox
+            visible="{CompanyServiceStatus(data).serviceCodeEnum == ServiceCodeEnum.CLOUD}"
+            includeInLayout="{CompanyServiceStatus(data).serviceCodeEnum == ServiceCodeEnum.CLOUD}"
+            horizontalGap="0" width="100%" verticalAlign="top">
+        <mx:Label text="Company Realm Id:"/>
+        <mx:Text text="{CompanyBannerView(parentDocument).viewModel.company.iamRealmId}"/>
+    </mx:HBox>
+</mx:VBox>

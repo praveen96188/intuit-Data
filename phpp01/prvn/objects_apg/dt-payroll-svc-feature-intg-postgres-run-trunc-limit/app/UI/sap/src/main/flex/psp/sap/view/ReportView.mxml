@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<!--
+  Created by: smodgil
+  Description: To Create Duplication Automation View
+  Date:02/08/2019
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:control="http://www.adobe.com/2006/mxml"
+         width="100%" verticalGap="0" creationComplete="onCreationComplete();">
+
+    <mx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.formatters.DateFormatter;
+
+        import psp.sap.application.SAP;
+
+        import psp.sap.formatters.SAPDateFormatters;
+
+        import psp.sap.formatters.SAPDateFormatters;
+
+        import psp.sap.view.*;
+        import psp.sap.viewmodel.RTBViewModel;
+
+        import mx.events.CloseEvent;
+        import mx.managers.PopUpManager;
+        private var mViewModel:RTBViewModel;
+        private var mTempViewModel:RTBViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():RTBViewModel {
+            return mViewModel;
+        }
+
+        protected static var mRTBJobAutomationPopup:DupEEView;
+
+        protected static function getDupEEView():DupEEView {
+            if (mRTBJobAutomationPopup == null) mRTBJobAutomationPopup = new DupEEView();
+            return mRTBJobAutomationPopup;
+        }
+
+        public function set viewModel(value:RTBViewModel):void {
+            if (mCreationComplete) {
+                mViewModel=value;
+            } else {
+                mTempViewModel=value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+            viewModel.canSave=true;
+        }
+
+        private function confirmDownload():void {
+            if (viewModel.selectedReportJob != null && viewModel.selectedReportJob.reportName!="" && viewModel.selectedReportJob.shortDescription=="AMLReportProcessor"){
+
+                var today:Date = SAP.instance.PSPDate;
+                var todayStr:String = SAPDateFormatters.dateFormatShort.format(today);
+                var curMonth:Number = todayStr.toString().split("/")[0];
+                var curDay:Number = todayStr.toString().split("/")[1];
+                var curYear:Number =todayStr.toString().split("/")[2];
+
+                var selectedDate:Date = parseDate(selectedDate.text);
+                var selectedDayStr:String = SAPDateFormatters.dateFormatShort.format(selectedDate);
+                var selMonth:Number = selectedDayStr.toString().split("/")[0];
+                var selDay:Number = selectedDayStr.toString().split("/")[1];
+                var selYear:Number = selectedDayStr.toString().split("/")[2];
+                if((selDay<14 && selMonth==2 && selYear==2020) ||(selYear==2020 && selMonth==1) || selYear<curYear){
+                    Alert.show("Please select a date higher than 13 feb!");
+                }else if((curDay<selDay && curMonth==selMonth) || selMonth>curMonth ){
+                    Alert.show("Can't select future date!");
+                } else {
+                    viewModel.canSave = true;
+                    viewModel.save();
+                }
+            }else{
+                Alert.show("Please select a report to proceed");
+            }
+        }
+
+        /*
+        private function confirmVerifyHandler(event:CloseEvent):void {
+            if (event.detail == Alert.OK) {
+                viewModel.canSave=true;
+                viewModel.save();
+            }
+        }
+        */
+
+        // method to close the TitleWindow targeted by a close event
+        private function closeTitleWindow(evt:CloseEvent):void {
+
+            PopUpManager.removePopUp(mRTBJobAutomationPopup);
+        }
+
+        private function  CurrentDateTimeString():void
+        {
+            var today:Date = SAP.instance.PSPDate;
+
+            var curDate:Date = parseDate(today.toString())
+            var selectedDate:Date = parseDate(selectedDate.text);
+            Alert.show("CurDate: "+curDate.getDay() + "-" +curDate.getMonth() +" SelectedDate: "+selectedDate.getDay() +"-" + selectedDate.getMonth());
+            if(curDate.getDay()<selectedDate.getDay() && curDate.getMonth()==selectedDate.getMonth()){
+
+                Alert.show("Selected Date is greater");
+            }else{
+                Alert.show("No match");
+            }
+
+        }
+
+        private function parseDate(dateString:String):Date {
+            if(dateString == ""){
+                return null;
+            }
+            var formattedDate:String = SAPDateFormatters.dateFormatShort.format(dateString);
+            var txDate:Date = SAP.instance.PSPDate;
+            var time:Number = Date.parse(formattedDate);
+            txDate.setTime(time);
+            return txDate;
+        }
+
+        ]]></mx:Script>
+
+
+
+    <mx:HBox width="100%" >
+        <mx:VBox id="jobActionDiv" width="100%">
+                <mx:HBox verticalAlign="middle" paddingLeft="20">
+                    <controls:RequiredLabel text="Select Report:" width="150" horizontalAlign="right"/>
+                    <controls:SAPComboBox  dataProvider="{viewModel.reportJobList}"  dataField="selectedReportJob"
+                                           labelField="shortDescription"/>
+                </mx:HBox>
+
+                <mx:HBox verticalAlign="middle" paddingLeft="20">
+                    <controls:RequiredLabel text="Select Date:" width="150" horizontalAlign="right"/>
+                    <pspui:SAPDateField id="selectedDate" editable="false" width="100"/>
+                </mx:HBox>
+
+                <mx:HBox paddingLeft="175" paddingBottom="20" paddingTop="10">
+                    <mx:PopUpButton label="Download" click="confirmDownload();"/>
+                </mx:HBox>
+
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:Binding source="selectedDate.text" destination="viewModel.selectedDate" />
+    <mx:Binding source="viewModel.selectedDate" destination="selectedDate.text" />
+</mx:VBox>

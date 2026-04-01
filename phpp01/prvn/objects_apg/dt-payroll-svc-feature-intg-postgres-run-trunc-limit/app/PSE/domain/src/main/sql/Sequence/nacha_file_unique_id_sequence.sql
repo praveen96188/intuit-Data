@@ -1,0 +1,14 @@
+/
+DECLARE
+   sequence_exists PLS_INTEGER;
+BEGIN
+   SELECT COUNT(*) INTO sequence_exists
+   FROM "USER_SEQUENCES"
+   WHERE SEQUENCE_NAME = 'SEQ_ACH_FILE_CTR';
+   IF sequence_exists = 0 THEN
+    EXECUTE IMMEDIATE 'create sequence SEQ_ACH_FILE_CTR MINVALUE 1 MAXVALUE 26 CYCLE';
+   END IF;
+end;
+/
+
+

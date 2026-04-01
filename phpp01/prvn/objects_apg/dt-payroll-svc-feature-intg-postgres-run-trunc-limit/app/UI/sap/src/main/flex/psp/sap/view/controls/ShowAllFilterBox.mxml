@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete();" direction="vertical">
+	
+	<!--
+    * Set "children" to be the default property so we can easily set it from mxml
+    -->
+    <mx:Metadata>
+        [DefaultProperty("children")]
+        [Event(name="transitionEffectEnd", type="mx.events.EffectEvent")]
+    </mx:Metadata>
+    
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.EffectEvent;
+			import mx.core.UIComponent;
+			
+    
+            private var _children:Array = [];
+            private var _childrenChanged:Boolean = false;
+                        
+            
+            /**
+             * Set the 'content' of this component, and then call invalidateProperties
+             *
+             * Note that if only one child is defined in mxml, then that child itself is passed in
+             * If more than one child is defined, then an Array is passed in
+             */
+            public function set children( value:* ):void
+            {
+                if( value is DisplayObject )
+                    _children = [ value ];
+                else
+                    _children = value;
+                
+                _childrenChanged = true;
+                invalidateProperties();
+            }
+            
+            public function get children():Array
+            {
+                return _children;
+            }
+            
+            
+            /**
+             * During the commit properties phase is the best time to
+             * add the children to their intended target
+             */
+            protected override function commitProperties():void
+            {
+                super.commitProperties();
+                
+                if( _childrenChanged )
+                {
+                    for each( var child:DisplayObject in _children )
+                    {
+                        searchBoxForm.addChild( child );                        
+                    }
+                    _childrenChanged = false;
+                }    
+            }
+            
+			private var mFilterStringFunction:Function;
+			
+			public function get filterStringFunction():Function{
+				return mFilterStringFunction;
+			}
+			
+			private function onCreationComplete():void {
+				if (m_showAllSelected) {
+					callLater(collapse);					
+				} else {
+					callLater(expand);
+				}				
+			}
+			
+			public function collapse():void {
+				currentState='searchCollapsed';
+			}
+			
+			public function expand():void {
+				currentState='searchExpanded';
+			}
+			
+			public function toggle():void{
+				currentState=(currentState=='searchExpanded'? 'searchCollapsed' : 'searchExpanded');
+			}
+			
+			private var mSearchBoxHeight:int;
+			
+			[Bindable]
+			public function get searchBoxHeight():int {
+				return mSearchBoxHeight;
+			}
+			
+			public function set searchBoxHeight(value:int):void	{
+				mSearchBoxHeight = value;
+			}
+			
+			
+			private function transitionEffectEnd():void{
+				var ev:EffectEvent = new EffectEvent("transitionEffectEnd");
+				dispatchEvent(ev);
+			}
+			
+			private var mOpenOnStartup:Boolean=false;			
+			
+			[Bindable]
+			public function get openOnStartup():Boolean {
+				return mOpenOnStartup;	
+			}
+
+			public function set openOnStartup(value:Boolean):void{
+				mOpenOnStartup = value;
+			} 
+			
+			private var m_showAllSelected:Boolean = true;
+			
+			[Bindable]
+			public function get showAllSelected():Boolean {
+				return m_showAllSelected;
+			}
+			
+			public function set showAllSelected(value:Boolean):void {
+				m_showAllSelected = value;
+				
+				if(m_showAllSelected) collapse(); else expand();
+			}
+			
+		]]>
+	</mx:Script>
+
+	
+	<mx:VBox width="100%">
+		<mx:RadioButtonGroup id="radioButtonGroupForShowAllFilters" />
+		<mx:VBox paddingLeft="10">
+			<mx:RadioButton groupName="radioButtonGroupForShowAllFilters" value="{true}" label="Show All" useHandCursor="true" buttonMode="true" />
+			<mx:RadioButton groupName="radioButtonGroupForShowAllFilters" value="{false}" label="Filter By: " useHandCursor="true" buttonMode="true"/>
+		</mx:VBox>
+		<mx:Box width="{this.width-2}" id="searchBoxForm"
+		    verticalAlign="top"
+		    horizontalGap="0"
+		    styleName="grayMiniBoxWithMinimalPadding" 
+		    paddingLeft="0"  
+		    direction="horizontal"
+		    verticalScrollPolicy="off"/>
+	</mx:VBox>
+
+	
+	<mx:states>
+		<mx:State name="searchExpanded">					
+																						
+		</mx:State>
+		<mx:State name="searchCollapsed">
+													
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="searchCollapsed" toState="searchExpanded">                      
+			<mx:Sequence target="{searchBoxForm}">
+				<mx:SetPropertyAction name="visible" value="true"/>
+				<mx:SetPropertyAction name="includeInLayout" value="true"/>					
+				<mx:Resize duration="200" widthBy="0" heightFrom="0" heightTo="{this.searchBoxHeight}" effectEnd="transitionEffectEnd();" />
+			</mx:Sequence>			   
+		</mx:Transition>
+		<mx:Transition fromState="searchExpanded" toState="searchCollapsed">
+			<mx:Sequence target="{searchBoxForm}">                      
+				<mx:SetPropertyAction target="{this}" name="searchBoxHeight" value="{searchBoxForm.height}"/>
+				<mx:Resize duration="200" widthBy="0" heightFrom="{searchBoxForm.height}" heightTo="0" effectEnd="transitionEffectEnd();" />
+				<mx:SetPropertyAction name="visible" value="false"/>
+				<mx:SetPropertyAction name="includeInLayout" value="false"/>	
+			</mx:Sequence>   
+		</mx:Transition>
+		<mx:Transition fromState="" toState="searchCollapsed"> <!-- Don't need to have an effect on load -->
+			<mx:Sequence target="{searchBoxForm}">
+				<mx:SetPropertyAction target="{this}" name="searchBoxHeight" value="{searchBoxForm.height}"/>                      
+				<mx:SetPropertyAction name="visible" value="false"/>
+				<mx:SetPropertyAction name="includeInLayout" value="false"/>	
+			</mx:Sequence>   
+		</mx:Transition>
+		<mx:Transition fromState="" toState="searchExpanded"> <!-- Or else not everything shows up.  Go figure. -->
+			<mx:Sequence target="{searchBoxForm}">
+				<mx:SetPropertyAction name="visible" value="true"/>
+				<mx:SetPropertyAction name="includeInLayout" value="true"/>	
+			</mx:Sequence>   
+		</mx:Transition>		
+	</mx:transitions>
+	
+    <mx:Binding source="showAllSelected" destination="radioButtonGroupForShowAllFilters.selectedValue" />
+	<mx:Binding source="Boolean(radioButtonGroupForShowAllFilters.selectedValue)" destination="showAllSelected" />
+	
+</mx:Box>

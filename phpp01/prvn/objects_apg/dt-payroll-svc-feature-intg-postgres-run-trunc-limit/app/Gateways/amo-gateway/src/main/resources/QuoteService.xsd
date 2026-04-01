@@ -1,0 +1,3353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by XMLSpy 2007 Enterprise Ed., Concurrent for 14 users (with SMP from 2007-04-24 to 2009-04-24) (Intuit) -->
+<xs:schema xmlns="http://www.intuit.com/iep/gcs/quote/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.intuit.com/iep/gcs/quote/xsd" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:element name="InvoiceQuoteRequest">
+		<xs:annotation>
+			<xs:documentation>Invoice Quote Request</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="InvoiceQuoteHeader" type="InvoiceQuoteHeaderType">
+					<xs:annotation>
+						<xs:documentation>Header level information for the Invoice Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="InvoiceQuoteLine" type="InvoiceQuoteLineType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Line level details for the Invoice Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="InvoiceQuoteResponse">
+		<xs:annotation>
+			<xs:documentation>Invoice Quote Response</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Result" type="ResultType">
+					<xs:annotation>
+						<xs:documentation>Invoice Quote Result</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="InvoiceQuoteHeader" type="InvoiceQuoteHeaderType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Header level information for the Invoice Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="InvoiceQuoteLine" type="InvoiceQuoteLineType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Line level details for the Invoice Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SalesQuoteRequest">
+		<xs:annotation>
+			<xs:documentation>Sales Quote Request</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SalesQuoteHeader" type="SalesQuoteHeaderType">
+					<xs:annotation>
+						<xs:documentation>Header level information for the Sales Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SalesQuoteLine" type="SalesQuoteLineType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Line level details for the Sales Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SalesQuoteResponse">
+		<xs:annotation>
+			<xs:documentation>Sales Quote Response</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Result" type="ResultType">
+					<xs:annotation>
+						<xs:documentation>Sales Quote Result</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="QuoteHeader" type="SalesQuoteHeaderType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Header level information for the Sales Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="QuoteLine" type="SalesQuoteLineType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Line level details for the Sales Quote</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ShippingRuleValidationRequest">
+		<xs:annotation>
+			<xs:documentation>Shipping Rule Request</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SalesQuoteHeader" type="ShippingRuleHeaderType">
+					<xs:annotation>
+						<xs:documentation>Sales Quote Header</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SalesQuoteLine" type="ShippingRuleLineType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Sales Quote Line</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ShippingRuleValidationResponse">
+		<xs:annotation>
+			<xs:documentation>Shipping Rule Response</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Result" type="ResultType">
+					<xs:annotation>
+						<xs:documentation>Shipping Rule Validation Result</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SalesQuoteHeader" type="ShippingRuleHeaderType">
+					<xs:annotation>
+						<xs:documentation>Sales Quote Header</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SalesQuoteLine" type="ShippingRuleLineType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Sales Quote Line</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Error" type="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Error object for the WSDL</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="AccountInfoType">
+		<xs:annotation>
+			<xs:documentation>Account Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="RefId" type="RefIdType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Hold" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>This field indicates whether the Party's Account is in a Hold state due to payment, fraud or RPS problems.  This field will only appear on the outgoing message.  If provided on an incoming message, it will be ignored.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountStatus" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Account Status of the party e.g. Active, Account Hold, Delinquent, Uncollectible, Fraud, or RPS Hold</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AddressInfoType">
+		<xs:annotation>
+			<xs:documentation>Address Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AddressId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Address</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeName" use="required">
+								<xs:annotation>
+									<xs:documentation>Scheme Name</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string"/>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddressType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of Address e.g. PO Box</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AddressLine" type="xs:string" minOccurs="0" maxOccurs="4">
+				<xs:annotation>
+					<xs:documentation>The Lines of the Address.  The first Address Line is typically the number and street.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="City" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The City of the Address.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="County" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The County of the Address.  The county is used for calculating tax.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="StateOrProvince" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The State or the Province of the address, depending on which is pertinent.  Required for all US addresses.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Country" type="xs:string" default="US" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Country of the Address</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PostalCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Postal Code or Zip Code of the address, if applicable.  An extended zip+4 code includes the five digits of the ZIP code, a hyphen, and four more digits that determine a more precise location than the ZIP code alone.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AdjustmentsType">
+		<xs:annotation>
+			<xs:documentation>Adjustments at the line item level</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Credit" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Adjustments</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="CreditPriceType">
+							<xs:sequence>
+								<xs:element name="SoftwareConfigurationCredit" type="AmountType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Software Configuration Credit</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Discount" type="DiscountPriceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Discount Adjustments</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Promotion" type="PromotionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Promotion Adjustments</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Entitlement" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement-related Adjustments</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EntitlementPriceAdjustmentAmount" type="AmountType">
+							<xs:annotation>
+								<xs:documentation>Entitlement Price Adjustment</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Rollup" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjustment rollup</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PricingAdjustmentAmount" type="AmountType">
+							<xs:annotation>
+								<xs:documentation>EntitlementPriceAdjustmentAmount + UnitPromotionDiscountAmount </xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AmountType">
+		<xs:annotation>
+			<xs:documentation>Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="AttributeType">
+		<xs:annotation>
+			<xs:documentation>A collection of attributes</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attribute Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Value" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attribute Value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AuthorizationIdType">
+		<xs:annotation>
+			<xs:documentation>Authorization Id</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="authType" use="required">
+					<xs:annotation>
+						<xs:documentation>Auth Type</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Individual"/>
+							<xs:enumeration value="Organization"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="BillingCycleType">
+		<xs:annotation>
+			<xs:documentation>Billing Cycle Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="BillingPeriod" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The period (number of days, weeks, months, or years) for which the bill is generated.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="day"/>
+						<xs:enumeration value="week"/>
+						<xs:enumeration value="month"/>
+						<xs:enumeration value="year"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="BillingFrequency" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The number of billing periods that make up the billing cycle.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="NextBillDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Next Bill Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BillingDayOfTheMonth" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Billing Day of the Month</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="31"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BillingProfileType">
+		<xs:annotation>
+			<xs:documentation>Billing Profile Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="BillingCycle" type="BillingCycleType">
+				<xs:annotation>
+					<xs:documentation>Billing Cycle</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BusinessType">
+		<xs:annotation>
+			<xs:documentation>Business</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The full Business Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LegalName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Legal Name of the Business</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="TelephoneType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The business's telephone number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="TelephoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The contacts fax number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Type" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Type of Business such as Household, Business or Payroll</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CompanyId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Company Id that identifies the top-level legal entity for which tax exception may exist.  The Vertex Central User Interface is us used to set up any taxability rules that apply at this level.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DivisionId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Division Id identifies the mid-level legal entity for which tax exceptions may exist.  The Vertex Central User Interface is us used to set up any taxability rules that apply at this level.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CancellationType">
+		<xs:annotation>
+			<xs:documentation>Cancellation Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CancellationDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cancellation Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CancellationReason" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cancellation Reason</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactType">
+		<xs:annotation>
+			<xs:documentation>Contact</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Type">
+				<xs:annotation>
+					<xs:documentation>Contact Type (Primary, Billing, Shipping)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Primary"/>
+						<xs:enumeration value="Billing"/>
+						<xs:enumeration value="Shipping"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Person" type="PersonType">
+				<xs:annotation>
+					<xs:documentation>The Person involved in the business transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="TelephoneType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The Contacts Telephone Number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EmailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The Contacts Email Address.  This field is not validated, but it is highly recommended to be in the canonical format of aaa@aaaaa.aaa</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="TelephoneType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The Contacts Fax Number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PreferredCorrespondenceMethod" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Party's Preferred Method of Correspondence.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Email"/>
+						<xs:enumeration value="Fax"/>
+						<xs:enumeration value="Mail"/>
+						<xs:enumeration value="Phone"/>
+						<xs:enumeration value="SMS"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CreditInfoType">
+		<xs:annotation>
+			<xs:documentation>Credit Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Hold" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This field indicates whether the Party's Account is in a Hold state due to credit problems.  This field will only appear on the outgoing message.  If provided on an incoming message, it will be ignored.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditStatus" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Credit Status of the Party, based on past sales/financial interactions e.g. NSF. There is no default value.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditLimit" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Maximum Credit Limit enabled for this party.  If not provided, the default amount will be determined by the back office.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AvailableCredit" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Available Credit a Party has for purchasing products.  If the party has an unpaid balance from aprevious open order, the amount will be reflected on this field.  This field will only appar on the outgoing message.  If provided on an incoming message, it will be ignored.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CollectionStatus" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Collection Status of the Party, based on most recent sales/financial interactions.  Theer is no default value. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CreditPriceType">
+		<xs:annotation>
+			<xs:documentation>Credit Price Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CreditAmount" type="AmountType">
+				<xs:annotation>
+					<xs:documentation>Credit Amount due to update, modification or migration</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditAmountTax" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax for the Credit Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DiscountPriceType">
+		<xs:annotation>
+			<xs:documentation>Discount Price Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="ManualDiscountAmount" type="AmountType">
+					<xs:annotation>
+						<xs:documentation>Manual Adjustment Amount.  This should not be used for self-service</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ManualDiscountPercentage" type="xs:decimal">
+					<xs:annotation>
+						<xs:documentation>Manual Adjustment Percentage.  This should not be used for self-service</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="PolicyDiscountAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Policy Discount for product only (exclude shipping)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DocumentReferenceType">
+		<xs:annotation>
+			<xs:documentation>Document Reference Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ReferenceDocumentId">
+				<xs:annotation>
+					<xs:documentation>Reference Document Id</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Type of Document Id</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ReferenceLineNumber" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference Line Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EligibilityRulesType">
+		<xs:annotation>
+			<xs:documentation>Item Eligibility Rules Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Status" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Eligibility Status</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Reason" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Eligibilty Reason</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntitlementType">
+		<xs:annotation>
+			<xs:documentation>Entitlement</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SerialNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Serial Number for the Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RegistrationNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique Registration Number assigned to the Item, which associates it with a Party.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActivationCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Activation Code for activation of the Ittem.  This is only applicable if this item requires activation.  This code may be printed on the product packing slip used in shipment.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LicenseNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique License Number assigned to the Item, which associates it with a Party.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementOfferingCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Product Number (can be associated with multiple items) that associates the item to an entitlement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AssetId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Asset Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AssetIntegrationId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Asset Integration Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EntitlementPriceType">
+		<xs:annotation>
+			<xs:documentation>Entitlement Price Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Id for the Entitlement Price</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name for the Entitlement Price</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TemplateName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement Template Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Error Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Category">
+				<xs:annotation>
+					<xs:documentation>Error Category</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Functional"/>
+						<xs:enumeration value="Input"/>
+						<xs:enumeration value="Operational"/>
+						<xs:enumeration value="Transitory"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Code" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Error Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Error Description</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FreightType">
+		<xs:annotation>
+			<xs:documentation>Freight</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ShipToPartyId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shippable lines will be shipped to this Party.  If the provided Party Id is for a BillTo Party, the PrimaryContact and PrimaryAddress information will be used unless a Secondary Address/Contact is provided.  If the Parties section defines only a BillToParty, then that Party will implicitly be used and this field is not required.  Also, if the Parties section defines a ShipToParty, then that Party will implicitly be used and this field is not required.  If Parties section defines more than 1 ShipToParty, then this field is required (if the line is shippable).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipCarrier" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The specific Carrier used to indicate through which carrier this item should be shipped.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipSetNumber" type="xs:unsignedInt" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This specifies which Ship Set this line should be part of.  Using this field enables the capability to bundle several lines into one shipment.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightChargeType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Used in calculating the Freight Charges individual products or a set of products.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipZone" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Zone (or General) Region to which the shipment must be sent to.  The value is used for calculating the freight charges.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShippingLevelAgreement" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shipping Level Agreement</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightCharge" type="FreightChargeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Freight Charges applied to the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightTax" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Freight Tax Amount, excluding the sales tax charged for the item.  The sum of TaxAmount and FreightTax make up the total tax for a given line.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ExtendedTaxAmount" type="AmountType">
+							<xs:annotation>
+								<xs:documentation>The Freight Tax Amount, excluding the sales tax charged for the item.  The sum of TaxAmount and FreightTax make up the total tax for a given line.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="UnitTaxAmount" type="AmountType">
+							<xs:annotation>
+								<xs:documentation>The Unit Freight Tax Amount, excluding the sales tax charged for the item</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TaxRate" type="TaxRateType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Freight Tax Percentage Rate that was used to make the calculation</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="JurisdictionInfo" type="JurisdictionInfoType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Jurisdiction level tax details</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FreightChargeDetailsType">
+		<xs:annotation>
+			<xs:documentation>Freight Charge Details</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="UnitFreightCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Shipping and Handling Charge before discount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedFreightCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Shipping and Handling Charge * Qty</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitFreightDiscount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Shipping and Handling Discount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedFreightDiscount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Shipping and Handling Discount * Qty</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitNetFreightCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>UnitNetFreightCharge = UnitFreightCharge - UnitFreightDiscount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedNetFreightCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ExtendedNetFreightCharge = ExtendedFreightCharge - ExtendedFreightDiscount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FreightChargeType">
+		<xs:annotation>
+			<xs:documentation>Freight Charge</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Amount" type="NonNegativeAmountType">
+				<xs:annotation>
+					<xs:documentation>The Amount per specified unit of measure</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PerQuantity" type="QuantityType">
+				<xs:annotation>
+					<xs:documentation>The Quantity for which the unit price applies to</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightChargeDetails" type="FreightChargeDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Charge Details</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FulfillmentType">
+		<xs:annotation>
+			<xs:documentation>Fulfillment</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FulfillmentStatus" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Fulfillment Sumary Status for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DeliveryEstimates" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Delivery Estimates for the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="InitialPromiseDeliveryDateFrom" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Initial Promise Delivery Start Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="InitialPromiseDeliveryDateTo" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Initial Promise Delivery End Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="LatestPromiseDeliveryDateFrom" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Latest Promise Delivery Start Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="LatestPromiseDeliveryDateTo" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Latest Promise Delivery End Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="FulfillmentEstimates" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Fulfillment Estimates for the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="InitialPromiseShipDateFrom" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Initial Promise Ship Start Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="InitialPromiseShipDateTo" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Initial Promise Ship End Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="LatestPromiseShipDateFrom" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Latest Promise Ship Start Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="LatestPromiseShipDateTo" type="xs:dateTime" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Latest Promise Ship End Date</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="HeaderFreightType">
+		<xs:annotation>
+			<xs:documentation>Header Freight Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FreeShipFlag" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if shiping is free</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipCarrier" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The specific Carrier for shipping the order</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BatchNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Batch is a logical grouping of orders.  If the order is part of a batch, this field may be used to identify it.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShippingLevelAgreement" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shipping Level Agreement</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceChargeType">
+		<xs:annotation>
+			<xs:documentation>Charge at the line item level</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Credit" type="InvoiceCreditPriceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Discount" type="InvoiceDiscountPriceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Discount Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Promotion" type="InvoicePromotionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Promotion Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceContextType">
+		<xs:annotation>
+			<xs:documentation>Invoice Context</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesOrganization" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The Sales Organization (or System) that originated this transaction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BizProcessType" default="Invoice" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>To indicate whether it is a sales quotation or invoice quotation</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Invoice"/>
+						<xs:enumeration value="Quotation"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TransactionDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which the sales transaction was created or recorded.  This field must be provided if the transaction datetime is different from the document datetime.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>An Identifier for the specific Transaction Type (Purchase order, Sales Order or Prepyament)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Lease"/>
+						<xs:enumeration value="Purchase"/>
+						<xs:enumeration value="Rental"/>
+						<xs:enumeration value="Sale"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TransactionSubtype" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction Subtype based on line items on the sales transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Channel" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Channel through which the sale took place</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Fax"/>
+						<xs:enumeration value="In-Product"/>
+						<xs:enumeration value="Mail"/>
+						<xs:enumeration value="Mobile"/>
+						<xs:enumeration value="Partner"/>
+						<xs:enumeration value="Phone"/>
+						<xs:enumeration value="Retail"/>
+						<xs:enumeration value="Web"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TaxHandlingApproach" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Tax Handling Approach for this Sales Transaction (Standard, Exempt or Require).  A Standard value will base tax exempt handling on the Bill To party information.  An Exempt value may be used when a tax-emempt customer places a tax exempt order.  When stating Exempt, the associated CustomerParty must have tax exempt information.  A Require value may be used when a tax exempt customer places an order that requires taxation.  </xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Exempt"/>
+						<xs:enumeration value="Require"/>
+						<xs:enumeration value="Standard"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TaxInfoSpec" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Metadata to specify the behavior of the Global Sales Tax Response</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="JurisdictionLevelDetails" type="xs:boolean" default="false">
+							<xs:annotation>
+								<xs:documentation>Flag to indicate if the detailed Tax Jurisdiction Levels are required in the Global Sales tax Response</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SalesParty" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sales Party Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CompanyId" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Company Id that identifies the top-level legal entity for which tax exception may exist.  The Vertex Central User Interface is used to set up any taxability rules that apply at this level.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DivisionId" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Division Id identifies the mid-level legal entity for which tax exceptions may exist.  The Vertex Central User Interface is us used to set up any taxability rules that apply at this level.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TaxJurisdiction" type="TaxJurisdictionType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Tax Jurisdiction Info</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceCreditPriceType">
+		<xs:annotation>
+			<xs:documentation>Credit Price Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CreditAmount" type="AmountType">
+				<xs:annotation>
+					<xs:documentation>Credit Amount due to update, modification or migration</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditAmountTax" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax for the Credit Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceDiscountPriceType">
+		<xs:annotation>
+			<xs:documentation>Discount Price Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="ManualDiscountAmount" type="AmountType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Manual Adjustment Amount.  This should not be used for self-service</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ManualDiscountPercentage" type="xs:decimal" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Manual Adjustment Percentage.  This should not be used for self-service</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="PolicyDiscountAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Policy Discount for product only (exclude shipping)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceFreightChargeType">
+		<xs:annotation>
+			<xs:documentation>Invoice Freight Charge</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Amount" type="AmountType">
+				<xs:annotation>
+					<xs:documentation>The Amount per specified unit of measure</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PerQuantity" type="QuantityType">
+				<xs:annotation>
+					<xs:documentation>The Quantity for which the unit price applies to</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceFreightType">
+		<xs:annotation>
+			<xs:documentation>Freight</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ShipToPartyId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shippable lines will be shipped to this Party.  If the provided Party Id is for a BillTo Party, the PrimaryContact and PrimaryAddress information will be used unless a Secondary Address/Contact is provided.  If the Parties section defines only a BillToParty, then that Party will implicitly be used and this field is not required.  Also, if the Parties section defines a ShipToParty, then that Party will implicitly be used and this field is not required.  If Parties section defines more than 1 ShipToParty, then this field is required (if the line is shippable).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipCarrier" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The specific Carrier used to indicate through which carrier this item should be shipped.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipSetNumber" type="xs:unsignedInt" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This specifies which Ship Set this line should be part of.  Using this field enables the capability to bundle several lines into one shipment.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightChargeType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Used in calculating the Freight Charges individual products or a set of products.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipZone" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Zone (or General) Region to which the shipment must be sent to.  The value is used for calculating the freight charges.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightCharge" type="InvoiceFreightChargeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Freight Charges applied to the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FreightTax" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Freight Tax Amount, excluding the sales tax charged for the item.  The sum of TaxAmount and FreightTax make up the total tax for a given line.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ExtendedTaxAmount" type="AmountType">
+							<xs:annotation>
+								<xs:documentation>The Freight Tax Amount, excluding the sales tax charged for the item.  The sum of TaxAmount and FreightTax make up the total tax for a given line.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="UnitTaxAmount" type="AmountType">
+							<xs:annotation>
+								<xs:documentation>The Unit Freight Tax Amount, excluding the sales tax charged for the item</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TaxRate" type="TaxRateType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The Freight Tax Percentage Rate that was used to make the calculation</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="JurisdictionInfo" type="JurisdictionInfoType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Jurisdiction level tax details</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceHeaderFreightType">
+		<xs:annotation>
+			<xs:documentation>Invoice Header Freight Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FreeShipFlag" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if shiping is free</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipCarrier" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The specific Carrier for shipping the order</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BatchNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Batch is a logical grouping of orders.  If the order is part of a batch, this field may be used to identify it.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceItemType">
+		<xs:annotation>
+			<xs:documentation>Item</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ProductClass" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Product class for the item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProductLine" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Product Line Name for the Item.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemCategory" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Code used to represent Groups or Categories of Products or Services with similar taxability</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of item e.g. Software product vs. Service</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SmartPartNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Part number for different combinations of the item attributes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemDefinition" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Item Definition</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceOrderItemType">
+		<xs:annotation>
+			<xs:documentation>Order Item</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ItemIds">
+				<xs:annotation>
+					<xs:documentation>The Ids of the items associated with this Quote Line.  It may include item cross references used in other systems, such as legacy systems or external suppliers.  Required for all scenarios except registrations.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="ItemId" type="ItemIdType">
+								<xs:annotation>
+									<xs:documentation>The Primary Item Id</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="AlternativeItemId" type="ItemIdType">
+								<xs:annotation>
+									<xs:documentation>An alternate Item Cross-reference, such as an ItemAlias</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+						<xs:element name="ParentItemId" type="ItemIdType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>An optioanl Item Id that may be used to determine the Parent or Ensemble/Kit Item this item is part of.  This field will have special uses (for explicit clarification) by systems that explode ensembles into components before passing them to the ERP system.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Name or Description of the Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemAttributes" type="InvoiceItemType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item Attributes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoicePartyType">
+		<xs:annotation>
+			<xs:documentation>Party Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Business" type="BusinessType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Business-related Information</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxExempt" type="TaxExemptType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Exemption Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="AddressInfoType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Addresses pertaining to this Party or Contact.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Contact" type="InvoicePersonType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Contact Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReferredToParties" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Referred To Parties</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ReferredToParty" type="ReferredToPartyType" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Referred To Party used for tracking if an account was referred by another account (0 to many relationship).</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoicePersonType">
+		<xs:annotation>
+			<xs:documentation>Person</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PersonName" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Person Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Title" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Business or Professional Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedTitle" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Free-form Title that may be identified in the call center to describe the Contact's Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Role" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Role of this Contact within the context which this object is used.  This field can be used to clarify multi-role contacts.  This field should only be provided on the abstract Contact object (not on any derived forms, such as the Primary Contact)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoicePriceDetailsType">
+		<xs:annotation>
+			<xs:documentation>Price Details</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="UnitCurrentCharge" type="NonNegativeAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Current Charge after proration to BDOM.  For one-time purchase or no BDOM, it is the same as Unit Price.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedCurrentCharge" type="NonNegativeAmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extended Current Charge (Unit Curent Charge * Qty)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoicePromotionType">
+		<xs:annotation>
+			<xs:documentation>Promotion Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="UnitPromotionDiscountAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Promotional Discount Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedPromotionDiscountAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Promotional Discount Amount * Qty</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceQuoteHeaderType">
+		<xs:annotation>
+			<xs:documentation>Invoice Quote Header</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DocumentId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The unique Identifier assigned to this business transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DocumentDateTime" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which this service request is created or recorded</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Parties">
+				<xs:annotation>
+					<xs:documentation>Party Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="BillToParty" type="InvoicePartyType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Bill To Party</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ShipToParty" type="InvoicePartyType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Ship To Party</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Freight" type="InvoiceHeaderFreightType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesContext" type="InvoiceContextType">
+				<xs:annotation>
+					<xs:documentation>Sales Context that originiated this transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="InvoiceQuote" type="InvoiceQuoteType">
+				<xs:annotation>
+					<xs:documentation>Invoice Quote</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceQuoteLineType">
+		<xs:annotation>
+			<xs:documentation>Quote Line</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LineNumber" type="xs:nonNegativeInteger">
+				<xs:annotation>
+					<xs:documentation>A unique Serial Number assigned to the line by the source system.  Each line must have a unique value on a given transaction document.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ParentLineNumber" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Parent Line Number for bundle, ensemble, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RootLineNumber" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Root Line Number for bundle, ensemble, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderItem" type="InvoiceOrderItemType">
+				<xs:annotation>
+					<xs:documentation>The Product/Service item information for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderQuantity" type="QuantityType">
+				<xs:annotation>
+					<xs:documentation>The Ordered Quantity for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitPrice" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Unit Price of the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="PriceType">
+							<xs:sequence>
+								<xs:element name="PriceDetails" type="InvoicePriceDetailsType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Price details</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="LineTotal" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Cost of the Line Item (ExtCurrentCharge + ExtCurrentChargeTax + ExtNetShippingCharge + ExtNetShippingChargeTax + CreditAmount + CreditAmountTax)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Adjustments" type="InvoiceChargeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjustment Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tax" type="TaxType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Info for the Line Item.  It includes the freight and sales tax.  Any tax objects supplied on the GetQuote message will be ignored.  The tax object will be returned on the ShowQuote message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Freight" type="InvoiceFreightType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Info for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Action to be performed on the Line Item.  Specifically, it indicates whether the line item is added, changed, cancelled, refunded, updated, suspended, resumed or deleted.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Add"/>
+						<xs:enumeration value="Cancel"/>
+						<xs:enumeration value="Delete"/>
+						<xs:enumeration value="Refund"/>
+						<xs:enumeration value="Resume"/>
+						<xs:enumeration value="Suspend"/>
+						<xs:enumeration value="Update"/>
+						<xs:enumeration value="None"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ActionSubtype" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Action Subtype to be performed on the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActionDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which the action was/will be performed</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DocumentReference" type="DocumentReferenceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Document Reference</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceQuoteType">
+		<xs:annotation>
+			<xs:documentation>Invoice Quote</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TotalTransaction" type="AmountType">
+				<xs:annotation>
+					<xs:documentation>Total Transaction Amount.  Total charges (line item price, sales/use tax, freight charge, etc.) - discounts - refunds.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalNRC" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Non-recurring Charge</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalMRC" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Monthly Recurring Charge</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalTax" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Tax Amount.  A sum of the taxes that have been calculated as part of the quotation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalFreight" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Freight Amount.  A sum of the freight changes that have been calculated as part of the quotation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalDiscount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Discount Amount.  A sum of the discounts that have been calculated as part of the quotation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalCredit" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Credit Amount.  A sum of the credit that have been calculated as part of the quotation.  It includes any sales/use tax as well as freight charge refund.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ItemIdType">
+		<xs:annotation>
+			<xs:documentation>Item Id</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id">
+				<xs:annotation>
+					<xs:documentation>Item Id</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeName">
+								<xs:annotation>
+									<xs:documentation>Scheme Name</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="ItemAlias"/>
+										<xs:enumeration value="MACS20Byte"/>
+										<xs:enumeration value="OracleSKU"/>
+										<xs:enumeration value="PIM"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ItemType">
+		<xs:annotation>
+			<xs:documentation>Item</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ProductClass" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Product class for the item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProductLine" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Product Line Name for the Item.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemCategory" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Code used to represent Groups or Categories of Products or Services with similar taxability</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Type of item e.g. Software product vs. Service</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemDefinition" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Item Definition</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SmartPartNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Part number for different combinations of the item attributes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Platform" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Operating System Platform on which the Item operates on.  Examples include Windows XP Professional, Windows 95, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Media" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Media on which the Item is delivered.  Exampled include CD-ROM, Disk, Electronic, 3.5-inch floppy, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Version" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Version Number for the Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Release" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Release Number or code for the Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Edition" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Edition for the Item.  Examples include Basic, Pro, Multi-user, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DownloadInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if it is a downloadable item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShippableInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if it is a Shippable item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubscriptionInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if it is a subscripiton Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RetailInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if it is a Retail item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NameType">
+		<xs:annotation>
+			<xs:documentation>Name</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Salutation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Phrase that may prefix the name.  Examples: Mr., Mrs., Ms., Dr., etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GivenName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>First Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MiddleName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Middle Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FamilyName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Last Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Suffix" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Phrase that may suffix the name.  Examples: Jr., Sr., I, II, III, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NonNegativeAmountType">
+		<xs:annotation>
+			<xs:documentation>Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="NonNegativeDecimal">
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="NonNegativeDecimal">
+		<xs:annotation>
+			<xs:documentation>The non-negative-decimal type specifies a non-negative decimal value.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="OfferReferenceType">
+		<xs:annotation>
+			<xs:documentation>Offer Reference</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DocumentId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Transaction Identifier (such as a sales order number) that will be later assigned to the sales order.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineNumber" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Serial Number assigned to the line by the source system.  Each line must have a unique value on a given message.A unique serial number assigned to the line by the source system.  Each line must have a unique value on a given message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OrderItemType">
+		<xs:annotation>
+			<xs:documentation>Order Item</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ItemIds">
+				<xs:annotation>
+					<xs:documentation>The Ids of the items associated with this Quote Line.  It may include item cross references used in other systems, such as legacy systems or external suppliers.  Required for all scenarios except registrations.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="ItemId" type="ItemIdType">
+								<xs:annotation>
+									<xs:documentation>The Primary Item Id</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="AlternativeItemId" type="ItemIdType">
+								<xs:annotation>
+									<xs:documentation>An alternate Item Cross-reference, such as an ItemAlias</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:choice>
+						<xs:element name="ParentItemId" type="ItemIdType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>An optioanl Item Id that may be used to determine the Parent or Ensemble/Kit Item this item is part of.  This field will have special uses (for explicit clarification) by systems that explode ensembles into components before passing them to the ERP system.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PromotionProductNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Promotion Product Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Name or Description of the Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ItemAttributes" type="ItemType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item Attributes</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Entitlement" type="EntitlementType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement-related Information</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EligibilityRules" type="EligibilityRulesType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item Eligibility Rules</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyConcessionType">
+		<xs:annotation>
+			<xs:documentation>Party Concession</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AccountId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account Id</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Scheme Name</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AccountType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account Type.  It is used by the pricing engine to determine the current price.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyType">
+		<xs:annotation>
+			<xs:documentation>Party Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AuthorizationId" type="AuthorizationIdType" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation>Authorization Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Business" type="BusinessType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Business-related Information</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxExempt" type="TaxExemptType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Exemption Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Address" type="AddressInfoType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Addresses pertaining to this Party or Contact.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Contact" type="ContactType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Contact Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AccountInfo" type="AccountInfoType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Account Info of this party</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CreditInfo" type="CreditInfoType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Credit Info of this party</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BillingProfile" type="BillingProfileType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Billing Profile</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReferredToParties" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Referred To Parties</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ReferredToParty" type="ReferredToPartyType" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Referred To Party used for tracking if an account was referred by another account (0 to many relationship).</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PartyIdType">
+		<xs:annotation>
+			<xs:documentation>Party Id</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="schemeName" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Scheme Name</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="PersonType">
+		<xs:annotation>
+			<xs:documentation>Person</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AuthorizationId" type="AuthorizationIdType" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation>The Authorization Id or Code for this Individual or Organization.  This field is typically derived from the Uni-Auth system</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PersonName" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Person' Name object.  My be left blank only when this object is used within a SalesPerson object.  For other uses it is required.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Title" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Business or Professional Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedTitle" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Free-form Title that may be identified in the call center to describe the Contact's Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Role" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Role of this Contact within the context which this object is used.  This field can be used to clarify multi-role contacts.  This field should only be provided on the abstract Contact object (not on any derived forms, such as the Primary Contact)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PriceDetailsType">
+		<xs:annotation>
+			<xs:documentation>Price Details</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="UnitRecurringCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Recurring Charge.  For monthly subscripiton, it is the monthly recurring charge.  For yearly subscription, it is the yearly recurring charge.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedRecurringCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extended Recurring Charge (Unit Recurring Charge * Qty)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NRCSubtotal" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>NRC Subtotal (NRC * Qty).  For CPC, this includes the CPC component values</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MRCSubtotal" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>MRC Subtotal (MRC * Qty).  For CPC, this includes the CPC component values.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitCurrentCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Current Charge after proration to BDOM.  For one-time purchase or no BDOM, it is the same as Unit Price.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedCurrentCharge" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extended Current Charge (Unit Curent Charge * Qty)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NetPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit item price (either One-Time or Recurring) that includes all the discounts but without proration.   For One-Time, this includes Credit.  For Recurring, the NetPrice does not include Credit.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedNetPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extended Net Price.  Net Price * Qty.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OfferingConfigurationPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offering Configuration Price.  List Price + CPC Adjustment + Attribute Adjustment</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FinanceListPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Finance List price.  Offering Configuration Price + Customer Price Adjustment (Enttlement Price with Customer Base type).  For VSOE.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="NonPromotionalPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Non-Promotional Price.  For subscription, this is the price that BRM will charge after the promotion ends.  Net Price + Promotional Discount Amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedNonPromotionalPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extended Non-Promotional Price.  Non-Promotional Price * Qty</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineItemTotalDiscount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Line Item Discount.  (Finance List Price - Net Price) *Qty</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CycleForward" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cycle Forward indicates if the customer will pay for the subscription at the beginning (true) or the end (false) of the billing cycle.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PriceListType">
+		<xs:annotation>
+			<xs:documentation>Price List</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Id" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Price List Id</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="schemeName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Scheme Name</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Price List Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PriceType">
+		<xs:annotation>
+			<xs:documentation>Price</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Amount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Amount per specified unit of measure</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PerQuantity" type="QuantityType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Quantity for which the unit price applies to</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PriceWaterfallType">
+		<xs:annotation>
+			<xs:documentation>Price Waterfall Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Text" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Text</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Price" type="xs:decimal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Price</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CurrencyCode" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Currency Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdjustmentType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjustment Type</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdjustmentSubtype" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjustment Subtype</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdjustmentAmount" type="xs:decimal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjustment Amount is the adjutsment applied to the Start Price or Net Price</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdjustedResult" type="xs:decimal" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjusted Value is the difference between the previous Net Price and the current Net Price or Current Charge</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PricingHeaderType">
+		<xs:annotation>
+			<xs:documentation>Pricing Header</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PriceList" type="PriceListType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Price List Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PricingDate" type="TimePeriodType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Pricing Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PromotionCode" type="PromotionCodeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Promotion Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PartyConcession" type="PartyConcessionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Party/Account related concession criteria</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PricingLineType">
+		<xs:annotation>
+			<xs:documentation>Pricing Line</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PriceList" type="PriceListType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Price List Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PricingDate" type="TimePeriodType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Pricing Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EntitlementPrice" type="EntitlementPriceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Entitlement Price provides entitlement pricing terms namely Adjustment Type and Adjustment Amount used in the Quote or Order line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PromotionCode" type="PromotionCodeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Promotion Code</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PriceWaterfall" type="PriceWaterfallType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Price Waterfall Info.  A detailled overview of all discounts that have been applied to a product.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CompatibilityType">
+		<xs:annotation>
+			<xs:documentation>Compatibility / Eligibility of Line items</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="EligibilityStatus" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Eligibility/Compatibility Status (Y or N)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EligibilityReason" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Eligibility Failure Reason</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PromotionCodeType">
+		<xs:annotation>
+			<xs:documentation>Promotion Code</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="schemeName" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Scheme Name e.g. Type of Promotion Code</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="PromotionType">
+		<xs:annotation>
+			<xs:documentation>Promotion Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="UnitPromotionDiscountAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Promotional Discount Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedPromotionDiscountAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit Promotional Discount Amount * Qty</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedNonPromotionPrice" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Extended Net Price + Extended Promotion Discount Amount</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PromotionEndDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Promotion End Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="QuantityType">
+		<xs:annotation>
+			<xs:documentation>Quantity</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:nonNegativeInteger">
+				<xs:attribute name="uom" use="required">
+					<xs:annotation>
+						<xs:documentation>Unit of Measure  Count by unit (e.g. Each) or Time-based (e.g. Day, Month and Year).</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Day"/>
+							<xs:enumeration value="Each"/>
+							<xs:enumeration value="Month"/>
+							<xs:enumeration value="Year"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ReferredToPartyType">
+		<xs:annotation>
+			<xs:documentation>Referred To Party</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" type="PartyIdType">
+				<xs:annotation>
+					<xs:documentation>Party Id</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Name of the Parent account</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RelationshipType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Relationship Type between the Parent Account and the Child Account</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RefIdType">
+		<xs:annotation>
+			<xs:documentation>Reference Id</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="schemeName">
+			<xs:annotation>
+				<xs:documentation>Scheme Name</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ResultType">
+		<xs:annotation>
+			<xs:documentation>Service Result</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Status">
+				<xs:annotation>
+					<xs:documentation>Service Status</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Success"/>
+						<xs:enumeration value="Failure"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Error" type="ErrorType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Error Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesBusinessType">
+		<xs:annotation>
+			<xs:documentation>Business</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The full Business Name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LegalName" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Legal Name of the Business</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Telephone" type="TelephoneType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The business's telephone number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fax" type="TelephoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The contacts fax number(s).  The canonical format is as follows: [country code][(area code)]number[Ext extension][+#...][(#...)]###...[ Ext #...].  The number portion is required at a minimum, others are optional (but recommended if known).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Type" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Type of Business such as Household, Business or Payroll</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CompanyId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Company Id that identifies the top-level legal entity for which tax exception may exist.  The Vertex Central User Interface is used to set up any taxability rules that apply at this level.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DivisionId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Division Id identifies the mid-level legal entity for which tax exceptions may exist.  The Vertex Central User Interface is us used to set up any taxability rules that apply at this level.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxJurisdiction" type="TaxJurisdictionType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesContextType">
+		<xs:annotation>
+			<xs:documentation>Sales Context</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesOrganization" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The Sales Organization (or System) that originated this transaction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BizProcessType" default="Quotation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>To indicate whether it is a sales quotation or invoice quotation</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Invoice"/>
+						<xs:enumeration value="Quotation"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TransactionDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which the sales transaction was created or recorded.  This field must be provided if the transaction datetime is different from the document datetime.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TransactionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>An Identifier for the specific Transaction Type (Purchase order, Sales Order or Prepyament)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Lease"/>
+						<xs:enumeration value="Purchase"/>
+						<xs:enumeration value="Rental"/>
+						<xs:enumeration value="Sale"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TransactionSubtype" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction Subtype based on line items on the sales transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Channel" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Channel through which the sale took place</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Fax"/>
+						<xs:enumeration value="In-Product"/>
+						<xs:enumeration value="Mail"/>
+						<xs:enumeration value="Mobile"/>
+						<xs:enumeration value="Partner"/>
+						<xs:enumeration value="Phone"/>
+						<xs:enumeration value="Retail"/>
+						<xs:enumeration value="Web"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="OrderType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Order Type to facilitate downstream processing</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BatchInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if the sale is part of a Batch (as opposed to a single one-time sale).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PartnerInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if the sale originated in a source External to Intuit, i.e. an Outsourced Partner.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RecurrenceInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if the sale is part of a Recurring Agreement, such as an annual subscription, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ValidateProductCompatability" type="xs:boolean" default="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates if the product compatability shall be validated</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxHandlingApproach" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Tax Handling Approach for this Sales Transaction (Standard, Exempt or Require).  A Standard value will base tax exempt handling on the Bill To party information.  An Exempt value may be used when a tax-emempt customer places a tax exempt order.  When stating Exempt, the associated CustomerParty must have tax exempt information.  A Require value may be used when a tax exempt customer places an order that requires taxation.  </xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Exempt"/>
+						<xs:enumeration value="Require"/>
+						<xs:enumeration value="Standard"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TaxInfoSpec" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Metadata to specify the behavior of the Global Sales Tax Response</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="JurisdictionLevelDetails" type="xs:boolean" default="false">
+							<xs:annotation>
+								<xs:documentation>Flag to indicate if the detailed Tax Jurisdiction Levels are required in the Global Sales Tax Response</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SalesParty" type="SalesPartyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Sales Party Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesPartyType">
+		<xs:annotation>
+			<xs:documentation>Sales Party</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SalesPerson" type="SalesPersonType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Individual (or Rep) that made the sale</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesBusiness" type="SalesBusinessType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Business that made the sale</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesPersonType">
+		<xs:annotation>
+			<xs:documentation>Sales Person</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PartyId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Id" type="PartyIdType">
+							<xs:annotation>
+								<xs:documentation>A unique Party Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PersonName" type="NameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Person' Name object.  My be left blank only when this object is used within a SalesPerson object.  For other uses it is required.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Title" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Business or Professional Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedTitle" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Free-form Title that may be identified in the call center to describe the Contact's Title</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Role" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Role of this Contact within the context which this object is used.  This field can be used to clarify multi-role contacts.  This field should only be provided on the abstract Contact object (not on any derived forms, such as the Primary Contact)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AuthorizationId" type="AuthorizationIdType" minOccurs="0" maxOccurs="2">
+				<xs:annotation>
+					<xs:documentation>The Authorization Id or Code for this Individual or Organization.  This field is typically derived from the Uni-Auth system</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxJurisdiction" type="TaxJurisdictionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Jurisdiction Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesQuoteHeaderType">
+		<xs:annotation>
+			<xs:documentation>Quote Header</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DocumentId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The unique Identifier assigned to this business transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DocumentDateTime" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which this service request is created or recorded</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Parties">
+				<xs:annotation>
+					<xs:documentation>Party Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="BillToParty" type="PartyType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Bill To Party</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ShipToParty" type="PartyType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Ship To Party</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Pricing" type="PricingHeaderType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Pricing at the header level</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Freight" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Info</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="FreeShipFlag" type="xs:boolean" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Indicates if shiping is free</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ShipCarrier" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>The specific Carrier for shipping the order</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="BatchNumber" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>A Batch is a logical grouping of orders.  If the order is part of a batch, this field may be used to identify it.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ShippingLevelAgreement" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Shipping Level Agreement</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SalesContext" type="SalesContextType">
+				<xs:annotation>
+					<xs:documentation>Sales Context that originiated this transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SalesQuote" type="SalesQuoteType">
+				<xs:annotation>
+					<xs:documentation>Sales Quote</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesQuoteLineType">
+		<xs:annotation>
+			<xs:documentation>Quote Line</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LineNumber" type="xs:nonNegativeInteger">
+				<xs:annotation>
+					<xs:documentation>A unique Serial Number assigned to the line by the source system.  Each line must have a unique value on a given transaction document.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ParentLineNumber" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Parent Line Number for bundle, ensemble, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RootLineNumber" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Root Line Number for bundle, ensemble, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderItem" type="OrderItemType">
+				<xs:annotation>
+					<xs:documentation>The Product/Service item information for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderQuantity" type="QuantityType">
+				<xs:annotation>
+					<xs:documentation>The Ordered Quantity for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitPrice" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Unit Price of the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="PriceType">
+							<xs:sequence>
+								<xs:element name="PriceDetails" type="PriceDetailsType" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Price Details</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="LineTotal" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Cost of the Line Item (ExtCurrentCharge + ExtCurrentChargeTax + ExtNetShippingCharge + ExtNetShippingChargeTax + CreditAmount + CreditAmountTax)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Pricing" type="PricingLineType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Pricing for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Compatibility" type="CompatibilityType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Compatibility / Eligibility rules for the line item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Adjustments" type="AdjustmentsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Adjustments Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Tax" type="TaxType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Info for the Line Item.  It includes the freight and sales tax.  Any tax objects supplied on the GetQuote message will be ignored.  The tax object will be returned on the ShowQuote message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Freight" type="FreightType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Info for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Action to be performed on the Line Item.  Specifically, it indicates whether the line item is the line item is added, changed, cancelled, refunded, updated, suspended, resumed or deleted.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ADD"/>
+						<xs:enumeration value="Add"/>
+						<xs:enumeration value="CANCEL"/>
+						<xs:enumeration value="Cancel"/>
+						<xs:enumeration value="DELETE"/>
+						<xs:enumeration value="Delete"/>
+						<xs:enumeration value="REFUND"/>
+						<xs:enumeration value="Refund"/>
+						<xs:enumeration value="RESUME"/>
+						<xs:enumeration value="Resume"/>
+						<xs:enumeration value="SUSPEND"/>
+						<xs:enumeration value="Suspend"/>
+						<xs:enumeration value="UPDATE"/>
+						<xs:enumeration value="Update"/>
+						<xs:enumeration value="NONE"/>
+						<xs:enumeration value="None"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ActionSubtype" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Action Subtype to be performed on the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ActionDateTime" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which the action was/will be performed.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Subscription" type="SubscriptionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Subscription Info</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Fulfillment" type="FulfillmentType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Fulfillment Info for the Line Item</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DocumentReference" type="DocumentReferenceType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Document Reference</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SalesQuoteType">
+		<xs:annotation>
+			<xs:documentation>Sales Quote</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TotalTransaction" type="AmountType">
+				<xs:annotation>
+					<xs:documentation>Total Transaction Amount.  Total charges (line item price, sales/use tax, freight charge, etc.) - discounts - refunds.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalNRC" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Non-recurring Charge</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalMRC" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Monthly Recurring Charge</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalTax" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Tax Amount.  A sum of the taxes that have been calculated as part of the quotation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalFreight" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Freight Amount.  A sum of the freight changes that have been calculated as part of the quotation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalDiscount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Discount Amount.  A sum of the discounts (header and line item discounts) that have been calculated as part of the quotation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TotalCredit" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total Credit Amount.  A sum of the credits that have been calculated as part of the quotation.  It includes any sales/use tax as well as freight charge refund.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ShippingLevelAgreementType">
+		<xs:annotation>
+			<xs:documentation>Shipping Level Agreement Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Default" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Default Shipping Level Agreement</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AddressType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Address Type</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShippingLevelAgreement" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shipping Method</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShippingHandlingLevel" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shipping and Handling Level</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ShippingRuleHeaderType">
+		<xs:annotation>
+			<xs:documentation>Shipping Rule Header</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DocumentId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The unique Identifier assigned to this business transaction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DocumentDateTime" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>The Date Time at which this service request is created or recorded</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ShipToParty" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Ship To Party</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PartyId" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>A unique Identifier assigned to this Party</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Id" type="PartyIdType">
+										<xs:annotation>
+											<xs:documentation>A unique Party Id</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Address" type="AddressInfoType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Ship To Address</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Freight" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Info for the Header</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ShippingLevelAgreement" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Shipping Level Agreement</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ShippingRuleLineType">
+		<xs:annotation>
+			<xs:documentation>Shipping Rule Line</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="LineNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Line Number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ParentLineNumber" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Parent Line Number for bundle, ensemble, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderItem">
+				<xs:annotation>
+					<xs:documentation>The Product/Service item information for the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ItemId" type="ItemIdType">
+							<xs:annotation>
+								<xs:documentation>Item Id</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ItemAttribute" type="AttributeType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Item Attribute</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Freight" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Freight Info for the Line Item</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SmartPartNumber" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Smart Part Number</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ShippingLevelAgreement" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Shipping Level Agreement</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="isValid" type="xs:boolean">
+											<xs:annotation>
+												<xs:documentation>True for valid Shipping Level Agreement; false otherwise</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="ValidShippingZone" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Valid Shipping Zone</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ValidShippingLevelAgreement" type="ShippingLevelAgreementType" minOccurs="0" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>Valid Shipping Agreement</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ActionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Action to be performed on the Line Item.  Specifically, it indicates whether the line item is the line item is added, changed, cancelled, refunded, updated, suspended, resumed or deleted.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ADD"/>
+						<xs:enumeration value="Add"/>
+						<xs:enumeration value="CANCEL"/>
+						<xs:enumeration value="Cancel"/>
+						<xs:enumeration value="DELETE"/>
+						<xs:enumeration value="Delete"/>
+						<xs:enumeration value="REFUND"/>
+						<xs:enumeration value="Refund"/>
+						<xs:enumeration value="RESUME"/>
+						<xs:enumeration value="Resume"/>
+						<xs:enumeration value="SUSPEND"/>
+						<xs:enumeration value="Suspend"/>
+						<xs:enumeration value="UPDATE"/>
+						<xs:enumeration value="Update"/>
+						<xs:enumeration value="NONE"/>
+						<xs:enumeration value="None"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SubscriptionType">
+		<xs:annotation>
+			<xs:documentation>Subscription Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="BillingCycle" type="BillingCycleType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The period for which the bill is generated.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ServiceDate" type="TimePeriodType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Service Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GracePeriod" type="TimePeriodType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Grace Period</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Cancellation" type="CancellationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Subscription Cancellation</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TaxExemptType">
+		<xs:annotation>
+			<xs:documentation>Tax Exemption</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TaxExemptInd" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Indicates whether this party is Tax Exempt.  If set to true, the Tax Id and Tax Exempt Reason elements are required</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxExemptionCertId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Party's Tax Exemption Certificate Number if they are claiming Tax exemption</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxExemptReason" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Reason why the party is claiming tax exempt.  The value of Unknown may only be used for existing data where the reason was not captured and it therefore unknown.  It should not be presented as an option for new orders.  This field is required if TaxExemptInd is true.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="DevelopmentAndResearch"/>
+						<xs:enumeration value="Education"/>
+						<xs:enumeration value="Government"/>
+						<xs:enumeration value="Hospital"/>
+						<xs:enumeration value="Non-Profit"/>
+						<xs:enumeration value="Manufacturer"/>
+						<xs:enumeration value="Resale"/>
+						<xs:enumeration value="Unknown"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TaxExemptExpirationDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If the party is claiming tax exempt, this field must be provided to determine the Valid Period of the Tax Exemption.  This field is required if TaxExemptInd is true.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TaxJurisdictionType">
+		<xs:annotation>
+			<xs:documentation>Tax Jurisdiction</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="PtOfOriginTaxAreaId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Point of origin Tax Area Id.  A Vertex-specific number that identifies a Tax Area. If the Tax Area ID exists in your host system, use that data to populate this data element in a request message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdminOriginTaxAreaId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Administrative Origin Tax Area Id. A Vertex-defined term that is equivalent to the following terms: order taken, order acceptance, place of principle negotiation, or place of business.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TaxType">
+		<xs:annotation>
+			<xs:documentation>Tax</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ExtendedTaxAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Extended Sales/Use Tax Amount, excluding any freight taxes.  The sum of TaxAmount and FreightTax makes up the total tax for a given line.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitTaxAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Unit Sales/Use Tax Amount, excluding any freight taxes.  The sum of TaxAmount and FreightTax makes up the total tax for a given line.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxRate" type="TaxRateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Sales/Use Tax Percentage Rate that was used to make the calculation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxType" default="SalesTax" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax Type (Sales/Use tax or Value Added Tax)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="SalesTax"/>
+						<xs:enumeration value="UseTax"/>
+						<xs:enumeration value="ValueAddedTax"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CalculateTaxOverrideInd" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Flag to indicate whether taxing should be overridden to force the calculation of taxes irrespective of the Item Configuration.  If set to true, taxes will be calculated regardless of item configuration.  If set to false (standard taxing), the taxation is driven by item data.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="JurisdictionInfo" type="JurisdictionInfoType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Jurisdiction level tax details</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TaxRateType">
+		<xs:annotation>
+			<xs:documentation>Tax Rate</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="NonNegativeDecimal"/>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="TimePeriodType">
+		<xs:annotation>
+			<xs:documentation>Time Period Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="StartDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Service Start date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EndDate" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Service End Date</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TelephoneType">
+		<xs:annotation>
+			<xs:documentation>Telephone</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type">
+					<xs:annotation>
+						<xs:documentation>Phone Type</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="Day"/>
+							<xs:enumeration value="Evening"/>
+							<xs:enumeration value="Home"/>
+							<xs:enumeration value="Mobile"/>
+							<xs:enumeration value="Work"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="ZeroOrNegativeDecimal">
+		<xs:annotation>
+			<xs:documentation>The zero or negative-decimal type specifies a zero/negative decimal value.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:maxInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ZeroOrNegativeAmountType">
+		<xs:annotation>
+			<xs:documentation>Zero or negative Amount</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="ZeroOrNegativeDecimal">
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>Currency in ISO 4217 standard e.g. USD, INR, etc.</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="JurisdictionLevelType">
+		<xs:annotation>
+			<xs:documentation>Tax Jurisdiction Level</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="taxationType" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Taxation Type. Eg: GST, HST, General Tax, Sales Tax, Local Tax, etc.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="JurisdictionInfoType">
+		<xs:annotation>
+			<xs:documentation>Tax Jurisdiction Info</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="JurisdictionLevel" type="JurisdictionLevelType">
+				<xs:annotation>
+					<xs:documentation>Tax Jurisdiction Level</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Situs" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The situs of the sale for local sales tax purposes shall be the place where the sale is made</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TaxRate" type="TaxRateType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Sales/Use Tax Percentage Rate that was used to make the calculation for the given tax jurisdiction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedTaxAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Extended Sales/Use Tax Amount for the given tax jurisdiction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UnitTaxAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Unit Sales/Use Tax Amount for the given tax jusisdiction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedExemptAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Amount of all exemptions for all units purchased in line</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedGrossAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Amount of all units purchased in line minus any exemptions</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExtendedTaxableAmount" type="AmountType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Amount of all units purchased on line for the given tax jurisdiction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

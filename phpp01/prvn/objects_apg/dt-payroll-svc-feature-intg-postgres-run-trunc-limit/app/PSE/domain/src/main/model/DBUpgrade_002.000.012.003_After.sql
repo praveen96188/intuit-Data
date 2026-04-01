@@ -1,0 +1,22 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- D:\dev\PSP\rel-1.12\PSE\Domain\src\main\model\DBUpgrade_002.000.012.003.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--
+
+UPDATE PSP_EMPLOYEE_PAYROLL_ITEM
+SET ITEM_ORDER = -1
+WHERE ITEM_ORDER IS NULL;
+
+UPDATE PSP_EMPLOYEE_CUSTOM_FIELD
+SET FIELD_ORDER = -1
+WHERE FIELD_ORDER IS NULL;
+
+UPDATE PSP_EMPLOYEE_BANK_ACCOUNT
+SET ACCOUNT_ORDER = -1
+WHERE ACCOUNT_ORDER IS NULL;
+
+UPDATE PSP_EMPLOYEE_TAX
+SET TAX_ORDER = -1
+WHERE TAX_ORDER IS NULL;

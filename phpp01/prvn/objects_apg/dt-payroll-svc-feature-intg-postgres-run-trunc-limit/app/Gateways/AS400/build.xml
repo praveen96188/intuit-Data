@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<project name="AS400 Gateway XML JAXB Source Generation" default="all" basedir=".">
+
+	<target name="initialize_params">
+		<property name="dirs.base" value="${basedir}"/>
+		<property name="src" value="${dirs.base}/src"/>
+		<property name="target" value="${dirs.base}/target"/>
+		<property name="targetSrc" value="${target}"/>
+		<property name="resources" value="${dirs.base}/resources"/>
+	</target>
+
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+	  <classpath>
+		<fileset dir="../../ThirdParty/jaxws-ri-2.2.7/lib" includes="*.jar" />
+	  </classpath>
+	</taskdef>
+
+	<!-- Main target  -->
+	<target name="all" depends="initialize_params,jaxb"/>
+
+	<!-- Generate Jaxb Classes -->
+	<target name="jaxb" depends="initialize_params">
+		<mkdir dir="${targetSrc}"/>
+
+		<xjc  destdir="${targetSrc}" removeOldOutput="yes" package="com.intuit.sbd.payroll.psp.gateways.as400.dtos">
+		  <schema dir="${resources}" includes="*.xsd" />
+		  <produces dir="${targetSrc}/com/intuit/sbd/payroll/psp/gateways/as400/dtos" includes="*.java" />
+		</xjc>
+
+	</target>
+</project>
+

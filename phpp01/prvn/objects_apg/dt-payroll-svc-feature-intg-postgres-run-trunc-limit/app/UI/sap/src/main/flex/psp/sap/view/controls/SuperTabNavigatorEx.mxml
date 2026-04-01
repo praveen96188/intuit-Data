@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SuperTabNavigator xmlns="flexlib.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" tabClose="onTabClose();" tabEnabled="false">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.application.SAP;
+			import mx.controls.Button;
+			use namespace mx_internal;
+			/**
+			 * Hack
+			 * 
+			 * The selectedIndex when the last inspector is removed should be set to -1.  However, this value
+			 * is not being committed so the tabBar is maintaining its 0 index.  When a new inspector is opened,
+			 * the current tabBar index == 0, the same as the value being set.  This causes the control to short-circuit its
+			 * processing and the tabBar never selects the current tab and shows it in the active state.  Any index value
+			 * other than 0 works fine since the default logic in the control is executed.
+			 * 
+			 * The code below forces the issue, essentially copied from ToggleButtonBar.hiliteSelectedNavItem
+			 */
+			override public function set selectedIndex(value:int):void {
+				if (value == selectedIndex && value == 0) {
+					// force hilite of existing selection
+					for each (var child:DisplayObject in tabBar.getChildren()) {
+						if (child is Button) {
+							var button:Button = Button(child);
+							button.selected = true;							
+				            
+				            var selectedButtonTextStyleName:String =
+				                getStyle("selectedButtonTextStyleName");
+				
+				            button.getTextField().styleName =
+				                selectedButtonTextStyleName ?
+				                selectedButtonTextStyleName :
+				                "activeButtonStyle";
+				
+				            button.invalidateDisplayList();
+				            
+				            break;												
+						}
+					}
+				}
+					
+				super.selectedIndex = value;
+			}
+			
+			override public function addChildAt(child:DisplayObject, index:int):DisplayObject {				
+				var returnDisplayObject:DisplayObject = super.addChildAt(child,index); 
+				
+				if (index==SAP.MAX_OPEN_COMPANIES){					
+					this.getTabAt(index).enabled=false;
+					this.getTabAt(index).errorString="Only " + SAP.MAX_OPEN_COMPANIES + " companies can be open at one time. You must close one of your open companies.";
+					callLater(deselectDisabledTab);
+				}				
+				return returnDisplayObject;
+			}		
+			
+			private function deselectDisabledTab():void{
+				this.selectedIndex=SAP.MAX_OPEN_COMPANIES-1;
+			}			
+			
+			public function onTabClose():void
+			{
+				if (this.tabBar.numChildren <= SAP.MAX_OPEN_COMPANIES) {
+					return;
+				}
+				
+				var tab:Button = this.getTabAt(SAP.MAX_OPEN_COMPANIES);
+				if (tab.enabled == false){
+					tab.enabled=true;
+					tab.errorString="";
+					this.selectedIndex=SAP.MAX_OPEN_COMPANIES;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</SuperTabNavigator>

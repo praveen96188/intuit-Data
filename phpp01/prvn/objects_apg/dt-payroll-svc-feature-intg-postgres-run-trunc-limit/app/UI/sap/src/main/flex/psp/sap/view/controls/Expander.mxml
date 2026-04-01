@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         width="100%"
+         initialize="onInit();"
+         automationName="{getAutomationName('expanderVBox')}">
+
+    <mx:Metadata>
+        [DefaultProperty("children")]
+    </mx:Metadata>
+
+    <mx:Script>
+    	<![CDATA[
+        import mx.core.Container;
+        import mx.core.ScrollPolicy;
+        import mx.core.UIComponent;
+        import mx.events.ChildExistenceChangedEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.viewmodel.ExpanderViewModel;
+
+        private var mChildren:Array = [];
+        private var mChildrenChanged:Boolean = false;
+
+        public function set children(value:Array):void
+        {
+            mChildren = value;
+
+            mChildrenChanged = true;
+            invalidateProperties();
+        }
+
+        public function get children():Array
+        {
+            return mChildren;
+        }
+
+
+        protected function onInit():void {
+            //addChildrenToContentBox();
+        }
+
+        private function onExpand():void {
+            if (mChildrenChanged && !deferToVisible) {
+                addChildrenToContentBox();
+            }
+        }
+
+        private function addChildrenToContentBox():void {
+            if (mChildrenChanged)
+            {
+                //ignore any extra children (also a good parenting tip!)
+                var child:DisplayObject = children[0];
+
+                content.addChild(child);
+                dispatchEvent(new ChildExistenceChangedEvent(ChildExistenceChangedEvent.CHILD_ADD, false, false, child));
+
+                if (child is Container) {
+                    //do i need this?  it makes it so it doesn't scroll when it's collapsing
+                    //since flex is stupid and doesn't just use an image
+                    (child as Container).verticalScrollPolicy = ScrollPolicy.OFF;
+                }
+
+                mChildrenChanged = false;
+                ViewModelSync.associatePageViewModels(this, viewModel);
+            }
+
+        }
+
+
+        private var mViewModel:ExpanderViewModel;
+
+        [Bindable]
+        public function get viewModel():ExpanderViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:ExpanderViewModel):void {
+            mViewModel = value;
+            if (mViewModel != null && ! deferToVisible) {
+                addChildrenToContentBox();
+            }
+        }
+
+        override public function set visible(value:Boolean):void {
+            deferToVisible = false; //handles the case where the expander is visible but collapsed by default
+            super.visible = value;
+            if (value && viewModel.opened && mChildrenChanged) {
+                addChildrenToContentBox();
+            }
+        }
+
+        private var mTitle:String;
+
+        //Set this if you have visible bound and want to defer creation of the display
+        //if not visible
+        public var deferToVisible:Boolean = false;
+
+        [Bindable]
+        public function get title():String {
+            return mTitle;
+        }
+
+        public function set title(value:String):void {
+            mTitle = value;
+            dispatchEvent(new Event("titleChange", true));
+        }
+
+        [Bindable]
+        protected var contentHeight:int;
+
+        [Bindable]
+        public var enableEffects:Boolean = true;
+
+        [Bindable]
+        public var barIcon:Class;
+
+        [Bindable]
+        public var contentPaddingBottom:Number = 10;
+
+        [Bindable]
+        public var barHeight:Number = 30;
+
+        private const RESIZE_DURATION:int = 200;
+
+        private function getPreferredHeightBecauseFlexIsAwful(comp:UIComponent):int {
+            if (comp.measuredHeight > 0) {
+                return comp.measuredHeight;
+            }
+            if (comp.explicitHeight > 0) {
+                return comp.explicitHeight;
+            }
+            return comp.height;
+        }
+
+        private function setPercentHeight():void {
+            content.percentHeight = 100;
+            content.percentWidth = 100;
+            content.invalidateSize();
+        }
+
+        private function setPercentWidth():void {
+            content.percentWidth = 100;
+            content.invalidateSize();
+        }
+
+        [Bindable(event="titleChange")]
+        private function getAutomationName(value:String):String {
+            return title + "_" + value;
+        }
+
+        private function onPreferenceClick():void {
+            if (preferenceImage.buttonMode) {
+                viewModel.savePreference();
+            }
+        }
+
+        public function set preferenceLocked(value:Boolean):void {
+            var currentStateVerb:String = (viewModel.opened ? "Open" : "Close");
+            if (value) {
+                preferenceImage.source = SAP.instance.icons.lock;
+                preferenceImage.toolTip = "This box will be " + currentStateVerb + "d every visit to this page";
+                preferenceImage.buttonMode = false;
+            } else {
+                preferenceImage.source = SAP.instance.icons.unLock;
+                preferenceImage.toolTip = currentStateVerb + " this box every visit to this page";
+                preferenceImage.buttonMode = true;
+            }
+        }
+
+
+			
+    	]]>
+    </mx:Script>
+
+    <mx:HBox width="100%" height="{barHeight}" click="viewModel.toggle();" styleName="expanderBar">
+        <mx:LinkButton automationName="{getAutomationName('collapseSearchButton')}" id="collapseSearchButton" width="20"
+                       icon="{SAP.instance.icons.collapse}" toolTip="Collapse" tabEnabled="false"/>
+        <mx:LinkButton automationName="{getAutomationName('expandSearchButton')}" id="expandSearchButton" width="20"
+                       icon="{SAP.instance.icons.expand}" toolTip="Expand" tabEnabled="false"/>
+        <mx:HBox width="100%" horizontalAlign="left">
+            <mx:Label automationName="{getAutomationName('titleLabel')}" fontWeight="bold" text="{title}"
+                      id="titleLabel"/>
+        </mx:HBox>
+        <mx:HBox width="100%" horizontalAlign="left">
+            <mx:Label htmlText="{viewModel.middleHtmlText}" automationName="{getAutomationName('middleText')}"/>
+        </mx:HBox>
+        <mx:HBox width="100%" horizontalAlign="right" paddingRight="50">
+            <mx:Label htmlText="{viewModel.rightHtmlText}" automationName="{getAutomationName('rightText')}"/>
+        </mx:HBox>
+        <mx:Image id="preferenceImage"
+                  visible="{viewModel.preferenceEnabled}"
+                  includeInLayout="{viewModel.preferenceEnabled}"
+                  click="onPreferenceClick(); event.stopPropagation();"/>
+    </mx:HBox>
+
+    <mx:VBox id="content"
+             resizeEffect="resizeEffect"
+             verticalScrollPolicy="off"
+             height="100%"
+             width="100%"
+             paddingBottom="{contentPaddingBottom}"
+            >
+        <pspui:SaveStatusMessage id="statusMessage" tabEnabled="false" textFieldWidth="{this.width - 100}" paddingLeft="15"/>
+    </mx:VBox>
+    <mx:states>
+        <mx:State name="panelOpen" enterState="onExpand();">
+            <mx:SetProperty target="{collapseSearchButton}" name="visible" value="true"/>
+            <mx:SetProperty target="{collapseSearchButton}" name="includeInLayout" value="true"/>
+            <mx:SetProperty target="{expandSearchButton}" name="visible" value="false"/>
+            <mx:SetProperty target="{expandSearchButton}" name="includeInLayout" value="false"/>
+        </mx:State>
+        <mx:State name="panelClosed">
+            <mx:SetProperty target="{expandSearchButton}" name="visible" value="true"/>
+            <mx:SetProperty target="{expandSearchButton}" name="includeInLayout" value="true"/>
+            <mx:SetProperty target="{collapseSearchButton}" name="visible" value="false"/>
+            <mx:SetProperty target="{collapseSearchButton}" name="includeInLayout" value="false"/>
+        </mx:State>
+    </mx:states>
+
+    <mx:transitions>
+        <mx:Transition fromState="panelClosed" toState="panelOpen">
+            <mx:Sequence target="{content}" effectStart="setPercentWidth();" effectEnd="callLater(setPercentHeight);">
+                <mx:SetPropertyAction name="visible" value="true"/>
+                <mx:SetPropertyAction name="includeInLayout" value="true"/>
+                <mx:Resize duration="{enableEffects ? RESIZE_DURATION : 0}" widthBy="0" heightFrom="0"
+                           heightTo="{contentHeight}"/>
+            </mx:Sequence>
+        </mx:Transition>
+        <mx:Transition fromState="panelOpen" toState="panelClosed">
+            <mx:Sequence target="{content}"
+                         effectStart="contentHeight = getPreferredHeightBecauseFlexIsAwful(content); setPercentWidth();">
+                <mx:Resize duration="{enableEffects ? RESIZE_DURATION : 0}" widthBy="0" heightFrom="{content.height}"
+                           heightTo="0"/>
+                <mx:SetPropertyAction name="visible" value="false"/>
+                <mx:SetPropertyAction name="includeInLayout" value="false"/>
+            </mx:Sequence>
+        </mx:Transition>
+        <mx:Transition fromState="" toState="panelClosed"> <!-- Don't need to have an effect on load -->
+            <mx:Sequence target="{content}"
+                         effectStart="contentHeight = getPreferredHeightBecauseFlexIsAwful(content); setPercentWidth();">
+                <mx:SetPropertyAction name="visible" value="false"/>
+                <mx:SetPropertyAction name="includeInLayout" value="false"/>
+            </mx:Sequence>
+        </mx:Transition>
+        <mx:Transition fromState="" toState="panelOpen"> <!-- Or else not everything shows up.  Go figure. -->
+            <mx:Sequence target="{content}">
+                <mx:SetPropertyAction name="visible" value="true"/>
+                <mx:SetPropertyAction name="includeInLayout" value="true"/>
+            </mx:Sequence>
+        </mx:Transition>
+
+    </mx:transitions>
+
+    <mx:Sequence id="resizeEffect" target="{content}" effectEnd="setPercentHeight();">
+        <mx:Resize duration="{enableEffects ? RESIZE_DURATION : 0}"/>
+    </mx:Sequence>
+
+    <mx:Binding source="viewModel.currentState" destination="currentState"/>
+    <mx:Binding source="viewModel.preferenceLocked" destination="preferenceLocked"/>
+
+    <mx:Binding source="viewModel.saveMsg" destination="statusMessage.text" />
+    <mx:Binding source="viewModel.saveFaulted" destination="statusMessage.isError" />		
+
+
+</mx:VBox>

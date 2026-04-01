@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*" 
+	width="100%" height="100%"
+	show="strikeDate.setFocus();">
+
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.model.CompanyStrike;
+        import psp.sap.viewmodel.CompanyManageStrikesViewModel;
+
+        private var mViewModel:CompanyManageStrikesViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanyManageStrikesViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyManageStrikesViewModel):void {
+            mViewModel = value;
+            if (mViewModel != null) {
+                mViewModel.strikeDateValidator.listener = strikeDate;
+            }
+        }
+
+        public function doAction(e:ActionLinkEvent):void {
+            if (e.action == "cancelStrike") {
+                var strike:CompanyStrike = e.data as CompanyStrike;
+                confirmCancel(strike);
+            }
+        }
+
+        private function confirmCancel(value:CompanyStrike):void {
+            var msgString:String =
+                    "Are you sure you want to cancel Strike " + value.strikeReason
+                            + " \n created by " + value.createdByUserId + " on " + dateFormatter.format(value.statusEffectiveDate) + "?";
+
+            Alert.show(
+                    msgString,
+                    "Cancel Strike Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK) {
+                            viewModel.cancelStrike(value); //Add single strike
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to add this Strike?";
+
+            Alert.show(
+                    msgString,
+                    "Add Strike Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK) {
+                            viewModel.saveNewStrike();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+
+        public function cancelStrike():void {
+            viewModel.cancel();
+        }
+
+        public function cancelledBySort(obj1:Object, obj2:Object):int {
+            if (obj1 == null || obj2 == null) {
+                return 0;
+            }
+
+            var time1:Number = CompanyStrike(obj1).statusEffectiveDate.getTime();
+            var time2:Number = CompanyStrike(obj2).statusEffectiveDate.getTime();
+
+            var retCompare:int = ObjectUtil.numericCompare(time1, time2);
+
+            if (retCompare == 0) {
+                //Secondary name compare if they're equal
+                var name1:String = (CompanyStrike(obj1).cancelledByUserId);
+                var name2:String = (CompanyStrike(obj2).cancelledByUserId);
+                return ObjectUtil.stringCompare(name1, name2);
+            }
+            return retCompare;
+        }
+
+        public function createdBySort(obj1:Object, obj2:Object):int {
+            if (obj1 == null || obj2 == null) {
+                return 0;
+            }
+
+            var time1:Number = CompanyStrike(obj1).strikeDate.getTime();
+            var time2:Number = CompanyStrike(obj2).strikeDate.getTime();
+
+            var retCompare:int = 0;
+            retCompare = ObjectUtil.numericCompare(time1, time2);
+
+            if (retCompare == 0) {
+                //Secondary name compare if they're equal
+                var name1:String = (CompanyStrike(obj1).createdByUserId);
+                var name2:String = (CompanyStrike(obj2).createdByUserId);
+                return ObjectUtil.stringCompare(name1, name2);
+            }
+            return retCompare;
+        }
+        ]]>
+	</mx:Script>
+
+	<mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+	
+	<controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+	
+	<mx:VBox id="dataContainer"
+			width="100%" height="100%">
+			
+			<mx:VBox id="manageStrike" 
+				borderStyle="solid" dropShadowEnabled="false" width="650" 
+				paddingBottom="5" paddingTop="5" paddingRight="5" paddingLeft="5"
+				visible="{SAP.canPerformOperation(OperationsEnum.STRIKE_ADD)}"
+				includeInLayout="{SAP.canPerformOperation(OperationsEnum.STRIKE_ADD)}">
+    			
+    			<mx:HBox textAlign="left" dropShadowEnabled="false">
+					<pspui:RequiredLabel
+						id="dateLabel" 
+						text="Strike Effective Date:" 
+						validator="{viewModel.strikeDateRequiredValidator}"/>
+					<pspui:SAPDateField id="strikeDate" width="100" editable="true"/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+					<pspui:RequiredLabel
+						id="reasonLabel" 
+						text="Strike Reason:" 
+						validator="{viewModel.strikeReasonRequiredValidator}"
+						width="100%"/>
+					<mx:TextInput id="charsLeftText" 
+						tabEnabled="false" width="54" dropShadowEnabled="false" editable="false" 
+						text="{viewModel.charactersRemaining}"/>
+    				<mx:Label text="characters remaining" fontWeight="bold"/>						
+				</mx:HBox>
+				
+    			<mx:VBox paddingLeft="10" paddingRight="10" width="100%">
+    				<mx:TextArea id="strikeReasonArea" width="100%" height="100" maxChars="{CompanyManageStrikesViewModel.MAX_STRIKE_REASON}"/>
+    			</mx:VBox>
+    			
+    			<mx:HBox paddingLeft="10" horizontalAlign="right" paddingRight="20" width="100%">
+    				<mx:Button id="addStrikeButton" label="Add Strike" click="confirmSave()" enabled="{viewModel.canSave}" width="100"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+		
+		<mx:Spacer height="10" />
+
+		
+		<mx:DataGrid id="datagrid1" width="95%" dataProvider="{viewModel.strikes}" selectable="false" variableRowHeight="true" height="100%">
+		<mx:columns>
+					<mx:DataGridColumn 
+							headerText="Strike Type"
+							textAlign="center" 
+							dataField="strikeReason">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn 
+							headerText="Strike Reason"
+							textAlign="center"  
+							dataField="manualDescription">
+						<mx:itemRenderer>
+								<mx:Component id="manualDescArea">
+									<mx:TextArea width="100%" height="50" borderStyle="none" backgroundAlpha="0.0" text="{data.manualDescription}" editable="false" textAlign="left" wordWrap="true"/>
+								</mx:Component>
+						</mx:itemRenderer>		
+					</mx:DataGridColumn>
+					<mx:DataGridColumn  width="180"
+							headerText="Created By" sortCompareFunction="createdBySort"
+							textAlign="center" headerStyleName="directDepositHeader">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:VBox verticalGap="0" verticalAlign="middle" horizontalAlign="center" height="40" width="100%">
+										<mx:Label id="createdByUserLabel" color="green" text="{data.createdByUserId}"/>
+										<mx:Label id="strikeDateLabel" color="black" text="{outerDocument.dateFormatter.format(data.strikeDate)}"/>
+									</mx:VBox>
+								</mx:Component>
+							</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn  width="180" headerText="Cancelled By" textAlign="center" sortCompareFunction="cancelledBySort">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:VBox horizontalAlign="center" verticalGap="0" verticalAlign="middle" height="40" width="100%">
+										<mx:VBox verticalGap="0" visible="{data.cancelled == true}" includeInLayout="{data.cancelled == true}" horizontalAlign="center" verticalAlign="middle">
+											<mx:Label id="cancelledByUserLabel" color="green" text="{data.cancelledByUserId}"/>
+											<mx:Label id="statusEffectiveDateLabel" color="black" text="{outerDocument.dateFormatter.format(data.statusEffectiveDate)}"/>
+										</mx:VBox>
+										<mx:VBox verticalGap="0" visible="{(data.cancelled == false)}" includeInLayout="{(data.cancelled == false)}" horizontalAlign="center" verticalAlign="middle">
+											<pspui:ActionLink id="cancelLink" label="Cancel" action="cancelStrike" data="{data}" actionClick="outerDocument.doAction" enabled="{outerDocument.viewModel.canCancelStrikes}"/>
+										</mx:VBox>
+									</mx:VBox>
+								</mx:Component>
+							</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>			
+		</mx:DataGrid>					
+	</mx:VBox>
+
+
+	<mx:Binding source="viewModel.charactersRemaining.toString()" destination="this.charsLeftText.text" />
+	
+	<mx:Binding source="viewModel.strikeDate" destination="this.strikeDate.text" />
+	<mx:Binding source="this.strikeDate.text" destination="viewModel.strikeDate" />
+	
+	<mx:Binding source="viewModel.strikeDateValidator.validDateRange" destination="strikeDate.selectableRange" />
+	
+	<mx:Binding source="viewModel.strikeReason" destination="this.strikeReasonArea.text" />
+	<mx:Binding source="this.strikeReasonArea.text" destination="viewModel.strikeReason" />
+		
+	
+</mx:VBox>

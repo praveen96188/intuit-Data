@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*">
+    <mx:Script>
+        <![CDATA[
+
+        import psp.taxcredits.model.EstimatorModel;
+        import psp.taxcredits.model.TaxCreditsModel;
+
+        import mx.events.FlexEvent;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+        [Bindable]
+        public var estimatorModel:EstimatorModel = TaxCreditsModel.instance.estimatorModel;
+
+        private var mCollapsed:Boolean = false;
+
+        [Bindable]
+        [Embed("assets/estimatorBoxLarge.png")]
+        private var bgLarge:Class;
+
+        [Bindable]
+        [Embed("assets/estimatorBoxSmall.png")]
+        private var bgSmall:Class;
+
+        private function writeToModel():void {
+            estimatorModel.hourly = hourly.selectedValue as Boolean;
+            if (estimatorModel.hourly) {
+                estimatorModel.hoursPerWeekString = hoursPerWeek.text;
+                estimatorModel.wageString = wage.text;
+            } else {
+                estimatorModel.salaryString = salary.text;
+            }
+
+            if (workUntilFull.selectedValue == null) {
+                //nothing
+            } else if (workUntilFull.selectedValue) {
+                estimatorModel.useMaximumDate = true;
+                estimatorModel.useMaximumDateSet = true;
+            } else {
+                estimatorModel.useMaximumDate = false;
+                estimatorModel.useMaximumDateSet = true;
+                estimatorModel.employedUntil = employedUntil.selectedDate;
+            }
+        }
+
+        private function onLink(e:Event):void {
+            collapsed = !collapsed;
+        }
+
+        public function get collapsed():Boolean {
+            return mCollapsed;
+        }
+
+        public function set collapsed(value:Boolean):void {
+            if (!initialized) {
+                this.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:Event):void {collapsed = value});
+                return;
+            }
+            mCollapsed = value;
+            if (value) {
+                bgImage.source = bgSmall;
+                changeInputsImg.source = EmbeddedAssets.transparentCollapse;
+                inputsBox.visible = false;
+                inputsBox.includeInLayout = false;
+                changeInputsLink.x = 80;
+                changeInputsLink.y = 90;
+                outputBox.x = 350;
+                outputBox.y = 65;
+            } else {
+                bgImage.source = bgLarge;
+                changeInputsImg.source = EmbeddedAssets.transparentExpand;
+                inputsBox.visible = true;
+                inputsBox.includeInLayout = true;
+                changeInputsLink.x = 19;
+                changeInputsLink.y = 25;
+                outputBox.x = 528;
+                outputBox.y = 130;
+            }
+        }
+
+        private function changeRestrict(textIntput:TextInput):void {
+            if (textIntput.text.indexOf('.') > -1) {
+                textIntput.restrict = '0-9';
+            } else {
+                textIntput.restrict = '0-9.';
+            }
+        }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Canvas>        
+        <mx:Image id="bgImage" source="{bgLarge}"/>
+
+        <mx:HBox id="changeInputsLink" x="19" y="25" styleName="noPadding" verticalAlign="middle" horizontalGap="1">
+            <mx:Image id="changeInputsImg" source="{EmbeddedAssets.transparentExpand}" click="onLink(event);"/>
+
+            <controls:SupText styleName="pageEmphasis" link="onLink(event);" paddingTop="2"
+                              htmlText="{resourceManager.getString('estimateSavings','change_inputs')}"/>
+
+        </mx:HBox>
+
+        <mx:VBox x="21" y="50" width="440" verticalGap="0" id="inputsBox">
+            <mx:Text selectable="false" styleName="estimatorQuestion"
+                     text="{resourceManager.getString('estimateSavings','hourly_or_salary')}"/>
+            <mx:HBox paddingLeft="20" paddingTop="0">
+                <mx:RadioButtonGroup id="hourly" change="writeToModel();" selectedValue="{estimatorModel.hourly}"/>
+                <mx:RadioButton group="{hourly}" value="true" styleName="pageText" tabIndex="1"
+                                label="{resourceManager.getString('estimateSavings','hourly')}"/>
+                <mx:RadioButton group="{hourly}" value="false" styleName="pageText"
+                                label="{resourceManager.getString('estimateSavings','salaried')}"/>
+            </mx:HBox>
+
+
+            <mx:VBox styleName="noPadding" visible="{estimatorModel.hourly}" includeInLayout="{estimatorModel.hourly}">
+                <mx:Text selectable="false" styleName="estimatorQuestion" paddingTop="14"
+                         text="{resourceManager.getString('estimateSavings','hours_per_week')}"/>
+                <mx:HBox paddingLeft="20" paddingTop="5" horizontalGap="0">
+                    <mx:TextInput id="hoursPerWeek" width="62" restrict="0-9." change="writeToModel(); changeRestrict(hoursPerWeek);"
+                                  text="{estimatorModel.hoursPerWeekString}" tabIndex="2"/>
+                    <mx:Text selectable="false" styleName="pageText" paddingLeft="6"
+                             text="{resourceManager.getString('estimateSavings','average_hours')}"/>
+                </mx:HBox>
+            
+                <mx:Text selectable="false" styleName="estimatorQuestion" paddingTop="14"
+                         text="{resourceManager.getString('estimateSavings','wage')}"/>
+                <mx:HBox paddingLeft="7" paddingTop="5" horizontalGap="0" verticalAlign="middle">
+                    <mx:Text text="$" styleName="pageText"/>
+                    <mx:TextInput id="wage" width="62" restrict="0-9." change="writeToModel(); changeRestrict(wage);" text="{estimatorModel.wageString}" tabIndex="3"/>
+                    <mx:Text selectable="false" styleName="pageText" paddingLeft="6"
+                             text="{resourceManager.getString('estimateSavings','per_hour')}"/>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:VBox styleName="noPadding" visible="{! estimatorModel.hourly}" includeInLayout="{! estimatorModel.hourly}">
+                <mx:Text selectable="false" styleName="estimatorQuestion" paddingTop="14"
+                         text="{resourceManager.getString('estimateSavings','salary')}"/>
+                <mx:HBox paddingLeft="7" paddingTop="5" horizontalGap="0" verticalAlign="middle">
+                    <mx:Text text="$" styleName="pageText"/>
+                    <mx:TextInput id="salary" width="62" restrict="0-9." change="writeToModel(); changeRestrict(salary);" text="{estimatorModel.salaryString}" tabIndex="4"/>
+                    <mx:Text selectable="false" styleName="pageText" paddingLeft="6"
+                             text="{resourceManager.getString('estimateSavings','per_year')}"/>
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:Text selectable="false" styleName="estimatorQuestion" paddingTop="14"
+                     text="{resourceManager.getString('estimateSavings','work_until')}"/>
+            <mx:VBox paddingLeft="20">
+                <mx:HBox verticalAlign="middle" horizontalGap="2">
+                    <mx:RadioButtonGroup id="workUntilFull" change="writeToModel();" selectedValue="{estimatorModel.useMaximumDateSet ? estimatorModel.useMaximumDate : null}"/>
+                    <mx:RadioButton enabled="{estimatorModel.maxCreditDateString != ''}" group="{workUntilFull}" value="true" styleName="pageText" tabIndex="5"
+                                    label="{resourceManager.getString('estimateSavings','at_least_until')}"/>
+                    <mx:Text styleName="pageEmphasis" text="{estimatorModel.maxCreditDateString}"/>
+                    <controls:InlineHelp help="{resourceManager.getString('estimateSavings','at_least_until_help')}" visible="{estimatorModel.maxCreditDateString.length > 0}" includeInLayout="{estimatorModel.maxCreditDateString.length > 0}"/>
+                </mx:HBox>
+                <mx:HBox>
+                    <mx:RadioButton enabled="{estimatorModel.maxCreditDateString != ''}" group="{workUntilFull}" value="false" styleName="pageText"
+                                    label="{resourceManager.getString('estimateSavings','until_aprox')}"/>
+                    <controls:DateFieldEx id="employedUntil" labelFunction="estimatorModel.formatLongDate" close="writeToModel();" tabIndex="6"
+                            selectedDate="{estimatorModel.employedUntil}"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+        
+        <mx:VBox x="528" y="130" id="outputBox" verticalGap="0">
+            <mx:Text text="$ {estimatorModel.numberFormatter.format(estimatorModel.estimate)}" selectable="false" styleName="estimatorOutput" visible="{!isNaN(estimatorModel.estimate)}" includeInLayout="{!isNaN(estimatorModel.estimate)}"/>
+            <mx:Text text="$ 88,888" alpha="0.65" styleName="estimatorOutput" visible="{isNaN(estimatorModel.estimate)}" selectable="false" includeInLayout="{isNaN(estimatorModel.estimate)}"/>
+            <mx:Text width="270" selectable="false"
+                     text="{resourceManager.getString('estimateSavings','disclaimer')}"/>
+        </mx:VBox>
+
+    </mx:Canvas>
+
+</mx:VBox>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         width="100%" verticalGap="0" creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.enums.EnrollmentsPageEnum;
+        import psp.sap.viewmodel.ACHEnrollmentsViewModel;
+
+        private var mViewModel:ACHEnrollmentsViewModel;
+        private var mTempViewModel:ACHEnrollmentsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():ACHEnrollmentsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:ACHEnrollmentsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+
+    <controls:PartsTabNavigator
+        label="{EnrollmentsPageEnum.ACH_ENROLLMENTS+ '_ptn'}">
+        <pspui:ACHEnrollmentsPendingView label="{EnrollmentsPageEnum.ACH_PENDING_ENROLLMENT}"/>
+        <pspui:ACHEnrollmentsPendingResponseView label="{EnrollmentsPageEnum.ACH_PENDING_RESPONSE}"/>
+        <pspui:ACHEnrollmentsRejectedView label="{EnrollmentsPageEnum.ACH_REJECTED}"/>
+        <pspui:ACHEnrollmentsDeleteView label="{EnrollmentsPageEnum.ACH_DELETE}"/>
+    </controls:PartsTabNavigator>
+    <controls:PopUpPart label="{EnrollmentsPageEnum.ACH_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:ACHEnrollmentHistoryView label="{EnrollmentsPageEnum.ACH_HISTORY}"/>
+    </controls:PopUpPart>
+</mx:VBox>

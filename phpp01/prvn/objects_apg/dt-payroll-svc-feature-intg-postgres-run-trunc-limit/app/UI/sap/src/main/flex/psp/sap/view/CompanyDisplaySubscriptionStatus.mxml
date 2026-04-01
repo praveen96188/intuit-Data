@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*">
+	
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.utils.StringUtil;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.model.CompanyServiceStatus;
+        import psp.sap.model.ServiceCodeEnum;
+        import psp.sap.view.controls.WindowManager;
+        import psp.sap.viewmodel.CompanyDisplaySubscriptionStatusViewModel;
+        import psp.sap.view.CaseIdSave;
+        import mx.managers.PopUpManager;
+
+        private var mViewModel:CompanyDisplaySubscriptionStatusViewModel;
+        private var popup:CaseIdSave;
+
+        [Bindable]
+        public function get viewModel():CompanyDisplaySubscriptionStatusViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyDisplaySubscriptionStatusViewModel):void {
+            if(mViewModel != null){
+                mViewModel.removeEventListener("bitmapReady", onImageLoaded);
+            }
+
+            if (value != null) {
+                mViewModel = value;
+            }
+
+            if(mViewModel != null){
+                mViewModel.addEventListener("bitmapReady", onImageLoaded, false, 0, true);
+            }
+        }
+
+        private function confirmRemoveFraudFlag():void
+        {
+            var msgString:String = "Are you sure you want to remove the fraud flag?";
+            Alert.show(msgString,
+                    "Remove Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK)
+            {
+                viewModel.removeFraudFlag();
+            }
+        }
+
+        // method to open the PopUp Window on creationComplete
+        private function openPopUpWindow():void {
+            // open the PopUp Window as a modal popup window
+            // and store it in a variable for later use
+            popup = PopUpManager.createPopUp(this, CaseIdSave, true) as CaseIdSave;
+            popup.heading.label = "Are you sure you want to add "+ ServiceCodeEnum.BILL_PAYMENT_DISPLAY +"? If yes please provide caseId";
+            popup.addEventListener("close", removeMe);
+            popup.cancel.addEventListener("click", removeMe);
+            popup.save.addEventListener("click", submitData);
+            PopUpManager.centerPopUp(popup);
+
+        }
+
+        private function removeMe(event:Event):void {
+            PopUpManager.removePopUp(popup);
+        }
+
+        private function submitData(event:Event):void {
+            if (popup.caseIdInput.text == null || StringUtil.trim(popup.caseIdInput.text)== "") {
+                popup.caseIdMandatoryItem.visible = true;
+            } else {
+                viewModel.caseId = popup.caseIdInput.text;
+                PopUpManager.removePopUp(popup);
+                viewModel.addService(ServiceCodeEnum.BILL_PAYMENT.code);
+            }
+        }
+
+        private function confirmAddService(e:ActionLinkEvent):void {
+            var serviceCode:ServiceCodeEnum = ServiceCodeEnum.valueOf(e.currentTarget.data);
+            if(serviceCode.label == "Vendor Payments") {
+                openPopUpWindow();
+            } else {
+            var msgString:String = "Are you sure you want to add " + serviceCode.label + " service to this company?";
+            Alert.show(msgString,
+                    "Add Service Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.OK)
+                        {
+                            viewModel.addService(serviceCode.code);
+                        }
+                    },
+                    null,
+                    Alert.OK);
+            }
+        }
+
+        private function onViewSignature(event:DataEvent):void {
+            viewModel.getSignatureImage();
+        }
+
+        private function addTestPrintBatch(event:DataEvent):void {
+            viewModel.addTestPrintBatch();
+        }
+
+        private function editOfferings(event:DataEvent):void {
+            viewModel.editOfferings(event.data);
+        }
+
+        private function editOffers(event:DataEvent):void {
+            viewModel.editOffers(event.data);
+        }
+
+        private function getWorkersCompInfo(event:DataEvent):void {
+            viewModel.getWorkersCompInfo();
+        }
+
+        private function onImageLoaded(e:Event):void {
+            //pop-up
+            var window:SignatureView = new SignatureView();
+            window.image = viewModel.signatureBitmap;
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);            
+            window.move(window.x, window.y - 75);
+        }
+
+		]]>
+	</mx:Script>
+
+    <mx:HBox horizontalGap="0" verticalAlign="middle">
+        <mx:Label text="{viewModel.cloudService.serviceCodeEnum.label}: "
+                  visible="{viewModel.cloudService != null}"
+                  includeInLayout="{viewModel.cloudService != null}"
+                  fontWeight="bold"
+                  styleName="noPadding"/>
+        <pspui:ServiceStatusLabel displayStatus="{viewModel.cloudService.displayStatus}" fontWeight="bold"
+                                  visible="{viewModel.cloudService != null}"
+                                  includeInLayout="{viewModel.cloudService != null}"
+                                  styleName="noPadding"/>
+        <mx:Label text="{viewModel.cloudV2Service.serviceCodeEnum.label}: "
+                  visible="{viewModel.cloudV2Service!= null}"
+                  includeInLayout="{viewModel.cloudV2Service != null}"
+                  fontWeight="bold"
+                  styleName="noPadding"
+                  paddingLeft="15"/>
+        <pspui:ServiceStatusLabel displayStatus="{viewModel.cloudV2Service.displayStatus}" fontWeight="bold"
+                                  visible="{viewModel.cloudV2Service != null}"
+                                  includeInLayout="{viewModel.cloudV2Service != null}"
+                                  styleName="noPadding"/>
+
+        <mx:Repeater
+                id="addServiceRepeater"
+                dataProvider="{viewModel.companyStatus.availableServices}">
+            <pspui:ActionLink
+                    label="Add {ServiceCodeEnum.valueOf(addServiceRepeater.currentItem as String).label} Service"
+                    actionClick="confirmAddService"
+                    enabled="{viewModel.canAddService(addServiceRepeater.currentItem as String)}"
+                    data="{addServiceRepeater.currentItem as String}"
+                    paddingLeft="10"/>
+        </mx:Repeater>
+    </mx:HBox>
+
+    <mx:HBox
+            borderStyle="solid"
+            borderSides="left"
+            horizontalGap="0"
+            visible="{viewModel.companyStatus.serviceStatusCollection.length > 0}"
+            includeInLayout="{viewModel.companyStatus.serviceStatusCollection.length > 0}">
+        <mx:Repeater
+                id="serviceRepeater"
+                dataProvider="{viewModel.companyStatus.serviceStatusCollection}">
+            <pspui:SubscriptionStatus
+                    visible="{CompanyServiceStatus(serviceRepeater.currentItem).displayInTile}"
+                    includeInLayout="{CompanyServiceStatus(serviceRepeater.currentItem).displayInTile}"
+                    data="{serviceRepeater.currentItem}"
+                    viewSignature="onViewSignature(event)" 
+                    addTestPrintBatch="addTestPrintBatch(event)"
+                    editOfferings="editOfferings(event)"
+                    editOffers="editOffers(event)"
+                    getWorkersCompInfo="getWorkersCompInfo(event)"
+                    workersCompInfo="{viewModel.workersCompInfo}"/>
+        </mx:Repeater>
+    </mx:HBox>
+
+    <mx:HBox
+            visible="{viewModel.fraudFlag &amp;&amp; SAP.canPerformOperation(OperationsEnum.VIEW_SIGNUP_FRAUD_QUEUE)}"
+            includeInLayout="{viewModel.fraudFlag &amp;&amp; SAP.canPerformOperation(OperationsEnum.VIEW_SIGNUP_FRAUD_QUEUE)}">
+        <mx:Label
+                id="fraudFlagLabel"
+                text="Fraud Flag:"
+                styleName="fieldLabel"/>
+        <mx:HBox>
+            <mx:Image
+                    id='fraudFlagImage'
+                    horizontalAlign="center"
+                    source="{SAP.instance.icons.redFlag}"/>
+            <mx:LinkButton
+                    id="removeFraudFlagButton"
+                    label="Remove Fraud Flag"
+                    styleName="standardLinkButtonStyle"
+                    enabled="{SAP.canPerformOperation(OperationsEnum.REMOVE_FROM_SIGNUP_FRAUD_HOLD)}"
+                    click="confirmRemoveFraudFlag()"/>
+        </mx:HBox>
+    </mx:HBox>
+
+    <mx:Spacer height="6"/> <!--little bitty hack for the horizontal scroll bar since the vert bar is disabled-->
+
+</mx:VBox>

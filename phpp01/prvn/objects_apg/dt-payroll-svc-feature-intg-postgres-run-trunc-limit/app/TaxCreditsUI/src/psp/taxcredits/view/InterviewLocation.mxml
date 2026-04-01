@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        showTag="false"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        public function onCreationComplete():void {
+            validators.addItem(ezRC.validator);
+        }
+
+
+        public function writeToModel():void {
+            writeYesNoToModel("ezRC");
+        }
+
+
+        override public function readFromModel():void {
+            readYesNoFromModel("ezRC");
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+
+    <mx:VBox styleName="infoBox" width="655" verticalGap="0">
+        <mx:VBox paddingLeft="13" width="630" paddingTop="10" paddingBottom="4">
+            <mx:Text selectable="false" styleName="pageEmphasis" width="100%"
+                     htmlText="{resourceManager.getString('interview','fez_sorry')}"/>
+            <mx:Text selectable="false" styleName="pageText" width="100%"
+                     htmlText="{resourceManager.getString('interview','fez_please_call')}"/>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Spacer height="15"/>
+    <mx:Image source="psp/taxcredits/view/assets/dotted_line_small.gif"/>
+
+    <mx:VBox paddingLeft="15" paddingTop="1">
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="600"
+                 text="{resourceManager.getString('interview','fez_eligible')}"/>
+        <controls:YesNoRadio id="ezRC" paddingLeft="40" yesNoChange="writeToModel()"/>
+        
+    </mx:VBox>
+
+</controls:InterviewPage>

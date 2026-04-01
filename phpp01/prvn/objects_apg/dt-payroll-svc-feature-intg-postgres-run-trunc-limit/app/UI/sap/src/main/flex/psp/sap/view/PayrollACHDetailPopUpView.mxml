@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	height="100%"
+	width="100%"		
+	creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.application.SAP;
+			import mx.core.Application;
+			import psp.sap.viewmodel.PayrollACHDetailPopUpViewModel;			
+			import psp.sap.application.enums.CompanyInspectorPageEnum;
+			
+			private var mViewModel:PayrollACHDetailPopUpViewModel;
+			private var mTempViewModel:PayrollACHDetailPopUpViewModel;
+			private var mCreationComplete:Boolean = false;							
+								
+			[Bindable]
+			public function get viewModel():PayrollACHDetailPopUpViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:PayrollACHDetailPopUpViewModel):void {												
+				if (mCreationComplete) {
+					mViewModel = value;															
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+	
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;																		
+			}
+			
+			[Bindable ("propertyChange")]
+			private function get screenHeight():Number {
+				return systemManager.screen.height;
+			}
+			
+			[Bindable ("propertyChange")]
+			private function get screenWidth():Number {
+				return systemManager.screen.width;
+			}
+			
+			public function updateHeights():void {
+				var headerAndFooterHeight:Number = 50;
+				var detailViews:Array = [detailView1, detailView2, detailView3];
+				var payrollACHDetailView:PayrollACHDetailView;
+				
+				for each(payrollACHDetailView in detailViews){
+					var windowHeight:Number = Application.application.height - 250;
+					if(payrollACHDetailView.viewModel != null && this.height > windowHeight){
+						var gridCount:int = 0;
+						if(payrollACHDetailView.viewModel.feeTransactions.length > 0){
+							gridCount++;
+						}
+						if(payrollACHDetailView.viewModel.taxCreditTransactions.length > 0){
+							gridCount++;
+						}
+						if(payrollACHDetailView.viewModel.taxTransactions.length > 0){
+							gridCount++;
+						}
+						if(payrollACHDetailView.viewModel.ddTransactions.length > 0){
+							gridCount++;
+						}
+						
+						if(gridCount > 0){
+							// subtract headers and footers
+							windowHeight -= gridCount*headerAndFooterHeight;
+							// find the height per grid					
+							var heightPerGrid:Number = windowHeight/gridCount;
+							if(payrollACHDetailView.viewModel.feeTransactions.length > 0){							
+								if(payrollACHDetailView.viewModel.feeTransactions.length <= 2 || (payrollACHDetailView.viewModel.feeTransactions.length * payrollACHDetailView.feeTransactions.rowHeight) < heightPerGrid){
+									payrollACHDetailView.feeTransactions.rowCount = payrollACHDetailView.viewModel.feeTransactions.length; 
+								}
+								else{
+									var feeTransactionsRowCount:int = heightPerGrid/payrollACHDetailView.feeTransactions.rowHeight;
+									payrollACHDetailView.feeTransactions.rowCount = feeTransactionsRowCount > 2 ? feeTransactionsRowCount : 2;
+								} 
+							}
+							if(payrollACHDetailView.viewModel.taxCreditTransactions.length > 0){
+								if(payrollACHDetailView.viewModel.taxCreditTransactions.length <= 2 || (payrollACHDetailView.viewModel.taxCreditTransactions.length * payrollACHDetailView.appliedTaxCredits.rowHeight) < heightPerGrid){
+									payrollACHDetailView.appliedTaxCredits.rowCount = payrollACHDetailView.viewModel.taxCreditTransactions.length; 
+								}
+								else{
+									var taxCreditRowCount:int = heightPerGrid/payrollACHDetailView.appliedTaxCredits.rowHeight;
+									payrollACHDetailView.appliedTaxCredits.rowCount = taxCreditRowCount > 2 ? taxCreditRowCount : 2;
+								} 
+							}
+							if(payrollACHDetailView.viewModel.taxTransactions.length > 0){
+								if(payrollACHDetailView.viewModel.taxTransactions.length <= 2 || (payrollACHDetailView.viewModel.taxTransactions.length * payrollACHDetailView.curentLiabilities.rowHeight) < heightPerGrid){
+									payrollACHDetailView.curentLiabilities.rowCount = payrollACHDetailView.viewModel.taxTransactions.length; 
+								}
+								else{
+									var taxRowCount:int = heightPerGrid/payrollACHDetailView.curentLiabilities.rowHeight;
+									payrollACHDetailView.curentLiabilities.rowCount = taxRowCount > 2 ? taxRowCount : 2;
+								}
+							}
+							if(payrollACHDetailView.viewModel.ddTransactions.length > 0){
+								if(payrollACHDetailView.viewModel.ddTransactions.length <= 2 || (payrollACHDetailView.viewModel.ddTransactions.length * payrollACHDetailView.ddTransactions.rowHeight) < heightPerGrid){
+									payrollACHDetailView.ddTransactions.rowCount = payrollACHDetailView.viewModel.ddTransactions.length; 
+								}
+								else{
+									var ddTableRowCount:int = heightPerGrid/payrollACHDetailView.ddTransactions.rowHeight;
+									payrollACHDetailView.ddTransactions.rowCount = ddTableRowCount > 2 ? ddTableRowCount : 2;
+								}							
+							}
+						} 
+					}
+				}
+												
+				var feesRowCount:Number = 0;
+				var feesRowHeight:Number = 0;
+				var feesHeaderHeight:Number = 0;
+				var isFeesGridShowing:Boolean = 
+					(detailViews[0].visible && detailViews[0].feesGrid.visible) || 
+					(detailViews[1].visible && detailViews[1].feesGrid.visible) || 
+					(detailViews[2].visible && detailViews[2].feesGrid.visible);
+				for each(payrollACHDetailView in detailViews){
+					if(payrollACHDetailView.visible && payrollACHDetailView.feeTransactions.visible){
+						if(payrollACHDetailView.feeTransactions.rowCount > feesRowCount){
+							feesRowCount = payrollACHDetailView.feeTransactions.rowCount;
+					 	}
+					 	if(payrollACHDetailView.feeTransactions.rowHeight > feesRowHeight){
+					 		feesRowHeight = payrollACHDetailView.feeTransactions.rowHeight; 
+					 	}
+					 	if(payrollACHDetailView.feeTransactions.headerHeight > feesHeaderHeight){
+					 		feesHeaderHeight = payrollACHDetailView.feeTransactions.headerHeight; 
+					 	}
+					}
+				} 				
+				
+				var taxesRowCount:Number = 0;
+				var taxesRowHeight:Number = 0;
+				var taxesHeaderHeight:Number = 0;
+				var isTaxesGridShowing:Boolean = 
+					(detailViews[0].visible && detailViews[0].taxesGrid.visible) || 
+					(detailViews[1].visible && detailViews[1].taxesGrid.visible) ||
+					(detailViews[2].visible && detailViews[2].taxesGrid.visible);
+				for each(payrollACHDetailView in detailViews){
+					if(payrollACHDetailView.visible && payrollACHDetailView.curentLiabilities.visible){
+						if(payrollACHDetailView.curentLiabilities.rowCount > taxesRowCount){
+							taxesRowCount = payrollACHDetailView.curentLiabilities.rowCount;
+					 	}
+					 	if(payrollACHDetailView.curentLiabilities.rowHeight > taxesRowHeight){
+					 		taxesRowHeight = payrollACHDetailView.curentLiabilities.rowHeight; 
+					 	}
+					 	if(payrollACHDetailView.curentLiabilities.headerHeight > taxesHeaderHeight){
+					 		taxesHeaderHeight = payrollACHDetailView.curentLiabilities.headerHeight; 
+					 	}
+					}
+				} 				
+				
+				var taxCreditsRowCount:Number = 0;
+				var taxCreditsRowHeight:Number = 0;
+				var taxCreditsHeaderHeight:Number = 0;
+				for each(payrollACHDetailView in detailViews){
+					if(payrollACHDetailView.visible && payrollACHDetailView.appliedTaxCredits.visible){
+						if(payrollACHDetailView.appliedTaxCredits.rowCount > taxCreditsRowCount){
+							taxCreditsRowCount = payrollACHDetailView.appliedTaxCredits.rowCount;
+					 	}
+					 	if(payrollACHDetailView.appliedTaxCredits.rowHeight > taxCreditsRowHeight){
+					 		taxCreditsRowHeight = payrollACHDetailView.appliedTaxCredits.rowHeight; 
+					 	}
+					 	if(payrollACHDetailView.appliedTaxCredits.headerHeight > taxCreditsHeaderHeight){
+					 		taxCreditsHeaderHeight = payrollACHDetailView.appliedTaxCredits.headerHeight; 
+					 	}
+					}
+				}				
+				
+				var ddRowCount:Number = 0;
+				var ddRowHeight:Number = 0;
+				var ddHeaderHeight:Number = 0;
+				var isDdGridShowing:Boolean =
+					(detailViews[0].visible && detailViews[0].ddGrid.visible) ||
+					(detailViews[1].visible && detailViews[1].ddGrid.visible) ||
+					(detailViews[2].visible && detailViews[2].ddGrid.visible); 					
+				for each(payrollACHDetailView in detailViews){
+					if(payrollACHDetailView.visible && payrollACHDetailView.ddTransactions.visible){
+						if(payrollACHDetailView.ddTransactions.rowCount > ddRowCount){
+							ddRowCount = payrollACHDetailView.ddTransactions.rowCount;
+					 	}
+					 	if(payrollACHDetailView.ddTransactions.rowHeight > ddRowHeight){
+					 		ddRowHeight = payrollACHDetailView.ddTransactions.rowHeight; 
+					 	}
+					 	if(payrollACHDetailView.ddTransactions.headerHeight > ddHeaderHeight){
+					 		ddHeaderHeight = payrollACHDetailView.ddTransactions.headerHeight; 
+					 	}
+					}
+				}
+				
+				// apply the measurements
+				for each(payrollACHDetailView in detailViews){
+					payrollACHDetailView.feeTransactions.rowCount = feesRowCount;
+					payrollACHDetailView.curentLiabilities.rowCount = taxesRowCount;
+					payrollACHDetailView.appliedTaxCredits.rowCount = taxCreditsRowCount;
+					payrollACHDetailView.ddTransactions.rowCount = ddRowCount;
+					
+					if(!payrollACHDetailView.feesGrid.visible && feesRowCount > 0){
+						payrollACHDetailView.feesSpacer.height = feesRowCount*feesRowHeight + feesHeaderHeight + headerAndFooterHeight;
+					}
+					else if(feesRowCount > 0){
+						payrollACHDetailView.feesSpacer.height = feesRowCount*feesRowHeight + feesHeaderHeight;
+					}
+					else if(isFeesGridShowing && !payrollACHDetailView.feesGrid.visible){
+						payrollACHDetailView.feesSpacer.height = headerAndFooterHeight;
+					} 
+					else{
+						payrollACHDetailView.feesSpacer.height = NaN;
+					}
+					
+					if(isTaxesGridShowing && !payrollACHDetailView.taxesGrid.visible){
+						if(taxCreditsRowCount > 0){ 
+							payrollACHDetailView.taxesSpacer.height = 
+								taxCreditsRowCount*taxCreditsRowHeight + taxesRowCount*taxesRowHeight + taxCreditsHeaderHeight + taxesHeaderHeight + headerAndFooterHeight + headerAndFooterHeight;
+						}
+						else{
+							payrollACHDetailView.taxesSpacer.height = taxesRowCount*taxesRowHeight + taxesHeaderHeight + headerAndFooterHeight;
+						}					
+					}
+					else if(payrollACHDetailView.taxesGrid.visible){
+						if(payrollACHDetailView.appliedTaxCredits.rowCount == 0){
+							payrollACHDetailView.taxesSpacer.height = taxCreditsRowCount*taxCreditsRowHeight + taxCreditsHeaderHeight;
+						}
+						if(payrollACHDetailView.curentLiabilities.rowCount == 0){
+							payrollACHDetailView.taxesSpacer.height = taxesRowCount*taxesRowHeight + taxesHeaderHeight;
+						}
+					}					
+					else{
+						payrollACHDetailView.taxesSpacer.height = NaN;
+					}
+									
+					
+					if(!payrollACHDetailView.ddGrid.visible && ddRowCount > 0){
+						payrollACHDetailView.ddSpacer.height = ddRowCount*ddRowHeight + ddHeaderHeight + headerAndFooterHeight;
+					}
+					else if(ddRowCount > 0){
+						payrollACHDetailView.ddSpacer.height = ddRowCount*ddRowHeight + ddHeaderHeight;
+					}
+					else if(isDdGridShowing && !payrollACHDetailView.ddGrid.visible){
+						payrollACHDetailView.ddSpacer.height = headerAndFooterHeight;
+					}
+					else{
+						payrollACHDetailView.ddSpacer.height = NaN;
+					}
+				}																									
+			}						
+						
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="ACH Detail" fontWeight="bold"/>
+	<pspui:SaveStatusMessage id="saveMessage" paddingTop="10" tabEnabled="false"/> 
+	<mx:HBox width="100%" horizontalAlign="right" horizontalGap="0" visible="{viewModel.supportNavigateBack}" includeInLayout="{viewModel.supportNavigateBack}">
+		<pspui:ActionLink
+			automationName="navBackLink" 
+			click="viewModel.navigateBack()" label="Back: Adjustment Summary" labelPlacement="right" icon="{SAP.instance.icons.backGreenArrow16}"/>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%" horizontalGap="0">
+		<pspui:PayrollACHDetailView
+			id="detailView1" 
+			viewModel="{viewModel.payrollAchDetail1}"
+			label="{CompanyInspectorPageEnum.PAYROLL_ACH_DETAIL_1}"
+			showCompareLink="true"
+			visible="{detailView1.viewModel.showDetail}"
+			includeInLayout="{detailView1.viewModel.showDetail}"
+			modelDataLoaded="updateHeights()"
+			resizeFunction="{updateHeights}"/>
+		<pspui:PayrollACHDetailView
+			id="detailView2"
+			viewModel="{viewModel.payrollAchDetail2}" 
+			label="{CompanyInspectorPageEnum.PAYROLL_ACH_DETAIL_2}"
+			showCloseLink="true"
+			showCompareLink="{Application.application.width > 1024}"
+			visible="{detailView2.viewModel.showDetail}"
+			includeInLayout="{detailView2.viewModel.showDetail}"
+			modelDataLoaded="updateHeights()"
+			resizeFunction="{updateHeights}"/>
+		<pspui:PayrollACHDetailView
+			id="detailView3" 
+			viewModel="{viewModel.payrollAchDetail3}"
+			label="{CompanyInspectorPageEnum.PAYROLL_ACH_DETAIL_3}"
+			showCloseLink="true"
+			visible="{detailView3.viewModel.showDetail}"
+			includeInLayout="{detailView3.viewModel.showDetail}"
+			modelDataLoaded="updateHeights()"
+			resizeFunction="{updateHeights}"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button id="closeButton" label="Close" click="viewModel.cancel()"/>
+	</mx:HBox>
+	
+	<mx:Binding source="viewModel.selectedTransaction" destination="detailView1.viewModel.selectedTransaction"/>
+	
+	<mx:Binding source="viewModel.detail1Transactions" destination="detailView1.viewModel.transactions "/>
+	<mx:Binding source="viewModel.detail2Transactions" destination="detailView2.viewModel.transactions"/>
+	<mx:Binding source="viewModel.detail3Transactions" destination="detailView3.viewModel.transactions"/>
+	
+	<mx:Binding source="detailView1.viewModel.compare" destination="detailView2.viewModel.showDetail"/>
+	<mx:Binding source="detailView2.viewModel.showDetail" destination="detailView1.viewModel.compare"/>	
+	
+	<mx:Binding source="detailView2.viewModel.compare" destination="detailView3.viewModel.showDetail"/>
+	<mx:Binding source="detailView3.viewModel.showDetail" destination="detailView2.viewModel.compare"/>
+	
+	<mx:Binding source="viewModel.saveMsg" destination="saveMessage.text" />
+    <mx:Binding source="viewModel.saveFaulted" destination="saveMessage.isError" />
+		
+</mx:VBox>

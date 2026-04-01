@@ -1,0 +1,46 @@
+BEGIN
+
+UPDATE PSP_ENTITLEMENT PE
+SET PE.NEXT_CHARGE_DATE = trunc(PE.CREATED_DATE )+8/24+365,
+PE.MODIFIER_ID = 'EMSOPS-9096',
+modified_date = SYS_EXTRACT_UTC (SYSTIMESTAMP)
+WHERE pe.next_charge_date < SYSDATE + 30
+AND pe.entitlement_state = 'Enabled'
+AND entitlement_offering_code IN
+('615772',
+'793995',
+'637648',
+'412719',
+'798665',
+'8760',
+'392156',
+'757262',
+'885433',
+'132926',
+'253919',
+'52197',
+'456637',
+'879381',
+'522714',
+'981302',
+'827194',
+'283243',
+'322023',
+'628958',
+'323306',
+'793232',
+'482291',
+'424940',
+'813282',
+'192067',
+'641429',
+'326474',
+'417051' , '560894', '876826','189271','312726','811968','189271','037893','145279','396360','573166','745110','860626');
+
+commit;
+
+dbms_output.put_line('Retail Activation customers :Number of Rows Updated For PSP_ENTITLEMENT : ' ||  SQL%ROWCOUNT);
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE ('Error : ' || SQLERRM);
+END;

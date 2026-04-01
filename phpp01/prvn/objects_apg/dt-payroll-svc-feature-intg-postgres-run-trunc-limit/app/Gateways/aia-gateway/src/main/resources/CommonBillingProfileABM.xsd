@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!-- edited with XMLSpy v2012 rel. 2 sp1 (x64) (http://www.altova.com) by SB (INTUIT INC) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.intuit.net/xml/CommonBillingProfileABO" targetNamespace="http://www.intuit.net/xml/CommonBillingProfileABO" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:include schemaLocation="CommonBillingProfileABO.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ============= Common Request Message ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryBillingInfoRequest" type="QueryAccountBalanceSummaryType"/>
+	<xsd:complexType name="QueryAccountBalanceSummaryType">
+		<xsd:complexContent>
+			<xsd:extension base="BillingProfileType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= MultipleBilling Request Message ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryMultipleBillingInfoRequest" type="QueryMutipleBillsType"/>
+	<xsd:complexType name="QueryMutipleBillsType">
+		<xsd:complexContent>
+			<xsd:extension base="BillToPartyListType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= Query AccountBalanceSummary Response ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryAccountBalanceSummaryResponse" type="QueryAccountBalanceSummaryResponseType"/>
+	<xsd:complexType name="QueryAccountBalanceSummaryResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="BillingProfileType">
+				<xsd:sequence>
+					<xsd:element name="DataArea" type="QueryBalanceSummaryDataAreaResponseType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="QueryBalanceSummaryDataAreaResponseType">
+		<xsd:sequence>
+			<xsd:element ref="AccountBalanceSummary"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= Query Invoice Profile Response ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryInvoiceProfileResponse" type="QueryInvoiceProfileResponseType"/>
+	<xsd:complexType name="QueryInvoiceProfileResponseType">
+		<xsd:sequence>
+			<xsd:element name="DataArea" type="QueryInvoiceProfileDataAreaResponseType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="QueryInvoiceProfileDataAreaResponseType">
+		<xsd:sequence>
+			<xsd:element ref="BilledInvoiceProfile"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= Query Billed Usage Payments Response ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryBilledUsagePaymentsResponse" type="QueryBilledUsagePaymentsResponseType"/>
+	<xsd:complexType name="QueryBilledUsagePaymentsResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="BillingProfileType">
+				<xsd:sequence>
+					<xsd:element name="DataArea" type="QueryBilledUsagePaymentsDataAreaResponseType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="QueryBilledUsagePaymentsDataAreaResponseType">
+		<xsd:sequence>
+			<xsd:element ref="BilledUsagePayments"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= Query Account Balance Adjustments Response ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryBilledArAdjustmentsResponse" type="QueryBilledArAdjustmentsResponseType"/>
+	<xsd:complexType name="QueryBilledArAdjustmentsResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="BillingProfileType">
+				<xsd:sequence>
+					<xsd:element name="DataArea" type="QueryBilledArAdjustmentsDataAreaResponseType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="QueryBilledArAdjustmentsDataAreaResponseType">
+		<xsd:sequence>
+			<xsd:element ref="BilledUsageArItemsType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= Query Invoice Details Response ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryBilledInvoiceDetailsResponse" type="QueryBilledInvoiceDetailsResponseType"/>
+	<xsd:complexType name="QueryBilledInvoiceDetailsResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="BillingProfileType">
+				<xsd:sequence>
+					<xsd:element name="DataArea" type="QueryBilledInvoiceDetailsDataAreaResponseType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="QueryBilledInvoiceDetailsDataAreaResponseType">
+		<xsd:sequence>
+			<xsd:element ref="BilledInvoiceDetails"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Added for US1891  Start-->
+	<!-- ====================================================================== -->
+	<!-- ============= Query Item Event Detail Request ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryBilledItemEventDetailRequest" type="QueryBilledItemEventDetailRequestType"/>
+	<xsd:complexType name="QueryBilledItemEventDetailRequestType">
+		<xsd:complexContent>
+			<xsd:extension base="BilledItemDetailType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ============= Query Item Event Detail Response ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="QueryBilledItemEventDetailsResponse" type="QueryBilledItemEventDetailsType"/>
+	<xsd:complexType name="QueryBilledItemEventDetailsType">
+		<xsd:sequence>
+			<xsd:element name="DataArea" type="QueryBilledItemEventDetailsDataAreaResponseType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="QueryBilledItemEventDetailsDataAreaResponseType">
+		<xsd:sequence>
+			<xsd:element ref="BilledItemEventDetails"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Added for US1891  End-->
+</xsd:schema>

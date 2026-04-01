@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.model.ACHEnrollmentDetail;
+        import psp.sap.viewmodel.ACHEnrollmentsPendingResponseViewModel;
+        import psp.app.util.CommonUtil;
+
+        private var mViewModel:ACHEnrollmentsPendingResponseViewModel;
+        private var mTempViewModel:ACHEnrollmentsPendingResponseViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():ACHEnrollmentsPendingResponseViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:ACHEnrollmentsPendingResponseViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+            fileRef = new FileReference();
+            fileRef.addEventListener(Event.SELECT, onFileSelect, false, 0, false);
+            fileRef.addEventListener(IOErrorEvent.IO_ERROR, onFormLoadFailure, false, 0, true);
+            fileRef.addEventListener(Event.COMPLETE, onFormLoadComplete, false, 0, true);
+        }
+
+
+        public function showHistory(event:ActionLinkEvent):void {
+            viewModel.viewACHHistory(event.data as ACHEnrollmentDetail);
+        }
+
+        private function refreshGrid():void {
+            viewModel.refresh();
+        }
+
+        private var fileRef:FileReference;
+
+        public function loadFile():void {
+            fileRef.browse();
+        }
+
+        public function onFileSelect(e:Event):void {
+            viewModel.fileName = fileRef.name;
+            fileRef.load();
+        }
+
+        public function onFormLoadFailure(e:IOErrorEvent):void {
+            viewModel.saveFaulted = true;
+            viewModel.saveMsg = "Error loading file: " + e.text;
+        }
+
+        public function onFormLoadComplete(e:Event):void {
+            viewModel.file = fileRef.data;
+        }
+
+        private function exportResults():void {
+            var callString:String = "?report=achEnrollmentReport" +
+                    "&statusToFind=PendingEnrollmentResponse" +
+                    "&token=" + blankIfNull(SAP.instance.session.user.authorizationToken) +
+                    "&export=true";
+
+            if(CommonUtil.isDTApp()) {
+                CommonUtil.showPrintWindow(callString, "Print");
+            } else {
+                ExternalInterface.call("showPrintWindow", callString);
+            }
+        }
+
+        public function blankIfNull(c:*):* {
+            return (c == null) ? "" : c;
+        }
+        ]]>
+</mx:Script>
+    <mx:Label text="Upload response file" styleName="h3"/>
+    <mx:HBox verticalAlign="middle" paddingLeft="20">
+        <controls:RequiredLabel text="File Name:" dataField="fileData"/>
+        <mx:TextInput editable="false" text="{viewModel.fileName}" minWidth="200" click="loadFile()"/>
+        <mx:Button label="Browse" click="loadFile()"/>
+    </mx:HBox>
+    <mx:HBox paddingLeft="20">
+        <mx:Button label="Upload" enabled="{viewModel.canSave}" click="viewModel.uploadResponseFile();"/>
+    </mx:HBox>
+
+
+    <mx:VBox width="100%" id="searchResults" paddingTop="0" height="100%"
+             styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding">
+        <pspui:ACHEnrollmentDataGrid viewModel="{viewModel}" markEnrolledFunction="{viewModel.markAsEnrolled}"/>
+
+        <pspui:ActionLink click="exportResults();" icon="{SAP.instance.icons.exportIcon}" paddingTop="2"
+                          labelPlacement="right" label="Export Results"
+                          enabled="{viewModel.canExportResults}"/>
+    </mx:VBox>
+</mx:VBox>

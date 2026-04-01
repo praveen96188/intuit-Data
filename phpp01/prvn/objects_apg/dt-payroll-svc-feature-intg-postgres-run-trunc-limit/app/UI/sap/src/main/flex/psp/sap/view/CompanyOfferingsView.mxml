@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        visible="{!viewModel.isDataLoading}"
+        includeInLayout="{!viewModel.isDataLoading}"
+        width="100%" height="100%">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.RadioButton;
+        import mx.core.Repeater;
+        import mx.events.CloseEvent;
+        import mx.logging.ILogger;
+
+        import psp.sap.application.ClientLoggingTarget;
+        import psp.sap.model.Offering;
+        import psp.sap.viewmodel.CompanyOfferingsViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+
+        private var logger:ILogger = ClientLoggingTarget.getLogger(this);
+
+        [Bindable]
+        private var mViewModel:CompanyOfferingsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+
+        [Bindable]
+        public function get viewModel():CompanyOfferingsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyOfferingsViewModel):void {
+            removeViewModelListeners();
+            mViewModel = value;
+            addViewModelListeners();
+        }
+
+        private function removeViewModelListeners():void {
+            if (mViewModel != null)
+                mViewModel.removeEventListener(ViewModelEvent.MODEL_DATA_SETUP_COMPLETED, onDataLoadCompleted);
+        }
+
+        private function addViewModelListeners():void {
+            if (mViewModel != null)
+                mViewModel.addEventListener(ViewModelEvent.MODEL_DATA_SETUP_COMPLETED, onDataLoadCompleted, false, 0, true);
+        }
+
+        private function onDataLoadCompleted(e:ViewModelEvent):void {
+            if (viewModel.offerings.length > 0) {
+                var firstOffering:Offering = Offering(viewModel.offerings.getItemAt(0));
+                availableOfferingsGroup.selectedValue = firstOffering.SKU;
+            }
+        }
+
+        public function doAction(e:ActionLinkEvent):void {
+            if (e.action == "changeOfferings") {
+                confirmChangeOffering();
+            }
+        }
+
+        private function confirmChangeOffering():void {
+            var msgString:String =
+                    "Are you sure you want to change the offering to '" + viewModel.selectedOffering
+                            + "' for this company?";
+
+            Alert.show(
+                    msgString,
+                    "Change Offering Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(event:CloseEvent):void {
+                        if (event.detail == Alert.OK) {
+                            changeOffering(); // change offering
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        public function changeOffering():void {
+            viewModel.changeOffering();
+        }
+
+        public function availableOffering_change(evt:Event):void {
+            var rb:RadioButton = evt.currentTarget as RadioButton;
+            viewModel.selectedOffering = rb.value as String;
+        }
+
+        public function formatPrice(n:Number):String {
+            return "$" + viewModel.priceFormatter.format(n);
+        }
+
+        public function isLastRow(r:Object, s1:String, s2:String):String {
+            if (r is Repeater) {
+                if (r.currentIndex == r.dataProvider.length - 1) {
+                    return s1;
+                } else {
+                    return s2;
+                }
+            } else {
+                logger.error("Not a repeater!");
+                return "";
+            }
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:VBox
+            styleName="grayDataGridVBox"
+            verticalScrollPolicy="off"
+            horizontalScrollPolicy="off">
+        <mx:Label text="Offering in Effect" styleName="grayDataGridHeading"/>
+        <mx:Grid verticalGap="0" horizontalGap="0">
+            <mx:GridRow>
+                <mx:GridItem horizontalAlign="center" minWidth="185" styleName="headerBorder">
+                    <mx:Label text="Offering Name"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="SKU Description"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="SKU"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="Base Price/Unit Price"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:GridRow backgroundColor="{UIUtils.getRowColor(1)}">
+                <mx:GridItem horizontalAlign="left" minWidth="185" styleName="borderRightGrey" >
+                    <mx:Label id="currentOfferingLabel" text="{mViewModel.currentOffering.name}"
+                              paddingLeft="35"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="left" minWidth="150" styleName="borderRightGrey" >
+                    <mx:Label id="currentSKULabel" text="{mViewModel.currentOffering.SKU}"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="borderRightGrey" >
+                    <mx:Label text=""/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" >
+                    <mx:Label text=""/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:Repeater id="chargeRepeater" dataProvider="{viewModel.currentOffering.serviceCharges}" recycleChildren="false">
+                <mx:GridRow backgroundColor="{UIUtils.getRowColor(chargeRepeater.currentIndex)}">
+                    <mx:GridItem horizontalAlign="left" minWidth="185" backgroundColor="{UIUtils.getRowColor(1)}" styleName="borderRightGrey">
+                        <mx:Label text=""/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="left" minWidth="150" styleName="borderRightGrey" >
+                        <mx:Label id="descriptionLabel" text="{chargeRepeater.currentItem.groupDescription}"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="150" styleName="borderRightGrey" >
+                        <mx:Label id="chargeSKULabel" text="{chargeRepeater.currentItem.SKU}"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="150" >
+                        <mx:Label id="chargePriceLabel" text="{formatPrice(chargeRepeater.currentItem.price)}/{formatPrice(chargeRepeater.currentItem.unitPrice)}"/>
+                    </mx:GridItem>
+                </mx:GridRow>
+            </mx:Repeater>
+        </mx:Grid>
+    </mx:VBox>
+    <mx:Spacer height="30" />
+    <mx:VBox
+            styleName="grayDataGridVBox"
+            verticalScrollPolicy="off"
+            horizontalScrollPolicy="off">
+        <mx:Label text="Offerings Available" styleName="grayDataGridHeading"/>
+        <mx:RadioButtonGroup
+                id="availableOfferingsGroup"/>
+        <mx:Label
+                text="No available offerings found."
+                visible="{viewModel.offerings.length == 0}"
+                includeInLayout="{viewModel.offerings.length == 0}"
+                width="500"
+                textAlign="center"/>
+        <mx:Grid verticalGap="0" horizontalGap="0"
+                 visible="{viewModel.offerings.length > 0}"
+                 includeInLayout="{viewModel.offerings.length > 0}">
+            <mx:GridRow>
+                <mx:GridItem width="35" styleName="headerBorderBottom"/>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="Offering Name"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="SKU Description"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="SKU"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                    <mx:Label text="Base Price/Unit Price"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:Repeater
+                    dataProvider="{viewModel.offerings}"
+                    id="availableOfferingRepeater"
+                    recycleChildren="false">
+                <mx:GridRow
+                        backgroundColor="{UIUtils.getRowColor(availableOfferingRepeater.currentIndex)}">
+                    <mx:GridItem
+                            horizontalAlign="center"
+                            minWidth="35"
+                            minHeight="30">
+                        <mx:RadioButton
+                                id="skuButton"
+                                group="{availableOfferingsGroup}"
+                                value="{availableOfferingRepeater.currentItem.SKU}"
+                                click="{availableOffering_change(event)}"
+                                selected="{availableOfferingRepeater.currentItem.selected}" />
+                    </mx:GridItem>
+                    <mx:GridItem
+                            horizontalAlign="left"
+                            minWidth="150"
+                            styleName="borderRightGrey">
+                        <mx:Label id="offeringName" text="{availableOfferingRepeater.currentItem.name}"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="left" minWidth="150"
+                                 styleName="borderRightGrey">
+                        <mx:Label id="offeringSKU" text="{availableOfferingRepeater.currentItem.SKU}"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="150"
+                                 styleName="borderRightGrey">
+                        <mx:Label text=""/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="150">
+                        <mx:Label text=""/>
+                    </mx:GridItem>
+                </mx:GridRow>
+                <mx:Repeater
+                        dataProvider="{availableOfferingRepeater.currentItem.serviceCharges}"
+                        id="serviceChargeRepeater"
+                        recycleChildren="false">
+                    <mx:GridRow
+                            backgroundColor="{UIUtils.getRowColor(availableOfferingRepeater.currentIndex)}">
+                        <mx:GridItem
+                                width="35" />
+                        <mx:GridItem horizontalAlign="center"
+                                     minWidth="150"
+                                     styleName="borderRightGrey">
+                            <mx:Label text=""/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="left" minWidth="150" styleName="borderRightGrey">
+                            <mx:Label id="groupDescriptionLabel" text="{serviceChargeRepeater.currentItem.groupDescription}"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="150" styleName="borderRightGrey">
+                            <mx:Label id="serviceChargeSKULabel" text="{serviceChargeRepeater.currentItem.SKU}"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="center" minWidth="150" >
+                            <mx:Label id="serviceChargePriceLabel" text="{formatPrice(serviceChargeRepeater.currentItem.price)}/{formatPrice(serviceChargeRepeater.currentItem.unitPrice)}"/>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                </mx:Repeater>
+            </mx:Repeater>
+        </mx:Grid>
+
+    </mx:VBox>
+    <mx:Spacer height="10" />
+    <mx:HBox width="630" horizontalAlign="right">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()" width="100" />
+        <mx:Button id="saveButton" label="Save" click="confirmChangeOffering()" enabled="{viewModel.canSave}" width="100" />
+    </mx:HBox>
+
+
+
+</mx:VBox>

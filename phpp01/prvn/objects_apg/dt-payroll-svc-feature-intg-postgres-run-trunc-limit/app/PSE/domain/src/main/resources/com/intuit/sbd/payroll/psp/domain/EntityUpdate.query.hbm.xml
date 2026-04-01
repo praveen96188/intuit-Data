@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <!-- find the partitions to be processed -->
+    <sql-query name="findRangePartitions">
+        <return-scalar column="startTime" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        <return-scalar column="endTime" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        <![CDATA[
+            select group_id, min (created_date) startTime, max (created_date) endTime
+               from (select created_date, floor (serial_num / :BatchSize) group_id
+                       from (select created_date,
+                                    row_number () over (order by created_date) serial_num
+                               from psp_entity_update
+                              where  status='Created' and (created_date between :lastProcessedTimeStamp
+                                                         and :now)) result_inner) result
+            group by group_id
+        ]]>
+    </sql-query>
+
+    <sql-query name="findChangeEntitiesByDateRange">
+        <return alias="entityUpdate" class="com.intuit.sbd.payroll.psp.domain.EntityUpdate"/>
+        <![CDATA[
+			select *
+			from psp_entity_update
+			where status = 'Created'
+			and (created_date between :startCreatedDate and :endCreatedDate)
+			]]>
+    </sql-query>
+</hibernate-mapping>

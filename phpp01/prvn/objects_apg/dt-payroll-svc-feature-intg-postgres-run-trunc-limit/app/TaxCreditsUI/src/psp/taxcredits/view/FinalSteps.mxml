@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*" paddingLeft="30"
+         xmlns:view="psp.taxcredits.view.*" creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import mx.formatters.DateFormatter;
+        import mx.utils.StringUtil;
+
+        import psp.taxcredits.model.PageChangeEvent;
+        import psp.taxcredits.model.QAItemCollection;
+        import psp.taxcredits.model.TaxCreditsEvent;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        [Bindable]
+        public var pageEnabled:Boolean = false;
+
+
+        private var mDateFormatter:DateFormatter=null;
+
+        [Bindable("propertyChange")]
+        public function get dateFormatter():DateFormatter {
+            if (mDateFormatter == null) {
+                mDateFormatter = new DateFormatter();
+                mDateFormatter.formatString = "MMMM D, YYYY";
+            }
+            return mDateFormatter;
+        }
+
+        public function onCreationComplete():void {
+            model.pageManager.addEventListener(PageChangeEvent.PAGE_CHANGE, onPageChange);
+            model.addEventListener(TaxCreditsEvent.APPLICATION_SUBMITTED, onApplicationSubmitted);
+        }
+
+        private function onPageChange(e:PageChangeEvent):void {
+            if (e.page == this.label) {
+                pageEnabled = false;
+                model.submitApplication();
+            }
+        }
+
+        private function onApplicationSubmitted(e:Event):void {
+            pageEnabled = true;
+        }
+
+        private function onBack():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.COMPANY_INFO);
+        }
+
+        private function onPrint():void {
+            model.tracker.trackEvent("Navigation", "Print instructions");
+            navigateToURL(model.getPrintInstructionsURL());
+        }
+
+
+        ]]>
+    </mx:Script>
+
+    <controls:GreyscaleBox paddingTop="24" enableTo="4"/>
+
+    <mx:Text selectable="false" styleName="pageH3Alt" paddingTop="3" paddingLeft="-1"
+             text="{resourceManager.getString('finalSteps','page_tag_line')}"/>
+
+    <mx:HBox visible="{! pageEnabled}" verticalAlign="middle">
+        <mx:Image source="{EmbeddedAssets.spinner}"/>
+        <mx:Text styleName="generatingText" selectable="false"
+                 text="{resourceManager.getString('finalSteps','generating')}"/>
+    </mx:HBox>
+    
+
+    <mx:VBox paddingLeft="30">
+        <mx:VBox styleName="finalStepsBox" width="811" minHeight="301" id="finalStepsBox">
+            <mx:Canvas>
+                <mx:Image x="389" y="133" source="{EmbeddedAssets.spinner}" visible="{! pageEnabled}" includeInLayout="{pageEnabled}" id="spinnerImage"/>
+                <mx:Text y="165" x="{spinnerImage.x + spinnerImage.width/2 - 150}" width="300" textAlign="center" styleName="generatingText" selectable="false" visible="{! pageEnabled}" includeInLayout="{pageEnabled}"
+                         text="{resourceManager.getString('finalSteps','loading')}"/>
+                <mx:VBox paddingLeft="17" verticalGap="5" paddingTop="10" visible="{pageEnabled}" includeInLayout="{pageEnabled}">
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Image source="psp/taxcredits/view/assets/FinalStepCheck.png"/>
+                        <mx:Text styleName="pageText" selectable="false"
+                                 htmlText="{resourceManager.getString('finalSteps','app_emailed', [model.company.authSignerLabel, model.company.authorizedSignerEmail, model.employee.firstName + ' ' + model.employee.lastName, model.employee.email])}"/>
+                    </mx:HBox>
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Image source="psp/taxcredits/view/assets/FinalStepCheck.png"/>
+                        <controls:SupText styleName="pageText" selectable="true" width="600"
+                                 htmlText="{resourceManager.getString('finalSteps','app_sign', [model.applicationInfo.password])}"/>
+                    </mx:HBox>
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Image source="psp/taxcredits/view/assets/FinalStepCheck.png"/>
+                        <controls:SupText styleName="pageText" selectable="false" width="650"
+                                 htmlText="{resourceManager.getString('finalSteps','sign_required', [model.employee.getPostmarkedByDate(), model.employee.firstName])}"/> <!-- Major hack adding this unused param, but otherwise I can't get it to show up-->
+                    </mx:HBox>
+                    <mx:HBox verticalAlign="top" visible="{model.applicationInfo.proofDocumentGroups.length > 0}" includeInLayout="{model.applicationInfo.proofDocumentGroups.length > 0}" paddingBottom="0">
+                        <mx:VBox paddingTop="4">
+                            <mx:Image source="psp/taxcredits/view/assets/FinalStepCheck.png"/>
+                        </mx:VBox>
+                        <mx:VBox verticalGap="0">
+                            <mx:Text styleName="pageText" selectable="false" width="650" paddingBottom="0"
+                                     htmlText="{resourceManager.getString('finalSteps','proof_docs', [model.employee.getPostmarkedByDate(), model.employee.firstName])}"/> <!-- Major hack adding this unused param, but otherwise I can't get it to show up-->
+                            <view:QAExpandableItem paddingTop="0" paddingLeft="-15" width="400" id="proofDocsExpander"
+                                                   visible="{model.applicationInfo.proofDocumentGroups.length > 0}" includeInLayout="{model.applicationInfo.proofDocumentGroups.length > 0}"
+                                                   question="{resourceManager.getString('finalSteps','proof_docs_which', [model.applicationInfo.numberRequiredText])}"/>
+                            <mx:VBox visible="{model.applicationInfo.proofDocumentGroups.length > 0 &amp;&amp; proofDocsExpander.show}" includeInLayout="{model.applicationInfo.proofDocumentGroups.length > 0 &amp;&amp; proofDocsExpander.show}"
+                                     width="380" paddingBottom="15" verticalGap="0">
+                                <mx:Repeater dataProvider="{model.applicationInfo.proofDocumentGroups}" id="proofDocRepeater">
+                                    <mx:Text>
+                                        <mx:htmlText>
+                                            <![CDATA[<B>ONE</B> of the following:]]>
+                                        </mx:htmlText>
+                                    </mx:Text>
+                                    <mx:Repeater dataProvider="{proofDocRepeater.currentItem}" id="proofDocOptionRepeater">
+                                        <mx:HBox paddingLeft="20" width="100%">
+                                            <mx:VBox paddingTop="3">
+                                                <mx:Image source="psp/taxcredits/view/assets/longArrowRight.png"/>
+                                            </mx:VBox>
+                                            <mx:Text text="{proofDocOptionRepeater.currentItem}" width="100%" paddingTop="0" paddingBottom="0"/>
+                                        </mx:HBox>
+                                    </mx:Repeater>
+                                </mx:Repeater>
+                            </mx:VBox>
+                        </mx:VBox>
+                    </mx:HBox>
+                </mx:VBox>
+                <mx:VBox styleName="infoBoxWhite" x="440" y="{finalStepsBox.height - 120}" width="350" height="100" visible="{pageEnabled}" includeInLayout="{pageEnabled}">
+                    <mx:Text styleName="pageText" selectable="false" paddingLeft="8" paddingTop="6" width="346"
+                             htmlText="{resourceManager.getString('finalSteps','note', [dateFormatter.format(model.employee.getPostmarkedByDate()), model.employee.firstName + ' ' + model.employee.lastName])}"/>
+                </mx:VBox>
+                <mx:VBox horizontalAlign="center" y="10" x="700" verticalGap="0" visible="{pageEnabled}">
+                    <mx:Image source="psp/taxcredits/view/assets/Printer.png" useHandCursor="true" buttonMode="true" click="onPrint();"/>
+                    <mx:Text text="{resourceManager.getString('finalSteps','print')}" styleName="pageText"/>
+                </mx:VBox>
+            </mx:Canvas>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:HBox verticalAlign="middle">
+        <controls:SupText selectable="false" styleName="pageText" paddingTop="10" width="820"
+                          htmlText="{resourceManager.getString('finalSteps','closing')}"/>
+        <controls:InlineHelp help="{resourceManager.getString('finalSteps','closing_help')}"/>
+    </mx:HBox>
+
+    <controls:SupText selectable="false" styleName="pageEmphasis" paddingTop="10" width="858"
+                      htmlText="{resourceManager.getString('finalSteps','thanks')}"/>
+
+    <mx:Spacer height="20"/>
+    <mx:HRule styleName="divider" width="852"/>
+
+    <mx:HBox styleName="noPadding" paddingTop="8" paddingLeft="31" verticalAlign="middle">
+        <mx:Button styleName="buttonBack" useHandCursor="true" buttonMode="true"
+                   click="onBack();"/>
+    </mx:HBox>
+
+    <controls:QASection width="860" paddingTop="20"
+                        title="{resourceManager.getString('eligibility','qa_subheader')}"
+                        items="{new QAItemCollection((QAItemFactory.finalStepsQAItems.toArray().concat(QAItemFactory.qaItems.toArray())))}"/>
+
+</mx:VBox>

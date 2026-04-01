@@ -1,0 +1,145 @@
+00:25:29 SQL> set echo on feedback on timing on
+00:25:29 SQL> 
+00:25:29 SQL> --disable online index rebuild cleanup job
+00:25:29 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+29-MAY-22 04.00.41.181069 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+00:25:29 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+00:25:29 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+29-MAY-22 04.00.41.181069 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+00:25:29 SQL> 
+00:25:29 SQL> exec dbms_streams.set_tag (hextoraw(3));
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+00:25:29 SQL> 
+00:25:29 SQL> alter index PSPADM.PSP_TAX_FK5 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+00:25:29 SQL> alter index PSPADM.PSP_TAX_FK5 rebuild tablespace PSP_IDX02 online parallel 8;
+
+Index altered.
+
+Elapsed: 00:59:47.74
+01:25:17 SQL> alter index PSPADM.PSP_TAX_FK5 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+01:25:17 SQL> alter index PSPADM.PSP_TAX_FK2 rebuild tablespace PSP_IDX02 online parallel 8;
+
+Index altered.
+
+Elapsed: 00:56:14.70
+02:21:32 SQL> alter index PSPADM.PSP_TAX_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:21:32 SQL> alter index PSPADM.PSP_TAX_FK1 rebuild tablespace PSP_IDX02 online parallel 8;
+
+Index altered.
+
+Elapsed: 00:30:29.86
+02:52:02 SQL> alter index PSPADM.PSP_TAX_FK1 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:52:02 SQL> alter index PSPADM.SYS_C0020725 rebuild tablespace PSP_IDX02 online parallel 8;
+
+Index altered.
+
+Elapsed: 00:44:39.38
+03:36:41 SQL> alter index PSPADM.SYS_C0020725 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+03:36:41 SQL> 
+03:36:41 SQL> --enable online index rebuild cleanup job
+03:36:41 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+29-MAY-22 04.00.41.181069 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+03:36:41 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+03:36:41 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+29-MAY-22 07.00.41.626279 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+03:36:41 SQL> 
+03:36:41 SQL> spool off

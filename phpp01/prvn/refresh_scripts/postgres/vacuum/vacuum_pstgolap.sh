@@ -1,0 +1,9 @@
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_1.sql > pspadm_vacuum_pstgolap_1.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_2.sql > pspadm_vacuum_pstgolap_2.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_3.sql > pspadm_vacuum_pstgolap_3.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_4.sql > pspadm_vacuum_pstgolap_4.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_5.sql > pspadm_vacuum_pstgolap_5.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_nonpart_1.sql > pspadm_vacuum_nonpart_pstgolap_1.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_nonpart_2.sql > pspadm_vacuum_nonpart_pstgolap_2.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_nonpart_3.sql > pspadm_vacuum_nonpart_pstgolap_3.log &
+nohup ./run_on_ppsp--stg-olap-new.sh pspadm_vacuum_nonpart_4.sql > pspadm_vacuum_nonpart_pstgolap_4.log &

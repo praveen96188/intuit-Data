@@ -1,0 +1,22 @@
+<project name="zip-configuration" basedir="." default="all">
+  <!-- properties defined in build.xml -->
+  <!-- zip.prefix defines prefix name (passed from build.xml) -->
+  <!-- zip.env defines environment name (passed from build.xml) -->
+  <!-- zip.subtype defines subtype name (passed from build.xml) -->
+
+    <property name="dir.target" location="${basedir}/target"/>
+    <property name="dir.tools" location="${base.dir}/tools"/>
+
+    <target name="all">
+        <echo message="Creating ${zip.prefix}-${zip.env}-${zip.subtype}.zip"/>
+        <mkdir dir="${dir.target}"/>
+        <zip destfile="${dir.target}/${zip.prefix}-${zip.env}-${zip.subtype}.zip" update="true">
+            <fileset dir="${base.dir}/${zip.env}/${zip.subtype}"/>
+        </zip>
+
+    <echo message="Generating ${zip.prefix}-${zip.env}-${zip.subtype}.md5"/>    
+	
+   <!--  MD5 checksum is generated using a maven plugin
+   <exec dir="${dir.target}" executable="perl.exe" output="${dir.target}/${zip.prefix}-${zip.env}-${zip.subtype}.zip.md5" append="true" failonerror="true"><arg line="${dir.tools}/md5.pl -r . -f ${zip.prefix}-${zip.env}-${zip.subtype}.zip" /></exec> -->   
+    </target>
+</project>

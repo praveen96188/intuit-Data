@@ -1,0 +1,1 @@
+This file required by P4. Resources directory must be created for IntelliJ build.

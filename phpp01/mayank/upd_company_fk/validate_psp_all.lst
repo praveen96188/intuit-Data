@@ -1,0 +1,252 @@
+SQL> @Validate_PSP_COMPANY_EVENT_EMAIL.sql
+SQL> ----------------PSP_COMPANY_EVENT_EMAIL--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT /*+Parallel(16) */ count(*) into rec_count
+  5  	 FROM PSPADM.PSP_COMPANY_EVENT_EMAIL ceei,
+  6  	      PSPADM.PSP_COMPANY_EVENT cei
+  7  	 WHERE ceei.COMPANY_EVENT_FK = cei.COMPANY_EVENT_SEQ
+  8  	   AND ceei.COMPANY_FK != cei.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_COMPANY_EVENT_EMAIL');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_COMPANY_EVENT_EMAIL                                
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:05:40.31
+SQL> 
+SQL> @Validate_PSP_EDI_PAYMENT_DETAIL.sql
+SQL> -------------PSP_EDI_PAYMENT_DETAIL--
+SQL> 
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_EDI_PAYMENT_DETAIL epd,
+  6  	      PSPADM.PSP_MONEY_MOVEMENT_TRANSACTION mmt
+  7  	 WHERE mmt.MONEY_MOVEMENT_TRANSACTION_SEQ= epd.MONEY_MOVEMENT_TRANSACTION_FK
+  8  	   AND epd.COMPANY_FK !=  mmt.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_EDI_PAYMENT_DETAIL');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_EDI_PAYMENT_DETAIL                                 
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.28
+SQL> 
+SQL> @Validate_PSP_EVENT_AS400_SYNC.sql
+SQL> --------PSP_EVENT_AS400_SYNC--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_EVENT_AS400_SYNC ceei,
+  6  	      PSPADM.PSP_COMPANY_EVENT cei
+  7  	 WHERE ceei.COMPANY_EVENT_FK = cei.COMPANY_EVENT_SEQ
+  8  	   AND ceei.COMPANY_FK != cei.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_EVENT_AS400_SYNC');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_EVENT_AS400_SYNC                                   
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:02.52
+SQL> 
+SQL> @Validate_PSP_FSET_FILING_DETAIL.sql
+SQL> ----------PSP_FSET_FILING_DETAIL--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_FSET_FILING_DETAIL ffd,
+  6  	      PSPADM.PSP_MONEY_MOVEMENT_TRANSACTION mmt
+  7  	 WHERE mmt.MONEY_MOVEMENT_TRANSACTION_SEQ= ffd.MONEY_MOVEMENT_TRANSACTION_FK
+  8  	   AND ffd.COMPANY_FK !=  mmt.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_FSET_FILING_DETAIL');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_FSET_FILING_DETAIL                                 
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:02.41
+SQL> 
+SQL> @Validate_PSP_PAYMENT_BATCH_ASSOC.sql
+SQL> ------- PSP_PAYMENT_BATCH_ASSOC--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_PAYMENT_BATCH_ASSOC pba,
+  6  	      PSPADM.PSP_MONEY_MOVEMENT_TRANSACTION mmt
+  7  	 WHERE mmt.MONEY_MOVEMENT_TRANSACTION_SEQ= pba.MONEY_MOVEMENT_TRANSACTION_FK
+  8  	   AND pba.COMPANY_FK != mmt.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_PAYMENT_BATCH_ASSOC');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_PAYMENT_BATCH_ASSOC                                
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:37.88
+SQL> 
+SQL> @Validate_PSP_PAYSTUB.sql
+SQL> -----------------PSP_PAYSTUB- 11m
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT /*+Parallel(16) */ count(*) into rec_count
+  5  	 FROM PSPADM.PSP_PAYSTUB ci,
+  6  	      PSPADM.PSP_PAYCHECK pi
+  7  	 WHERE pi.PAYCHECK_SEQ = ci.PAYCHECK_FK
+  8  	   AND ci.COMPANY_FK != pi.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_PAYSTUB');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_PAYSTUB                                            
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:08:22.21
+SQL> 
+SQL> @Validate_PSP_TAX_PAYMENT_ON_HOLD_REASON.sql
+SQL> -------------PSP_TAX_PAYMENT_ON_HOLD_REASON--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_TAX_PAYMENT_ON_HOLD_REASON ceei,
+  6  	      PSPADM.PSP_MONEY_MOVEMENT_TRANSACTION cei
+  7  	 WHERE ceei.MONEY_MOVEMENT_TRANSACTION_FK = cei.MONEY_MOVEMENT_TRANSACTION_SEQ
+  8  	   AND ceei.COMPANY_FK != cei.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_TAX_PAYMENT_ON_HOLD_REASON');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_TAX_PAYMENT_ON_HOLD_REASON                         
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:20.29
+SQL> 
+SQL> @Validate_PSP_TP401K_BATCH_PAYCHECK.sql
+SQL> --------------PSP_TP401K_BATCH_PAYCHECK--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_TP401K_BATCH_PAYCHECK ci,
+  6  	      PSPADM.PSP_PAYCHECK pi
+  7  	 WHERE pi.PAYCHECK_SEQ = ci.PAYCHECK_FK
+  8  	   AND ci.COMPANY_FK != pi.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_TP401K_BATCH_PAYCHECK');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_TP401K_BATCH_PAYCHECK                              
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:05.13
+SQL> 
+SQL> @Validate_PSP_TP401K_PAYCHECK.sql
+SQL> --------PSP_TP401K_PAYCHECK-- 5m
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_TP401K_PAYCHECK ci,
+  6  	      PSPADM.PSP_PAYCHECK pi
+  7  	 WHERE pi.PAYCHECK_SEQ = ci.PAYCHECK_FK
+  8  	   AND ci.COMPANY_FK != pi.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_TP401K_PAYCHECK');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_TP401K_PAYCHECK                                    
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:02.64
+SQL> 
+SQL> @Validate_PSP_VOIDED_CHECK.sql
+SQL> ----------PSP_VOIDED_CHECK--
+SQL> declare
+  2  	 rec_count number;
+  3  begin
+  4  	 SELECT count(*) into rec_count
+  5  	 FROM PSPADM.PSP_VOIDED_CHECK vc,
+  6  	      PSPADM.PSP_MONEY_MOVEMENT_TRANSACTION mmt
+  7  	 WHERE mmt.MONEY_MOVEMENT_TRANSACTION_SEQ= vc.MONEY_MOVEMENT_TRANSACTION_FK
+  8  	   AND vc.COMPANY_FK != mmt.COMPANY_FK;
+  9  
+ 10  	 if(rec_count = 0) then
+ 11  	     dbms_output.put_line('validated successful for PSP_VOIDED_CHECK');
+ 12  	 end if;
+ 13  
+ 14  	 dbms_output.put_line('validation End');
+ 15  end;
+ 16  /
+validated successful for PSP_VOIDED_CHECK                                       
+validation End                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.14
+SQL> 
+SQL> spool off

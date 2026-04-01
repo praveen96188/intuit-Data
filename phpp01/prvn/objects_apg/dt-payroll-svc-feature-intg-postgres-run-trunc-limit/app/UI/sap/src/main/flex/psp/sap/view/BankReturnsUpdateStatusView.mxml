@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	width="100%" 
+	height="100%"		
+	show="noteText.setFocus();">		
+	
+	<mx:Script>
+		<![CDATA[
+		
+			import psp.sap.viewmodel.BankReturnsUpdateStatusViewModel;
+			import mx.core.UIComponent;
+			import mx.events.ValidationResultEvent;
+			import psp.sap.viewmodel.events.ViewModelEvent;
+			import psp.sap.viewmodel.events.ViewModelFaultEvent;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;		
+			import psp.sap.application.SAP;
+			
+			private var mViewModel:BankReturnsUpdateStatusViewModel;	
+			private const MAX_NOTE_LENGTH:Number = 3998;
+							
+			[Bindable]
+			public function get viewModel():BankReturnsUpdateStatusViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:BankReturnsUpdateStatusViewModel):void {			
+				if(value != null) {					
+					mViewModel = value;
+					mViewModel.noteValidator.listener = this.noteText;
+				}
+			}
+						
+			private function confirmSave():void 
+			{
+				var msgString:String = "Are you sure you want to update the Bank Return Status?";				
+        		Alert.show(	msgString, 
+        					"Save Confirmation", 
+        					Alert.OK | Alert.CANCEL, 
+        					this, 
+        					confirmVerifyHandler, 
+        					null, 
+        					Alert.OK);
+        	}
+        	
+        	private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+        		if(evt_obj.detail == mx.controls.Alert.OK)
+        		{
+        			viewModel.save();
+        		}
+        	}
+					 
+		]]>
+	</mx:Script>
+
+		<mx:VBox width="100%">
+			<mx:VBox id="addNote" borderStyle="solid" dropShadowEnabled="false" width="650"  visible="true" paddingBottom="5" paddingTop="5" paddingRight="5" paddingLeft="5">
+    			
+    			<mx:HBox width="100%" verticalGap="0" verticalAlign="bottom">
+    				<mx:VBox verticalGap="0">
+	    				<mx:Label text="Type your note below and press &quot;Save&quot;" fontWeight="bold"/>
+	    				<mx:Label text="Each note can be max. 3,998 characters."/>
+    				</mx:VBox>
+    				<mx:Spacer width="90%"/>
+    				<mx:TextInput id="charsLeftInput" tabEnabled="false"  width="54" dropShadowEnabled="false" editable="false"/>
+    				<mx:Label text="characters remaining" fontWeight="bold"/>
+    			</mx:HBox>
+    			<mx:VBox paddingLeft="10" paddingRight="10" width="100%">
+    				<mx:TextArea id="noteText" width="100%" height="100" maxChars="{MAX_NOTE_LENGTH}"/>
+    			</mx:VBox>
+    			<mx:HBox paddingLeft="10" horizontalAlign="right" paddingRight="20" width="100%">
+    				<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()" />
+    				<mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+	<mx:Binding source="noteText.text" destination="viewModel.note" />
+	<mx:Binding source="viewModel.note" destination="noteText.text" />
+	
+	<mx:Binding source="String(viewModel.remainingChars)" destination="charsLeftInput.text"/> 
+</mx:Canvas>

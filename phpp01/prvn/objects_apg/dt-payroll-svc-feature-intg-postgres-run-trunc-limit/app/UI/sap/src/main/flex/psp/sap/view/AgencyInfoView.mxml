@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         creationComplete="onCreationComplete();" xmlns:containers="flexlib.containers.*">
+    <mx:Script>
+            <![CDATA[
+        import flexlib.controls.tabBarClasses.SuperTab;
+
+        import mx.collections.ArrayCollection;
+        import mx.core.ContainerCreationPolicy;
+        import mx.events.CollectionEvent;
+        import mx.events.CollectionEventKind;
+
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.EnrollmentsPageEnum;
+        import psp.sap.model.AgencyInfoDTO;
+        import psp.sap.viewmodel.AgencyInfoTabViewModel;
+        import psp.sap.viewmodel.AgencyInfoViewModel;
+
+        private var mViewModel:AgencyInfoViewModel;
+        private var mTempViewModel:AgencyInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+        private var mPreviousSelectedTab:String = null;
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        [Bindable]
+        public function get viewModel():AgencyInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:AgencyInfoViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                    mViewModel.agencyInfoTabViewModelCollection.addEventListener(CollectionEvent.COLLECTION_CHANGE, onAgencyInfoCollectionChanged, false, 0, true);
+                    syncToViewModel();
+                    agencyInfoTab.addEventListener(Event.CHANGE, tabSelectionChanged, false, 0, true);
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onAgencyInfoCollectionChanged(e:CollectionEvent):void {
+            if (!mCreationComplete)
+                return;
+
+            if (e.kind == CollectionEventKind.ADD) {
+                addAgencyInfoViews(new ArrayCollection(e.items));
+            } else if (e.kind == CollectionEventKind.REMOVE) {
+                for each (var agencyInfoTabViewModel:AgencyInfoTabViewModel in e.items) {
+                    for each (var aAgencyInfoTabView:AgencyInfoTabView in agencyInfoViewStack.getChildren()) {
+                        if (aAgencyInfoTabView.viewModel == agencyInfoTabViewModel) {
+                            agencyInfoViewStack.removeChild(aAgencyInfoTabView);
+                            break;
+                        }
+                    }
+                }
+            } else if (e.kind == CollectionEventKind.RESET) {
+                agencyInfoViewStack.removeAllChildren();
+            } else if (e.kind == CollectionEventKind.REFRESH) {
+                updateAgencyInfoTab();
+            }
+        }
+
+        private function syncToViewModel():void {
+            addAgencyInfoViews(mViewModel.agencyInfoTabViewModelCollection);
+        }
+
+        private function addAgencyInfoViews(agencyInfoTabViewModels:ArrayCollection):void {
+            for each (var agencyInfoTabViewModel:AgencyInfoTabViewModel in agencyInfoTabViewModels) {
+                var agencyInfoTabView:AgencyInfoTabView = new AgencyInfoTabView();
+                agencyInfoTabView.viewModel = agencyInfoTabViewModel;
+                agencyInfoTabView.id = agencyInfoTabViewModel.label;
+                agencyInfoTabView.name = agencyInfoTabViewModel.label;
+                agencyInfoTabView.label = agencyInfoTabViewModel.label;
+                agencyInfoTabView.creationPolicy = ContainerCreationPolicy.NONE;
+                agencyInfoViewStack.addChild(agencyInfoTabView);
+            }
+        }
+
+        public function tabSelectionChanged(e:Event):void {
+            var selectedTab:String = SuperTabNavigator(e.currentTarget).selectedChild.label;
+            mPreviousSelectedTab = selectedTab;
+            agencyInfoViewStack.selectedIndex = agencyInfoViewStack.getChildIndex(agencyInfoViewStack.getChildByName(selectedTab));
+        }
+
+        public function updateAgencyInfoTab():void {
+            if (mPreviousSelectedTab != null) {
+                if (agencyInfoViewStack.getChildByName(mPreviousSelectedTab) != null) {
+                    agencyInfoViewStack.selectedIndex = agencyInfoViewStack.getChildIndex(agencyInfoViewStack.getChildByName(mPreviousSelectedTab));
+                }
+            }
+        }
+
+    ]]>
+	</mx:Script>
+
+    <!-- using navigator just to get the right style since tabbar is different style-->
+    <containers:SuperTabNavigator id="agencyInfoTab"
+            width="100%" resizeToContent="true"
+            horizontalGap="4"
+            minTabWidth="80"
+            closePolicy="{SuperTab.CLOSE_NEVER}"
+            borderSides="top" tabHeight="20">
+        <mx:Repeater
+                id="agenciesRepeater"
+                dataProvider="{viewModel.agencyInfoArray}"
+                recycleChildren="true">
+            <mx:VBox width="100%" verticalGap="0" paddingTop="0" paddingBottom="0"
+                     label="{AgencyInfoDTO(agenciesRepeater.currentItem).agency.agencyAbbrev}" verticalScrollPolicy="off"/>
+        </mx:Repeater>
+    </containers:SuperTabNavigator>
+
+    <mx:ViewStack id="agencyInfoViewStack" width="100%" height="100%" resizeToContent="true" />
+                                                                                                                                
+    <controls:PopUpPart id="eftpsHistoryModal" label="{EnrollmentsPageEnum.EFTPS_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EFTPSHistoryPopUp id="eftpsHistoryView" label="{EnrollmentsPageEnum.EFTPS_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="rafHistoryModal" label="{EnrollmentsPageEnum.RAF_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:RAFHistoryPopUpView id="rafHistoryView" label="{EnrollmentsPageEnum.RAF_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{EnrollmentsPageEnum.ACH_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:ACHEnrollmentHistoryView label="{EnrollmentsPageEnum.ACH_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="depositFrequencyHistoryModal"
+                        label="{CompanyInspectorPageEnum.DEPOSIT_FREQUENCY_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:DepositFrequencyHistoryPopUpView id="depositFrequencyHistoryView"
+                                                label="{CompanyInspectorPageEnum.DEPOSIT_FREQUENCY_HISTORY}"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.AGENCY_ID_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:AgencyIDHistoryPopUpView label="{CompanyInspectorPageEnum.AGENCY_ID_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.COMPANY_AGENCY_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:CompanyAgencyHistoryPopUpView label="{CompanyInspectorPageEnum.COMPANY_AGENCY_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="filerTypeHistoryModal"
+                        label="{CompanyInspectorPageEnum.FILER_TYPE_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:FilerTypeHistoryPopUpView id="filerTypeHistoryView"
+                                         label="{CompanyInspectorPageEnum.FILER_TYPE_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="lawRatesHistoryModal"
+                        label="{CompanyInspectorPageEnum.LAW_RATES_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:LawRatesHistoryPopUpView id="lawRatesHistoryView"
+                                        label="{CompanyInspectorPageEnum.LAW_RATES_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="entityChangeHistoryModal" label="{CompanyInspectorPageEnum.COMPANY_ENTITY_CHANGE+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EntityChangeHistoryPopUpView id="entityChangeHistoryView"
+                                            label="{CompanyInspectorPageEnum.COMPANY_ENTITY_CHANGE}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="paymentMethodModal"
+                        label="{CompanyInspectorPageEnum.PSP_PAYMENT_METHOD+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:PaymentMethodPopUpView id="paymentMethodView"
+                                      label="{CompanyInspectorPageEnum.PSP_PAYMENT_METHOD}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="additionalAgencyIdsHistoryModal"
+                        label="{CompanyInspectorPageEnum.PSP_ADDITIONAL_AGENCY_IDS+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:AdditionalIdHistoryPopUpView id="additionalAgencyIdsHistoryView"
+                                            label="{CompanyInspectorPageEnum.PSP_ADDITIONAL_AGENCY_IDS}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="ACHRegistrationHistoryModal"
+                        label="{CompanyInspectorPageEnum.ACH_REGISTRATION_HISTORY+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:ACHRegistrationHistoryPopUpView id="achRegistrationHistoryView"
+                                               label="{CompanyInspectorPageEnum.ACH_REGISTRATION_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_ADDITIONAL_FILING_AMOUNT_HISTORY+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:CompanyFilingAmountHistoryView label="{CompanyInspectorPageEnum.TAX_ADDITIONAL_FILING_AMOUNT_HISTORY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_RATES+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditRatesView label="{CompanyInspectorPageEnum.TAX_EDIT_RATES}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_RATES_MULTIPLE+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditRatesMultipleView label="{CompanyInspectorPageEnum.TAX_EDIT_RATES_MULTIPLE}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_AGENCY_IDS+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditAgencyIdView label="{CompanyInspectorPageEnum.TAX_EDIT_AGENCY_IDS}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_DEPOSIT_FREQUENCY+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditDepositFrequencyView label="{CompanyInspectorPageEnum.TAX_EDIT_DEPOSIT_FREQUENCY}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_ADDITIONAL_FILING_AMOUNTS+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditAdditionalFilingAmountsView label="{CompanyInspectorPageEnum.TAX_EDIT_ADDITIONAL_FILING_AMOUNTS}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_LAW_FLAGS+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditLawFlagsView label="{CompanyInspectorPageEnum.TAX_EDIT_LAW_FLAGS}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_EDIT_FILER_TYPE+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EditFilerTypeView label="{CompanyInspectorPageEnum.TAX_EDIT_FILER_TYPE}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart label="{CompanyInspectorPageEnum.TAX_LAW_FLAG_HISTORY+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:LawFlagHistoryView label="{CompanyInspectorPageEnum.TAX_LAW_FLAG_HISTORY}"/>
+    </controls:PopUpPart>
+</mx:VBox>

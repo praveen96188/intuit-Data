@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','page_2_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        public function onCreationComplete():void {
+            validators.addItem(referralRehab.validator);
+            validators.addItem(referralNetwork.validator);
+            validators.addItem(referralDva.validator);
+        }
+
+
+        public function writeToModel():void {
+            if (referralRehab.selectedValue == null) {
+                model.employee.referralRehabSet = false;
+            } else {
+                model.employee.referralRehab = referralRehab.selectedValue as Boolean;
+                model.employee.referralRehabSet = true;
+            }
+
+            if (referralNetwork.selectedValue == null) {
+                model.employee.referralNetworkSet = false;
+            } else {
+                model.employee.referralNetwork = referralNetwork.selectedValue as Boolean;
+                model.employee.referralNetworkSet = true;
+            }
+
+            if (referralDva.selectedValue == null) {
+                model.employee.referralDvaSet = false;
+            } else {
+                model.employee.referralDva = referralDva.selectedValue as Boolean;
+                model.employee.referralDvaSet = true;
+            }
+
+
+        }
+
+
+        override public function readFromModel():void {
+            if (! model.employee.referralRehabSet) {
+                referralRehab.selectedValue = null;
+            } else {
+                referralRehab.selectedValue = model.employee.referralRehab;
+            }
+
+            if (! model.employee.referralNetworkSet) {
+                referralNetwork.selectedValue = null;
+            } else {
+                referralNetwork.selectedValue = model.employee.referralNetwork;
+            }
+
+            if (! model.employee.referralDvaSet) {
+                referralDva.selectedValue = null;
+            } else {
+                referralDva.selectedValue = model.employee.referralDva;
+            }
+
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','referral_subheader')}"/>
+
+    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="0"
+             text="{resourceManager.getString('interview','referral_referred')}"/>
+
+    <mx:VBox paddingLeft="15">
+        <mx:HBox horizontalGap="0" paddingTop="0">
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="1." paddingRight="0"/>
+            <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="370"
+                     text="{resourceManager.getString('interview','referral_rehab')}"/>
+            <controls:YesNoRadio showAsteriskOnError="false" id="referralRehab" yesNoChange="writeToModel()"/>
+            <controls:InlineHelp help="{resourceManager.getString('interview','referral_rehab_help')}"/>
+        </mx:HBox>
+        <mx:HBox horizontalGap="0" paddingTop="0">
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="2." paddingRight="0"/>
+            <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="370"
+                     text="{resourceManager.getString('interview','referral_network')}"/>
+            <controls:YesNoRadio showAsteriskOnError="false" id="referralNetwork" yesNoChange="writeToModel()"/>
+        </mx:HBox>
+        <mx:HBox horizontalGap="0" paddingTop="0">
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                                 text="3." paddingRight="0"/>
+            <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="370"
+                     text="{resourceManager.getString('interview','referral_dva')}"/>
+            <controls:YesNoRadio showAsteriskOnError="false" id="referralDva" yesNoChange="writeToModel()"/>
+        </mx:HBox>
+    </mx:VBox>
+
+
+
+
+
+</controls:InterviewPage>

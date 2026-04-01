@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*">
+
+    <mx:Metadata>
+        [Event(name="export", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="nextClicked", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="previousClicked", type="psp.sap.application.events.SAPEvent")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.events.SAPEvent;
+        import psp.sap.view.controls.ExportDisplayManager;
+        import psp.sap.view.controls.ProgressDisplayManager;
+
+        import mx.controls.DataGrid;
+        import mx.events.ListEvent;
+        import mx.events.PropertyChangeEvent;
+        import mx.events.CollectionEvent;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.DataGridEvent;
+
+        import psp.sap.application.collections.PaginationCollection;
+
+        private var mColumns:Array;
+        private var mPagingDataProvider:PaginationCollection;
+        private var mIsDataLoading:Boolean;
+        private var mExtendedInformationLoaded:Boolean = false;
+        [Bindable]
+        public var maxRows:Number = NaN;
+        [Bindable]
+        public var rowCount:Number = -1;
+
+        [Bindable]
+        public var fixWidths:Boolean = false;
+
+        [Bindable]
+        public var displayTotal:Boolean = true;
+
+        [Bindable]
+        public var sortableColumns:Boolean = true;
+
+        [Bindable]
+        public function get isDataLoading():Boolean {
+            return mIsDataLoading;
+        }
+
+        public function set isDataLoading(value:Boolean):void {
+            mIsDataLoading = value;
+
+            if (isExporting && !isDataLoading && extendedInformationLoaded && readyForNextLoad)
+                nextExport();
+        }
+
+        [Bindable]
+        public function get extendedInformationLoaded():Boolean {
+            return mExtendedInformationLoaded;
+        }
+
+        public function set extendedInformationLoaded(value:Boolean):void {
+            mExtendedInformationLoaded = value;
+
+            if (isExporting && !isDataLoading && extendedInformationLoaded && readyForNextLoad)
+                nextExport();
+        }
+
+        [Bindable]
+        public function set dataProvider(value:PaginationCollection):void {
+            if (mPagingDataProvider != null) {
+                mPagingDataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onCollectionChanged);
+            }
+
+            mPagingDataProvider = value;
+
+            if (mPagingDataProvider != null) {
+                mPagingDataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCollectionChanged, false, 0, true);
+            }
+        }
+
+        public function get dataProvider():PaginationCollection {
+            return mPagingDataProvider;
+        }
+
+        [Bindable]
+        public function set columns(value:Array):void {
+            mColumns = value;
+        }
+
+        public function get columns():Array {
+            return mColumns;
+        }
+
+        private function onCollectionChanged(e:CollectionEvent):void {
+            results.ignoreReset = true;
+            dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "dataProvider", null, dataProvider));
+        }
+
+        [Bindable]
+        public var loadDataFunction:Function;
+
+        /**
+         * This function replaces the default header click functionality of a data grid
+         * the name is a referance to the function it replaces
+         */
+        private function headerReleaseHandler(event:DataGridEvent):void {
+            // just sort the column nomally if there is only one page
+            if (dataProvider.totalRecords >= dataProvider.pageSize) {
+                var dataGrid:DataGrid = DataGrid(event.currentTarget);
+                var c:DataGridColumn = dataGrid.columns[event.columnIndex];
+
+                // sort should go back to the first page
+                dataProvider.reset();
+                // set sort parameters
+                dataProvider.sortDesc = c.sortDescending;
+                dataProvider.sortBy = event.dataField;
+
+                loadDataFunction();
+
+                c.sortDescending = !c.sortDescending;
+
+                event.preventDefault();
+            }
+        }
+
+        public function onPreviousLinkClicked():void {
+            dispatchEvent(new SAPEvent("previousClicked"));
+            dataProvider.previousPage();
+            loadDataFunction();
+        }
+
+        public function onNextLinkClicked():void {
+            dispatchEvent(new SAPEvent("nextClicked"));
+            dataProvider.nextPage();
+            loadDataFunction();
+        }
+
+        [Bindable]
+        public var itemClickFunction:Function;
+
+        private function itemClick(e:ListEvent):void {
+            if (itemClickFunction != null) {
+                itemClickFunction(e);
+            }
+        }
+
+        [Bindable]
+        public var isExporting:Boolean = false;
+
+        protected var exportLoadFunction:Function = null;
+        protected var readyForNextLoad:Boolean = false;
+        protected var exportData:String = "";
+
+        public function startExport(specialLoadFunction:Function = null):void {
+            isExporting = true;
+
+            //Clear out old data
+            exportData = "";
+
+            ProgressDisplayManager.pagesComplete = 0;
+            ProgressDisplayManager.numberOfPages = Math.ceil(dataProvider.totalRecords / dataProvider.pageSize);
+            ProgressDisplayManager.displayProgressDisplayWindow();
+
+            this.visible = false;
+            this.includeInLayout = false;
+
+            //Setup load function
+            if (specialLoadFunction == null)
+                exportLoadFunction = loadDataFunction;
+            else
+                exportLoadFunction = specialLoadFunction;
+
+            //Start export
+            dataProvider.reset();
+            exportLoadFunction();
+            SAP.instance.hideProgress();
+            readyForNextLoad = true;
+        }
+
+        protected function nextExport():void {
+            readyForNextLoad = false;
+
+            exportData += results.getExportData();
+
+            if (dataProvider.totalRecords > dataProvider.lastIndex) {
+                dataProvider.nextPage();
+                ProgressDisplayManager.pagesComplete = Math.floor(dataProvider.startIndex / dataProvider.pageSize);
+                ProgressDisplayManager.numberOfPages = Math.ceil(dataProvider.totalRecords / dataProvider.pageSize);
+                ProgressDisplayManager.displayProgressDisplayWindow();
+                exportLoadFunction();
+                SAP.instance.hideProgress();
+                readyForNextLoad = true;
+            } else {
+                isExporting = false;
+                ProgressDisplayManager.hideProgressDisplayWindow();
+                this.visible = true;
+                this.includeInLayout = true;
+                setupExportDataAfterLoaded();
+            }
+        }
+
+        protected function setupExportDataAfterLoaded():void {
+            ExportDisplayManager.exportData = results.getExportHeaders() + exportData;
+            ExportDisplayManager.displayExportDisplayWindow();
+        }
+
+        [Bindable]
+        public var autoResizeToFitContent:Boolean = false;
+
+        [Bindable]
+        public var autoResizeHeightBuffer:Number = 260;
+
+        [Bindable]
+        public var resizeSwitch:Boolean = false;
+
+        [Bindable]
+        public var showExportButton:Boolean = false;
+
+        private function exportResults():void {
+            dispatchEvent(new SAPEvent("export"));
+        }
+        ]]>
+	</mx:Script>
+
+	<pspui:PaginationControl 
+		totalRecords="{dataProvider.totalRecords}"
+        totalAmount="{dataProvider.totalAmount}"
+		startIndex="{dataProvider.startIndex}"
+		lastIndex="{dataProvider.lastIndex}"
+		recordsPerPage="{dataProvider.pageSize}"
+        displayTotal= "{displayTotal}"
+		previousFunction="onPreviousLinkClicked"
+		nextFunction="onNextLinkClicked"
+		visible="{!isDataLoading ? dataProvider.length > 0 : false}"
+		includeInLayout="{!isDataLoading ? dataProvider.length > 0 : false}"/>
+    <controls:SAPDataGrid
+            id="results"
+            width="100%"
+            itemClick="itemClick(event)"
+            dataProvider="{dataProvider}"
+            selectable="false"
+            variableRowHeight="true" autoResizeHeightBuffer="{autoResizeHeightBuffer}"
+            dragEnabled="false" autoResizeToFitContent="{autoResizeToFitContent}"
+            headerRelease="headerReleaseHandler(event)" resizeSwitch="{resizeSwitch}"
+            columns="{columns}"
+            visible="{!isDataLoading ? dataProvider.length > 0 : false}"
+            includeInLayout="{!isDataLoading ? dataProvider.length > 0 : false}"
+            rowCount="{rowCount}"
+            maxRows="{maxRows}"
+            sortableColumns="{sortableColumns}"
+            fixWidths="{fixWidths}"/>
+	<mx:HBox
+		width="100%"
+		horizontalAlign="center"
+		visible="{!isDataLoading ? dataProvider.length == 0 : false}"
+		includeInLayout="{!isDataLoading ? dataProvider.length == 0 : false}"
+		verticalGap="0"
+		height="30" 				
+		verticalAlign="middle" 
+		backgroundColor="#F4F4F4" 
+		borderStyle="solid"
+		cornerRadius="5"
+		borderColor="black" 
+		color="#000000" 
+		fontWeight="normal" 
+		dropShadowEnabled="false">
+		<mx:Text id="noDataFoundText" text="No data found for the search criteria."/>
+	</mx:HBox>
+    <pspui:ActionLink
+            visible="{showExportButton &amp;&amp; !isDataLoading}"
+            includeInLayout="{showExportButton &amp;&amp; !isDataLoading}"
+            click="exportResults()" icon="{SAP.instance.icons.exportIcon}"
+            labelPlacement="right"
+            label="Export Results"
+            enabled="{dataProvider.length > 0}"/>
+</mx:VBox>

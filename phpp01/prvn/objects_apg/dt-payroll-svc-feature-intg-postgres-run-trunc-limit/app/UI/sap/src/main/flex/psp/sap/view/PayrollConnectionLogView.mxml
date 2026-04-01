@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+           xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:pspui="psp.sap.view.*"
+           xmlns:controls="psp.sap.view.controls.*"
+           width="100%"
+           height="100%"           
+           creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[        	
+        	import mx.binding.utils.BindingUtils;
+        	import psp.sap.model.SourceSystemEnum;
+            import psp.sap.viewmodel.CompanyConnectionLogTopicViewModel;
+            import psp.sap.application.enums.CompanyInspectorPageEnum;
+            import psp.sap.viewmodel.CompanyPayrollsTopicViewModel;
+            import mx.events.ValidationResultEvent;
+            import psp.sap.model.DateRangeEnum;
+            import mx.controls.Alert;
+            import mx.events.DataGridEvent;
+            import psp.sap.model.Transmission;
+            import psp.sap.application.SAP;
+            import psp.sap.viewmodel.PayrollConnectionLogViewModel;
+            import psp.sap.viewmodel.PayrollConnectionOFXViewModel;
+
+            private var mViewModel:PayrollConnectionLogViewModel;
+            private var mTempViewModel:PayrollConnectionLogViewModel;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            public function get viewModel():PayrollConnectionLogViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:PayrollConnectionLogViewModel):void {                              
+                if (mCreationComplete) {
+                    mViewModel = value;                                        
+	                addEventListeners();	                
+                }                
+                else {
+                    mTempViewModel= value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+                dateSelection.dateRangeTypeCombo.selectedItem = dateSelection.defaultDateRange;                
+            }                   
+
+            public function addEventListeners():void {
+                if(viewModel != null){                   
+                    
+                    //some people might comment this block of code with 'hack' or something to the effect
+                    //but not I--nay, I have outsmarted Flex and will not apologize.  mx:bindings
+                    //makes the order impossible to guess, so I have moved some out here so the combo box does 
+                    //sets everything correctly.
+                    //I win.
+                    
+                    BindingUtils.bindProperty(sourceSystemCombo,"dataProvider",viewModel,"sourceSystems");
+                    BindingUtils.bindProperty(sourceSystemCombo,"selectedItem",viewModel,"sourceSystem");
+                    BindingUtils.bindProperty(viewModel,"sourceSystem",sourceSystemCombo,"selectedItem");
+                        
+                }
+            }                       
+
+            public function onTransmissionClick(e:DataGridEvent):void {
+                var transmissionId:String = Transmission(e.itemRenderer.data).transmissionIdentifier;
+                viewModel.topic.findPage(CompanyInspectorPageEnum.PAYROLL_CONNECTION_OFX).activatePage(PayrollConnectionOFXViewModel.createActivator(transmissionId));
+            }
+
+            public function timeFunction(item:Object, dgc:DataGridColumn):String{
+                if(item.connectionTime == SAP.instance.configuration.specialNumberForDefault){
+                    return "N/A";
+                }
+                return item.connectionTime.toString();
+            }
+		]]>        
+    </mx:Script>
+
+    <controls:DataLoadFade target="{searchResults}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>       
+
+    <mx:VBox styleName="ddGrayMiniBoxStyle">
+        <mx:HBox styleName="padderBox">
+
+            <!-- Row 1 -->
+            <mx:HBox verticalAlign="middle">
+                <mx:Label text="Search by Date:" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="dateSelection"
+                        viewModel="{viewModel.dateSelectionViewModel}"
+                        direction="horizontal"/>
+                <mx:Label text="Source System:" fontWeight="bold"/>
+                <mx:ComboBox
+                        id="sourceSystemCombo"                        
+                        rowCount="{viewModel.sourceSystems.length}" />
+                <mx:Button
+                        id="searchButton"
+                        label="Search"
+                        enabled="{viewModel.canSave}"
+                        click="viewModel.searchTransmissions()"/>
+            </mx:HBox>
+
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Spacer height="10"/>
+
+    <mx:VBox width="80%"
+             id="searchResults"
+             paddingRight="10"
+             horizontalAlign="right"
+             verticalGap="0"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+        <!-- todo
+            <mx:Label text="Displaying {viewModel.startIndex} to {viewModel.lastIndex} of {viewModel.totalRecords} records"/>
+            <mx:HBox horizontalGap="0" styleName="padderBox">
+                <pspui:ActionLink label="View All"
+                            enabled="{viewModel.startIndex > 1 || viewModel.lastIndex != viewModel.totalRecords}"
+                            click="_viewAll()"/>
+                <mx:HBox
+                    borderStyle="solid"
+                    borderColor="black"
+                    borderSides="left, right"
+                    borderThickness="0.5">
+                    <pspui:ActionLink label="Previous"
+                            enabled="{viewModel.startIndex > 1}"
+                            click="_previous()"/>
+                </mx:HBox>
+                <pspui:ActionLink label="Next"
+                            enabled="{viewModel.lastIndex != viewModel.totalRecords}"
+                            click="_next()"/>
+            </mx:HBox>-->
+        <pspui:TransmissionSearchResultsDataGrid
+                id="transmissionsData"
+                width="100%"
+                dataProvider="{viewModel.transmissions}"
+                selectable="false"
+                transmissionClick="onTransmissionClick(event)">
+            <pspui:columns>
+
+                <mx:DataGridColumn
+                        headerText="Connection Date/Time"
+                        minWidth="200"
+                        dataField="initializeDateTime"
+                        itemRenderer="psp.sap.view.TransmissionLinkGridItemRender"/>
+
+                <mx:DataGridColumn
+                        headerText="Transaction Type"
+                        minWidth="200"
+                        dataField="description"/>
+
+                <mx:DataGridColumn
+                        headerText="Token In"
+                        minWidth="80"
+                        dataField="requestToken"/>
+
+                <mx:DataGridColumn
+                        headerText="Token Out"
+                        minWidth="80"
+                        dataField="responseToken"/>
+
+                <mx:DataGridColumn
+                        headerText="Seconds Connected"
+                        minWidth="150"
+                        labelFunction="timeFunction"
+                        dataField="connectionTime"/>
+
+                <mx:DataGridColumn
+						headerText="IP Address"
+						minWidth="125"
+						dataField="ipAddress"/>
+
+            </pspui:columns>
+        </pspui:TransmissionSearchResultsDataGrid>
+    </mx:VBox>
+</mx:VBox>

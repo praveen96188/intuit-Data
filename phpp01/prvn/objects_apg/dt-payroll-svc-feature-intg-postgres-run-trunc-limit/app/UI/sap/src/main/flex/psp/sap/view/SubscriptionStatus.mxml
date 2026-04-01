@@ -1,0 +1,292 @@
+<?xml version="1.0" ?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspmx="mx.containers.*"
+        xmlns:pspui="psp.sap.view.*"
+        borderSides="right"
+        borderStyle="solid"
+        height="100%"
+        width="100%"
+        verticalGap="4">
+    <mx:Metadata>
+        [Event(name="viewSignature", type="flash.events.DataEvent")]
+        [Event(name="addTestPrintBatch", type="flash.events.DataEvent")]
+        [Event(name="editOfferings", type="flash.events.DataEvent")]
+        [Event(name="editOffers", type="flash.events.DataEvent")]
+        [Event(name="getWorkersCompInfo", type="flash.events.DataEvent")]
+    </mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.CompanyServiceStatus;
+        import psp.sap.model.ServiceCodeEnum;
+        import psp.sap.model.ServiceSubStatus;
+
+        import mx.events.ToolTipEvent;
+
+
+        private const TRUNC_TEXT_HEIGHT:int = 20;
+        private const TRUNC_TEXT_WIDTH:int = 100;		//this controls the width of the column, too.
+
+
+        //[Bindable] public var data:CompanyServiceStatus;
+        [Bindable]
+        private var canViewPrintSignature:Boolean = SAP.canPerformOperation(OperationsEnum.VIEW_CHECK_PRINT_SIGNATURE);
+        [Bindable]
+        private var canAddUpdatePrintSignature:Boolean = SAP.canPerformOperation(OperationsEnum.ADD_UPDATE_CHECK_PRINT_SIGNATURE);
+
+        private function dispatchActionEvent(type:String):void {
+            dispatchEvent(new DataEvent(type, false, false, companyServiceStatus.serviceCd == "Tax" ? "DirectDeposit" : companyServiceStatus.serviceCd));
+        }
+
+        private function createCustomToolTip(event:ToolTipEvent):void {
+            var toolTip:OfferingTooltip = new OfferingTooltip();
+            toolTip.offering = companyServiceStatus.offeringDetails;
+            event.toolTip = toolTip;
+        }
+
+        [Bindable]
+        public var companyServiceStatus:CompanyServiceStatus;
+
+
+        [Inspectable(environment="none")]
+        [Bindable("dataChange")]
+        override public function get data():Object {
+            return super.data;
+        }
+
+        override public function set data(value:Object):void {
+            if (value is CompanyServiceStatus) {
+                companyServiceStatus = CompanyServiceStatus(value);
+            }
+            super.data = value;
+        }
+
+        [Bindable]
+        public var workersCompInfo:XML;
+        ]]>
+    </mx:Script>
+    <mx:FormHeading label="{companyServiceStatus.serviceCodeEnum.label}" width="100%" textAlign="center"/>
+    <mx:Form paddingTop="0" paddingBottom="0"  verticalGap="4" textAlign="left" paddingLeft="2" paddingRight="2" indicatorGap="5">
+        <pspmx:SAPFormItem label="Status:" labelStyleName="serviceStatusLabel" horizontalGap="5" horizontalAlign="left">
+            <pspui:ServiceStatusLabel displayStatus="{companyServiceStatus.displayStatus}" fontWeight="bold"/>
+        </pspmx:SAPFormItem>
+
+        <pspmx:SAPFormItem label="Substatus:" labelStyleName="serviceStatusLabel">
+            <mx:Text visible="{!companyServiceStatus.isServiceOnHold}" includeInLayout="{!companyServiceStatus.isServiceOnHold}"
+                     text="{companyServiceStatus.displayStatus.displaySubStatus}"/>
+            <mx:VBox includeInLayout="{companyServiceStatus.isServiceOnHold}" visible="{companyServiceStatus.isServiceOnHold}" verticalGap="2">
+                <mx:Repeater id="onHoldReasonRepeater" dataProvider="{companyServiceStatus.status.serviceSubStatusList}">
+                    <mx:Text id="onHoldReasonText"
+                             text="{ServiceSubStatus(onHoldReasonRepeater.currentItem).subStatusName}"/>
+                </mx:Repeater>
+            </mx:VBox>
+        </pspmx:SAPFormItem>
+
+
+        <pspmx:SAPFormItem label="Company Signature:" labelStyleName="serviceStatusLabel"
+                     visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.CHECK_DISTRIBUTION}"
+                     includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.CHECK_DISTRIBUTION}">
+            <mx:HBox
+                    verticalAlign="middle"
+                    paddingTop="-2"
+                    paddingBottom="0"
+                    horizontalGap="0">
+                <mx:Text
+                        styleName="fieldLabel"
+                        text="{companyServiceStatus.hasSignatureFile ? 'Present' : 'Absent'}"
+                        color="{companyServiceStatus.hasSignatureFile ? UIUtils.COLOR_GREEN : UIUtils.COLOR_RED}"/>
+                <mx:Spacer width="5"/>
+                <mx:Text text="("/>
+                <pspui:ActionLink
+                        paddingLeft="-5"
+                        paddingRight="-5"
+                        label="view"
+                        click="dispatchActionEvent('viewSignature')"
+                        enabled="{companyServiceStatus.hasSignatureFile &amp;&amp; canViewPrintSignature}"/>
+                <mx:Text text=")"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <!-- This is a hack. The form items keep the space of all labels even though a label may not be showing. -->
+        <pspmx:SAPFormItem label="Custodial Id:" labelStyleName="serviceStatusLabel"
+                     visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.THIRD_PARTY_401K}"
+                     includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.THIRD_PARTY_401K}">
+            <mx:HBox
+                    verticalAlign="middle"
+                    paddingTop="-2"
+                    paddingBottom="0"
+                    horizontalGap="0">
+                <mx:Text
+                        text="{companyServiceStatus.custodialId}"/>
+                <mx:Spacer width="5"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <!-- This is a hack. The form items keep the space of all labels even though a label may not be showing. -->
+        <pspmx:SAPFormItem label="Safe Harbor:" labelStyleName="serviceStatusLabel"
+                     visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.THIRD_PARTY_401K}"
+                     includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.THIRD_PARTY_401K}">
+            <mx:HBox
+                    verticalAlign="middle"
+                    paddingTop="-2"
+                    paddingBottom="0"
+                    horizontalGap="0">
+                <mx:Text
+                        text="{companyServiceStatus.isSafeHarbor ? 'Yes' : 'No'}"/>
+                <mx:Spacer width="5"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <mx:HBox
+                visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.CHECK_DISTRIBUTION &amp;&amp; companyServiceStatus.hasSignatureFile &amp;&amp; canAddUpdatePrintSignature}"
+                includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.CHECK_DISTRIBUTION &amp;&amp; companyServiceStatus.hasSignatureFile &amp;&amp; canAddUpdatePrintSignature}">
+            <pspui:ActionLink
+                    paddingLeft="0"
+                    label="Add Test Print Batch"
+                    click="dispatchActionEvent('addTestPrintBatch')"
+                    enabled="{companyServiceStatus.hasSignatureFile &amp;&amp; canAddUpdatePrintSignature}"/>
+        </mx:HBox>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.ddLimits != null}" visible="{companyServiceStatus.ddLimits != null}"
+                     label="Per Payroll:" labelStyleName="serviceStatusLabel">
+            <mx:HBox
+                    includeInLayout="{companyServiceStatus.ddLimits.isUsingDefaultPayrollLimit}"
+                    visible="{companyServiceStatus.ddLimits.isUsingDefaultPayrollLimit}">
+                <mx:Label id="defaultPayrollLimitLabel"
+                          text="{SAPCurrencyFormatters.defaultFormatter.format(companyServiceStatus.ddLimits.defaultPayrollLimit)}"/>
+                <mx:Label text="(default)"
+                          styleName="ddDefaultLimitTextStyle"/>
+            </mx:HBox>
+            <mx:HBox
+                    includeInLayout="{!companyServiceStatus.ddLimits.isUsingDefaultPayrollLimit}"
+                    visible="{!companyServiceStatus.ddLimits.isUsingDefaultPayrollLimit}">
+                <mx:Label id="perPayrollLimitLabel"
+                          text="{SAPCurrencyFormatters.defaultFormatter.format(companyServiceStatus.ddLimits.perPayrollLimit)}"/>
+                <mx:Label id="defaultPayrollLimitAmountLabel"
+                          text="default: {SAPCurrencyFormatters.defaultFormatter.format(companyServiceStatus.ddLimits.defaultPayrollLimit)}"
+                          styleName="ddDefaultNotUsingLimitTextStyle"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.ddLimits != null}" visible="{companyServiceStatus.ddLimits != null}"
+                     label="Per {companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.BILL_PAYMENT ? 'Payee' : 'Employee'}:" labelStyleName="serviceStatusLabel">
+            <mx:HBox
+                    includeInLayout="{!companyServiceStatus.ddLimits.isUsingDefaultEmployeeLimit}"
+                    visible="{!companyServiceStatus.ddLimits.isUsingDefaultEmployeeLimit}">
+                <mx:Label id="perEmployeeLimitLabel"
+                          text="{SAPCurrencyFormatters.defaultFormatter.format(companyServiceStatus.ddLimits.perEmployeeLimit)}"/>
+                <mx:Label id="defaultEmployeeLimitAmountLabel"
+                          text="default: {SAPCurrencyFormatters.defaultFormatter.format(companyServiceStatus.ddLimits.defaultEmployeeLimit)}"
+                          styleName="ddDefaultNotUsingLimitTextStyle"/>
+            </mx:HBox>
+            <mx:HBox
+                    includeInLayout="{companyServiceStatus.ddLimits.isUsingDefaultEmployeeLimit}"
+                    visible="{companyServiceStatus.ddLimits.isUsingDefaultEmployeeLimit}">
+                <mx:Label id="defaultEmployeeLimitLabel"
+                          text="{SAPCurrencyFormatters.defaultFormatter.format(companyServiceStatus.ddLimits.defaultEmployeeLimit)}"/>
+                <mx:Label text="(default)"
+                          styleName="ddDefaultLimitTextStyle"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.TAX}" visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.TAX}"
+                           label="First Qtr:" labelStyleName="serviceStatusLabel">
+            <mx:HBox>
+                <mx:Text text="{companyServiceStatus.strFirstTaxQuarter()}"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.TAX}" visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.TAX}"
+                           label="W-2s:" labelStyleName="serviceStatusLabel">
+            <mx:HBox>
+                <mx:Text text="{companyServiceStatus.w2PrintingPreference}"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.offering != null}" visible="{companyServiceStatus.offering != null}"
+                     label="Offering:" labelStyleName="serviceStatusLabel" direction="horizontal">
+                <mx:Text text="{companyServiceStatus.offering}"
+                         toolTip=" "
+                         data="{companyServiceStatus.offeringDetails}"
+                         toolTipCreate="createCustomToolTip(event)"/>
+                <pspui:ActionLink
+                        visible="{companyServiceStatus.canEditOffering}"
+                        includeInLayout="{companyServiceStatus.canEditOffering}"
+                        paddingTop="0"
+                        paddingBottom="0"
+                        paddingLeft="-5"
+                        paddingRight="0"
+                        label="edit"
+                        click="dispatchActionEvent('editOfferings')"/>
+        </pspmx:SAPFormItem>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.offer != null || companyServiceStatus.canEditOffer}" visible="{companyServiceStatus.offer != null || companyServiceStatus.canEditOffer}"
+                     label="Offer:" labelStyleName="serviceStatusLabel" direction="horizontal">
+                <pspui:TruncatedText
+                        text="{companyServiceStatus.offerText}"
+                        height="{TRUNC_TEXT_HEIGHT}"
+	                    width="{TRUNC_TEXT_WIDTH}"
+                        visible="{companyServiceStatus.offer != null}"
+                        includeInLayout="{companyServiceStatus.offer != null}"/>
+                <pspui:ActionLink
+                        paddingTop="0"
+                        paddingBottom="0"
+                        paddingLeft="-5"
+                        paddingRight="-5"
+                        label="edit"
+                        click="dispatchActionEvent('editOffers')"
+                        visible="{companyServiceStatus.canEditOffer &amp;&amp; companyServiceStatus.offer != null}"
+                        includeInLayout="{companyServiceStatus.canEditOffer &amp;&amp; companyServiceStatus.offer != null}"
+                        enabled="{SAP.canPerformOperation(companyServiceStatus.serviceCd != 'Tax' ? OperationsEnum.ADD_OFFER : (companyServiceStatus.isAssistedActive ? OperationsEnum.ADD_ASSISTED_OFFER_POST_BALF : OperationsEnum.ADD_ASSISTED_OFFER_PRE_BALF))}"/>
+                <pspui:ActionLink
+                        paddingTop="0"
+                        paddingBottom="0"
+                        paddingLeft="-2"
+                        paddingRight="-2"
+                        label="add"
+                        click="dispatchActionEvent('editOffers')"
+                        visible="{companyServiceStatus.canEditOffer &amp;&amp; companyServiceStatus.offer == null}"
+                        includeInLayout="{companyServiceStatus.canEditOffer &amp;&amp; companyServiceStatus.offer == null}"
+                        enabled="{SAP.canPerformOperation(companyServiceStatus.serviceCd != 'Tax' ? OperationsEnum.ADD_OFFER : (companyServiceStatus.isAssistedActive ? OperationsEnum.ADD_ASSISTED_OFFER_POST_BALF : OperationsEnum.ADD_ASSISTED_OFFER_PRE_BALF))}"/>
+        </pspmx:SAPFormItem>
+
+        <mx:Text
+                id="fundingModelNameText"
+                visible="{companyServiceStatus.fundingModel != null}"
+                includeInLayout="{companyServiceStatus.fundingModel != null}"
+                styleName="fieldLabel"
+                text="{companyServiceStatus.fundingModel.name}"/>
+
+        <pspmx:SAPFormItem includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo == null}"
+                           visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo == null}"
+                           horizontalGap="5"
+                           horizontalAlign="left"
+                           labelStyleName="serviceStatusLabel"
+                           id="wcMainSapMoreInfo">
+            <mx:HBox>
+                <pspui:ActionLink includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo == null}"
+                                  visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo == null}"
+                                  label="View More Info"
+                                  click="dispatchActionEvent('getWorkersCompInfo')"/>
+            </mx:HBox>
+        </pspmx:SAPFormItem>
+
+        <mx:Repeater id="workersCompRepeater"
+                     dataProvider="{workersCompInfo.Data}"
+                     recycleChildren="true"
+                     includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo != null}"
+                     visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo != null}">
+            <pspmx:SAPFormItem label="{workersCompRepeater.currentItem.Label}"
+                               labelStyleName="serviceStatusLabel"
+                               includeInLayout="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo != null}"
+                               visible="{companyServiceStatus.serviceCodeEnum == ServiceCodeEnum.WORKERS_COMP &amp;&amp; workersCompInfo != null}">
+                <mx:Text text="{workersCompRepeater.currentItem.Value}"/>
+            </pspmx:SAPFormItem>
+        </mx:Repeater>
+
+    </mx:Form>
+
+</mx:VBox>

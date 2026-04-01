@@ -1,0 +1,402 @@
+set search_path=pspadm;
+SET
+alter table pspadm.psp_entitlement_message RENAME to psp_entitlement_message_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2012 RENAME to psp_entitlement_message_2012_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2013 RENAME to psp_entitlement_message_2013_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2014 RENAME to psp_entitlement_message_2014_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2015 RENAME to psp_entitlement_message_2015_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2016 RENAME to psp_entitlement_message_2016_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2017 RENAME to psp_entitlement_message_2017_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2018 RENAME to psp_entitlement_message_2018_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2019 RENAME to psp_entitlement_message_2019_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2020 RENAME to psp_entitlement_message_2020_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2021 RENAME to psp_entitlement_message_2021_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2022 RENAME to psp_entitlement_message_2022_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2023 RENAME to psp_entitlement_message_2023_old;
+ALTER TABLE
+alter table pspadm.psp_entitlement_message_2024 RENAME to psp_entitlement_message_2024_old;
+ALTER TABLE
+CREATE TABLE pspadm.psp_entitlement_message(
+    entitlement_message_seq CHARACTER VARYING(255) NOT NULL,
+    version integer NOT NULL,
+    creator_id CHARACTER VARYING(30),
+    created_date TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    modifier_id CHARACTER VARYING(30),
+    modified_date TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    realm_id SMALLINT NOT NULL DEFAULT - 1,
+    entitlement_offering_code CHARACTER VARYING(20),
+    order_number CHARACTER VARYING(20),
+    message_bkp TEXT,
+    license_number CHARACTER VARYING(20),
+    status CHARACTER VARYING(255),
+    token NUMERIC(19,0),
+    event_reason CHARACTER VARYING(50),
+    failure_count integer,
+    last_failure_message CHARACTER VARYING(1000),
+    message_timestamp TIMESTAMP(6) WITHOUT TIME ZONE,
+    expiration_timestamp TIMESTAMP(6) WITHOUT TIME ZONE,
+    message TEXT,
+    message_enc TEXT
+) 
+   PARTITION BY Hash (license_number);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p0 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 0);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p1 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 1);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p2 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 2);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p3 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 3);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p4 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 4);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p5 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 5);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p6 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 6);
+CREATE TABLE
+CREATE TABLE pspadm.psp_entitlement_message_p7 PARTITION OF pspadm.psp_entitlement_message FOR VALUES WITH (MODULUS 8, REMAINDER 7);
+CREATE TABLE
+ALTER TABLE pspadm.psp_entitlement_message ADD CONSTRAINT psp_entitlement_message_pk PRIMARY KEY (license_number, entitlement_message_seq);
+ALTER TABLE
+set search_path=pspadm;
+SET
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 06:58:07.136403-07
+(1 row)
+
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2012_old;
+INSERT 0 2097520
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2013_old;
+INSERT 0 5335338
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2014_old;
+INSERT 0 6501191
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2015_old;
+INSERT 0 7145169
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2016_old;
+INSERT 0 7189480
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2017_old;
+INSERT 0 7574737
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2018_old;
+INSERT 0 7268753
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2019_old;
+INSERT 0 7212104
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2020_old;
+INSERT 0 7396845
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2021_old;
+INSERT 0 8190860
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2022_old;
+INSERT 0 9632353
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2023_old;
+INSERT 0 3818427
+Insert into pspadm.psp_entitlement_message select * from pspadm.psp_entitlement_message_2024_old;
+INSERT 0 0
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 16:49:56.020307-07
+(1 row)
+
+Alter index psp_entitlement_message_u1 RENAME TO psp_entitlement_message_u1_old;
+ALTER INDEX
+Alter index psp_entitlement_msg_lcno_eofcd RENAME TO psp_entitlement_msg_lcno_eofcd_old;
+ALTER INDEX
+Alter index psp_entitlement_msg_msgts_er RENAME TO psp_entitlement_msg_msgts_er_old;
+ALTER INDEX
+Alter index psp_entitlement_msg_orno_lcno  RENAME TO psp_entitlement_msg_orno_lcno_old;
+ALTER INDEX
+Alter index idx_ent_msg_mod_date  RENAME TO idx_ent_msg_mod_date_old;
+ALTER INDEX
+Timing is on.
+set search_path=pspadm;
+SET
+Time: 0.288 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 16:49:56.062842-07
+(1 row)
+
+Time: 0.305 ms
+select 'creating index on psp_entitlement_message' as status ;
+                  status                   
+-------------------------------------------
+ creating index on psp_entitlement_message
+(1 row)
+
+Time: 0.262 ms
+create index concurrently psp_entitlement_message_u1_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (token );
+CREATE INDEX
+Time: 10142.112 ms (00:10.142)
+create index concurrently psp_entitlement_message_u1_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (token );
+CREATE INDEX
+Time: 11184.099 ms (00:11.184)
+create index concurrently psp_entitlement_message_u1_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (token );
+CREATE INDEX
+Time: 12226.431 ms (00:12.226)
+create index concurrently psp_entitlement_message_u1_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (token );
+CREATE INDEX
+Time: 10146.919 ms (00:10.147)
+create index concurrently psp_entitlement_message_u1_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (token );
+CREATE INDEX
+Time: 9617.680 ms (00:09.618)
+create index concurrently psp_entitlement_message_u1_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (token );
+CREATE INDEX
+Time: 10345.289 ms (00:10.345)
+create index concurrently psp_entitlement_message_u1_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (token );
+CREATE INDEX
+Time: 10434.719 ms (00:10.435)
+create index concurrently psp_entitlement_message_u1_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (token );
+CREATE INDEX
+Time: 12530.113 ms (00:12.530)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 13391.740 ms (00:13.392)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 13420.519 ms (00:13.421)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 13463.146 ms (00:13.463)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 14513.352 ms (00:14.513)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 13392.205 ms (00:13.392)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 13434.635 ms (00:13.435)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 13613.756 ms (00:13.614)
+create index concurrently psp_entitlement_msg_lcno_eofcd_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 14084.134 ms (00:14.084)
+create index concurrently psp_entitlement_msg_msgts_er_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 7608.323 ms (00:07.608)
+create index concurrently psp_entitlement_msg_msgts_er_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 8042.410 ms (00:08.042)
+create index concurrently psp_entitlement_msg_msgts_er_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 8102.955 ms (00:08.103)
+create index concurrently psp_entitlement_msg_msgts_er_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 8332.231 ms (00:08.332)
+create index concurrently psp_entitlement_msg_msgts_er_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 10887.960 ms (00:10.888)
+create index concurrently psp_entitlement_msg_msgts_er_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 8855.739 ms (00:08.856)
+create index concurrently psp_entitlement_msg_msgts_er_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 8184.874 ms (00:08.185)
+create index concurrently psp_entitlement_msg_msgts_er_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (message_timestamp ,event_reason );
+CREATE INDEX
+Time: 7789.618 ms (00:07.790)
+create index concurrently psp_entitlement_msg_orno_lcno_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 14025.582 ms (00:14.026)
+create index concurrently psp_entitlement_msg_orno_lcno_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 14021.299 ms (00:14.021)
+create index concurrently psp_entitlement_msg_orno_lcno_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 13973.773 ms (00:13.974)
+create index concurrently psp_entitlement_msg_orno_lcno_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 13991.075 ms (00:13.991)
+create index concurrently psp_entitlement_msg_orno_lcno_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 14761.697 ms (00:14.762)
+create index concurrently psp_entitlement_msg_orno_lcno_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 14142.744 ms (00:14.143)
+create index concurrently psp_entitlement_msg_orno_lcno_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 14109.317 ms (00:14.109)
+create index concurrently psp_entitlement_msg_orno_lcno_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 13938.535 ms (00:13.939)
+create index concurrently idx_ent_msg_mod_date_p0 on pspadm.psp_entitlement_message_p0  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6436.774 ms (00:06.437)
+create index concurrently idx_ent_msg_mod_date_p1 on pspadm.psp_entitlement_message_p1  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6343.866 ms (00:06.344)
+create index concurrently idx_ent_msg_mod_date_p2 on pspadm.psp_entitlement_message_p2  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6593.455 ms (00:06.593)
+create index concurrently idx_ent_msg_mod_date_p3 on pspadm.psp_entitlement_message_p3  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6350.713 ms (00:06.351)
+create index concurrently idx_ent_msg_mod_date_p4 on pspadm.psp_entitlement_message_p4  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6099.228 ms (00:06.099)
+create index concurrently idx_ent_msg_mod_date_p5 on pspadm.psp_entitlement_message_p5  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6011.180 ms (00:06.011)
+create index concurrently idx_ent_msg_mod_date_p6 on pspadm.psp_entitlement_message_p6  USING BTREE (modified_date);
+CREATE INDEX
+Time: 6161.782 ms (00:06.162)
+create index concurrently idx_ent_msg_mod_date_p7 on pspadm.psp_entitlement_message_p7  USING BTREE (modified_date);
+CREATE INDEX
+Time: 5947.549 ms (00:05.948)
+create index  psp_entitlement_message_u1 ON ONLY  pspadm.psp_entitlement_message USING BTREE (token );
+CREATE INDEX
+Time: 10.199 ms
+create index  psp_entitlement_msg_lcno_eofcd ON ONLY  pspadm.psp_entitlement_message USING BTREE (license_number ,entitlement_offering_code );
+CREATE INDEX
+Time: 5.201 ms
+create index  psp_entitlement_msg_msgts_er ON ONLY  pspadm.psp_entitlement_message USING BTREE (message_timestamp ,event_reason  );
+CREATE INDEX
+Time: 8.986 ms
+create index  psp_entitlement_msg_orno_lcno ON ONLY  pspadm.psp_entitlement_message USING BTREE (order_number ,license_number );
+CREATE INDEX
+Time: 5.014 ms
+create index  idx_ent_msg_mod_date ON ONLY  pspadm.psp_entitlement_message USING BTREE (modified_date);
+CREATE INDEX
+Time: 4.822 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p0 ;
+ALTER INDEX
+Time: 10.145 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p1 ;
+ALTER INDEX
+Time: 4.373 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p2 ;
+ALTER INDEX
+Time: 5.859 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p3 ;
+ALTER INDEX
+Time: 6.058 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p4 ;
+ALTER INDEX
+Time: 4.390 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p5 ;
+ALTER INDEX
+Time: 4.202 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p6 ;
+ALTER INDEX
+Time: 4.025 ms
+alter index psp_entitlement_message_u1 attach partition  pspadm.psp_entitlement_message_u1_p7 ;
+ALTER INDEX
+Time: 4.672 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p0 ;
+ALTER INDEX
+Time: 4.526 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p1 ;
+ALTER INDEX
+Time: 4.229 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p2 ;
+ALTER INDEX
+Time: 4.178 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p3 ;
+ALTER INDEX
+Time: 4.202 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p4 ;
+ALTER INDEX
+Time: 4.297 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p5 ;
+ALTER INDEX
+Time: 4.251 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p6 ;
+ALTER INDEX
+Time: 3.979 ms
+alter index psp_entitlement_msg_lcno_eofcd attach partition  pspadm.psp_entitlement_msg_lcno_eofcd_p7 ;
+ALTER INDEX
+Time: 13.700 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p0 ;
+ALTER INDEX
+Time: 4.864 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p1 ;
+ALTER INDEX
+Time: 4.312 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p2 ;
+ALTER INDEX
+Time: 4.488 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p3 ;
+ALTER INDEX
+Time: 4.566 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p4 ;
+ALTER INDEX
+Time: 5.715 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p5 ;
+ALTER INDEX
+Time: 4.922 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p6 ;
+ALTER INDEX
+Time: 3.853 ms
+alter index psp_entitlement_msg_msgts_er attach partition  pspadm.psp_entitlement_msg_msgts_er_p7 ;
+ALTER INDEX
+Time: 4.205 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p0 ;
+ALTER INDEX
+Time: 4.536 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p1 ;
+ALTER INDEX
+Time: 4.069 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p2 ;
+ALTER INDEX
+Time: 3.998 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p3 ;
+ALTER INDEX
+Time: 5.941 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p4 ;
+ALTER INDEX
+Time: 4.118 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p5 ;
+ALTER INDEX
+Time: 4.002 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p6 ;
+ALTER INDEX
+Time: 3.893 ms
+alter index psp_entitlement_msg_orno_lcno attach partition  pspadm.psp_entitlement_msg_orno_lcno_p7 ;
+ALTER INDEX
+Time: 5.964 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p0 ;
+ALTER INDEX
+Time: 4.312 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p1 ;
+ALTER INDEX
+Time: 3.955 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p2 ;
+ALTER INDEX
+Time: 3.876 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p3 ;
+ALTER INDEX
+Time: 3.965 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p4 ;
+ALTER INDEX
+Time: 3.924 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p5 ;
+ALTER INDEX
+Time: 4.019 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p6 ;
+ALTER INDEX
+Time: 3.669 ms
+alter index idx_ent_msg_mod_date attach partition  pspadm.idx_ent_msg_mod_date_p7 ;
+ALTER INDEX
+Time: 4.284 ms
+SELECT CURRENT_TIMESTAMP;
+       current_timestamp       
+-------------------------------
+ 2023-10-07 16:57:02.949459-07
+(1 row)
+
+Time: 0.290 ms

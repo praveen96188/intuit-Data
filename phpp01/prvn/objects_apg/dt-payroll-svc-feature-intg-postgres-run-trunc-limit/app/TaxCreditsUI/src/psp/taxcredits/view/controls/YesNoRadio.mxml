@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+         verticalAlign="middle" horizontalGap="10">
+    <mx:Metadata>
+        [Event(name="yesNoChange", type="flash.events.Event")]
+    </mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+
+        [Bindable] public var showAsteriskOnError:Boolean = true;
+
+        [Bindable] public var yesLabel:String="Yes";
+        [Bindable] public var noLabel:String="No";
+
+        private function onChange():void {
+            dispatchEvent(new Event("yesNoChange"));
+        }
+
+        [Bindable(event="yesNoChange")]
+        public function get selectedValue():Object {
+            return radioButtonGroup.selectedValue;
+        }
+
+        public function set selectedValue(value:Object):void {
+            radioButtonGroup.selectedValue = value;
+        }
+
+        public function get validator():Validator {
+            return yesNoValidator;
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Validator id="yesNoValidator" source="{radioButtonGroup}" property="selectedValue" required="true" triggerEvent="none" listener="{errorText}"/>
+    <mx:RadioButtonGroup id="radioButtonGroup" change="onChange();"/>
+    <mx:RadioButton id="radioYes" styleName="pageText" group="{radioButtonGroup}" value="true" label="{yesLabel}"/>
+    <mx:RadioButton id="radioNo" styleName="pageText" group="{radioButtonGroup}" value="false" label="{noLabel}" paddingLeft="30"/>
+    <controls:RequiredAsterisk visible="{showAsteriskOnError || ! errorText.visible}" includeInLayout="{showAsteriskOnError || ! errorText.visible}"/>
+    <controls:ErrorText id="errorText" styleName="errorText" selectable="false"
+                        text="{resourceManager.getString('interview','yes_no_required')}"/>
+</mx:HBox>

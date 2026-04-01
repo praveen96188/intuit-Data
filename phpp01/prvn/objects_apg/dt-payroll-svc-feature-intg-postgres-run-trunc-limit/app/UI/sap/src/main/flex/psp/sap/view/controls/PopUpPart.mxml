@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Container xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"	
+	initialize="onInit();"
+	creationComplete="onCreationComplete();">
+	
+    <mx:Metadata>
+    	[DefaultProperty("child")]
+    	[Event(name="close", type="mx.events.CloseEvent")]
+    </mx:Metadata>	
+	
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.scrollClasses.ScrollBar;
+        import mx.core.Application;
+        import mx.core.IFlexDisplayObject;
+        import mx.core.ScrollPolicy;
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+        import mx.events.FlexEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.viewmodel.PopUpPartViewModel;
+
+        private var mChild:DisplayObject;
+        private var mChildrenChanged:Boolean = false;
+
+        private var showing:Boolean = false;
+
+        public function set child(value:DisplayObject):void {
+            mChild = value;
+
+            modalView = child as IFlexDisplayObject;
+
+            mChildrenChanged = true;
+            invalidateProperties();
+        }
+
+        public function get child():DisplayObject {
+            return mChild;
+        }
+
+        private function onInit():void {
+        }
+
+        private function addChildrenToContent():void {
+            if (mChildrenChanged) {
+                content.addChild(child);
+
+                if (child is Container) {
+                    //?
+                    (child as Container).verticalScrollPolicy = ScrollPolicy.OFF;
+                }
+
+                ViewModelSync.associatePageViewModels(this, viewModel);
+                mChildrenChanged = false;
+            }
+        }
+
+        [Bindable]
+        public var showCloseButton:Boolean = false;
+
+        [Bindable]
+        public var horizontalResizeEnabled:Boolean = true;
+
+        [Bindable]
+        public var verticalResizeEnabled:Boolean = true;
+
+
+        [Bindable]
+        public var deferAdd:Boolean = true; //when true, will wait until creation complete to show to avoid resizing
+        [Bindable]
+        public var loadingMessage:String = "Loading..."; //set to null to not show
+
+
+        private var mViewModel:PopUpPartViewModel;
+        private var mTempViewModel:PopUpPartViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PopUpPartViewModel {
+            return mViewModel;
+        }
+
+
+        public function set viewModel(value:PopUpPartViewModel):void {
+            if (mCreationComplete && value != null) {
+                mViewModel = value;
+                value.addEventListener("displayPopUp", onDisplayPopUp, false, 0, true);
+                value.addEventListener("hidePopUp", onHidePopUp, false, 0, true);
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+
+        [Bindable]
+        protected var modalView:IFlexDisplayObject;
+
+        [Bindable]
+        public var resizeToContent:Boolean = false;
+
+        public var isModal:Boolean = true;
+
+        [Bindable]
+        public var accountForVerticalScrollBar:Boolean = false;
+
+        private function onDisplayPopUp(e:Event):void {
+            show();
+        }
+
+        private function show():void {
+            if (mChildrenChanged) {
+                addChildrenToContent();
+            }
+            if (deferAdd && modalView is UIComponent && !(modalView as UIComponent).initialized) {
+                if (loadingMessage != null) {
+                    SAP.instance.showProgress(loadingMessage);
+                }
+                modalView.addEventListener(FlexEvent.CREATION_COMPLETE, function (e:Event):void {
+                    addWindow();
+                    if (loadingMessage != null) {
+                        SAP.instance.hideProgress();
+                    }
+                });
+            } else {
+                addWindow();
+            }
+        }
+
+        private function addWindow():void {
+            modalView.addEventListener(Event.RESIZE, onModalResize, false, 0, true);
+            showing = true;
+            WindowManager.add(fullModal, Application.application as DisplayObject, isModal);
+            WindowManager.centerWindow(fullModal);
+        }
+
+
+        protected function onModalResize(e:Event):void {
+            WindowManager.centerWindow(fullModal);
+        }
+
+        //called when it is determined by the VM to close the window
+        private function onHidePopUp(e:Event):void {
+            showing = false;
+            WindowManager.remove(fullModal);
+
+            // dispatch close event for view related updates
+            // note VM-related updates can be hooked directly from the modal view model
+            dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+
+            //this makes it so it sets the focus back when the window is closed
+            //why this isn't automatic, I don't know.
+            if (parent is UIComponent) {
+                (parent as UIComponent).setFocus();
+            }
+        }
+
+        //called when the VIEW closes the window
+        //this tells the VM that the user wants the window closed
+        //and then the VM tells the view to actually remove it
+        private function close():void {
+            viewModel.hidePopUp();
+        }
+
+        private function onKeyDown(e:KeyboardEvent):void {
+            if (e.keyCode == Keyboard.ESCAPE) {
+                close();
+            }
+        }
+
+        private var mPaddingTemp:Number;
+
+        private function set updateVerticalScrollBar(value:ScrollBar):void {
+            if (accountForVerticalScrollBar) {
+                if (value == null && !isNaN(mPaddingTemp)) {
+                    fullModal.setStyle("paddingRight", mPaddingTemp);
+                }
+                else if (value != null) {
+                    if (isNaN(mPaddingTemp)) {
+                        mPaddingTemp = fullModal.getStyle("paddingRight");
+                    }
+                    fullModal.setStyle("paddingRight", ScrollBar.THICKNESS);
+                }
+            }
+        }
+
+        /*
+         for some reason, nested popups make flex go crazy and think that there is one child and then fail to get the child.
+         ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         */
+        override public function get numChildren():int {
+            var candidateNumberOfChildren:int = super.numChildren;
+            while (candidateNumberOfChildren > 0) {
+                try {
+                    getChildAt(candidateNumberOfChildren - 1);
+                    return candidateNumberOfChildren;
+                } catch (e:RangeError) {
+                    candidateNumberOfChildren--;
+                }
+            }
+            return candidateNumberOfChildren;
+        }
+
+        ]]>
+	</mx:Script>
+	
+	<controls:SizeableTitleWindow	
+		id="fullModal" 
+		borderAlpha="1.0"
+		borderColor="#959595"
+		resizeToContent="{resizeToContent}" 
+		verticalResizeEnabled="{verticalResizeEnabled}" 
+		horizontalResizeEnabled="{horizontalResizeEnabled}" 
+		backgroundColor="white" 
+		showCloseButton="{showCloseButton}" 
+		close="close()"
+		maxHeight="{Application.application.height}"
+		keyDown="onKeyDown(event);"
+		horizontalScrollPolicy="{accountForVerticalScrollBar ? 'off' : 'auto'}">
+		<pspui:SaveStatusMessage id="errorMessage" tabEnabled="false" width="{content.width}" height="100%" textFieldWidth="{content.width}"/>
+		<mx:VBox id="content" height="100%" width="100%"/>		
+	</controls:SizeableTitleWindow>
+	
+	<mx:Binding source="viewModel.modalViewModel.saveMsg" destination="errorMessage.text"/>
+	<mx:Binding source="viewModel.modalViewModel.saveFaulted" destination="errorMessage.isError"/>
+
+	<mx:Binding source="fullModal.verticalScrollBar" destination="updateVerticalScrollBar"/>
+	<mx:Binding source="fullModal.verticalScrollBar" destination="updateVerticalScrollBar"/>	
+</mx:Container>

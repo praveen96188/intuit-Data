@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*" creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+
+        import psp.sap.model.TaxCredits9061;
+        import psp.sap.viewmodel.TaxCredits9061ViewModel;
+        import psp.app.util.CommonUtil;
+
+        private var mViewModel:TaxCredits9061ViewModel;
+        private var mTempViewModel:TaxCredits9061ViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():TaxCredits9061ViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:TaxCredits9061ViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.einValidator.listener = ein;
+                mViewModel.ssnValidator.listener = ssn;
+
+                mViewModel.startDateValidator.listener = startDateInput;
+                mViewModel.endDateValidator.listener = endDateInput;
+                mViewModel.dateRangeValidator.startDateListener = startDateInput;
+                mViewModel.dateRangeValidator.endDateListener = endDateInput;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+
+
+
+        public function viewForm(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var form:TaxCredits9061 = link.data as TaxCredits9061;
+            if(CommonUtil.isDTApp()) {
+                var formURL:URLRequest = viewModel.getViewFormURL(form, '9061');
+                CommonUtil.downloadFromSAPURL(formURL.url, "TaxCreditsForms9061");
+            } else {
+                navigateToURL(viewModel.getViewFormURL(form, '9061'),'_blank');
+            }
+        }
+
+        public function viewUnsignedPacket(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var form:TaxCredits9061 = link.data as TaxCredits9061;
+            if(CommonUtil.isDTApp()) {
+                var formURL:URLRequest = viewModel.getViewApplicationURL(form, 'unsignedPacket');
+                CommonUtil.downloadFromSAPURL(formURL.url, "TaxCreditsFormsUnsigned");
+            } else {
+                navigateToURL(viewModel.getViewApplicationURL(form, 'unsignedPacket'),'_blank');
+            }
+        }
+        
+        public function viewSignedPacket(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var form:TaxCredits9061 = link.data as TaxCredits9061;
+            if(CommonUtil.isDTApp()) {
+                var formURL:URLRequest = viewModel.getViewApplicationURL(form, 'signedPacket');
+                CommonUtil.downloadFromSAPURL(formURL.url, "TaxCreditsFormsSigned");
+            } else {
+                navigateToURL(viewModel.getViewApplicationURL(form, 'signedPacket'),'_blank');
+            }
+        }
+
+
+
+        ]]>
+	</mx:Script>
+
+    <mx:Form defaultButton="{searchButton}">
+        <mx:FormItem label="EIN:">
+            <mx:TextInput id="ein"/>
+        </mx:FormItem>
+        <mx:FormItem label="SSN:">
+            <mx:TextInput id="ssn"/>
+        </mx:FormItem>
+        <mx:FormItem label="From:">
+            <pspui:SAPDateField
+                    id="startDateInput"
+                    width="100"
+                    editable="true"/>
+        </mx:FormItem>
+        <mx:FormItem label="To:">
+            <pspui:SAPDateField
+                    id="endDateInput"
+                    width="100"
+                    editable="true"/>
+        </mx:FormItem>
+        <mx:FormItem>
+            <mx:Button id="searchButton" label="Search" click="viewModel.search();" enabled="{viewModel.canSave}"/>
+        </mx:FormItem>
+    </mx:Form>
+    <controls:SAPDataGrid maxRows="10" width="800" selectable="false" visible="{!viewModel.isDataLoading}"
+                          dataProvider="{viewModel.forms}">
+        <controls:columns>
+            <mx:DataGridColumn
+                    width="80"
+                    headerText="EIN"
+                    dataField="ein"/>
+            <mx:DataGridColumn
+                    width="80"
+                    headerText="SSN"
+                    dataField="ssn"/>
+            <mx:DataGridColumn
+                    width="100"
+                    headerText="Submitted"
+                    dataField="createdDate"
+                    labelFunction="{viewModel.formatCreatedDate}"/>
+            <mx:DataGridColumn
+                    headerText="Signers"
+                    dataField="employerEmail">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox width="100%" height="100%" verticalGap="1">
+                            <mx:Script>
+                                <![CDATA[
+                                import psp.sap.model.TaxCredits9061;
+                                ]]>
+                            </mx:Script>
+                            <mx:Text text="ER: {TaxCredits9061(data).employerEmail}"/>
+                            <mx:Text text="EE: {TaxCredits9061(data).employeeEmail}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <mx:DataGridColumn
+                    width="80"
+                    headerText="Remaining"
+                    dataField="signersRemaining"/>
+            <mx:DataGridColumn
+                    width="120"
+                    headerText="App Password"
+                    dataField="applicationPassword"
+                    itemRenderer="mx.controls.Text"/>
+            <mx:DataGridColumn
+                    width="115"
+                    headerText="Forms"
+                    dataField="formId">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox width="100%" height="100%" verticalGap="1">
+                            <mx:Script>
+                                <![CDATA[
+                                import psp.sap.model.TaxCredits9061;
+                                ]]>
+                            </mx:Script>
+                            <pspui:ActionLink data="{data}"
+                                              label="9061"
+                                              actionClick="outerDocument.viewForm"/>
+                            <mx:HBox>
+                                <pspui:ActionLink data="{data}"
+                                                  paddingBottom="0" paddingRight="0" paddingTop="0"
+                                                  label="App"
+                                                  actionClick="outerDocument.viewUnsignedPacket"
+                                                  visible="{TaxCredits9061(data).hasUnsignedApplication}"/>
+                                <pspui:ActionLink data="{data}"
+                                                  paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"
+                                                  label="(Signed)"
+                                                  actionClick="outerDocument.viewSignedPacket"
+                                                  visible="{TaxCredits9061(data).hasSignedApplication}"
+                                                  includeInLayout="{TaxCredits9061(data).hasSignedApplication}"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+        </controls:columns>
+    </controls:SAPDataGrid>
+
+    <mx:Binding source="viewModel.ein" destination="ein.text"/>
+    <mx:Binding source="ein.text" destination="viewModel.ein"/>
+
+    <mx:Binding source="viewModel.ssn" destination="ssn.text"/>
+    <mx:Binding source="ssn.text" destination="viewModel.ssn"/>
+
+    <mx:Binding source="viewModel.startDate" destination="startDateInput.text" />
+	<mx:Binding source="startDateInput.text" destination="viewModel.startDate" />
+
+    <mx:Binding source="viewModel.endDate" destination="endDateInput.text" />
+    <mx:Binding source="endDateInput.text" destination="viewModel.endDate" />
+
+
+
+
+</mx:VBox>

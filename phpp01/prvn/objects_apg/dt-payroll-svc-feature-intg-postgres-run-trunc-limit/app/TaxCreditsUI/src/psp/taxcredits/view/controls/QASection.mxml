@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+         xmlns:view="psp.taxcredits.view.*">
+    <mx:Script>
+        <![CDATA[
+        import psp.taxcredits.model.QAItem;
+        import psp.taxcredits.model.QAItemCollection;
+        import psp.taxcredits.model.TaxCreditsModel;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        [Bindable]
+        public var items:QAItemCollection;
+        [Bindable]
+        public var title:String;
+
+        private function onLink(e:TextEvent):void {
+            model.tracker.trackEvent("Navigation", "Click Email", "Q/A " + model.pageManager.currentPage);
+            navigateToURL(new URLRequest(e.text), "_self");
+        }
+
+        ]]>
+    </mx:Script>
+
+    <mx:Text selectable="false" styleName="sectionHeading" paddingBottom="4"
+             text="{title}"/>
+    <mx:Repeater dataProvider="{items}" id="qaItemRepeater">
+        <mx:Box styleName="noPadding" paddingLeft="5">
+            <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+        </mx:Box>
+        <view:QAExpandableItem question="{QAItem(qaItemRepeater.currentItem).question}" answer="{QAItem(qaItemRepeater.currentItem).answer}" width="98%" paddingLeft="6"
+                               paddingBottom="3"/>
+    </mx:Repeater>
+    <mx:Image source="psp/taxcredits/view/assets/dotted_line.gif"/>
+    <controls:SupText selectable="true" paddingTop="12" paddingLeft="16"
+                      styleName="introQuestions" htmlText="{resourceManager.getString('intro','questions')}"
+                      link="onLink(event);"/>
+</mx:VBox>

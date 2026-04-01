@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<controls:SAPDataGrid xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+                      xmlns:pspui="psp.sap.view.*"
+                      width="100%"
+                      dataProvider="{paychecks}"
+                      visible="{paychecks.length > 0}"
+                      includeInLayout="{paychecks.length > 0}"
+                      rowCount="{UIUtils.getRowCountFor(paychecks)+1}"
+                      selectable="false"
+                      variableRowHeight="true">
+    <mx:Metadata>
+        [Event(name="actionClickedEvent", type="psp.sap.model.ActionClickEvent")]
+    </mx:Metadata>
+    <mx:Script>
+        <![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.events.MenuEvent;
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.ActionClickEvent;
+        import psp.sap.model.ActionEvent;
+        import psp.sap.model.Paycheck;
+
+        [Bindable]
+        public var includePaycheckDateColumn:Boolean = false;
+        [Bindable]
+        public var includeEmployeeNameColumn:Boolean = true;
+
+        [ArrayElementType("psp.sap.model.Paycheck")]
+        [Bindable]
+        public var paychecks:ArrayCollection = new ArrayCollection();
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            var paycheck:Paycheck = item as Paycheck;
+            if (paycheck[dgc.dataField] == null) {
+                return "Missing";
+            } else {
+                return SAPDateFormatters.dateFormatMedium.format(paycheck[dgc.dataField]);
+            }
+        }
+
+        private function sortPayPeriodBeginDate(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(Paycheck(itemA).payPeriodBeginDate, Paycheck(itemB).payPeriodBeginDate);
+        }
+
+        private function sortPayPeriodEndDate(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(Paycheck(itemA).payPeriodEndDate, Paycheck(itemB).payPeriodEndDate);
+        }
+
+        public function formatPaycheckTOKStatus(item:Object):String {
+            var paycheck:Paycheck = item as Paycheck;
+            var tokStatus:String = paycheck.paycheck401k.tokStatus;
+            if (paycheck.paycheck401k.voidedAfterTOKOffload) {
+                tokStatus = tokStatus + "<br/><b>VOIDED</b>";
+            } else if (paycheck.paycheck401k.deletedAfterTOKOffload) {
+                tokStatus = tokStatus + "<br/><b>DELETED</b>";
+            }
+            return tokStatus;
+        }
+
+        private function sortPaycheckDate(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(Paycheck(itemA).paycheckDate, Paycheck(itemB).paycheckDate);
+        }
+
+        public function onPaycheckActionClicked(event:MenuEvent):void {
+            dispatchEvent(new ActionClickEvent(ActionEvent(event.item), event.target));
+        }
+
+        ]]>
+    </mx:Script>
+    <controls:columns>
+        <mx:DataGridColumn
+                visible="{includeEmployeeNameColumn}"
+                headerText="Employee Name"
+                dataField="sourceEmployeeName"
+                textAlign="left"
+                minWidth="130"/>
+        <mx:DataGridColumn
+                visible="{includePaycheckDateColumn}"
+                headerText="Paycheck date"
+                dataField="paycheckDate"
+                labelFunction="formatDate"
+                sortCompareFunction="sortPaycheckDate"
+                minWidth="150"/>
+        <mx:DataGridColumn
+                headerText="Pay period{String('\n')}start date"
+                headerWordWrap="true"
+                dataField="payPeriodBeginDate"
+                labelFunction="formatDate"
+                sortCompareFunction="sortPayPeriodBeginDate"
+                minWidth="150"/>
+        <mx:DataGridColumn
+                headerText="Pay period{String('\n')}end date"
+                dataField="payPeriodEndDate"
+                labelFunction="formatDate"
+                sortCompareFunction="sortPayPeriodEndDate"
+                minWidth="150"/>
+        <mx:DataGridColumn
+                headerText="Actions"
+                sortable="false"
+                textAlign="left"
+                minWidth="120"
+                dataField="actionCollection">
+            <mx:itemRenderer>
+                <mx:Component>
+                    <mx:VBox height="100%" width="100%" paddingLeft="5" paddingRight="3">
+                        <mx:Script><![CDATA[
+                            import psp.sap.model.Paycheck;
+                            ]]></mx:Script>
+                        <pspui:EmployeeActionPopUpMenuButton
+                                paycheck="{data as Paycheck}"
+                                dataProvider="{Paycheck(data).actionCollection}"
+                                labelField="description"
+                                width="100%"
+                                itemClick="outerDocument.onPaycheckActionClicked(event)"
+                                paddingLeft="5"
+                                textAlign="left"
+                                fontWeight="normal"
+                                popUpStyleName="payrollPopUpMenu"
+                                />
+                    </mx:VBox>
+                </mx:Component>
+            </mx:itemRenderer>
+        </mx:DataGridColumn>
+    </controls:columns>
+</controls:SAPDataGrid>

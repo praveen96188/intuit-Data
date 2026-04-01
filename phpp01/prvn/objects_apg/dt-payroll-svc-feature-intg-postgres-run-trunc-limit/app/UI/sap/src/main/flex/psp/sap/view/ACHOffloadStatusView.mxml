@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="0" xmlns:controls="psp.sap.view.controls.*">
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+        import mx.formatters.DateFormatter;
+
+        import psp.sap.application.SAP;
+        import psp.sap.model.ACHOffloadStatusEntry;
+        import psp.sap.viewmodel.ACHOffloadStatusViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+
+        private var mViewModel:ACHOffloadStatusViewModel;
+        private var mDateTimeFormatter:DateFormatter = new DateFormatter();
+        private var mAutoRefreshTimer:Timer;
+
+        [Bindable] public var autoRefreshMessage:String;
+
+        [Bindable]
+        public function get viewModel():ACHOffloadStatusViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:ACHOffloadStatusViewModel):void {
+            mViewModel = value;
+
+            // auto-refresh every 5 seconds for up to two hours
+            mAutoRefreshTimer = new Timer(5000, 1440);
+
+            if (viewModel.offloadStatusEntries != null)
+                updateAutoRefreshMessage();
+
+            viewModel.addEventListener(ViewModelEvent.MODEL_DATA_LOADED, function (e:ViewModelEvent):void {
+                updateAutoRefreshMessage();
+            }, false, 0, true);
+
+            mAutoRefreshTimer.addEventListener(TimerEvent.TIMER, function (e:TimerEvent):void {
+                if (!viewModel.isDataLoading)
+                    viewModel.refresh();
+            }, false, 0, true);
+
+            viewModel.addEventListener(ViewModelEvent.ACTIVATED, function (e:ViewModelEvent):void {
+                mAutoRefreshTimer.reset();
+                mAutoRefreshTimer.start();
+            }, false, 0, true);
+
+            viewModel.addEventListener(ViewModelEvent.DEACTIVATED, function (e:ViewModelEvent):void {
+                mAutoRefreshTimer.stop();
+            }, false, 0, true);
+
+            mAutoRefreshTimer.start();
+        }
+
+        private function updateAutoRefreshMessage():void {
+            mDateTimeFormatter.formatString = SAP.instance.configuration.timeHourMinSecFormat;
+            autoRefreshMessage = 'Auto Refresh: On     Last Updated: ' + mDateTimeFormatter.format(new Date());
+        }
+
+        public function formatDateVal(offloadStatusEntry:ACHOffloadStatusEntry, column:AdvancedDataGridColumn):String {
+            mDateTimeFormatter.formatString = SAP.instance.configuration.timeFormat;
+
+            var dateStr:String = "";
+            if (offloadStatusEntry[column.dataField])
+                dateStr = mDateTimeFormatter.format(offloadStatusEntry[column.dataField]);
+
+            if (offloadStatusEntry.isStep)
+                dateStr = "   " + dateStr;
+
+            return dateStr;
+        }
+
+        public function formatStringVal(offloadStatusEntry:ACHOffloadStatusEntry, column:AdvancedDataGridColumn):String {
+            var stringVal:String = offloadStatusEntry[column.dataField];
+            if (offloadStatusEntry.isStep)
+                stringVal = "   " + stringVal;
+            return stringVal;
+        }
+					
+		]]>
+	</mx:Script>
+	
+	
+	<mx:Label text="Estimated Transaction Count: {viewModel.estimatedTransactionCount}" fontSize="14"/>
+	
+	<mx:AdvancedDataGrid id="jobGrid" dataProvider="{viewModel.offloadStatusEntries}" 
+							allowDragSelection="false"
+							selectionMode="none" 
+							allowMultipleSelection="false"
+							draggableColumns="false"
+							resizableColumns="false"
+							sortableColumns="false"
+							sortExpertMode="false"
+							rowCount="23">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn headerText="Batch Job" 	labelFunction="formatStringVal"	dataField="jobName" width="300" sortable="false"/>
+			<mx:AdvancedDataGridColumn headerText="Status" 		labelFunction="formatStringVal"	dataField="status" sortable="false" />
+			<mx:AdvancedDataGridColumn headerText="Start" 		labelFunction="formatDateVal"	dataField="startDateTime" width="125" sortable="false" />
+			<mx:AdvancedDataGridColumn headerText="Est. Finish" labelFunction="formatDateVal"	dataField="expectedFinishDateTime" width="125" sortable="false" />
+			<mx:AdvancedDataGridColumn headerText="Finish" 		labelFunction="formatDateVal" 	dataField="finishDateTime" width="125" sortable="false"/>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	<mx:Label id="autoRefreshLabel" text="{autoRefreshMessage}" textAlign="right" width="{jobGrid.width}" color="{viewModel.isDataLoading ? 0x0000FF : 0x000000}"/>
+
+</mx:VBox>

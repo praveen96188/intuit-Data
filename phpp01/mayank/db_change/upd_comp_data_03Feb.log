@@ -1,0 +1,44 @@
+23:35:42 SQL> 
+23:35:42 SQL> DECLARE
+23:35:42   2  	  RECORD_COUNT	    INTEGER := 0;
+23:35:42   3  	  MAX_RECORDS	    INTEGER := 2000000;
+23:35:42   4  	  PROCESSED_RECORDS INTEGER := 0;
+23:35:42   5  	  MAX_FETCH_RECORDS INTEGER := 229500;
+23:35:42   6  BEGIN
+23:35:42   7  	  SELECT count(*) INTO RECORD_COUNT FROM PSPADM.PSP_COMPANY WHERE regexp_like(PUBLISH_STATUS,'......2.........');
+23:35:42   8  
+23:35:42   9  	  DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+23:35:42  10  
+23:35:42  11  	  WHILE RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS
+23:35:42  12  	      LOOP
+23:35:42  13  		  UPDATE PSPADM.PSP_COMPANY
+23:35:42  14  		  SET PUBLISH_STATUS = (substr(PUBLISH_STATUS,1,6) || '0' || substr(PUBLISH_STATUS, 8))
+23:35:42  15  		  WHERE company_seq IN (SELECT COMPANY_SEQ FROM
+23:35:42  16  						  (SELECT company_seq
+23:35:42  17  						   FROM PSPADM.PSP_COMPANY
+23:35:42  18  						   WHERE regexp_like(PUBLISH_STATUS,'......2.........'))
+23:35:42  19  					WHERE ROWNUM <= MAX_FETCH_RECORDS);
+23:35:42  20  		  COMMIT;
+23:35:42  21  		  PROCESSED_RECORDS := PROCESSED_RECORDS + MAX_FETCH_RECORDS;
+23:35:42  22  		  DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+23:35:42  23  	      END LOOP;
+23:35:42  24  EXCEPTION
+23:35:42  25  	  WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error updating the record');
+23:35:42  26  END;
+23:35:42  27  /
+Found 229463 Records                                                            
+Processed 229500 records successfully                                           
+Processed 459000 records successfully                                           
+Processed 688500 records successfully                                           
+Processed 918000 records successfully                                           
+Processed 1147500 records successfully                                          
+Processed 1377000 records successfully                                          
+Processed 1606500 records successfully                                          
+Processed 1836000 records successfully                                          
+Processed 2065500 records successfully                                          
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:06:19.64
+23:42:01 SQL> 
+23:42:01 SQL> spool off

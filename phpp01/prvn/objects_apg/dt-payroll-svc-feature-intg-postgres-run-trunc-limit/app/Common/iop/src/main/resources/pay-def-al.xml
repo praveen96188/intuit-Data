@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<Resource handler="com.paycycle.gui.ResourceHandler">
+    <!-- ****************** EFT Payment Addenda Record For AL (withholding) ****************** -->
+    <Component class="com.paycycle.delimlen.DelimRecordTemplate" id="Txp_AL_WH">
+        <Property name="Name" value="Payment Addenda Record"/>
+        <Property name="Id" constant="com.paycycle.eft.RecordId.Txp_AL_WH"/>
+        <Property name="Delimiter" value="*"/>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Tax Payment ID"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.SEGMENT_IDENTIFIER"/>
+            <Property name="ValueType" value="alpha"/>
+            <Property name="Size" value="3"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="Value" value="TXP"/>
+            <Property name="DelimiterReqd" value="1"/>
+            <Description>Tax Payment ID.</Description>
+        </Field>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Employer Account Number"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.TAXPAYER_EIN"/>
+            <Property name="ValueType" value="alpha"/>
+            <Property name="Size" value="15"/>
+            <!-- starts with 'IW' or 'IW0000' and ends with EIN, ie IW0000123456 or IW1234567890 -->
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="DelimiterReqd" value="1"/>
+            <Description>Employer Federal Account Number.</Description>
+        </Field>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Tax Type Code"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.TAX_TYPE_CODE"/>
+            <Property name="ValueType" value="alphanumeric"/>
+            <Property name="Size" value="5"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="Value" value="01106"/>
+            <Property name="DelimiterReqd" value="1"/>
+            <Property name="EnableFormatting" value="1"/>
+            <Description>Tax Payment Type Code.</Description>
+        </Field>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Period End Date"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.TAX_PERIOD_END_DATE"/>
+            <Property name="ValueType" value="numeric"/> <!-- YYMMDD -->
+            <Property name="Size" value="6"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="DelimiterReqd" value="1"/>
+            <Description>Tax Period End Date.</Description>
+        </Field>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Amount Type"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.TAX_AMOUNT_TYPE"/>
+            <Property name="ValueType" value="alpha"/>
+            <Property name="Size" value="1"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="Value" value="T"/>
+            <Property name="DelimiterReqd" value="1"/>
+            <Description>Amount Type (T = Tax, Z = Zero).</Description>
+        </Field>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Payment Amount"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.TAX_AMOUNT"/>
+            <Property name="ValueType" value="numeric"/> <!-- ddddddddcc -->
+            <Property name="Size" value="10"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="DelimiterReqd" value="0"/>
+            <Property name="EnableFormatting" value="1"/>
+            <Description>Payment Amount.</Description>
+        </Field>
+<!--        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Filler"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.DEFAULT_VALUE_SPACE_18"/>
+            <Property name="ValueType" value="alpha"/>
+            <Property name="Size" value="18"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="Value" value="                  "/>
+            <Property name="DelimiterReqd" value="1"/>
+            <Description>Filler (18 spaces).</Description>
+        </Field>
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Confirmation Number"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.CONFIRMATION_NUMBER"/>
+            <Property name="ValueType" value="alphanumeric"/>
+            <Property name="Size" value="11"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="Value" value="N0000000000"/>
+            <Property name="DelimiterReqd" value="0"/>
+            <Description>Confirmation Number (use default).</Description>
+        </Field>-->
+        <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+            <Property name="Name" value="Terminator"/>
+            <Property name="Id" constant="com.paycycle.eft.FieldId.TERMINATOR"/>
+            <Property name="ValueType" value="alpha"/>
+            <Property name="Size" value="1"/>
+            <Property name="Inclusion" value="mandatory"/>
+            <Property name="Value" value="\"/>
+            <Property name="DelimiterReqd" value="0"/>
+            <Description>Terminator.</Description>
+        </Field>
+    </Component>
+</Resource>

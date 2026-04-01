@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="650"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPRateFormatter;
+        import psp.sap.model.CompanyFilingAmount;
+        import psp.sap.model.CompanyFilingAmountHistory;
+        import psp.sap.viewmodel.CompanyFilingAmountHistoryViewModel;
+
+        [Bindable]
+        public var viewModel:CompanyFilingAmountHistoryViewModel;
+
+        public function getFontWeight(item:CompanyFilingAmountHistory):String {
+            /*  Make bold if the item is valid  */
+            return item.invalidDate == null ? "bold" : "normal";
+        }
+
+        public function formatAdditionalAmount(item:Object, dgc:DataGridColumn):String {
+            if (item.value == "Missing") {
+                return "Missing";
+            }
+            if (item.isRate) {
+                return SAPRateFormatter.formatRateAsPercentage(parseFloat(CompanyFilingAmount(item).value));
+            } else {
+                return SAPCurrencyFormatters.defaultFormatter.format(parseFloat(CompanyFilingAmount(item).value));
+            }
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Additional Filing Amounts History for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="headerBorder" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <controls:SAPComboBox dataProvider="{viewModel.additionalAmountNames}" dataField="selectedName"/>
+    <controls:SAPDataGrid dataProvider="{viewModel.filingAmounts}"
+                          width="100%" maxRows="6"
+                          selectable="false" draggableColumns="false">
+        <controls:columns>
+            <controls:SAPDataGridColumn headerText="Name"
+                                        width="120"
+                                        dataField="name"
+                                        paddingLeft="5"/>
+            <controls:SAPDataGridColumn headerText="Value"
+                                        width="110"
+                                        textAlign="right"
+                                        dataField="value"
+                                        labelFunction="formatAdditionalAmount"/>
+            <controls:SAPDataGridColumn sortable="true"
+                                        headerText="Effective Quarter"
+                                        width="120"
+                                        dataField="effectiveDate"
+                                        paddingLeft="5">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                horizontalAlign="right"
+                                verticalGap="0"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:Text fontWeight="{outerDocument.getFontWeight(CompanyFilingAmountHistory(data))}"
+                                     text="{CompanyFilingAmountHistory(data).effectiveQuarter.label}"/>
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.CompanyFilingAmountHistory;
+                                ]]></mx:Script>
+                        </mx:VBox>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+            <mx:DataGridColumn headerText="Change Date"
+                               width="120"
+                               dataField="modifiedDate"
+                               paddingLeft="5"
+                               labelFunction="SAPDataGrid.formatDateMedium"/>
+            <mx:DataGridColumn headerText="Modified By"
+                               width="120"
+                               dataField="modifiedBy"
+                               paddingLeft="5"
+                               draggable="false"/>
+            <mx:DataGridColumn headerText="Invalid Date"
+                               width="120"
+                               dataField="invalidDate"
+                               paddingLeft="5"
+                               labelFunction="SAPDataGrid.formatDateMedium"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

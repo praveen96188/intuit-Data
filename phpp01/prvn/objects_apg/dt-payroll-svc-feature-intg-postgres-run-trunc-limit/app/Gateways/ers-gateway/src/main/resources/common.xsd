@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns="http://schema.intuit.com/platform/enterpriseinterface/common/v1"
+           targetNamespace="http://schema.intuit.com/platform/enterpriseinterface/common/v1"
+           attributeFormDefault="unqualified" elementFormDefault="unqualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:complexType name="addressType">
+        <xs:sequence>
+            <xs:element name="addressId"    type="xs:string" minOccurs="0"/>    <!-- CAS ID -->
+            <xs:element name="addressNumber" type="xs:string" minOccurs="0"/>    <!-- MDM ID -->
+            <xs:element name="addressInfo" type="addressInfoType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="primary" type="xs:boolean" default="false"/>
+    </xs:complexType>
+
+    <xs:complexType name="addressInfoType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="addressLine1"/>
+            <xs:element type="xs:string" name="addressLine2" minOccurs="0"/>
+            <xs:element type="xs:string" name="city"/>
+            <xs:element type="xs:string" name="state"/>
+            <xs:element type="xs:string" name="postalCode"/>
+            <xs:element type="xs:string" name="country"/>
+            <xs:element type="xs:string" name="geoCode" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="contactType">
+        <xs:annotation>
+            <xs:documentation>
+                At least one of the child elements need to be present.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="contactId"        type="xs:string" minOccurs="0"/> <!-- CAS ID -->
+            <xs:element name="contactNumber"    type="xs:string" minOccurs="0"/> <!-- MDM ID -->
+            <xs:element name="authID"            type="xs:string" minOccurs="0" />
+            <xs:element name="contactInfo"        type="contactInfoType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="primary" type="xs:boolean" default="false"/>
+    </xs:complexType>
+
+    <xs:complexType name="contactInfoType">
+        <xs:sequence>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="middleName" type="xs:string" minOccurs="0"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="email" type="xs:string"/>
+            <xs:element name="phones" type="phonesType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="phonesType">
+        <xs:sequence>
+            <xs:element name="phone" type="phoneType" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="customerAddressNumberType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="customerSchemeNameType" name="schemeName" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="customerSchemeNameType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MDM"/>
+            <xs:enumeration value="CAS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="eftType">
+        <xs:sequence>
+            <xs:element type="bankAccountType" name="accountType"/>
+            <xs:element type="xs:string" name="accountNumber"/>
+            <xs:element type="xs:string" name="accountName"/>
+            <xs:element type="xs:string" name="routingNumber"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="bankAccountType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CHECKING"/>
+            <xs:enumeration value="SAVINGS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="priceType">
+        <xs:simpleContent>
+            <xs:extension base="xs:float">
+                <xs:attribute type="currencyAttributeType" name="currency" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="currencyAttributeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="USD"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="customerAccountNumberType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="customerSchemeNameType" name="schemeName" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="customerContactNumberType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="customerSchemeNameType" name="schemeName" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="paymentMethodType">
+        <xs:choice>
+            <xs:element type="creditCardType" name="creditCard"/>
+            <xs:element type="eftType" name="bankAccount"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="creditCardType">
+        <xs:sequence>
+            <xs:element type="creditCardAccountType" name="accountType"/>
+            <xs:element type="xs:string" name="accountNumber"/>
+            <xs:element type="xs:string" name="accountName"/>
+            <xs:element type="xs:int" name="expirationMonth"/>
+            <xs:element type="xs:int" name="expirationYear"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="creditCardAccountType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="VISA"/>
+            <xs:enumeration value="MASTERCARD"/>
+            <xs:enumeration value="AMEX"/>
+            <xs:enumeration value="DISCOVER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="phoneType">
+        <xs:sequence>
+            <xs:element name="phoneNumber" type="xs:string"/>
+            <xs:element name="phoneExt" type="xs:string" minOccurs="0"/>
+            <xs:element name="type" type="phoneTypeEnum" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="phoneTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HOME"/>
+            <xs:enumeration value="WORK"/>
+            <xs:enumeration value="CELL"/>
+            <xs:enumeration value="FAX"/>
+            <xs:enumeration value="OTHER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="entitlementSchemeNameType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ERS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="entitlementIdType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="entitlementSchemeNameType" name="schemeName" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="transactionAttributeType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="xs:string" name="value"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="transactionAttributesType">
+        <xs:sequence>
+            <xs:element type="transactionAttributeType" name="transactionAttribute" maxOccurs="unbounded"
+                        minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="entitlementInfoType">
+        <xs:sequence>
+            <xs:element type="entitlementIdType" name="entitlementId"/>
+            <xs:element type="transactionAttributesType" name="transactionAttributes" minOccurs="0"/>
+            <xs:element type="xs:string" name="entitlementState"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="entitlementType">
+        <xs:sequence>
+            <xs:element type="licenseIdType" name="licenseId"/>
+            <xs:element name="accountNumber" type="customerAccountNumberType" minOccurs="0"/>
+            <xs:element name="contactNumber" type="customerContactNumberType" minOccurs="0"/>
+            <xs:element type="entitlementInfoType" name="entitlementInfo" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="licenseIdType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="entitlementSchemeNameType" name="schemeName" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+
+</xs:schema>

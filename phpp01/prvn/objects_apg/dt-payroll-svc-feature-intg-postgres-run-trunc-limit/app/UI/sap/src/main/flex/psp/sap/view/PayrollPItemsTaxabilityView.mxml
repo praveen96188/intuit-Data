@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+    <![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.model.CompanyLaw;
+        import psp.sap.model.PItem;
+        import psp.sap.viewmodel.PayrollPItemsTaxabilityViewModel;
+
+        private var mViewModel:PayrollPItemsTaxabilityViewModel;
+        private var mTempViewModel:PayrollPItemsTaxabilityViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PayrollPItemsTaxabilityViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollPItemsTaxabilityViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function displayTaxability(item:Object, dgc:DataGridColumn):String {
+            var law:CompanyLaw = CompanyLaw(item);
+            var pitem:PItem = viewModel.pitem;
+            var taxable:Boolean = pitem != null && pitem.taxableToLawIds != null && law!=null && pitem.taxableToLawIds.contains(String(law.lawId));
+            return (taxable ? "Y" : "N");
+        }
+
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox
+            id="titleBox"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}"
+            width="70%"
+            height="6%"
+            paddingRight="0"
+            verticalGap="0">
+        <mx:Label
+                text="{viewModel.pitem.groupTitle}"
+                width="100%"
+                textAlign="left"
+                fontSize="16"
+                fontWeight="bold"/>
+        <mx:Text
+                text="{viewModel.pitem.pitemNumber} - {viewModel.pitem.pitemName}"
+                width="100%"
+                textAlign="left"
+                fontSize="13"
+                fontWeight="bold"/>
+        <mx:Text
+                text="Tax Form Line: {viewModel.pitem.taxFormLine!=null ? viewModel.pitem.taxFormLine : '-'}"
+                width="100%"
+                textAlign="left"
+                fontSize="13"
+                fontWeight="bold"/>
+    </mx:VBox>
+    <mx:VBox
+            id="payrollItemsContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}"
+            width="100%"
+            height="100%">
+
+        <controls:SAPDataGrid
+                width="30%" maxRows="30"
+                autoResizeToFitContent="true"
+                selectable="false" draggableColumns="false"
+                visible="{viewModel.hasCompanyLaws}"
+                includeInLayout="{viewModel.hasCompanyLaws}"
+                dataProvider="{viewModel.companyLaws}"
+                id="payrollItemsDataGrid">
+            <controls:columns>
+                <controls:SAPDataGridColumn sortable="true"
+                                            dataField="lawId"
+                                            headerText="P-Item"
+                                            width="20"
+                                            draggable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:HBox horizontalGap="0" width="100%" paddingRight="5">
+                                    <mx:Text id="pitemText"
+                                             text="{CompanyLaw(data).lawId}"
+                                             textAlign="center"/>
+
+                                    <mx:Image source="{SAP.instance.icons.redAsterisk}" toolTip="Latest Payroll Item is Item Id: {CompanyLaw(data).latestId}"
+                                              visible="{CompanyLaw(data).latestId != null}"
+                                              includeInLayout="{CompanyLaw(data).latestId != null}"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.model.CompanyLaw;
+                                        ]]></mx:Script>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Tax Name"
+                        dataField="description"
+                        width="50"/>
+                <controls:SAPDataGridColumn
+                        headerText="{viewModel.pitem.taxabilityHeader}"
+                        labelFunction="displayTaxability"
+                        width="20"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+        <mx:Text
+                id="noPayrollsText"
+                text="No taxabilties were found for this payroll item."
+                width="100%"
+                textAlign="center"
+                visible="{!viewModel.hasCompanyLaws}"
+                includeInLayout="{!viewModel.hasCompanyLaws}"
+                fontWeight="bold"/>
+    </mx:VBox>
+</mx:VBox>

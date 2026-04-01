@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.DataGrid;
+        import mx.controls.LinkButton;
+        import mx.controls.Menu;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.CloseEvent;
+        import mx.events.ListEvent;
+        import mx.events.MenuEvent;
+        import mx.controls.Button;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.PaymentsPageEnum;
+        import psp.sap.application.events.SAPEvent;
+        import psp.sap.formatters.SAPCurrencyFormatter;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Payment;
+        import psp.sap.model.TaxPaymentCheckDateSet;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.TaxPaymentsDetailViewModel;
+
+        private var mViewModel:TaxPaymentsDetailViewModel;
+        private var mTempViewModel:TaxPaymentsDetailViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        public var pageLabel:String = "Payment Details";
+
+        [Bindable]
+        public function get viewModel():TaxPaymentsDetailViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:TaxPaymentsDetailViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function quarterSelectLabelFunction(item:Object):String {
+            return item.paymentTemplateName + "-" + item.quarter + "-" + item.year;
+        }
+
+        public function selectPayment(e:SAPEvent):void {
+            var event:MouseEvent = MouseEvent(e.data);
+            var dg:DataGrid = event.currentTarget as DataGrid;
+            viewModel.selectedPayment = dg.selectedItem as Payment;
+            if (dg != paymentsMadeGrid) {
+                paymentsMadeGrid.selectedIndices = [];
+            }
+            else if (dg != pendingPaymentsGrid) {
+                pendingPaymentsGrid.selectedIndices = [];
+            }
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+
+        //noinspection JSUnusedLocalSymbols
+        private function checkDateTotalFunction(dataGrid:DataGrid, col:DataGridColumn):String {
+            var checkDateSet:Object = dataGrid.getRepeaterItem();
+            if (checkDateSet != null) {
+                return currencyFormatter.format(checkDateSet.checkDateTotal);
+            }
+            return "0.00";
+        }
+
+
+        public function showHistory(event:SAPEvent):void {
+            var mouseEvent:MouseEvent = MouseEvent(event.data);
+            var menu:Menu = Menu.createMenu(this, ["Status History", "Hold History", "Paid Date History", "Payment Method History"], false);
+            menu.addEventListener("itemClick", function(menuEvent:Event):void {
+                if (MenuEvent(menuEvent).item == "Status History") {
+                    viewModel.viewStatusHistory(Payment(ActionLink(mouseEvent.target).data));
+                } else if (MenuEvent(menuEvent).item == "Hold History") {
+                    viewModel.viewHoldsHistory(Payment(ActionLink(mouseEvent.target).data));
+                } else if (MenuEvent(menuEvent).item == "Payment Method History") {
+                    viewModel.viewPaymentMethodHistory(Payment(ActionLink(mouseEvent.target).data));
+                } else {
+                    viewModel.viewPayDateHistory(Payment(ActionLink(mouseEvent.target).data));
+                }
+            }, false, 0, true);
+
+            var pt:Point = new Point(mouseEvent.localX, mouseEvent.localY);
+            pt = mouseEvent.target.localToGlobal(pt);
+
+            menu.show(pt.x, pt.y);
+
+        }
+
+        private function onComboChange(e:ListEvent):void {
+            viewModel.selectedQuarter = e.currentTarget.selectedItem;
+        }
+
+        public function updatePaymentMethod(event:SAPEvent):void {
+            var mouseEvent:MouseEvent = MouseEvent(event.data);
+            viewModel.editPaymentMethod(Payment(ActionLink(mouseEvent.target).data));
+        }
+
+        public function updatePayDate(event:SAPEvent):void {
+            var mouseEvent:MouseEvent = MouseEvent(event.data);
+            viewModel.editPayDate(Payment(ActionLink(mouseEvent.target).data));
+        }
+
+        public function confirmRemoveHold(event:SAPEvent):void {
+            var mouseEvent:MouseEvent = MouseEvent(event.data);
+            var holdName:String = String(LinkButton(mouseEvent.target).getRepeaterItem());
+            var msgString:String = "Are you sure you want to remove this hold?";
+            Alert.show(msgString,
+                    "Remove Hold Confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.removeHold(Payment(ActionLink(mouseEvent.target).data), holdName);
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+
+        public function confirmAddAgentHold(event:SAPEvent):void {
+            var mouseEvent:MouseEvent = MouseEvent(event.data);
+            var msgString:String = "Are you sure you want to add an Agent hold?";
+            Alert.show(msgString,
+                    "Add Agent Hold Confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.addAgentHold(Payment(ActionLink(mouseEvent.target).data));
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+
+        public function confirmRejectPayment(event:SAPEvent):void {
+            var mouseEvent:MouseEvent = MouseEvent(event.data);
+            viewModel.RejectPayment(Payment(Button(mouseEvent.target).data));
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:CurrencyFormatter id="currencyFormatter" currencySymbol="" useThousandsSeparator="true" decimalSeparatorFrom="."
+                          decimalSeparatorTo="." precision="2"/>
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+    <mx:DateFormatter id="dateLongFormatter" formatString="{SAP.instance.configuration.dateFormatLong}"/>
+    <mx:Resize id="resizeEffect" duration="250" heightFrom="0"/>
+    <mx:HBox>
+        <mx:Label text="Selected Quarter:" fontWeight="bold"/>
+        <mx:ComboBox id="quarterSelect" change="onComboChange(event)" dataProvider="{viewModel.paymentQuarters}" labelFunction="quarterSelectLabelFunction"/>
+    </mx:HBox>
+    <mx:VBox
+            verticalGap="10"
+            width="100%"
+            tabChildren="false">
+        <mx:VBox
+                styleName="grayDataGridVBoxLightBorders"
+                width="100%">
+            <mx:HBox width="100%" textAlign="left" verticalAlign="middle">
+                <mx:Label text="Payments Made" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <pspui:PaymentsDataGrid
+                    id="paymentsMadeGrid"
+                    dataProvider="{viewModel.selectedQuarter.paymentsMade}"
+                    isPendingPayment="false"
+                    visible="{viewModel.selectedQuarter.paymentsMade != null ? viewModel.selectedQuarter.paymentsMade.length > 0 : false}"
+                    includeInLayout="{viewModel.selectedQuarter.paymentsMade != null ? viewModel.selectedQuarter.paymentsMade.length > 0 : false}"
+                    totalText="{SAPCurrencyFormatter.currencyFormatter.format(viewModel.selectedQuarter.paymentsMadeTotal)}"
+                    paymentSelect="selectPayment(event)"
+                    historyClick="showHistory(event)"
+                    rejectPayment="confirmRejectPayment(event)"/>
+            <mx:Label
+                    visible="{viewModel.selectedQuarter.paymentsMade == null || viewModel.selectedQuarter.paymentsMade.length == 0}"
+                    includeInLayout="{viewModel.selectedQuarter.paymentsMade == null || viewModel.selectedQuarter.paymentsMade.length == 0}"
+                    width="100%"
+                    textAlign="center"
+                    fontWeight="bold"
+                    text="No Information has been recorded for this quarter."/>
+        </mx:VBox>
+        <mx:VBox
+                styleName="grayDataGridVBoxLightBorders"
+                width="100%">
+            <mx:HBox width="100%" textAlign="left" verticalAlign="middle">
+                <mx:Label text="Pending Payments" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <pspui:PaymentsDataGrid
+                    id="pendingPaymentsGrid"
+                    dataProvider="{viewModel.selectedQuarter.pendingPayments}"
+                    isPendingPayment="true"
+                    visible="{viewModel.selectedQuarter.pendingPayments != null ? viewModel.selectedQuarter.pendingPayments.length > 0 : false}"
+                    includeInLayout="{viewModel.selectedQuarter.pendingPayments != null ? viewModel.selectedQuarter.pendingPayments.length > 0 : false}"
+                    totalText="{SAPCurrencyFormatter.currencyFormatter.format(viewModel.selectedQuarter.pendingPaymentsTotal)}"
+                    paymentSelect="selectPayment(event)"
+                    historyClick="showHistory(event)"
+                    editPaymentMethod="updatePaymentMethod(event)"
+                    removeHold="confirmRemoveHold(event)"
+                    addHold="confirmAddAgentHold(event)"
+                    editPayDate="updatePayDate(event)"/>
+            <mx:Label
+                    id="noPendingPayments"
+                    visible="{viewModel.selectedQuarter.pendingPayments == null || viewModel.selectedQuarter.pendingPayments.length == 0}"
+                    includeInLayout="{viewModel.selectedQuarter.pendingPayments == null || viewModel.selectedQuarter.pendingPayments.length == 0}"
+                    width="100%"
+                    textAlign="center"
+                    fontWeight="bold"
+                    text="No Information has been recorded for this quarter."/>
+        </mx:VBox>
+        <mx:HBox
+                horizontalGap="0"
+                width="100%"
+                styleName="grayDataGridVBoxLightBorders">
+            <mx:Label text="Total" fontWeight="bold" textAlign="left" width="125" paddingLeft="5"/>
+            <mx:Spacer width="65"/>
+            <mx:Text id="quarterPaymentsTotal"
+                     text="{currencyFormatter.format(viewModel.selectedQuarter.quarterPaymentsTotal)}" textAlign="right"
+                     fontWeight="bold" width="100"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:VBox
+            width="100%"
+            visible="{viewModel.selectedPayment != null}"
+            includeInLayout="{viewModel.selectedPayment != null}"
+            resizeEffect="resizeEffect"
+            tabChildren="false">
+        <mx:VBox
+                styleName="grayDataGridVBoxLightBorders"
+                width="100%">
+            <mx:HBox width="100%" textAlign="left" verticalAlign="middle" verticalGap="0">
+                <mx:Label text="Payment Detail: " styleName="grayDataGridHeading"/>
+                <mx:Label id="selectedInitDate"
+                          text="Settlement Date: {dateLongFormatter.format(viewModel.selectedPayment.settlementDate)}, "
+                          fontWeight="bold"/>
+                <mx:Label id="selectedDueDate"
+                          text="Due Date: {dateLongFormatter.format(viewModel.selectedPayment.dueDate)}, "
+                          fontWeight="bold"/>
+                <mx:Label id="selectedAmount"
+                          text="Amount: {currencyFormatter.format(viewModel.selectedPayment.amount)}"
+                          fontWeight="bold"/>
+            </mx:HBox>
+            <mx:VBox
+                    width="100%"
+                    verticalGap="0">
+                <mx:Repeater dataProvider="{viewModel.paymentDetails}" id="paymentDetails">
+                    <controls:FooterDataGrid
+                            dataProvider="{TaxPaymentCheckDateSet(paymentDetails.currentItem).agencyTransactions}"
+                            selectable="false"
+                            width="100%"
+                            draggableColumns="false"
+                            sortableColumns="false"
+                            showHeaders="{paymentDetails.currentIndex == 0}"
+                            rowCount="{paymentDetails.currentIndex == 0 ? TaxPaymentCheckDateSet(paymentDetails.currentItem).agencyTransactions.length : (TaxPaymentCheckDateSet(paymentDetails.currentItem).agencyTransactions.length > 1 ? TaxPaymentCheckDateSet(paymentDetails.currentItem).agencyTransactions.length-1 : TaxPaymentCheckDateSet(paymentDetails.currentItem).agencyTransactions.length)}">
+                        <controls:columns>
+                            <controls:FooterDataGridColumn
+                                    headerText="Created Date"
+                                    dataField="createdDate"
+                                    textAlign="left"
+                                    labelFunction="formatDate"
+                                    width="110"
+                                    minWidth="110">
+                                <mx:DataGridColumn
+                                        headerText="Total"
+                                        textAlign="left"
+                                        dataField="createdDate"/>
+                            </controls:FooterDataGridColumn>
+                            <controls:FooterDataGridColumn
+                                    headerText="Check Date"
+                                    dataField="checkDate"
+                                    textAlign="left"
+                                    labelFunction="formatDate"
+                                    width="90"
+                                    minWidth="90">
+                                <mx:DataGridColumn
+                                        headerText=""
+                                        textAlign="left"
+                                        dataField="checkDate"/>
+                            </controls:FooterDataGridColumn>
+                            <controls:FooterDataGridColumn
+                                    headerText="Amount"
+                                    dataField="amount"
+                                    textAlign="right"
+                                    labelFunction="SAPDataGrid.formatCurrency"
+                                    width="100"
+                                    minWidth="100">
+                                <mx:DataGridColumn
+                                        labelFunction="checkDateTotalFunction"
+                                        textAlign="right"
+                                        dataField="amount"/>
+                            </controls:FooterDataGridColumn>
+                            <controls:FooterDataGridColumn
+                                    headerText="Tax Type"
+                                    dataField="law"
+                                    textAlign="left">
+                                <mx:DataGridColumn
+                                        headerText=""
+                                        textAlign="left"
+                                        dataField="taxType"/>
+                            </controls:FooterDataGridColumn>
+                            <controls:FooterDataGridColumn
+                                    headerText="Txn Type"
+                                    dataField="txnType"
+                                    textAlign="left">
+                                <mx:DataGridColumn
+                                        headerText=""
+                                        textAlign="left"
+                                        dataField="createdDate"/>
+                            </controls:FooterDataGridColumn>
+                        </controls:columns>
+                    </controls:FooterDataGrid>
+                </mx:Repeater>
+            </mx:VBox>
+            <mx:HBox
+                    horizontalGap="0"
+                    width="100%"
+                    styleName="grayDataGridVBoxLightBorders">
+                <mx:Label text="Total" fontWeight="bold" textAlign="left" width="110" paddingLeft="5"/>
+                <mx:Spacer width="90"/>
+                <mx:Text id="selectedPaychecksTotal" text="{currencyFormatter.format(viewModel.selectedPayment.amount)}"
+                         textAlign="right" fontWeight="bold" width="100"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <controls:PopUpPart id="paymentsHoldsHistoryModal" label="{PaymentsPageEnum.HOLDS_POPUP+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:PaymentsHoldsHistoryPopUp id="paymentsHoldsHistory" label="{PaymentsPageEnum.HOLDS_POPUP}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="paymentsStatusHistoryModal" label="{PaymentsPageEnum.STATUS_POPUP+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:PaymentsStatusHistoryPopUp id="paymentsStatusHistory" label="{PaymentsPageEnum.STATUS_POPUP}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="paymentsPayDateHistoryModal" label="{PaymentsPageEnum.PAYDATE_POPUP+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="true">
+        <pspui:PaymentsPayDateHistoryPopUp id="paymentsPayDateHistory" label="{PaymentsPageEnum.PAYDATE_POPUP}"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart id="paymentsPayDateEditModal" label="{PaymentsPageEnum.EDIT_PAYDATE_POPUP+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:PaymentsPayDateEditPopUp id="paymentsPayDateEdit" label="{PaymentsPageEnum.EDIT_PAYDATE_POPUP}"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart id="paymentMethodHistoryModal" label="{PaymentsPageEnum.PAYMENT_METHOD_POPUP+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:PaymentMethodHistoryPopUp id="paymentMethodHistory" label="{PaymentsPageEnum.PAYMENT_METHOD_POPUP}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="paymentMethodEditModal" label="{PaymentsPageEnum.EDIT_PAYMENT_METHOD_POPUP+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:PaymentMethodEditPopUp id="paymentMethodEdit" label="{PaymentsPageEnum.EDIT_PAYMENT_METHOD_POPUP}"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart id="paymentRejectModal" label="{PaymentsPageEnum.REJECTION_POPUP+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:PaymentRejectionPopUp id="paymentRejection" label="{PaymentsPageEnum.REJECTION_POPUP}"/>
+    </controls:PopUpPart>
+    <controls:PopUpPart id="paymentRefundModal" label="{PaymentsPageEnum.REFUND_PAYMENT_POPUP+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:RefundPaymentPopUp id="refundPayment" label="{PaymentsPageEnum.REFUND_PAYMENT_POPUP}"/>
+    </controls:PopUpPart>
+
+    <!-- the binding order below is important. The dataprovider must be set before the selected item is read -->
+    <mx:Binding source="viewModel.selectedQuarter" destination="quarterSelect.selectedItem"/>
+
+</mx:VBox>

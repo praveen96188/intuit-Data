@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.application.enums.PartsEnum;
+			import psp.sap.viewmodel.UniversalSearchViewModel;
+			import psp.sap.application.SAP;			
+					
+			private var mViewModel:UniversalSearchViewModel;
+			[Bindable]
+			private var totalMemMax:Number = 0;
+			
+			[Bindable]
+			public function get viewModel():UniversalSearchViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:UniversalSearchViewModel):void {
+				mViewModel = value;							
+			}
+			
+			private function calculateMax():void {
+				totalMemMax = Math.max(totalMemMax, System.totalMemory); 
+			}
+			
+		]]>
+	</mx:Script>
+	<controls:UniversalSearchField id="searchField" viewModel="{viewModel.searchFieldViewModel}"/>
+	<mx:LinkButton id="viewResultsButton"
+		paddingLeft="0"
+		paddingRight="0"		
+		icon="{SAP.instance.icons.docs}" 
+		toolTip="{Math.max(viewModel.resultsViewModel.searchResults.length, viewModel.resultsViewModel.employeeSearchResults.length) > 0 ? 'View Results (' + Math.max(viewModel.resultsViewModel.searchResults.length, viewModel.resultsViewModel.employeeSearchResults.length) + ')' : 'No Results'}"
+		enabled="{Math.max(viewModel.resultsViewModel.searchResults.length, viewModel.resultsViewModel.employeeSearchResults.length) > 0}"
+		useHandCursor="{Math.max(viewModel.resultsViewModel.searchResults.length, viewModel.resultsViewModel.employeeSearchResults.length) > 0}"
+		alpha="{Math.max(viewModel.resultsViewModel.searchResults.length, viewModel.resultsViewModel.employeeSearchResults.length) > 0 ? 1 : .4}"
+		labelPlacement="right"		
+		click="viewModel.displayResults();"/>
+	<!--mx:LinkButton
+	    id="advancedSearchButton"
+        styleName="inlineLinkButtonNoUnderline"			    
+	    label="Adv."
+	    toolTip="Advanced Search"
+	    click="viewModel.advancedSearch();"
+	    enabled="true"/-->	    		    
+	    
+	<controls:PopUpPart id="resultsPopup" showCloseButton="true" horizontalResizeEnabled="false" resizeToContent="true" label="{PartsEnum.ADVANCED_SEARCH+'_pup'}" deferAdd="false">
+		<pspui:UniversalSearchAdvancedView label="{PartsEnum.ADVANCED_SEARCH}"/>
+	</controls:PopUpPart>
+</mx:HBox>

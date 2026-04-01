@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*" width="100%" creationComplete="init();" horizontalGap="0">
+    <mx:Script>
+		<![CDATA[
+        import psp.taxcredits.model.TaxCreditsModel;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        [Bindable]
+        public var question:String = "";
+
+        [Bindable]
+        public var answer:String = "";
+
+        [Bindable]
+        public var show:Boolean = false;
+
+        [Bindable]
+        private var src:Class = EmbeddedAssets.collapse;
+
+        private function init():void {
+            if (show) {
+                src = EmbeddedAssets.expand;
+            } else {
+                src = EmbeddedAssets.collapse;
+            }
+        }
+
+        private function toggle():void {
+            show = !show;
+            init();
+            if (show) {
+                model.tracker.trackEvent("Interaction", "Open Q/A Item", question);
+            }
+        }
+
+        private function onLink(e:TextEvent):void {
+            if (e.text == "hireactinformation") {
+                model.tracker.trackEvent("Navigation","Click HIRE Act Information", "Q/A Item");
+                navigateToURL(new URLRequest("http://payroll.intuit.com/support/kb/kbitem/1012855.html"));
+            } else if (e.text == "EligibilityForm") {
+                model.tracker.trackEvent("Eligibility", "Print Extra Form", e.text + model.offerCode + ".pdf");
+                navigateToURL(new URLRequest(e.text + model.offerCode + ".pdf"), "_blank");
+            }
+        }
+
+        ]]>
+	</mx:Script>
+
+    <mx:VBox paddingTop="4" paddingLeft="14" width="31" horizontalAlign="center">
+        <mx:Image useHandCursor="true" mouseChildren="false" buttonMode="true" click="toggle();" source="{src}"/>
+    </mx:VBox>
+    <mx:VBox width="100%" paddingRight="25">
+        <mx:Text useHandCursor="true" mouseChildren="false" buttonMode="true" click="toggle();" width="100%" styleName="qaQuestion" htmlText="{question}"/>
+        <controls:SupText selectable="{answer.indexOf('&lt;a') &gt; 0}" visible="{show &amp;&amp; answer != ''}" includeInLayout="{show &amp;&amp; answer != ''}" width="100%" styleName="qaAnswer"
+                          htmlText="{answer}" link="onLink(event)"/>
+    </mx:VBox>
+</mx:HBox>

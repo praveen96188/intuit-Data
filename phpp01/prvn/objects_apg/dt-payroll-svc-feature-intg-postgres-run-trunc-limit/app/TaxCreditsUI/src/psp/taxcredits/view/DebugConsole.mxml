@@ -1,0 +1,305 @@
+<?xml version="1.0"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="500" height="600" showCloseButton="true" close="onClose();" creationComplete="onCreationComplete();" alpha=".8" title="Debug Console">
+    <mx:Script><![CDATA[
+        import mx.events.CollectionEvent;
+        import mx.utils.ObjectUtil;
+
+        import psp.taxcredits.model.Benefits;
+        import psp.taxcredits.model.ModelUtils;
+        import psp.taxcredits.model.TaxCreditsEvent;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+        import psp.taxcredits.view.controls.WindowManager;
+
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private var lastError:int=0;
+
+        public function onClose():void {
+            WindowManager.remove(this);
+        }
+
+        public function onCreationComplete():void {
+            console.text = "PSP Date=" + model.pspDate.toString();
+
+            model.addEventListener(TaxCreditsEvent.CATEGORIES_LOADED, function(e:Event):void {
+                console.text+= "\n" + ObjectUtil.toString(model.eligibleCategories);
+            });
+
+            model.errors.addEventListener(CollectionEvent.COLLECTION_CHANGE, function(e:Event):void {
+                while (model.errors.length > lastError){
+                    console.text += "\n" + "Error: " + model.errors.getItemAt(lastError);
+                    lastError++;
+                }
+            });
+
+        }
+
+        private function preEligibility():void {
+            model.company.businessType = model.company.profitLabel;
+            model.employee.majorityOwnerSet = true;
+            model.employee.majorityOwner = false;
+            model.employee.relativeSet = true;
+            model.employee.relative = false;
+            model.employee.previouslyHiredSet = true;
+            model.employee.previouslyHired = false;
+            model.employee.hireDate = ModelUtils.addDays(model.pspDate, -5);
+            model.dispatchEvent(TaxCreditsEvent.createEligibilityChangeEvent());            
+        }
+
+        private function personalInfo():void {
+            model.employee.firstName = "John";
+            model.employee.middleInitial = "T";
+            model.employee.lastName = "Tester";
+            model.employee.dobMonth="4";
+            model.employee.dobDay="1";
+            model.employee.dobYear="1980";
+            model.employee.address = "6888 Sierra Center Pkwy";
+            model.employee.city = "Reno";
+            model.employee.state = "NV";
+            model.employee.zip = "89511";
+            model.employee.county = "Washoe";
+            model.employee.phone1 = "775";
+            model.employee.phone2 = "555";
+            model.employee.phone3 = "1234";
+            model.employee.phoneX = "654321";
+        }
+
+        private function ineligibleQuestions():void {
+            model.employee.snapEverSet = true;
+            model.employee.snapEver = false;
+            model.employee.tanfEverSet = true;
+            model.employee.tanfEver = false;
+            model.employee.referralRehabSet = true;
+            model.employee.referralRehab = false;
+            model.employee.referralNetworkSet = true;
+            model.employee.referralNetwork = false;
+            model.employee.referralDvaSet = true;
+            model.employee.referralDva = false;
+            model.employee.veteranEverSet = true;
+            model.employee.veteranEver = false;
+            model.employee.disconnectedEverSet = true;
+            model.employee.disconnectedEver = false;
+            model.employee.felonEverSet = true;
+            model.employee.felonEver = false;
+            model.employee.ssiSet = true;
+            model.employee.ssi = false;
+            model.employee.summerYouthSet = true;
+            model.employee.summerYouth = false;
+            model.employee.conditionalSet = true;
+            model.employee.conditional = false;
+            model.employee.unemployed60Set = true;
+            model.employee.unemployed60 = false;
+        }
+
+        private function ezRC():void {
+            model.employee.address = "100 E 5th Ave";
+            model.employee.zip = "43210";
+        }
+
+        private function RRC():void {
+            model.employee.county = "Crawford";
+            model.employee.state = "OH";
+        }
+
+        private function noHUD():void {
+            model.employee.address = "100 Made Up St";
+        }
+
+        private function extraEEInfo():void {            
+            model.employee.offeredDate = ModelUtils.addDays(model.pspDate, -20);
+            model.employee.startDate = ModelUtils.addDays(model.pspDate, -3);
+            model.employee.ssn = "123456789";
+            model.employee.startingWage = "$10";
+            model.employee.position = "Chief Umbrella Repairman";
+            model.employee.workState = "CA";
+        }
+
+        private function ERInfo():void {
+            model.company.legalName = "Widgets, LLC.";
+            model.company.ein = "112222222";
+            model.company.address1 = "PO Box 1234";
+            model.company.address2 = "100 Widgets Ln";
+            model.company.city = "Portland";
+            model.company.state = "OR";
+            model.company.zip = "67111";
+            model.company.contactName = "Dave Contact";
+            model.company.phone1 = "513";
+            model.company.phone2 = "555";
+            model.company.phone3 = "1234";
+            model.company.phoneX = "4321";
+            model.company.contactEmail = "dave@contact.com";
+
+            model.company.companyType = model.company.corporationLabel;
+            model.company.authorizedSignerEmail = "intuittaxcredits@gmail.com";
+            model.company.isAuthorized = true;
+            model.employee.email = "intuitbenqa1@gmail.com";
+            
+        }
+
+        private function testAmfError():void {
+            model.employee.hireDate = new Date(2010, 1, 15);
+            model.employee.firstName = "Joe";
+            model.employee.middleInitial = "";
+            model.employee.lastName = "Don";
+            model.employee.dobMonth="12";
+            model.employee.dobDay="10";
+            model.employee.dobYear="1968";
+            model.employee.address = "4660 Balboa Ave.";
+            model.employee.city = "San Diego";
+            model.employee.state = "CA";
+            model.employee.zip = "92111";
+            model.employee.county = "San Diego";
+            model.employee.phone1 = "111";
+            model.employee.phone2 = "111";
+            model.employee.phone3 = "1111";
+            model.employee.phoneX = "";
+
+            model.employee.snapEverSet = true;
+            model.employee.snapEver = false;
+            model.employee.tanfEverSet = true;
+            model.employee.tanfEver = false;
+            model.employee.referralRehabSet = true;
+            model.employee.referralRehab = false;
+            model.employee.referralNetworkSet = true;
+            model.employee.referralNetwork = false;
+            model.employee.referralDvaSet = true;
+            model.employee.referralDva = false;
+            model.employee.veteranEverSet = true;
+            model.employee.veteranEver = false;
+            model.employee.disconnectedEverSet = true;
+            model.employee.disconnectedEver = false;
+            model.employee.felonEverSet = true;
+            model.employee.felonEver = false;
+            model.employee.ssiSet = true;
+            model.employee.ssi = false;
+            model.employee.summerYouthSet = true;
+            model.employee.summerYouth = true;
+            model.employee.conditionalSet = true;
+            model.employee.conditional = true;
+            model.employee.unemployed60Set = true;
+            model.employee.unemployed60 = false;
+
+            model.company.legalName = "CQ Virtual";
+            model.company.ein = "110123456";
+            model.company.address1 = "1000 Broadway St.";
+            model.company.address2 = "";
+            model.company.city = "San Diego";
+            model.company.state = "CA";
+            model.company.zip = "92108";
+            model.company.contactName = "David Matt";
+            model.company.phone1 = "222";
+            model.company.phone2 = "222";
+            model.company.phone3 = "2222";
+            model.company.phoneX = "";
+            model.company.contactEmail = "dmatt111@gmail.com";
+            
+            model.employee.offeredDate = new Date(2010, 1, 8);
+            model.employee.startDate = new Date(2010, 1, 15);
+            model.employee.ssn = "123456789";
+            model.employee.startingWage = "24000";
+            model.employee.position = "Secretary";
+            model.employee.workState = "CA";
+            
+        }
+
+        private function setCT():void {
+            model.employee.workState = "CT";
+        }
+
+        private function getAllDY():void {
+            preEligibility();
+            personalInfo();
+            ineligibleQuestions();
+            model.employee.dobYear = "1990";
+            model.employee.disconnectedEver = true;
+            model.employee.disconnectedAttendSet = true;
+            model.employee.disconnectedAttend = false;
+            model.employee.disconnectedAdmittedSet = true;
+            model.employee.disconnectedAdmitted = false;
+            model.employee.disconnectedHighSchoolSet = true;
+            model.employee.disconnectedHighSchool = true;
+            model.employee.disconnectedJob6Set = true;
+            model.employee.disconnectedJob6 = false;            
+            extraEEInfo();
+            ERInfo();
+        }
+
+        private function getAllSNAP():void {
+            preEligibility();
+            personalInfo();
+            ineligibleQuestions();
+            model.employee.snapEver = true;
+            model.employee.snapLast6Set = true;
+            model.employee.snapLast6 = true;
+            model.employee.snap3Benefits = new Benefits();
+            model.employee.snap3Benefits.city = "Paris";
+            model.employee.snap3Benefits.state = "TX";
+            model.employee.snap3Benefits.name = "Little Bobby Tables";
+
+            extraEEInfo();
+            ERInfo();
+        }
+
+        private function getAll():void {
+            preEligibility();
+            personalInfo();
+            RRC();
+            ineligibleQuestions();
+            extraEEInfo();
+            ERInfo();
+        }
+
+        private function loadResults():void {
+            model.getCategories();
+        }
+
+        private function gotoEstimator():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.ESTIMATE);
+        }
+
+        private function gotoFinalSteps():void {
+            model.pageManager.switchPage(TaxCreditsPageEnum.FINAL_STEPS);
+        }
+
+        private function HIRE():void {
+            model.employee.unemployed60 = true;
+        }
+
+
+        ]]></mx:Script>
+    <mx:HBox>
+        <mx:Button label="View EE Info" click="console.text += '\nemployeeInfo=' + ObjectUtil.toString(model.createEmployeeInfo())"/>
+        <mx:Button label="View ER Info" click="console.text += '\nemployerInfo=' + ObjectUtil.toString(model.createEmployerInfo())"/>
+        <mx:Button label="View Elig. Info" click="console.text += '\neligibilityInfo=' + ObjectUtil.toString(model.createEligibilityInfo())"/>
+        <mx:Button label="View Errors" click="console.text += '\nErrors=' + ObjectUtil.toString(model.errors)"/>
+    </mx:HBox>
+    <mx:HBox>
+        <mx:Button label="Pre-eligibility" click="preEligibility();"/>
+        <mx:Button label="Personal Info" click="personalInfo();"/>
+        <mx:Button label="+EZ/RC" click="ezRC();"/>
+        <mx:Button label="+RRC" click="RRC();"/>
+        <mx:Button label="+No HUD" click="noHUD();"/>
+    </mx:HBox>
+    <mx:HBox>
+        <mx:Button label="Questions (Inelg.)" click="ineligibleQuestions();"/>
+        <mx:Button label="Extra EE Info" click="extraEEInfo();"/>
+        <mx:Button label="ER Info" click="ERInfo();"/>
+        <mx:Button label="HIRE" click="HIRE();"/>
+    </mx:HBox>
+    <mx:HBox>
+        <mx:Button label="CT" click="setCT();"/>
+        <mx:Button label="SNAP++" click="getAllSNAP();"/>
+        <mx:Button label="DY++" click="getAllDY();"/>
+        <mx:Button label="RRC++" click="getAll();"/>
+    </mx:HBox>
+    <mx:HBox>
+        <mx:Button label="Load Results" click="loadResults();"/>
+        <mx:Button label="->Estimate" click="gotoEstimator();"/>
+        <mx:Button label="->Final Steps" click="gotoFinalSteps();"/>
+        <!--mx:Button label="AMF Error" click="testAmfError();"/-->        
+    </mx:HBox>
+    <mx:Canvas height="100%" width="100%" verticalLineScrollSize="20">
+        <mx:Text id="console" width="100%"/>
+    </mx:Canvas>
+</mx:TitleWindow>

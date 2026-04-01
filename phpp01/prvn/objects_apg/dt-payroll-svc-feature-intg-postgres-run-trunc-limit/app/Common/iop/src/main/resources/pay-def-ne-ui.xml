@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<Resource handler="com.paycycle.gui.ResourceHandler">
+  <!-- Record Templates -->
+  <!-- ****************** EFT Payment Addenda Record For NE SUI ****************** -->
+  <Component class="com.paycycle.delimlen.DelimRecordTemplate" id="Txp_NE_UI">
+      <Property name="Name" value="Payment Addenda Record"/>
+      <Property name="Id" constant="com.paycycle.eft.RecordId.Txp_NE_UI"/>
+      <Property name="Delimiter" value="*"/>
+
+    <!-- NE does not use the 'TXP' segment identifier. -->
+
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Federal Employer Identification Number"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.TAXPAYER_FEIN"/>
+      <Property name="ValueType" value="alpha"/>
+      <Property name="Size" value="9"/>
+      <Property name="Inclusion" value="mandatory"/>
+      <Property name="DelimiterReqd" value="1"/>
+      <Description>Employer 9 digit Federal Employer ID Number.</Description>
+    </Field>    
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Nebraska Unemployment Insurance Tax Account Number"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.TAXPAYER_EIN"/>
+      <Property name="ValueType" value="alpha"/>
+      <Property name="Size" value="10"/>
+      <Property name="Inclusion" value="mandatory"/>
+      <Property name="DelimiterReqd" value="1"/>
+      <Description>Employer 10 digit Unemployment Insurance Account Number starting with 00.</Description>
+    </Field>	
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Tax Period End Date"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.TAX_YEAR"/>
+      <Property name="ValueType" value="numeric"/>
+      <Property name="Size" value="4"/>
+      <Property name="Inclusion" value="mandatory"/>
+      <Property name="DelimiterReqd" value="1"/>
+      <Description>Year of tax period(YYYY).</Description>
+    </Field>
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Tax Period End Date"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.TAX_QUARTER"/>
+      <Property name="ValueType" value="alpha"/>
+      <Property name="Size" value="2"/>
+      <Property name="Inclusion" value="mandatory"/>
+      <Property name="DelimiterReqd" value="1"/>
+      <Description>Last month of tax quarter (MM).</Description>
+    </Field>
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Employer Name"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.FILING_NAME"/>
+      <Property name="ValueType" value="newLine"/>
+      <Property name="Size" value="30"/>
+      <Property name="Inclusion" value="mandatory"/>
+      <Property name="DelimiterReqd" value="1"/>
+      <Description>Employer Name</Description>
+    </Field>
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Submitter Name"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.SUBMITTER_NAME"/>
+      <Property name="ValueType" value="newLine"/>
+      <Property name="Size" value="18"/>
+      <Property name="Inclusion" value="mandatory"/>
+      <Property name="Value" value="COMPUTING RESOURCE"/>
+      <Property name="DelimiterReqd" value="1"/>
+      <Description>Constant</Description>
+    </Field>
+    <Field class="com.paycycle.delimlen.DelimFieldTemplate">
+      <Property name="Name" value="Terminator"/>
+      <Property name="Id" constant="com.paycycle.eft.FieldId.TERMINATOR"/>
+      <Property name="ValueType" value="alpha"/>
+      <Property name="Size" value="1"/>
+      <Property name="Inclusion" value="mandatory"/>
+  	  <Property name="Value" value="/"/>
+      <Property name="DelimiterReqd" value="0"/>
+      <Description>end of line</Description>
+    </Field>
+  </Component>
+</Resource>

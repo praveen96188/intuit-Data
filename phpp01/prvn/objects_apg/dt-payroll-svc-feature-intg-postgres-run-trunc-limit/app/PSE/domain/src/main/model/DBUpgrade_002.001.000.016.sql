@@ -1,0 +1,49 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column VERSION;
+ALTER TABLE PSP_AUTH_USER
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_COMPANY
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Table PSP_WAGE_LIMIT;
+CREATE TABLE PSP_WAGE_LIMIT
+(
+  WAGE_LIMIT_ID           VARCHAR2(10 CHAR),
+  VERSION                 NUMBER(19),
+  REALM_ID                NUMBER(19)            DEFAULT -1,
+  EFFECTIVE_YEAR_QUARTER  VARCHAR2(5 CHAR),
+  AMOUNT                  NUMBER(19,4),
+  LAW_FK                  VARCHAR2(255 CHAR)
+)
+NOPARALLEL;
+
+Prompt Index PSP_WAGE_LIMIT_FK1;
+CREATE INDEX PSP_WAGE_LIMIT_FK1 ON PSP_WAGE_LIMIT
+(LAW_FK, REALM_ID)
+NOPARALLEL;
+
+ALTER TABLE PSP_WAGE_LIMIT
+ ADD PRIMARY KEY
+  (WAGE_LIMIT_ID, REALM_ID)
+  USING INDEX;
+
+Prompt Column VERSION;
+ALTER TABLE PSP_ENTITLEMENT_UNIT
+MODIFY(VERSION  DEFAULT 0);
+
+ALTER TABLE PSP_WAGE_LIMIT
+ ADD CONSTRAINT PSP_WAGE_LIMIT_FK1 
+  FOREIGN KEY (LAW_FK, REALM_ID) 
+  REFERENCES PSP_LAW (LAW_ID,REALM_ID);
+
+PROMPT finishedDBUpgrade_002.001.000.016.sql

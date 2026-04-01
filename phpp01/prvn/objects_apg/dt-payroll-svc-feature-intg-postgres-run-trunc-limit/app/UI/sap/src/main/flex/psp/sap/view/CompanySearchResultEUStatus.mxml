@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:pspui="psp.sap.view.*" width="100%" horizontalAlign="center" verticalGap="0" paddingTop="0" paddingBottom="0" paddingRight="0" paddingLeft="0">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.model.CompanySearchResult;
+        import psp.sap.model.StatusEntitlements;
+
+        ]]>
+    </mx:Script>
+    <mx:Repeater
+            dataProvider="{CompanySearchResult(data).groupEntitlementsByStatus()}"
+            id="entitlementGroupRepeater">
+        <pspui:EntitlementStatusPopUpButton
+                label="{StatusEntitlements(entitlementGroupRepeater.currentItem).getLabel()}"
+                statusEntitlements="{StatusEntitlements(entitlementGroupRepeater.currentItem)}"
+                width="100%"
+                textAlign="center"
+                fontWeight="normal"
+                color="{StatusEntitlements(entitlementGroupRepeater.currentItem).status == 'Activated' ? 0x009900 : 0xff0000}"
+                paddingLeft="0"
+                paddingRight="-18"
+                paddingTop="0"
+                paddingBottom="0"
+                skin="{null}"/>
+    </mx:Repeater>
+
+</mx:VBox>

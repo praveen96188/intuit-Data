@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:controls="psp.sap.view.controls.*"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+        width="100%" height="100%">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.PayrollTransaction;
+        import psp.sap.viewmodel.LedgerEntriesViewModel;
+
+        private var mViewModel:LedgerEntriesViewModel;
+
+        [Bindable]
+        public function get viewModel():LedgerEntriesViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:LedgerEntriesViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+            }
+        }
+
+        public function isNonZero(ledgerTransactionObject:Object):Boolean {
+            var ledgerTransaction:PayrollTransaction = ledgerTransactionObject as PayrollTransaction;
+            return (ledgerTransaction.amount != 0);
+        }
+
+        public function transactionTypeLookup(txnType:String):String {
+            return SAP.instance.lookupService.transactionTypes.getItemByKey(txnType).name;
+        }
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataGrid}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox width="100%">
+
+        <mx:VBox id="dataGrid"
+                 visible="{!viewModel.isDataLoading}"
+                 includeInLayout="{!viewModel.isDataLoading}"
+                 horizontalGap="0"
+                 verticalGap="0"
+                 styleName="grayDataGridVBox"
+                 paddingTop="0"
+                 verticalScrollPolicy="off"
+                 horizontalScrollPolicy="off">
+
+            <mx:Grid horizontalGap="0" verticalGap="0" height="100%" width="100%">
+                <mx:GridRow width="100%">
+                    <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorder">
+                        <mx:Label text="Created Date"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorderRight">
+                        <mx:Label text="Posting Date"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="250" styleName="headerBorderRight">
+                        <mx:Label text="Transaction Type"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="130" styleName="headerBorderRight">
+                        <mx:Label text="Status"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="150" styleName="headerBorderRight">
+                        <mx:Label text="Balance"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="right" minWidth="80" styleName="headerBorderRight">
+                        <mx:Label text=""/>
+                    </mx:GridItem>
+                </mx:GridRow>
+                <mx:Repeater id="ledgerEntries" dataProvider="{viewModel.ledgerEntries}">
+                    <mx:GridRow id="ledgerEntryRow" backgroundColor="{UIUtils.getRowColor(ledgerEntries.currentIndex)}">
+
+                        <mx:GridItem  horizontalAlign="center" height="100%" styleName="borderBottomLeftRight">
+                            <mx:Text text="{SAPDateFormatters.dateTimeFormatMedium.format(PayrollTransaction(ledgerEntries.currentItem).createdDate)}"/>
+                        </mx:GridItem>
+
+                        <!-- posting date -->
+                        <mx:GridItem  horizontalAlign="center" height="100%" styleName="borderBottomRight">
+                            <mx:Text id="txnDateText" text="{dateFormatter.format(ledgerEntries.currentItem.txnDate)}"/>
+                        </mx:GridItem>
+
+                        <!-- txn type -->
+                        <mx:GridItem  horizontalAlign="center" height="100%" styleName="borderBottomRight">
+                            <mx:Text id="txnTypeText" text="{SAP.instance.lookupService.transactionTypes.getItemByKey(ledgerEntries.currentItem.txnType).name}"/>
+                        </mx:GridItem>
+
+                        <!-- status -->
+                        <mx:GridItem horizontalAlign="center" height="100%" styleName="borderBottomRight">
+                            <mx:Text id="statusText" text="{ledgerEntries.currentItem.status}"/>
+                        </mx:GridItem>
+
+                        <!-- balance amount -->
+                        <mx:GridItem horizontalAlign="center" height="100%" styleName="borderBottomRight">
+                            <mx:Text id="amountText" text="{SAPCurrencyFormatters.defaultFormatter.format(Math.abs(ledgerEntries.currentItem.amount))}"/>
+                        </mx:GridItem>
+
+                        <!-- debit/credit -->
+                        <mx:GridItem horizontalAlign="center" height="100%" styleName="borderBottomRight">
+                            <mx:VBox horizontalAlign="center" verticalGap="0" height="100%" verticalScrollPolicy="off">
+                                <mx:Label
+                                        id="accountTypeLabel"
+                                        text="{ledgerEntries.currentItem.accountType}"
+                                        visible="{isNonZero(ledgerEntries.currentItem)}"
+                                        includeInLayout="{isNonZero(ledgerEntries.currentItem)}"
+                                        fontWeight="bold"
+                                        color="{ledgerEntries.currentItem.credit ? UIUtils.COLOR_BLACK : UIUtils.COLOR_RED}" />
+                            </mx:VBox>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                </mx:Repeater>
+            </mx:Grid>
+
+            <mx:VBox id="noLedgerEntries"
+                     visible="{viewModel.ledgerEntries.length == 0}"
+                     includeInLayout="{viewModel.ledgerEntries.length == 0}"
+                     width="100%"
+                     paddingTop="5" paddingBottom="5"
+                     verticalAlign="middle" horizontalAlign="center"
+                     verticalScrollPolicy="off" horizontalScrollPolicy="off">
+                <mx:Text id="noLedgerEntriesText" text="No ledger entries were found for this ledger account." fontWeight="bold"/>
+            </mx:VBox>
+
+        </mx:VBox>
+
+
+
+    </mx:VBox>
+
+</mx:VBox>

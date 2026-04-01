@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="800"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.model.CompanyLawRateDetail;
+        import psp.sap.model.Quarter;
+        import psp.sap.viewmodel.LawRatesHistoryPopUpViewModel;
+
+        private var mViewModel:LawRatesHistoryPopUpViewModel;
+        private var mTempViewModel:LawRatesHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():LawRatesHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:LawRatesHistoryPopUpViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Law Rates History for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="heading" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:HBox width="100%">
+        <controls:SAPComboBox dataProvider="{viewModel.companyLaws}" dataField="companyLaw"/>
+        <mx:HBox width="100%" horizontalAlign="right">
+            <controls:SAPCheckBox dataField="hideInvalidRates" label="Hide Invalid Rates"/>
+        </mx:HBox>
+    </mx:HBox>
+    <mx:Spacer height="5"/>
+    <controls:SAPDataGrid dataProvider="{viewModel.companyLawRateHistory}"
+                          width="100%" maxRows="10"
+                          selectable="false"
+                          draggableColumns="false">
+        <controls:columns>
+            <mx:DataGridColumn headerText="Law"
+                               width="120"
+                               dataField="lawName"
+                               paddingLeft="5"/>
+            <mx:DataGridColumn headerText="Rate"
+                               width="100"
+                               dataField="rate"
+                               labelFunction="SAPDataGrid.formatRateAsPercentage"/>
+            <mx:DataGridColumn headerText="Effective Quarter"
+                               width="160"
+                               dataField="effectiveQuarter"
+                               sortCompareFunction="{function(o1:CompanyLawRateDetail, o2:CompanyLawRateDetail):int {return Quarter.sortCompareFunction(o1.effectiveQuarter, o2.effectiveQuarter)}}">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                horizontalAlign="right"
+                                verticalGap="0"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:Script><![CDATA[
+                                import psp.sap.model.CompanyLawRateDetail;
+                                ]]></mx:Script>
+                            <mx:Text fontWeight="{CompanyLawRateDetail(data).isCurrent ? 'bold' : 'normal'}"
+                                     fontStyle="{CompanyLawRateDetail(data).invalidDate == null ? 'normal' : 'italic'}"
+                                     text="{CompanyLawRateDetail(data).effectiveQuarter.label}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+            </mx:DataGridColumn>
+            <mx:DataGridColumn headerText="Created Date"
+                               width="140"
+                               dataField="createdDate"
+                               labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+            <mx:DataGridColumn headerText="Created By"
+                               width="120"
+                               dataField="createdBy"/>
+            <mx:DataGridColumn headerText="Invalid Date"
+                               width="140"
+                               dataField="invalidDate"
+                               labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete();">
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.CompanyEditTokenViewModel;
+			
+			private const COLUMN_1_WIDTH:int = 200;
+			private const COLUMN_2_WIDTH:int = 100;			
+
+			private var mViewModel:CompanyEditTokenViewModel;
+			private var mTempViewModel:CompanyEditTokenViewModel;
+			private var mCreationComplete:Boolean = false;
+			
+			[Bindable]
+			public function get viewModel():CompanyEditTokenViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:CompanyEditTokenViewModel):void {
+				if (mCreationComplete) {
+					mViewModel = value;					
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+			
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;
+			}
+
+
+		]]>
+	</mx:Script>
+	    	
+	<mx:HBox>
+		<mx:Label text="High Token:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Label text="{viewModel.syncTokens.highToken}" width="{COLUMN_2_WIDTH}" textAlign="right"/>
+	</mx:HBox>						
+		
+    <mx:HBox>
+   		<mx:Label text="Payroll Txn Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+   		<mx:Label text="{viewModel.syncTokens.payrollTxNextId}" width="{COLUMN_2_WIDTH}" textAlign="right"/>
+   	</mx:HBox>
+
+    <mx:HBox>
+   		<mx:Label text="Paycheck Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+   		<mx:Label text="{viewModel.syncTokens.paycheckNextId}" width="{COLUMN_2_WIDTH}" textAlign="right"/>
+   	</mx:HBox>
+
+    <mx:HBox visible="{viewModel.showAssistedTokens}" includeInLayout="{viewModel.showAssistedTokens}">
+   		<mx:Label text="Employee Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+   		<mx:Label text="{viewModel.syncTokens.employeeNextId}" width="{COLUMN_2_WIDTH}" textAlign="right"/>
+   	</mx:HBox>
+
+    <mx:HBox visible="{viewModel.showAssistedTokens}" includeInLayout="{viewModel.showAssistedTokens}">
+   		<mx:Label text="Payroll Item Next ID:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+   		<mx:Label text="{viewModel.syncTokens.payrollItemNextId}" width="{COLUMN_2_WIDTH}" textAlign="right"/>
+   	</mx:HBox>
+
+</mx:VBox>

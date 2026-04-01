@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.viewmodel.SAPDataSyncSearchFilterViewModel;
+
+        private var mViewModel:SAPDataSyncSearchFilterViewModel;
+        private var mTempViewModel:SAPDataSyncSearchFilterViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private static const dateFieldWidth:int = 100;
+        private static const dateFieldLabelsWidth:int = 40;
+
+        [Bindable]
+        public function get viewModel():SAPDataSyncSearchFilterViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:SAPDataSyncSearchFilterViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                if (mViewModel != null) {
+                    mViewModel.fromAndToIdRequiredValidator.fromValueListener = fromIdInput;
+                    mViewModel.fromAndToIdRequiredValidator.toValueListener = toIdInput;
+
+                    mViewModel.fromDateValidator.listener = fromDateInput;
+                    mViewModel.toDateValidator.listener = toDateInput;
+
+                    mViewModel.startEndDateValidator.startDateListener = fromDateInput;
+                    mViewModel.startEndDateValidator.endDateListener = toDateInput;
+                }
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function doSearch():void {
+            mainFilterBox.collapse();
+            viewModel.doSearch();
+        }
+
+        [Bindable]
+        public var memoColumnSelected:Boolean;
+        [Bindable]
+        public var classColumnSelected:Boolean;
+
+        ]]>
+    </mx:Script>
+    <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="100%" id="mainFilterBox"
+                        defaultButton="{searchButton}"
+                        filterStringFunction="{viewModel.getFilterLabelString}"
+                        openOnStartup="true"
+                        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+        <mx:VBox horizontalAlign="right">
+            <mx:HBox>
+                <mx:Spacer width="5"/>
+                <mx:VBox>
+                    <mx:RadioButtonGroup id="searchType"/>
+                    <mx:HBox horizontalGap="25">
+                        <mx:VBox>
+                            <mx:RadioButton id="idSearchRadio" value="0" label="ID Search" group="{searchType}"
+                                            selected="true"/>
+                            <mx:HBox>
+                                <mx:VBox>
+                                    <pspui:RequiredLabel paddingTop="25" fontWeight="bold" text="From:"
+                                                         validator="{viewModel.fromIdRequiredValidator}"/>
+                                    <pspui:RequiredLabel fontWeight="bold" text="To:"
+                                                         validator="{viewModel.toIdRequiredValidator}"/>
+                                </mx:VBox>
+                                <mx:VBox>
+                                    <controls:SAPComboBox id="idSearchCombo" dataProvider="{viewModel.idSearchStrings}"
+                                                          dataField="selectedIdSearchString"
+                                                          enabled="{idSearchRadio.selected}"/>
+                                    <controls:SAPTextInput id="fromIdInput" width="85" toolTip="Starting ID value"
+                                                           enabled="{idSearchRadio.selected}" dataField="fromId"
+                                                           restrict="0-9\-"/>
+                                    <controls:SAPTextInput id="toIdInput" width="85" toolTip="Ending ID value"
+                                                           dataField="toId" restrict="0-9\-"
+                                                           enabled="{idSearchRadio.selected}"/>
+                                </mx:VBox>
+                            </mx:HBox>
+                            <mx:HBox paddingTop="5">
+                                <controls:SAPTextInput id="informationSearch" width="150" toolTip="Information Search"
+                                                       dataField="informationSearchQueryString"/>
+                                <controls:SAPComboBox id="informationSearchCombo"
+                                                      dataProvider="{viewModel.informationSearchStrings}"
+                                                      dataField="selectedInformationSearchString"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                        <mx:VBox>
+                            <mx:RadioButton id="typeSearchRadio" value="1" label="Type Search" group="{searchType}"/>
+                            <controls:SAPComboBox id="typeSearchCombo"
+                                                  dataProvider="{viewModel.typeSearchStrings}"
+                                                  dataField="selectedTypeSearchString"
+                                                  enabled="{typeSearchRadio.selected}"/>
+                            <mx:HBox>
+                                <mx:VBox>
+                                    <mx:HBox visible="{viewModel.dateLabel != ''}">
+                                        <mx:VBox>
+                                            <mx:Label paddingTop="25" text="From: " textAlign="right" fontWeight="bold"/>
+                                            <mx:Label text="To: " textAlign="right" fontWeight="bold"/>
+                                        </mx:VBox>
+                                        <mx:VBox>
+                                            <mx:Label text="{viewModel.dateLabel}"/>
+                                            <pspui:SAPDateField id="fromDateInput" editable="true"
+                                                                width="{dateFieldWidth}"
+                                                                enabled="{typeSearchRadio.selected}"/>
+                                            <pspui:SAPDateField id="toDateInput" editable="true" width="{dateFieldWidth}"
+                                                                enabled="{typeSearchRadio.selected}"/>
+                                        </mx:VBox>
+                                    </mx:HBox>
+                                </mx:VBox>
+                            </mx:HBox>
+                        </mx:VBox>
+                        <mx:Box verticalAlign="bottom" height="100%">
+                            <mx:Button label="Search" enabled="{viewModel.canSave}" id="searchButton"
+                                       click="doSearch();"/>
+                        </mx:Box>
+                        <mx:HBox paddingLeft="10">
+                            <mx:Label text="Columns: "/>
+                            <mx:VBox verticalGap="0">
+                                <mx:CheckBox id="memoColumn" label="Memo"/>
+                                <mx:CheckBox id="classColumn" label="Class"/>
+                            </mx:VBox>
+                        </mx:HBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+    </controls:FilterBox>
+    <mx:Binding source="memoColumn.selected" destination="memoColumnSelected"/>
+    <mx:Binding destination="memoColumn.selected" source="memoColumnSelected"/>
+
+    <mx:Binding source="classColumn.selected" destination="classColumnSelected"/>
+    <mx:Binding destination="classColumn.selected" source="classColumnSelected"/>
+
+    <mx:Binding source="fromDateInput.text" destination="viewModel.fromDateString"/>
+    <mx:Binding source="viewModel.fromDateString" destination="fromDateInput.text"/>
+
+    <mx:Binding source="toDateInput.text" destination="viewModel.toDateString"/>
+    <mx:Binding source="viewModel.toDateString" destination="toDateInput.text"/>
+
+    <mx:Binding source="int(searchType.selectedValue)" destination="viewModel.selectedSearchType"/>
+    <mx:Binding source="viewModel.selectedSearchType" destination="searchType.selectedValue"/>
+</mx:VBox>

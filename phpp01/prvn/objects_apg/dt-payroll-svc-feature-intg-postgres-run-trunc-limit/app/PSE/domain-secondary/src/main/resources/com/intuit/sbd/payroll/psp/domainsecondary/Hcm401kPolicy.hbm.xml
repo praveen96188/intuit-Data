@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domainsecondary" default-cascade="merge" auto-import="false" default-access="com.intuit.sbd.payroll.psp.hibernate.PSPMixedAccessor">
+	<class name="com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kPolicy" entity-name="com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kPolicy" table="PSP_HCM401K_POLICY">
+		<id name="Id" column="HCM401K_POLICY_SEQ" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType" access="property">
+			<generator class="assigned"/>
+		</id>
+
+		<!-- Hcm401kPolicy Version Property -->
+		<version name="Version" type="long" column="VERSION" unsaved-value="negative" />
+
+		<!-- Hcm401kPolicy Admin Properties -->
+		<property name="CreatorId" type="string" column="CREATOR_ID" not-null="false" />
+		<property name="CreatedDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType" column="CREATED_DATE" not-null="true" />
+		<property name="ModifierId" type="string" column="MODIFIER_ID" not-null="false" />
+		<property name="ModifiedDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType" column="MODIFIED_DATE" not-null="true"/>
+		<property name="TempId" type="string" column="HCM401K_POLICY_SEQ" update="false" insert="false" access="property"/>
+        <property name="RealmId" type="long" column="REALM_ID" not-null="true" insert="true" update="false" access="property"/>
+
+		<!-- Hcm401kPolicy Declared Properties -->
+		<property name="DeductionItemPolicy" column="DEDUCTION_ITEM_POLICY" >
+			<type name="com.intuit.sbd.payroll.psp.hibernate.SpcfStringEnumUserType">
+				<param name="enumClassname">com.intuit.sbd.payroll.psp.domainsecondary.DeductionItemPolicy</param>
+			</type>
+		</property>
+
+		<property name="Description" type="string" column="DESCRIPTION"/>
+
+		<property name="DeductionItemProvider" column="DEDUCTION_ITEM_PROVIDER" >
+			<type name="com.intuit.sbd.payroll.psp.hibernate.SpcfStringEnumUserType">
+				<param name="enumClassname">com.intuit.sbd.payroll.psp.domainsecondary.DeductionItemProvider</param>
+			</type>
+		</property>
+        <set name="Hcm401kCompanyPolicySet" inverse="true"  access="property" batch-size="100">
+        	<key column="HCM401K_POLICY_FK"  not-null="true" />
+        	<one-to-many class="com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kCompanyPolicy" />
+        </set>
+	</class>
+</hibernate-mapping>

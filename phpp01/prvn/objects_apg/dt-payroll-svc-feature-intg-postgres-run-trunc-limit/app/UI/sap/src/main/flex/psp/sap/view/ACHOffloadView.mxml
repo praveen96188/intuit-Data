@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         height="100%"
+         width="100%"
+         xmlns:pspui="psp.sap.view.*"
+         creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.binding.utils.BindingUtils;
+        import mx.controls.Alert;
+        import mx.controls.TextInput;
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.collections.NachaFileGroup;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.NachaFile;
+        import psp.sap.viewmodel.ACHOffloadViewModel;
+
+        private var mViewModel:ACHOffloadViewModel;
+        private var mTempViewModel:ACHOffloadViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():ACHOffloadViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:ACHOffloadViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        //Bind values to viewModel
+
+        [Bindable("propertyChange")]
+        private function get currentGroup():NachaFileGroup {
+            return ACHFileGroupRepeater.currentItem as NachaFileGroup;
+        }
+
+        [Bindable("propertyChange")]
+        private function get currentFile():NachaFile {
+            return ACHFileRepeater[ACHFileGroupRepeater.currentIndex].currentItem as NachaFile;
+        }
+
+        [Bindable("propertyChange")]
+        private function get currentFileIndex():int {
+            return ACHFileRepeater[ACHFileGroupRepeater.currentIndex].currentIndex;
+        }
+		]]>
+	</mx:Script>
+
+    <mx:DateFormatter id="dateTimeFormatShort" formatString="{SAP.instance.configuration.dateTimeFormatShort}"/>
+
+    <mx:Grid id="offloadGrid" styleName="achGrid" verticalGap="0">
+        <mx:GridRow styleName="operatorTitleRow">
+            <mx:GridItem colSpan="4">
+                <mx:Label text="Intuit Operator Offload" styleName="operatorH2"/>
+                <mx:HBox width="100%" horizontalAlign="right">
+                    <mx:LinkButton id="requestSecondaryOffloadButton"
+                                   label="Request Secondary Offload"
+                                   styleName="standardLinkButtonStyle"
+                                   click="viewModel.onSecondaryOffload()"
+                                   toolTip="{viewModel.cannotRequestSecondaryOffloadReason}"
+                                   tabEnabled="false"/>
+                </mx:HBox>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:GridRow>
+            <mx:GridItem>
+                <mx:Label text="File Name" styleName="operatorColumnHeader"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center">
+                <mx:Label text="Total Credits" styleName="operatorColumnHeader"/>
+            </mx:GridItem>
+            <mx:GridItem horizontalAlign="center">
+                <mx:Label text="Total Debits" styleName="operatorColumnHeader"/>
+            </mx:GridItem>
+
+        </mx:GridRow>
+        <mx:GridRow visible="{viewModel.ACHFileGroups.length == 0 &amp;&amp; !viewModel.isDataLoading}"
+                    includeInLayout="{viewModel.ACHFileGroups.length == 0 &amp;&amp; !viewModel.isDataLoading}">
+            <mx:GridItem colSpan="4">
+                <mx:Label id="noOffloadsLabel" text="There are no more offloads to confirm"/>
+            </mx:GridItem>
+        </mx:GridRow>
+        <mx:Repeater id="ACHFileGroupRepeater" dataProvider="{viewModel.ACHFileGroups}">
+            <mx:GridRow styleName="operatorSummaryRow" paddingBottom="0" paddingTop="0">
+                <mx:GridItem colSpan="2" paddingLeft="5" paddingBottom="0" paddingTop="0">
+                    <mx:Label text="Finalized Time: {dateTimeFormatShort.format(currentGroup.finalizedTime)}"/>
+                </mx:GridItem>
+                <mx:GridItem colSpan="2">
+                    <mx:Label text="Transmission Time: {dateTimeFormatShort.format(currentGroup.transmissionTime)}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:Repeater id="ACHFileRepeater" dataProvider="{currentGroup.achFiles}">
+                <mx:GridRow styleName="{currentFileIndex % 2 == 0 ? 'operatorRow' : 'operatorAlternateRow'}" paddingBottom="5" paddingTop="5">
+                    <mx:GridItem verticalAlign="middle">
+                        <mx:Label id="fileNameLabel" text="{viewModel.shortFormatFile(currentFile.fileName)}" toolTip="{currentFile.fileName}"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" verticalAlign="middle">
+                        <mx:Label id="totalCreditsLabel" text="{SAPCurrencyFormatters.defaultFormatter.format(currentFile.totalCredits)}"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" verticalAlign="middle">
+                        <mx:Label id="totalDebitsLabel" text="{SAPCurrencyFormatters.defaultFormatter.format(currentFile.totalDebits)}"/>
+                    </mx:GridItem>
+
+                </mx:GridRow>
+            </mx:Repeater>
+        </mx:Repeater>
+    </mx:Grid>
+
+
+
+    <mx:Binding source="viewModel.canRequestSecondaryOffload" destination="requestSecondaryOffloadButton.enabled"/>
+
+</mx:VBox>

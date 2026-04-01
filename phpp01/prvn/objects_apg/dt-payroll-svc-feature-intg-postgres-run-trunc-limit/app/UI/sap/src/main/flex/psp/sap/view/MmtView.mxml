@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+           xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:pspui="psp.sap.view.*"
+           xmlns:controls="psp.sap.view.controls.*"
+           width="100%"
+           height="100%"
+           creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.List;
+        import mx.utils.ObjectProxy;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.KeyValuePair;
+        import psp.sap.viewmodel.MmtViewModel;
+
+        private var mViewModel:MmtViewModel;
+        private var mTempViewModel:MmtViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():MmtViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:MmtViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+            dateSelection.dateRangeTypeCombo.selectedItem = dateSelection.defaultDateRange;
+        }
+
+        private function copyToClickBoard():void {
+            var arr:Array = [];
+            arr = searchResults.getChildren();
+            var copyData:String = "";
+            for each(var obj:Object in arr) {
+                if (obj is HBox) {
+
+                }
+                if (obj is Label && obj.visible) {
+                    copyData += obj.text + "\t\n";
+                }
+                if (obj is List) {
+                    for each(var objx:ObjectProxy in obj.dataProvider) {
+                        if (objx.visible) {
+                            copyData += objx.label + "\t\n";
+                        }
+                    }
+                }
+            }
+            System.setClipboard(copyData);
+            Alert.show("The contents have been copied to the Clipboard.");
+        }
+
+		]]>
+    </mx:Script>
+
+    <controls:DataLoadFade targets="{[searchResults, noResultsPanel]}" isLoading="{viewModel.isDataLoading}" />
+
+    <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="750" id="mainSearchBox"
+                            openOnStartup="true"                             
+                            filterStringFunction="{viewModel.getFilterString}">
+
+        <mx:VBox verticalGap="18">
+            <mx:HBox >
+                <mx:Label text="Initiation Date:" fontWeight="bold"/>
+                <pspui:DateSelectionView
+                        id="dateSelection"
+                        viewModel="{viewModel.dateSelectionViewModel}"
+                        direction="horizontal"/>
+            </mx:HBox>            
+            <mx:HBox>
+                <mx:VBox verticalGap="18" horizontalAlign="right">
+                    <mx:Label text="Total Amount" fontWeight="bold" />
+                    <mx:Label text="Related Amount" fontWeight="bold" />
+                </mx:VBox>
+                <mx:VBox verticalGap="18">
+                    <mx:Label text="From:" fontWeight="bold"/>
+                    <mx:Label text="From:" fontWeight="bold"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="18">
+                    <mx:TextInput id="totalAmountFrom" paddingLeft="0" width="80"/>
+                    <mx:TextInput id="relatedAmountFrom" paddingLeft="0" width="80"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="18">
+                    <mx:Label text="To:" fontWeight="bold"/>
+                    <mx:Label text="To:" fontWeight="bold"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="18">
+                    <mx:TextInput id="totalAmountTo" paddingLeft="0" width="80"/>
+                    <mx:TextInput id="relatedAmountTo" paddingLeft="0" width="80"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="0">
+                    <mx:RadioButton id="customerPayment" paddingLeft="0" label="Customer" enabled="false" fontWeight="bold"/>
+                    <mx:RadioButton id="agentPayment" paddingLeft="0" label="Agency" enabled="true" selected="true" fontWeight="bold"/>
+                    <mx:RadioButton id="EmployeePayment" paddingLeft="0" label="Employee" enabled="false" fontWeight="bold"/>
+                </mx:VBox>
+                <mx:VBox verticalGap="18" horizontalAlign="right">
+                    <mx:HBox>
+                        <mx:Label text="Payment Type:" fontWeight="bold"/>
+                        <controls:SAPComboBox id="paymentTemplatesCombo" dataProvider="{viewModel.paymentTemplates}" width="150"
+                                              dataField="selectedTemplate"/>
+                    </mx:HBox>
+                    <mx:HBox horizontalGap="40">
+                        <mx:Button
+                            id="searchButton"
+                            label="Search"
+                            tabIndex="1"
+                            enabled="{viewModel.canSave}"
+                            click="viewModel.searchForPayments()" />
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+    </controls:FilterBox>
+
+    <mx:Spacer height="10"/>
+
+    <mx:DateFormatter id="dateFormatterNoTime" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+
+
+    <mx:VBox visible="{viewModel.payments.length == 0}" includeInLayout="{viewModel.payments.length == 0}" verticalGap="0" width="70%" height="30" id="noResultsPanel" 
+             verticalAlign="middle" horizontalAlign="center" backgroundColor="#b7b7b7" borderStyle="none" color="#000000" fontWeight="normal" dropShadowEnabled="false">
+        <mx:Text id="noDataFoundText" text="No data found for the search criteria."/>
+    </mx:VBox>
+
+    <mx:VBox styleName="ddGrayMiniBoxStyle" width="70%" id="searchResults"            
+             verticalGap="0"
+             visible="{viewModel.selectedPayment != null}"
+             includeInLayout="{viewModel.selectedPayment != null}" data="{viewModel.selectedPayment}" paddingLeft="15" paddingTop="10">
+
+        <mx:Label selectable="true" text="Company Name: {viewModel.company.legalName}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="FEIN: {viewModel.company.fein}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Initiation Date: {dateFormatterNoTime.format(viewModel.selectedPayment.initiationDate)}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Payment Method: {viewModel.selectedPayment.paymentMethod}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Payment Template: {viewModel.selectedPayment.paymentTemplate.paymentTemplateName}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Payment Period Begin Date: {dateFormatterNoTime.format(viewModel.selectedPayment.periodBeginDate)}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Payment Period End Date: {dateFormatterNoTime.format(viewModel.selectedPayment.periodEndDate)}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Tax Payment Status: {viewModel.selectedPayment.taxPaymentStatus}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Tax Payment Amount: {SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedPayment.amount)}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Settlement Date: {dateFormatterNoTime.format(viewModel.selectedPayment.settlementDate)}" fontWeight="bold"/>
+        <mx:Label selectable="true" text="Agency Taxpayer ID: {viewModel.selectedPayment.taxpayerAgencyId}"  fontWeight="bold"/>
+        <mx:Label selectable="true" text="{viewModel.selectedPayment.getTransactionType} Details:" fontWeight="bold" paddingTop="15"/>
+        <mx:Label selectable="true" textIndent="10" text="Sent To Bank Account Number: {viewModel.selectedPayment.creditAccountNumber}  Routing Number: {viewModel.selectedPayment.creditAccountRouting}" fontWeight="bold"
+                includeInLayout="{viewModel.selectedPayment.creditAccountNumber != null}" visible="{viewModel.selectedPayment.creditAccountNumber != null}"/>
+        <mx:Label selectable="true" textIndent="10" text="Sent From Bank Account Number: {viewModel.selectedPayment.debitAccountNumber} " fontWeight="bold"
+                includeInLayout="{viewModel.selectedPayment.debitAccountNumber != null}" visible="{viewModel.selectedPayment.debitAccountNumber != null}"/>
+        <mx:Label selectable="true" textIndent="10" text="Information included in the {viewModel.selectedPayment.getTransactionType} transaction: " fontWeight="bold"
+                includeInLayout="{viewModel.selectedPayment.getTransactionType != 'Payment'}" visible="{viewModel.selectedPayment.getTransactionType != 'Payment'}"/>
+
+        <mx:Repeater id="detailsRepeater" dataProvider="{viewModel.selectedPayment.details}" >
+            <mx:Label selectable="true" textIndent="10" text="{KeyValuePair(detailsRepeater.currentItem).key} : {KeyValuePair(detailsRepeater.currentItem).value}" fontWeight="bold"/>
+        </mx:Repeater>
+
+        <mx:HBox horizontalAlign="right" width="100%" paddingTop="10" paddingBottom="10" paddingRight="10">
+            <mx:Button id="copy" label="Copy to Clipboard" click="copyToClickBoard()"/>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:VBox width="70%" visible="{!viewModel.payments.isEmpty}" includeInLayout="{!viewModel.payments.isEmpty}">
+        <mx:HBox width="100%">
+                <pspui:ActionLink 	label="Previous"
+                                    click="viewModel.previousRecord();"
+                                    tabIndex="2"
+                                    enabled="{viewModel.payments.canSelectPrevious}"/>
+                <mx:Label width="100%" textAlign="right" text="{viewModel.payments.selectedIndex + 1} of {viewModel.payments.length}" />
+                <pspui:ActionLink  	label="Next"
+                                    click="viewModel.nextRecord();"
+                                    tabIndex="3" 
+                                    enabled="{viewModel.payments.canSelectNext}"/>
+	    </mx:HBox>
+    </mx:VBox>    
+    
+    <!-- total amount from bindings -->
+    <mx:Binding source="totalAmountFrom.text" destination="viewModel.totalAmountFrom"/>
+    <mx:Binding source="viewModel.totalAmountFrom" destination="totalAmountFrom.text"/>
+    <!-- total amount To bindings -->
+    <mx:Binding source="totalAmountTo.text" destination="viewModel.totalAmountTo"/>
+    <mx:Binding source="viewModel.totalAmountTo" destination="totalAmountTo.text"/>
+    <!-- related amount from bindings -->
+    <mx:Binding source="relatedAmountFrom.text" destination="viewModel.relatedAmountFrom"/>
+    <mx:Binding source="viewModel.relatedAmountFrom" destination="relatedAmountFrom.text"/>
+    <!-- related amount To bindings -->
+    <mx:Binding source="relatedAmountTo.text" destination="viewModel.relatedAmountTo"/>
+    <mx:Binding source="viewModel.relatedAmountTo" destination="relatedAmountTo.text"/>
+</mx:VBox>
+
+

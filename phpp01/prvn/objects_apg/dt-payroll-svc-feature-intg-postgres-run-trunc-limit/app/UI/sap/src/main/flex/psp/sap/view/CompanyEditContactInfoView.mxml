@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         xmlns:view="intuit.sbd.flex.framework.view.*"
+         width="100%" height="100%"
+         creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+        import flexlib.controls.tabBarClasses.SuperTab;
+
+        import mx.controls.Alert;
+        import mx.controls.ComboBox;
+        import mx.controls.DateField;
+        import mx.controls.Menu;
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+        import mx.events.FlexEvent;
+        import mx.events.MenuEvent;
+        import mx.utils.StringUtil;
+        import mx.validators.Validator;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.collections.LookupCollection;
+        import psp.sap.model.Contact;
+        import psp.sap.model.ContactRole;
+        import psp.sap.viewmodel.CompanyEditContactInfoViewModel;
+        import psp.sap.view.CaseIdSave;
+
+        import mx.managers.PopUpManager;
+
+        private const FIELD_HEIGHT:int = 22;
+
+        private var mViewModel:CompanyEditContactInfoViewModel;
+        private var mTempViewModel:CompanyEditContactInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+        private var mTempSelectedIndex:int;
+
+        [Bindable]
+        public function get viewModel():CompanyEditContactInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditContactInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.addEventListener(CompanyEditContactInfoViewModel.CONTACTS_CHANGED, onContactsChanged, false, 0, false);
+                if (mViewModel.backingPropertiesInitialized) {
+                    onContactsChanged();
+                }
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function onContactsChanged(e:Event = null):void {
+            //this horrible code is to work around the fact that when you use a repeater, creation complete
+            //happens before the repeated items is created
+            //and oh by the way, there are no convenient events for knowing when actual creation is actually completed.
+            //jerks.
+            if (contactViewStack.numChildren != viewModel.contacts.length) {
+                contactsRepeater.addEventListener(FlexEvent.REPEAT_END, function (e:Event):void {
+                    onContactsChanged();
+                    e.currentTarget.removeEventListener(e.type, arguments.callee);
+                });
+                return;
+            } else {
+                for each (var tab:UIComponent in contactViewStack.getChildren()) {
+                    if (!tab.initialized) {
+                        tab.addEventListener(FlexEvent.CREATION_COMPLETE, function (e:Event):void {
+                            onContactsChanged();
+                            e.currentTarget.removeEventListener(e.type, arguments.callee);
+                        });
+                        return;
+                    }
+                }
+            }
+
+            setupValidators();
+            setTabStyles();
+        }
+
+        private function setupValidators():void {
+            for (var i:int = 0; i < viewModel.contacts.length; i++) {
+                var validators:LookupCollection = viewModel.contactValidators[viewModel.contacts[i]];
+                if (validators == null) {
+                    return;
+                }
+                Validator(validators.getItemByKey("firstName")).listener = firstName[i];
+                firstNameLabel[i].validator = validators.getItemByKey("firstName");
+
+                Validator(validators.getItemByKey("lastName")).listener = lastName[i];
+                lastNameLabel[i].validator = validators.getItemByKey("lastName");
+
+                Validator(validators.getItemByKey("phoneNumber")).listener = phoneNumber[i];
+                phoneNumberLabel[i].validator = validators.getItemByKey("phoneNumber");
+
+                Validator(validators.getItemByKey("email")).listener = email[i];
+                emailLabel[i].validator = validators.getItemByKey("email");
+
+                Validator(validators.getItemByKey("addressLine1")).listener = addressLine1[i];
+                Validator(validators.getItemByKey("city")).listener = city[i];
+                Validator(validators.getItemByKey("state")).listener = state[i];
+                Validator(validators.getItemByKey("zipCode")).listener = zipCode[i];
+                Validator(validators.getItemByKey("zipCodeExtension")).listener = zipCodeExtension[i];
+
+
+                //Customers with Direct Deposit
+
+                if (viewModel.isDirectDepositCustomer() && viewModel.contacts[i].contactRoleCd == "PrimaryPrincipal") {
+                    //ssn is part of 'PrimaryPrincipal' contact only
+                    Validator(validators.getItemByKey("socialSecurityNumber")).listener = socialSecurityNumber[i];
+                    socialSecurityNumberLabel[i].validator = validators.getItemByKey("socialSecurityNumber");
+                    //dateOfBirth is part of 'PrimaryPrincipal' contact only
+                    Validator(validators.getItemByKey("dateOfBirth")).listener = dateOfBirth[i];
+                    dateOfBirthLabel[i].validator = validators.getItemByKey("dateOfBirth");
+                }
+
+            }
+        }
+
+        private function setTabStyles():void {
+            if (viewModel.contacts && contactTabs && viewModel.contacts.length == contactTabs.numChildren) {
+                for (var i:int = 0; i < viewModel.contacts.length; i++) {
+                    var contact:Contact = Contact(viewModel.contacts.getItemAt(i));
+                    if (contact.errors > 0) {
+                        var errorString:String = contact.errors + " Error";
+                        if (contact.errors > 1) {
+                            errorString += "s";
+                        }
+                        SuperTab(contactTabs.getChildAt(i)).setStyle("color", "red");
+                        SuperTab(contactTabs.getChildAt(i)).errorString = errorString;
+                    } else if (contact.newContactOrder != -1) {
+                        SuperTab(contactTabs.getChildAt(i)).setStyle("color", "blue");
+                        SuperTab(contactTabs.getChildAt(i)).errorString = "";
+                    } else if (contact.changed) {
+                        SuperTab(contactTabs.getChildAt(i)).setStyle("color", "green");
+                        SuperTab(contactTabs.getChildAt(i)).errorString = "";
+                    } else {
+                        SuperTab(contactTabs.getChildAt(i)).setStyle("color", "black");
+                        SuperTab(contactTabs.getChildAt(i)).errorString = "";
+                    }
+
+                    //flex is really lazy so I will do this myself.
+                    SuperTab(contactTabs.getChildAt(i)).toolTip = viewModel.contacts.getItemAt(i)[contactTabs.toolTipField];
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function getContactRoleNames(item:Object):String {
+            return item.contactRole.name;
+        }
+
+        private var popup:CaseIdSave;
+
+        // method to open the PopUp Window on creationComplete
+        private function openPopUpWindow():void {
+            // open the PopUp Window as a modal popup window
+            // and store it in a variable for later use
+            popup = PopUpManager.createPopUp(this, CaseIdSave, true) as CaseIdSave;
+            popup.heading.label = "Are you sure you want to update this contact info? If yes please provide caseId";
+            popup.addEventListener("close", removeMe);
+            popup.cancel.addEventListener("click", removeMe);
+            popup.save.addEventListener("click", submitData);
+            PopUpManager.centerPopUp(popup);
+
+        }
+
+        private function removeMe(event:Event):void {
+            PopUpManager.removePopUp(popup);
+        }
+
+        private function submitData(event:Event):void {
+            if (popup.caseIdInput.text == null || StringUtil.trim(popup.caseIdInput.text)== "") {
+                popup.caseIdMandatoryItem.visible = true;
+            } else {
+                viewModel.caseId = popup.caseIdInput.text;
+                PopUpManager.removePopUp(popup);
+                viewModel.save();
+            }
+        }
+
+        private function confirmSave():void {
+            if (viewModel.contactsUpdated()) {
+                openPopUpWindow();
+            } else {
+                var msgString:String = "Are you sure you want to update this contact info?";
+
+                Alert.show(msgString,
+                        "Save Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        confirmVerifyHandler,
+                        null,
+                        Alert.OK);
+            }
+        }
+
+        private function confirmVerifyHandler(e:CloseEvent):void {
+            if (e.detail == Alert.OK) {
+                viewModel.save();
+            }
+        }
+
+        private function onTextInputUpdated(event:Event, field:String):void {
+            setOnTarget(UIComponent(event.target).getRepeaterItem(), field, (event.target as TextInput).text);
+        }
+
+        private function onDateInputUpdated(event:Event, field:String):void {
+            setOnTarget(UIComponent(event.target).getRepeaterItem(), field, (event.target as DateField).selectedDate);
+        }
+
+        private function onComboUpdated(event:Event, field:String):void {
+            setOnTarget(UIComponent(event.target).getRepeaterItem(), field, (event.target as ComboBox).selectedItem);
+        }
+
+        private function setOnTarget(object:Object, field:String, value:Object):void {
+            if (field.indexOf(".") > -1) {
+                var fields:Array = field.split(".");
+                setOnTarget(object[fields[0]], fields[1], value);
+            } else {
+                object[field] = value;
+            }
+        }
+
+        private function onPhoneFocusOut(event:Event):void {
+            viewModel.formatPhone(Contact(UIComponent(event.target.parent).getRepeaterItem()));
+        }
+
+        private function onFaxFocusOut(event:Event):void {
+            viewModel.formatFax(Contact(UIComponent(event.target.parent).getRepeaterItem()));
+        }
+
+        private function onStateFocusOut(event:Event):void {
+            viewModel.formatState(Contact(UIComponent(event.target.parent).getRepeaterItem()));
+        }
+
+        private function onAddContactClicked():void {
+            var menu:Menu = Menu.createMenu(this, viewModel.availableRolesToAdd, false);
+            menu.labelField = "description";
+            menu.addEventListener("itemClick", function (e:MenuEvent):void {
+                viewModel.addContact(ContactRole(e.item));
+            }, false, 0, true);
+
+            var point:Point = new Point();
+            point.x = addTabButton.x;
+            point.y = addTabButton.y;
+            point = addTabButton.localToGlobal(point);
+
+            menu.show(point.x - contactTabs.width + addTabButton.width / 2, point.y + addTabButton.height / 2);
+        }
+
+        private function onTabBarValueCommit():void {
+            if (viewModel) {
+                viewModel.selectedContactIndex = contactTabs.selectedIndex;
+            }
+            //seemingly redundant because of bindings, but flex sucks sooooooo much
+            contactViewStack.selectedIndex = contactTabs.selectedIndex;
+
+        }
+
+
+        private function onCopyClicked(event:MouseEvent):void {
+            var target:Contact = Contact(UIComponent(event.target).getRepeaterItem());
+
+            var menu:Menu = Menu.createMenu(this, viewModel.getAvailableRolesToCopy(target), false);
+            menu.labelField = "menuLabel";
+            menu.addEventListener("itemClick", function (e:MenuEvent):void {
+                viewModel.copy(Contact(e.item), target);
+            }, false, 0, true);
+
+            var pt:Point = new Point(event.localX, event.localY);
+            pt = event.target.localToGlobal(pt);
+
+            menu.show(pt.x, pt.y);
+        }
+
+        private function onDeleteClicked(event:MouseEvent):void {
+            viewModel.deleteContact(Contact(UIComponent(event.target).getRepeaterItem()));
+        }
+
+        private function onClearClicked(event:MouseEvent):void {
+            viewModel.clearContact(Contact(UIComponent(event.target).getRepeaterItem()));
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:Spacer height="8"/>
+    <mx:HBox horizontalGap="0" paddingBottom="-7">
+        <controls:SuperTabBarExt id="contactTabs"
+                                 dataProvider="{viewModel.contacts}"
+                                 labelField="label"
+                                 toolTipField="toolTip"
+                                 valueCommit="onTabBarValueCommit();"
+                                 selectedIndex="{viewModel.selectedContactIndex}"
+                                 paddingRight="-1"
+                                 dragEnabled="false"
+                                 dropEnabled="false"
+                                 closePolicy="{SuperTab.CLOSE_NEVER}"/>
+        <mx:Button id="addTabButton"
+                   label="+"
+                   toolTip="Add Contact"
+                   paddingLeft="0"
+                   paddingRight="0"
+                   width="30"
+                   styleName="addTabButton"
+                   click="onAddContactClicked();"
+                   visible="{viewModel.availableRolesToAdd.length > 0}"
+                   includeInLayout="{viewModel.availableRolesToAdd.length > 0}"/>
+    </mx:HBox>
+    <mx:ViewStack id="contactViewStack" width="100%" height="350" tabEnabled="false"
+                  selectedIndex="{viewModel.selectedContactIndex}" styleName="contactsViewStack" paddingTop="0">
+        <mx:Repeater id="contactsRepeater" dataProvider="{viewModel.contacts}" width="100%" height="100%"
+                     recycleChildren="false">
+            <mx:HBox paddingLeft="5" paddingTop="20"
+                     enabled="{viewModel.mayEditContact(Contact(contactsRepeater.currentItem))}">
+                <mx:VBox paddingTop="3">
+                    <mx:Label text="Title:" styleName="fieldLabel" height="{FIELD_HEIGHT}"/>
+                    <controls:RequiredLabel
+                            text="First Name:"
+                            id="firstNameLabel"
+                            styleName="fieldLabel"
+                            height="{FIELD_HEIGHT}"/>
+                    <mx:Label text="Middle Name:" styleName="fieldLabel" height="{FIELD_HEIGHT}"/>
+                    <controls:RequiredLabel
+                            text="Last Name:"
+                            id="lastNameLabel"
+                            styleName="fieldLabel"
+                            height="{FIELD_HEIGHT}"/>
+                    <mx:Label text="Job Title:" styleName="fieldLabel" height="{FIELD_HEIGHT}"/>
+                    <mx:Label text="Suffix:" styleName="fieldLabel" height="{FIELD_HEIGHT}"/>
+                    <controls:RequiredLabel
+                            text="Phone:"
+                            id="phoneNumberLabel"
+                            styleName="fieldLabel"
+                            height="{FIELD_HEIGHT}"/>
+                    <mx:Label text="Fax:" styleName="fieldLabel" height="{FIELD_HEIGHT}"/>
+                    <controls:RequiredLabel
+                            text="Email:"
+                            id="emailLabel"
+                            styleName="fieldLabel"
+                            height="{FIELD_HEIGHT}"/>
+
+                    <controls:RequiredLabel
+                            text="SSN:"
+                            id="socialSecurityNumberLabel"
+                            styleName="fieldLabel"
+                            height="{FIELD_HEIGHT}"
+                            includeInLayout="{viewModel.isDirectDepositCustomer() &amp;&amp;  Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                            visible="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                            />
+
+
+                    <controls:RequiredLabel
+                            text="Date of Birth:"
+                            id="dateOfBirthLabel"
+                            styleName="fieldLabel"
+                            height="{FIELD_HEIGHT}"
+                            includeInLayout="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                            visible="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                            />
+
+
+                </mx:VBox>
+                <mx:VBox>
+                    <view:ComboBoxExt width="80" height="{FIELD_HEIGHT}" dataProvider="{viewModel.PREFIX_LIST}"
+                                      selectedItem="{Contact(contactsRepeater.currentItem).prefix}"
+                                      change="onComboUpdated(event, 'prefix')"/>
+                    <mx:TextInput id="firstName" maxChars="35" width="250"
+                                  text="{Contact(contactsRepeater.currentItem).firstName}"
+                                  change="onTextInputUpdated(event, 'firstName')"/>
+                    <mx:TextInput maxChars="35" width="250" text="{Contact(contactsRepeater.currentItem).middleName}"
+                                  change="onTextInputUpdated(event, 'middleName')"/>
+                    <mx:TextInput id="lastName" maxChars="35" width="250"
+                                  text="{Contact(contactsRepeater.currentItem).lastName}"
+                                  change="onTextInputUpdated(event, 'lastName')"/>
+                    <mx:TextInput maxChars="35" width="250" text="{Contact(contactsRepeater.currentItem).jobTitle}"
+                                  change="onTextInputUpdated(event, 'jobTitle')"/>
+                    <view:ComboBoxExt width="80" dataProvider="{viewModel.SUFFIX_LIST}" height="{FIELD_HEIGHT}"
+                                      selectedItem="{Contact(contactsRepeater.currentItem).suffix}"
+                                      change="onComboUpdated(event, 'suffix')"/>
+                    <mx:TextInput id="phoneNumber" restrict="0-9\(\)\-\ " maxChars="14" width="150"
+                                  text="{Contact(contactsRepeater.currentItem).phoneNumber}"
+                                  change="onTextInputUpdated(event, 'phoneNumber')"
+                                  focusOut="onPhoneFocusOut(event);"/>
+                    <mx:TextInput restrict="0-9\(\)\-\ " maxChars="14" width="150"
+                                  text="{Contact(contactsRepeater.currentItem).faxNumber}"
+                                  change="onTextInputUpdated(event, 'faxNumber')"
+                                  focusOut="onFaxFocusOut(event);"/>
+                    <mx:TextInput id="email" maxChars="80" width="250"
+                                  text="{Contact(contactsRepeater.currentItem).email}"
+                                  change="onTextInputUpdated(event, 'email')"/>
+                    <mx:TextInput id="socialSecurityNumber" maxChars="10" width="250"
+                                  text="{Contact(contactsRepeater.currentItem).socialSecurityNumber}"
+                                  change="onTextInputUpdated(event, 'socialSecurityNumber')"
+                                  includeInLayout="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd  == 'PrimaryPrincipal'}"
+                                  visible="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"/>
+
+                    <mx:DateField editable="true" id="dateOfBirth"
+                                  data="{Contact(contactsRepeater.currentItem).dateOfBirth}"
+                                  change="onDateInputUpdated(event, 'dateOfBirth')"
+                                  includeInLayout="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+                                  visible="{viewModel.isDirectDepositCustomer() &amp;&amp; Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}"
+
+                            />
+                </mx:VBox>
+                <mx:VBox>
+                    <mx:VBox id="linkButtonBox">
+                        <mx:HBox verticalAlign="middle" horizontalGap="0">
+                            <mx:LinkButton
+                                    id="copyLinkButton"
+                                    label="Copy contact from..."
+                                    toolTip="Copy the details from another contact to this one"
+                                    styleName="standardLinkButtonStyle"
+                                    paddingRight="0"
+                                    click="onCopyClicked(event)"/>
+                            <mx:HBox visible="{viewModel.additionalContacts.length > 0}"
+                                     includeInLayout="{viewModel.additionalContacts.length > 0}"
+                                     horizontalGap="0"
+                                     paddingLeft="0">
+                                <mx:Image source="{SAP.instance.icons.userAdd}"
+                                          toolTip="Contacts available from Siebel or other EINs"/>
+                                <mx:Label text="+{viewModel.additionalContacts.length}"/>
+                            </mx:HBox>
+                        </mx:HBox>
+                        <mx:LinkButton
+                                label="Delete contact"
+                                styleName="standardLinkButtonStyle"
+                                visible="{Contact(contactsRepeater.currentItem).canDelete}"
+                                includeInLayout="{Contact(contactsRepeater.currentItem).canDelete}"
+                                click="onDeleteClicked(event)"/>
+                        <mx:LinkButton
+                                label="Clear"
+                                styleName="standardLinkButtonStyle"
+                                visible="{!Contact(contactsRepeater.currentItem).canDelete}"
+                                includeInLayout="{!Contact(contactsRepeater.currentItem).canDelete}"
+                                click="onClearClicked(event)"/>
+                    </mx:VBox>
+                    <mx:HBox>
+                        <mx:VBox horizontalAlign="right" width="90">
+                            <mx:Label
+                                    text="Address:"
+                                    id="addressLine1Label"
+                                    styleName="fieldLabel"
+                                    height="{FIELD_HEIGHT}"/>
+                            <mx:Label text=" " styleName="fieldLabel" height="{FIELD_HEIGHT}"/>
+                            <mx:Label
+                                    text="City:"
+                                    id="cityLabel"
+                                    styleName="fieldLabel"
+                                    height="{FIELD_HEIGHT}"/>
+                            <mx:Label
+                                    text="State:"
+                                    id="stateLabel"
+                                    styleName="fieldLabel"
+                                    height="{FIELD_HEIGHT}"/>
+                            <mx:Label
+                                    text="Zip +4:"
+                                    id="zipCodeLabel"
+                                    styleName="fieldLabel"
+                                    height="{FIELD_HEIGHT}"/>
+                        </mx:VBox>
+                        <mx:VBox>
+                            <mx:TextInput id="addressLine1" maxChars="80" width="250"
+                                          text="{Contact(contactsRepeater.currentItem).address.addressLine1}"
+                                          change="onTextInputUpdated(event, 'address.addressLine1')"/>
+                            <mx:TextInput maxChars="80" width="250"
+                                          text="{Contact(contactsRepeater.currentItem).address.addressLine2}"
+                                          change="onTextInputUpdated(event, 'address.addressLine2')"/>
+                            <mx:TextInput id="city" maxChars="30" width="250"
+                                          text="{Contact(contactsRepeater.currentItem).address.city}"
+                                          change="onTextInputUpdated(event, 'address.city')"/>
+                            <mx:TextInput id="state" restrict="A-Za-z" maxChars="2" width="40"
+                                          text="{Contact(contactsRepeater.currentItem).address.state}"
+                                          focusOut="onStateFocusOut(event);"
+                                          change="onTextInputUpdated(event, 'address.state')"/>
+                            <mx:HBox horizontalGap="0">
+                                <mx:TextInput id="zipCode" restrict="0-9" maxChars="5" width="60"
+                                              text="{Contact(contactsRepeater.currentItem).address.zipCode}"
+                                              change="onTextInputUpdated(event, 'address.zipCode')"/>
+                                <mx:Text text="-" width="10" paddingLeft="0" paddingRight="-10"/>
+                                <mx:TextInput id="zipCodeExtension" restrict="0-9" maxChars="4" width="50"
+                                              text="{Contact(contactsRepeater.currentItem).address.zipCodeExtension}"
+                                              change="onTextInputUpdated(event, 'address.zipCodeExtension')"/>
+
+                            </mx:HBox>
+
+                        </mx:VBox>
+                    </mx:HBox>
+                    <mx:HBox paddingTop="22">
+                        <mx:Label styleName="fieldLabel" text="Preferred Contact Method: " paddingTop="4"/>
+                        <view:ComboBoxExt width="144" dataProvider="{viewModel.preferenceTypes}" enabled="true"
+                                          selectedItem="{Contact(contactsRepeater.currentItem).communicationPref}"
+                                          change="onComboUpdated(event, 'communicationPref')"/>
+                    </mx:HBox>
+                    <mx:HBox paddingTop="22"
+                             visible="{viewModel.isDirectDepositCustomer() &amp;&amp;  Contact(contactsRepeater.currentItem).contactRoleCd == 'PrimaryPrincipal'}">
+                        <mx:Label color="red" styleName="fieldLabel"
+                                  text="SSN and Date Of Birth is mandatory on change of Primary Principal."
+                                  paddingTop="4"/>
+                    </mx:HBox>
+
+                </mx:VBox>
+            </mx:HBox>
+        </mx:Repeater>
+    </mx:ViewStack>
+
+
+    <mx:HBox width="100%" horizontalAlign="right" visible="{viewModel.showSaveButtons}"
+             includeInLayout="{viewModel.showSaveButtons}">
+
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+
+</mx:VBox>

@@ -1,0 +1,1 @@
+-- No differences were detected between schemas PSP_LOCAL@XE and PREVIOUS_PSP_LOCAL@XE

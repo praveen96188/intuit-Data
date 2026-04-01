@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*">
+
+	<mx:Script>
+        <![CDATA[
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.formatters.SAPCurrencyFormatter;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.PropertyAudit;
+        import psp.sap.viewmodel.TransactionHistoryPopUpViewModel;
+
+        private var mViewModel:TransactionHistoryPopUpViewModel = null;
+
+        [Bindable]
+        public function get viewModel():TransactionHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:TransactionHistoryPopUpViewModel):void {
+            mViewModel = value;
+        }
+
+        ]]>
+    </mx:Script>
+
+	<mx:VBox width="100%">
+
+		<mx:VBox width="100%"
+				 styleName="grayDataGridVBox" >
+			<mx:Label text="Transaction State Change History" styleName="grayDataGridHeading"/>
+
+			<mx:HRule width="100%" height="13"/>
+
+			<mx:HBox paddingLeft="10" paddingTop="10" paddingBottom="10" width="100%">
+				<mx:VBox verticalGap="0" width="130">
+					<mx:Label text="From Account: " fontWeight="bold" includeInLayout="{viewModel.bookTransferTxn != null}" visible="{viewModel.bookTransferTxn != null}"/>
+					<mx:Label text="To Account: " fontWeight="bold" includeInLayout="{viewModel.bookTransferTxn != null}" visible="{viewModel.bookTransferTxn != null}"/>
+                    <mx:Label text="Transaction Type: " fontWeight="bold" includeInLayout="{viewModel.transaction != null}" visible="{viewModel.transaction != null}"/>
+                    <mx:Label text="Settlement Type: " fontWeight="bold" includeInLayout="{viewModel.transaction != null}" visible="{viewModel.transaction != null}"/>
+					<mx:Label text="Amount: " fontWeight="bold"/>
+					<mx:Label text="Settlement Date: " fontWeight="bold"/>
+				</mx:VBox>
+
+				<mx:VBox verticalGap="0" width="315">
+					<mx:Label text="{viewModel.bookTransferTxn.fromAccount}" includeInLayout="{viewModel.bookTransferTxn != null}" visible="{viewModel.bookTransferTxn != null}"/>
+					<mx:Label text="{viewModel.bookTransferTxn.toAccount}" includeInLayout="{viewModel.bookTransferTxn != null}" visible="{viewModel.bookTransferTxn != null}"/>
+                    <mx:Label text="{viewModel.transaction.transactionType}" includeInLayout="{viewModel.transaction != null}" visible="{viewModel.transaction != null}"/>
+                    <mx:Label text="{viewModel.transaction.settlementType}" includeInLayout="{viewModel.transaction != null}" visible="{viewModel.transaction != null}"/>
+					<mx:Label text="{SAPCurrencyFormatter.currencyFormatter.format(viewModel.amount)}"/>
+					<mx:Label
+							text="{SAPDateFormatters.dateFormatShort.format(viewModel.settlementDate)}"/>
+				</mx:VBox>
+			</mx:HBox>
+
+			<mx:HBox paddingLeft="10" paddingRight="10" paddingBottom="10" width="100%">
+				<controls:SAPDataGrid
+						dataProvider="{viewModel.propertyAudit}"
+						variableRowHeight="true"
+						selectable="false"
+						rowCount="5"
+						width="100%"
+						backgroundColor="#ffffff">
+
+					<controls:columns>
+						<mx:DataGridColumn
+								headerText="Change Date{String('\n')}Time"
+								textAlign="center"
+								headerStyleName="directDepositHeader"
+								labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"
+								draggable="false"
+								dataField="auditDate"/>
+						<mx:DataGridColumn
+								headerText="Changed By"
+								textAlign="center"
+								headerStyleName="directDepositHeader"
+								color="green"
+								draggable="false"
+								dataField="userId"/>
+						<mx:DataGridColumn
+								headerText="State"
+								textAlign="center"
+								headerStyleName="directDepositHeader"
+								draggable="false"
+								dataField="newPropertyValue"/>
+					</controls:columns>
+				</controls:SAPDataGrid>
+			</mx:HBox>
+
+		</mx:VBox>
+	</mx:VBox>
+
+</mx:VBox>

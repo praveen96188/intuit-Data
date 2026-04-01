@@ -1,0 +1,21 @@
+set search_path to pspadm;
+
+create index  psp_financial_transaction_i6 ON ONLY  pspadm.psp_financial_transaction USING BTREE (settlement_date); 
+
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p0;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p1;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p2;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p3;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p4;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p5;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p6;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p7;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p8;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p9;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p10;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p11;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p12;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p13;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p14;
+alter index psp_financial_transaction_i6 attach partition pspadm.psp_financial_transaction_i6_p15;
+

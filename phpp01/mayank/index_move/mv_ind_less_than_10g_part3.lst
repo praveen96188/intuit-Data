@@ -1,0 +1,1463 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Mon May 23 23:07:49 2022
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+Enter user-name: Last Successful login time: Mon May 23 2022 21:23:51 -07:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+
+SQL> SQL> SQL> SQL> 23:07:49 SQL> 23:07:49 SQL> 23:07:49 SQL> 
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+PSPUWP01
+ip-172-19-0-50
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:07:49 SQL> 23:07:49 SQL> 23:07:49 SQL> set echo on feedback on timing on
+23:07:49 SQL> 
+23:07:49 SQL> --disable online index rebuild cleanup job
+23:07:49 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+TRUE  SCHEDULED
+24-MAY-22 03.00.41.474998 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:07:49 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+23:07:49 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+FALSE DISABLED
+24-MAY-22 03.00.41.474998 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:07:49 SQL> 
+23:07:49 SQL> exec dbms_streams.set_tag (hextoraw(3));
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+23:07:49 SQL> 
+23:07:49 SQL> alter index PSPADM.PSP_COMPANY_FK7 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:03:04.55
+23:10:54 SQL> alter index PSPADM.SYS_C0020527 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.96
+23:10:57 SQL> alter index PSPADM.PSP_COMPANY_PIN_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.30
+23:10:59 SQL> alter index PSPADM.PSP_COMPANY_AGENCY_PAYMENT_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:07.31
+23:11:06 SQL> alter index PSPADM.PSP_PAYCHECK_USAGE_HIST_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.39
+23:11:09 SQL> alter index PSPADM.PSP_PAYEE_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:22.79
+23:11:32 SQL> alter index PSPADM.PSP_PAYCHECK_USAGE_HIST_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.24
+23:11:34 SQL> alter index PSPADM.SYS_C0032991 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.02
+23:11:36 SQL> alter index PSPADM.SYS_C0020625 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.65
+23:11:38 SQL> alter index PSPADM.PSP_COMPANY_AGENCY_FORM_TE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.53
+23:11:39 SQL> alter index PSPADM.PSP_QBDT_PAYROLL_TRANSACTI_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.52
+23:11:42 SQL> alter index PSPADM.PSP_FRAUDBANKACCOUNT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.21
+23:11:44 SQL> alter index PSPADM.PSP_FRAUD_EVENT_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.77
+23:11:47 SQL> alter index PSPADM.SYS_C0020686 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.29
+23:11:49 SQL> alter index PSPADM.PSP_COMPANY_USAGE_U1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.73
+23:11:51 SQL> alter index PSPADM.PSP_COMPANY_ADDITIONAL_INF_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.55
+23:11:53 SQL> alter index PSPADM.SYS_C0020717 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.76
+23:11:54 SQL> alter index PSPADM.PSP_PSTUB_EMPLOYER_INFO_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.74
+23:11:55 SQL> alter index PSPADM.PSP_VMP_EMPLOYEE_INFO_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.78
+23:11:55 SQL> alter index PSPADM.PSP_FRAUD_EVENT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.00
+23:11:57 SQL> alter index PSPADM.SYS_C0020737 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.14
+23:12:00 SQL> alter index PSPADM.PSP_FRAUD_EVENT_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.43
+23:12:02 SQL> alter index PSPADM.SYS_C0020636 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.15
+23:12:04 SQL> alter index PSPADM.PSP_COMPANY_AGENCY_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.29
+23:12:06 SQL> alter index PSPADM.SYS_C0020743 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.70
+23:12:07 SQL> alter index PSPADM.PSP_COMPANY_ADDITIONAL_INF_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.03
+23:12:09 SQL> alter index PSPADM.PSP_FRAUD_EVENT_I1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.02
+23:12:11 SQL> alter index PSPADM.PSP_COMPANY_AGENCY_FORM_TE_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.40
+23:12:13 SQL> alter index PSPADM.SYS_C0020606 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.70
+23:12:14 SQL> alter index PSPADM.PSP_COMPANY_RATE_REQUEST_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.31
+23:12:16 SQL> alter index PSPADM.SYS_C0020596 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.09
+23:12:18 SQL> alter index PSPADM.PSP_COMPANY_RATE_REQUEST_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.31
+23:12:19 SQL> alter index PSPADM.PSP_PAYMENT_BATCH_ASSOC_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.74
+23:12:20 SQL> alter index PSPADM.SYS_C0020714 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.74
+23:12:21 SQL> alter index PSPADM.SYS_C0020652 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.68
+23:12:22 SQL> alter index PSPADM.PSP_COMPANY_ADDITIONAL_INF_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.85
+23:12:24 SQL> alter index PSPADM.PSP_COMPANY_TFSSUBMISSION_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.76
+23:12:25 SQL> alter index PSPADM.SYS_C0020700 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.55
+23:12:25 SQL> alter index PSPADM.PSP_FRAUD_EVENT_FK4 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:02.03
+23:12:27 SQL> alter index PSPADM.PSP_COMPANYNOTE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.14
+23:12:28 SQL> alter index PSPADM.BACKUP_SCHEMA_STATS_090911 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.70
+23:12:29 SQL> alter index PSPADM.BACKUP_TAB_STATS_090911 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.73
+23:12:30 SQL> alter index PSPADM.PSP_PAYMENT_BATCH_ASSOC_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.63
+23:12:31 SQL> alter index PSPADM.PSP_ANNUALBILLINGITEM_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.68
+23:12:31 SQL> alter index PSPADM.PSP_ANNUALBILLINGITEM_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.51
+23:12:32 SQL> alter index PSPADM.BACKUP_STATS_032911 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.61
+23:12:32 SQL> alter index PSPADM.PSP_PRIOR_PAYMENT_SUBMISSI_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.55
+23:12:33 SQL> alter index PSPADM.SYS_C0020712 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.52
+23:12:33 SQL> alter index PSPADM.PSP_SMSMIGRATION_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.38
+23:12:34 SQL> alter index PSPADM.EMP_PREF_UNQ_INDX rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.42
+23:12:34 SQL> alter index PSPADM.SYS_C00105734 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.36
+23:12:35 SQL> alter index PSPADM.SYS_C0020629 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.37
+23:12:35 SQL> alter index PSPADM.SYS_C0020586 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:01.33
+23:12:36 SQL> alter index PSPADM.PSP_TAXPAYMENTONHOLDREASON_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.50
+23:12:37 SQL> alter index PSPADM.SYS_C0020627 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.41
+23:12:37 SQL> alter index PSPADM.SYS_C0020637 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.43
+23:12:38 SQL> alter index PSPADM.PSP_PSTUB_EMPLOYEE_PREFERE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.28
+23:12:38 SQL> alter index PSPADM.SYS_C0020719 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.29
+23:12:38 SQL> alter index PSPADM.SYS_C0020583 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.23
+23:12:38 SQL> alter index PSPADM.PSP_EFTPS_ENROLLMENT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.24
+23:12:39 SQL> alter index PSPADM.SYS_C0020622 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.38
+23:12:39 SQL> alter index PSPADM.SYS_C0020664 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.15
+23:12:39 SQL> alter index PSPADM.SYS_C0020552 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.20
+23:12:39 SQL> alter index PSPADM.PSP_EFTPS_ENROLLMENT_DETAI_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.32
+23:12:40 SQL> alter index PSPADM.SYS_C0060128 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.67
+23:12:40 SQL> alter index PSPADM.SYS_C0020550 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.23
+23:12:41 SQL> alter index PSPADM.SYS_C0020706 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:41 SQL> alter index PSPADM.PSP_WC_PEND_STATE_PCHK_FK rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:41 SQL> alter index PSPADM.PSP_RAFENROLLMENT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.20
+23:12:41 SQL> alter index PSPADM.SYS_C0020728 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.18
+23:12:41 SQL> alter index PSPADM.PSP_EFTPS_ENROLLMENT_DETAI_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.33
+23:12:41 SQL> alter index PSPADM.SYS_C0020543 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.23
+23:12:42 SQL> alter index PSPADM.PSP_CHECKPRINTPAYCHECK_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.25
+23:12:42 SQL> alter index PSPADM.PSP_CHECK_PRINT_PAYCHECK_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.22
+23:12:42 SQL> alter index PSPADM.SYS_C0020581 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.21
+23:12:42 SQL> alter index PSPADM.PSP_EFTPS_ENROLLMENT_DETAI_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.30
+23:12:43 SQL> alter index PSPADM.SYS_C0020621 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.14
+23:12:43 SQL> alter index PSPADM.SYS_C0020666 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.12
+23:12:43 SQL> alter index PSPADM.PSP_COMPANYFILINGAMOUNT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.16
+23:12:43 SQL> alter index PSPADM.SYS_C0020698 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.12
+23:12:43 SQL> alter index PSPADM.PSP_RAFENROLLMENT_DETAIL_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.27
+23:12:43 SQL> alter index PSPADM.PSP_EFTPS_FILE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.11
+23:12:44 SQL> alter index PSPADM.PSP_RAFENROLLMENT_DETAIL_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.18
+23:12:44 SQL> alter index PSPADM.SYS_C0020626 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.19
+23:12:44 SQL> alter index PSPADM.PSP_ASSTBUNDLEBILLDETAIL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.14
+23:12:44 SQL> alter index PSPADM.PSP_RAFENROLLMENT_DETAIL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.19
+23:12:44 SQL> alter index PSPADM.SYS_C0058725 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.11
+23:12:44 SQL> alter index PSPADM.PSP_STRPT_TMPFREQ_FK_STRPTOUT rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.10
+23:12:44 SQL> alter index PSPADM.SYS_C0020656 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.08
+23:12:45 SQL> alter index PSPADM.PSP_TP401K_BATCH_EE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.13
+23:12:45 SQL> alter index PSPADM.PSP_TP401K_BATCH_EE_FK2  rebuild tablespace PSP_IDX02 online;
+alter index PSPADM.PSP_TP401K_BATCH_EE_FK2  rebuild tablespace PSP_IDX02 online
+*
+ERROR at line 1:
+ORA-01418: specified index does not exist
+
+
+Elapsed: 00:00:00.01
+23:12:45 SQL> alter index PSPADM.SYS_C0020584 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.11
+23:12:45 SQL> alter index PSPADM.PSP_FSET_FILING_DETAIL_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.22
+23:12:45 SQL> alter index PSPADM.PSP_FSET_FILING_DETAIL_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.16
+23:12:45 SQL> alter index PSPADM.PSP_FSET_FILING_DETAIL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.15
+23:12:45 SQL> alter index PSPADM.SYS_C0020702 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.17
+23:12:45 SQL> alter index PSPADM.PSP_THIRD_PARTY401K_BATCH__FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.13
+23:12:46 SQL> alter index PSPADM.PSP_THIRD_PARTY401K_BATCH__FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.14
+23:12:46 SQL> alter index PSPADM.SYS_C0020580 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.12
+23:12:46 SQL> alter index PSPADM.PSP_STRPT_TMPFREQ_FK_PMTTMPFRQ rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.13
+23:12:46 SQL> alter index PSPADM.PSP_NACHAFILE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.16
+23:12:46 SQL> alter index PSPADM.SYS_C0020740 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:46 SQL> alter index PSPADM.SYS_C0020578 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:46 SQL> alter index PSPADM.PSP_PSTUB_STATE_TAX_INFO_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.13
+23:12:46 SQL> alter index PSPADM.SYS_C0020588 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:46 SQL> alter index PSPADM.SYS_C0020648 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:46 SQL> alter index PSPADM.SYS_C0020655 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.12
+23:12:47 SQL> alter index PSPADM.PSP_VOIDED_CHECK_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:47 SQL> alter index PSPADM.PSP_VOIDED_CHECK_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:47 SQL> alter index PSPADM.SYS_C0020739 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.09
+23:12:47 SQL> alter index PSPADM.BACKUP_STATS rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:47 SQL> alter index PSPADM.PSP_COMPANYPAYMENTTEMPLATE_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.11
+23:12:47 SQL> alter index PSPADM.SYS_C0020654 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.08
+23:12:47 SQL> alter index PSPADM.SYS_C0020553 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:47 SQL> alter index PSPADM.PSP_ACHENROLLMENT_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:47 SQL> alter index PSPADM.PSP_ATFDATA_EXTRACT_FILE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.09
+23:12:47 SQL> alter index PSPADM.SYS_C0020644 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:47 SQL> alter index PSPADM.SYS_C0020556 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:47 SQL> alter index PSPADM.PSP_CHECK_PRINT_BATCH_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:47 SQL> alter index PSPADM.PSP_ASSISTEDBUNDLEBILL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.08
+23:12:48 SQL> alter index PSPADM.SYS_C0058718 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.PSP_CHECK_PRINT_BATCH_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:48 SQL> alter index PSPADM.PSP_EMPLOYER_PREFERENCE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.PSP_AGENCY_CHECK_BATCH_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.SYS_C0020729 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:48 SQL> alter index PSPADM.SYS_C0020657 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.PSP_TAX_ACC_AUD_PK rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.SYS_C0020628 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:48 SQL> alter index PSPADM.PSP_FAILED_PAYROLL_RUN_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:48 SQL> alter index PSPADM.SYS_C0020690 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:48 SQL> alter index PSPADM.PSP_FORECASTDETAIL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:48 SQL> alter index PSPADM.PSP_ENTITYCHANGE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:48 SQL> alter index PSPADM.SYS_C0020544 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:48 SQL> alter index PSPADM.SYS_C0020534 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.PSP_COMPANY_PAYCHECK_BATCH_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:48 SQL> alter index PSPADM.SYS_C0020643 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:48 SQL> alter index PSPADM.PSP_ACHENROLLMENT_DETAIL_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:48 SQL> alter index PSPADM.PSP_ACHENROLLMENT_DETAIL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:48 SQL> alter index PSPADM.SYS_C0020716 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:49 SQL> alter index PSPADM.SYS_C0020709 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.PSP_VOIDED_CHECK_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:49 SQL> alter index PSPADM.SYS_C0020671 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:49 SQL> alter index PSPADM.PSP_EDI_PAYMENT_DETAIL_FK3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.PSP_EDI_PAYMENT_DETAIL_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.SYS_C0055948 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.PSP_EDI_PAYMENT_DETAIL_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.SYS_C0058710 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.SYS_C0020554 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.PSP_ACHENROLLMENT_DETAIL_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.05
+23:12:49 SQL> alter index PSPADM.SYS_C0020593 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020542 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020594 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020731 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020574 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.SYS_C0020571 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020713 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020680 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.PSP_WAGE_LIMIT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020567 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:49 SQL> alter index PSPADM.SYS_C0020536 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020701 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020711 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.06
+23:12:49 SQL> alter index PSPADM.SYS_C0020633 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020585 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:49 SQL> alter index PSPADM.SYS_C0020650 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_AGENCY_ID_REQUIREMENT_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:50 SQL> alter index PSPADM.SYS_C0020651 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:50 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_PRINT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020642 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020564 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:50 SQL> alter index PSPADM.PSP_USER_SETTING_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:50 SQL> alter index PSPADM.PSP_USERSETTING_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020565 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020592 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020736 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020582 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020572 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:50 SQL> alter index PSPADM.PSP_PAYMENTMETHODREQUIREME_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020647 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_QBDT_REQUEST_INFO_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020674 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020658 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020659 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020660 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020661 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:50 SQL> alter index PSPADM.PSP_STATE_EDI_TAX_FILE_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020670 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_AGENCY_RATE_REQUEST_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_LAW_RATE_RANGE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020726 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_LAW_RATE_VALUE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:50 SQL> alter index PSPADM.SYS_C0020727 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020741 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020742 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_CHECK_PRINT_SIGNATURE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020577 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.PSP_SOURCE_SYSTEM_PRINTED__FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:50 SQL> alter index PSPADM.SYS_C0020641 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:50 SQL> alter index PSPADM.SYS_C0020715 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_SUICREDITS_JOB_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020734 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020423 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:51 SQL> alter index PSPADM.SYS_C00100240 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C00105738 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_LIMIT_VALUE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020682 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_CHECK_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_CHECK_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:51 SQL> alter index PSPADM.SYS_C0020645 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_AGENC_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020646 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:51 SQL> alter index PSPADM.SYS_C0020624 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020703 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_ADE_LAW_MAP_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_ADE_LAW_MAP_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020730 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.C_PSP_BATCH_JOB_STATUS1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:51 SQL> alter index PSPADM.SYS_C0020735 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020738 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020684 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:51 SQL> alter index PSPADM.PSP_FRAUDVALUE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020693 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_ADDITIONAL_FILING_AMOU_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020697 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:51 SQL> alter index PSPADM.SYS_C0020681 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_FORM_TEMPLATE_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_FORM_TEMPLATE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020555 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:51 SQL> alter index PSPADM.PSP_HOURS_WORKED_EXCEPTION_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020699 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020561 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_OFFERING_FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.PSP_OFFERING_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:51 SQL> alter index PSPADM.SYS_C0020604 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020605 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.PSP_LAW_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:52 SQL> alter index PSPADM.SYS_C0020547 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020548 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:52 SQL> alter index PSPADM.PSP_REPORTING_AGENT_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020549 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.04
+23:12:52 SQL> alter index PSPADM.SYS_C0020649 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:52 SQL> alter index PSPADM.SYS_C0020541 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020630 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.07
+23:12:52 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_PAYME_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020631 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_BANK__FK2 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_BANK__FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020632 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.PSP_TAX_PENALTY_INTEREST_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:52 SQL> alter index PSPADM.SYS_C0020559 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020589 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.SYS_C0020590 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:52 SQL> alter index PSPADM.SYS_C0020591 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:52 SQL> alter index PSPADM.PSP_ENTITLEMENT_IDX3 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.99
+23:12:53 SQL> alter index PSPADM.SYS_C0020692 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.PSP_OFFER_PRICE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.SYS_C0020528 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:53 SQL> alter index PSPADM.SYS_C0020529 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.PSP_INTUIT_SHIPPER_INFO_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.SYS_C0020576 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.PSP_TXNTYPE_SVC_FK_TXNTYPE rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+23:12:53 SQL> alter index PSPADM.PSP_TXNTYPE_SVC_FK_SVC rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.SYS_C0020545 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.PSP_PAYMENT_TEMPLATE_FK1 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.SYS_C0020546 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.SYS_C0020575 rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> alter index PSPADM.TPSQL_IDX rebuild tablespace PSP_IDX02 online;
+
+Index altered.
+
+Elapsed: 00:00:00.03
+23:12:53 SQL> 
+23:12:53 SQL> --enable online index rebuild cleanup job
+23:12:53 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+FALSE DISABLED
+24-MAY-22 03.00.41.474998 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:12:53 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+23:12:53 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+TRUE  SCHEDULED
+24-MAY-22 03.00.41.978020 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:12:53 SQL> 
+23:12:53 SQL> spool off;
+not spooling currently
+23:12:53 SQL> 
+23:12:53 SQL> Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production

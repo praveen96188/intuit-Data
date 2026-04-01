@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:controls="psp.sap.view.controls.*"
+	 height="100%"
+	 width="100%" xmlns:view="psp.sap.view.*"
+	 currentState="panelClosed"
+	 borderStyle="solid"
+	 borderSides="right, bottom"
+	 borderColor="#999999"
+	 verticalGap="0">
+	 <mx:Metadata>
+    	[Event(name="templateExpanded", type="psp.sap.application.events.SAPEvent")]
+    	[Event(name="quarterSelected", type="psp.sap.application.events.SAPEvent")]
+     </mx:Metadata>
+	 <mx:Script>
+	 	<![CDATA[
+	 		import mx.controls.Alert;
+	 		import psp.sap.model.PaymentTemplate;
+	 		import mx.collections.ArrayCollection;
+	 		import psp.sap.application.events.SAPEvent;
+	 		import mx.core.UIComponent;
+	 		import psp.sap.model.TaxPaymentYear;
+	 		import psp.sap.application.SAP;
+	 		
+	 		private const RESIZE_DURATION:int = 200;
+	 		
+	 		[Bindable]
+	 		public var taxPaymentYear:TaxPaymentYear;
+	 		
+	 		[Bindable]
+    		protected var contentHeight:int;
+	 		
+	 		[Bindable]
+    		private function get yearExpanded():Boolean {
+    			return currentState == 'panelOpen';
+    		}
+    		
+    		private function set yearExpanded(value:Boolean):void {
+    			if(value){
+    				content.createComponentsFromDescriptors();									
+					currentState = 'panelOpen';
+    			}
+    			else{
+    				currentState = 'panelClosed';
+    			}    			
+    		}	 			 		
+			
+			public function toggle():void {
+				taxPaymentYear.isYearShowing = !taxPaymentYear.isYearShowing;										
+			}
+			
+			private function getPreferredHeight(comp:UIComponent):int{
+				if (comp.measuredHeight > 0 ) {
+					return comp.measuredHeight;
+				} 
+				if (comp.explicitHeight > 0 ) {
+					return comp.explicitHeight;
+				}
+				return comp.height;
+			}
+			
+			private function setPercentHeight():void {				
+				content.percentHeight = 100;			
+				content.invalidateSize();	
+			}
+			
+			private function bubbleEvent(e:SAPEvent):void {
+				dispatchEvent(new SAPEvent(e.type, e.data));
+			}						
+			
+			[Bindable]
+			private var paymentTemplates:ArrayCollection;
+	 	]]>
+	 </mx:Script>
+	 
+	<mx:HBox width="100%" height="30" click="toggle();" styleName="expanderBarWhite">
+		<mx:LinkButton id="collapse" width="20" icon="{SAP.instance.icons.collapse}" toolTip="Collapse" tabEnabled="false"/>
+		<mx:LinkButton id="expand" width="20" icon="{SAP.instance.icons.expand}" toolTip="Expand" tabEnabled="false"/>
+		<mx:Label fontWeight="bold" text="{taxPaymentYear.year}" automationName="titleLabel_{taxPaymentYear.year}"/>			
+	</mx:HBox>
+		
+	<mx:VBox id="content"		
+		verticalScrollPolicy="off"
+		height="100%"
+		width="100%"
+		verticalGap="0"
+		creationPolicy="none">
+		<mx:Repeater id="paymentTemplate" dataProvider="{taxPaymentYear.paymentTemplates}" width="100%">
+			<view:TaxPaymentSummaryTemplateExpanderView
+				paymentTemplate="{paymentTemplate.currentItem}"
+				templateExpanded="{bubbleEvent(event)}"
+				quarterSelected="{bubbleEvent(event)}"/>
+		</mx:Repeater>
+	</mx:VBox>		
+	<mx:states>
+		<mx:State name="panelOpen">
+			<mx:SetProperty target="{collapse}" name="visible" value="true"/>
+			<mx:SetProperty target="{collapse}" name="includeInLayout" value="true"/>			
+			<mx:SetProperty target="{expand}" name="visible" value="false"/>
+			<mx:SetProperty target="{expand}" name="includeInLayout" value="false"/>		
+		</mx:State>
+		<mx:State name="panelClosed">
+			<mx:SetProperty target="{expand}" name="visible" value="true"/>
+			<mx:SetProperty target="{expand}" name="includeInLayout" value="true"/>			
+			<mx:SetProperty target="{collapse}" name="visible" value="false"/>
+			<mx:SetProperty target="{collapse}" name="includeInLayout" value="false"/>			
+		</mx:State>
+	</mx:states>		
+	
+	<mx:transitions>
+		<mx:Transition fromState="panelClosed" toState="panelOpen">                      
+			<mx:Sequence target="{content}" effectEnd="callLater(setPercentHeight);">													
+				<mx:Resize duration="{RESIZE_DURATION}" heightFrom="0" heightTo="{contentHeight}" />				
+			</mx:Sequence>			   
+		</mx:Transition>
+		<mx:Transition fromState="panelOpen" toState="panelClosed">
+			<mx:Sequence target="{content}" effectStart="contentHeight = getPreferredHeight(content);">                      				
+				<mx:Resize duration="{RESIZE_DURATION}" heightFrom="{content.height}" heightTo="0" />				
+			</mx:Sequence>   
+		</mx:Transition>
+		<mx:Transition fromState="" toState="panelClosed"> 
+			<mx:Sequence target="{content}" effectStart="contentHeight = getPreferredHeight(content);">				                     				
+			</mx:Sequence>   
+		</mx:Transition>
+		<mx:Transition fromState="" toState="panelOpen"> 
+			<mx:Sequence target="{content}">								
+			</mx:Sequence>   
+		</mx:Transition>		
+		
+	</mx:transitions>
+		
+	<mx:Binding source="taxPaymentYear.isYearShowing" destination="yearExpanded"/>	
+	
+</mx:VBox>

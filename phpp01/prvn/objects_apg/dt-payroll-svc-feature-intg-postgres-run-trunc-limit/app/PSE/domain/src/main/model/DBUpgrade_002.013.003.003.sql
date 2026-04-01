@@ -1,0 +1,55 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column VERSION;
+ALTER TABLE PSP_AUTH_USER
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_COMPANY
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_QUICKBOOKS_INFO
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column I_A_M_REALM_ID;
+ALTER TABLE PSP_QUICKBOOKS_INFO
+ ADD (I_A_M_REALM_ID  VARCHAR2(50 CHAR));
+
+Prompt Column VERSION;
+ALTER TABLE PSP_ENTITLEMENT_UNIT
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column CUR_AMT;
+ALTER TABLE PSP_PSTUB_DDITEM
+ ADD (CUR_AMT  NUMBER(19,4));
+
+Prompt Column "CURRENT";
+ALTER TABLE PSP_PSTUB_DDITEM DROP COLUMN "CURRENT";
+
+Prompt Column CUR_AMT;
+ALTER TABLE PSP_PSTUB_PAY_ITEM
+ ADD (CUR_AMT  NUMBER(19,4));
+
+Prompt Column QTY_AMT;
+ALTER TABLE PSP_PSTUB_PAY_ITEM
+ ADD (QTY_AMT  NUMBER(19,4));
+
+Prompt Column QTY_TIME;
+ALTER TABLE PSP_PSTUB_PAY_ITEM
+ ADD (QTY_TIME  NUMBER(19,7));
+
+Prompt Column "CURRENT";
+ALTER TABLE PSP_PSTUB_PAY_ITEM DROP COLUMN "CURRENT";
+
+Prompt Column QTY;
+ALTER TABLE PSP_PSTUB_PAY_ITEM DROP COLUMN QTY;
+
+PROMPT finishedDBUpgrade_002.013.003.003.sql

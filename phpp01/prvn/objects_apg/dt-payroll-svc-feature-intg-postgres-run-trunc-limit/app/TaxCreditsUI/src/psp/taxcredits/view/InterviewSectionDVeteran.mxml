@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','page_2_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        [Bindable]
+        public var question1MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question2478Enabled:Boolean = false;
+        [Bindable]
+        public var question2Answer4Enabled:Boolean = false;
+        [Bindable]
+        public var question3Enabled:Boolean = false;
+        [Bindable]
+        public var question4Answer7Enabled:Boolean = false;
+        [Bindable]
+        public var question56Enabled:Boolean = false;
+        [Bindable]
+        public var question8MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question910Enabled:Boolean = false;
+
+
+        public var questionStructure:Array =
+                [
+                    {label:"question1MoveOnEnabled", children: []},
+                    {label:"question2478Enabled", children: [
+                        {label:"question2Answer4Enabled", children: []},
+                        {label:"question3Enabled", children: []},
+                        {label:"question4Answer7Enabled", children:[]},
+                        {label:"question56Enabled", children:[]},
+                        {label:"question8MoveOnEnabled", children:[]},
+                        {label:"question910Enabled", children:[]}
+                    ]}
+                ];
+
+
+        public function onCreationComplete():void {
+            validators.addItem(veteranEver.validator);
+            validators.addItem(veteranSnap.validator);
+            validators.addItem(benefitsInput.nameValidator);
+            validators.addItem(benefitsInput.cityValidator);
+            validators.addItem(benefitsInput.stateValidator);
+            validators.addItem(veteranDisabled.validator);
+            validators.addItem(veteranDischargedYear.validator);
+            validators.addItem(veteranUnemployed6.validator);
+            validators.addItem(veteranActive180.validator);
+            validators.addItem(veteranDischargedDisability.validator);
+            validators.addItem(veteranDischarged5.validator);
+            validators.addItem(veteranUnemployment4.validator);
+
+        }
+
+
+        public function writeToModel():void {
+            writeYesNoToModel("veteranEver");
+            writeYesNoToModel("veteranSnap");
+            writeYesNoToModel("veteranDisabled");
+            writeYesNoToModel("veteranDischargedYear");
+            writeYesNoToModel("veteranUnemployed6");
+            writeYesNoToModel("veteranActive180");
+            writeYesNoToModel("veteranDischargedDisability");
+            writeYesNoToModel("veteranDischarged5");
+            writeYesNoToModel("veteranUnemployment4");
+
+            model.employee.veteranBenefits.name = benefitsInput.nameValue;
+            model.employee.veteranBenefits.city = benefitsInput.cityValue;
+            model.employee.veteranBenefits.state = benefitsInput.stateValue;
+        }
+
+        override public function readFromModel():void {
+            readYesNoFromModel("veteranEver");
+            readYesNoFromModel("veteranSnap");
+            readYesNoFromModel("veteranDisabled");
+            readYesNoFromModel("veteranDischargedYear");
+            readYesNoFromModel("veteranUnemployed6");
+            readYesNoFromModel("veteranActive180");
+            readYesNoFromModel("veteranDischargedDisability");
+            readYesNoFromModel("veteranDischarged5");
+            readYesNoFromModel("veteranUnemployment4");
+
+
+            benefitsInput.nameValue = model.employee.veteranBenefits.name;
+            benefitsInput.cityValue = model.employee.veteranBenefits.city;
+            benefitsInput.stateValue = model.employee.veteranBenefits.state;
+
+            var tempEnabled:Object = [];
+
+            tempEnabled.question1MoveOnEnabled = model.employee.veteranEverSet && ! model.employee.veteranEver;
+            tempEnabled.question2478Enabled = model.employee.veteranEverSet && model.employee.veteranEver;
+            tempEnabled.question2Answer4Enabled = tempEnabled.question2478Enabled && model.employee.veteranSnapSet && ! model.employee.veteranSnap;
+            tempEnabled.question3Enabled = tempEnabled.question2478Enabled && model.employee.veteranSnapSet && model.employee.veteranSnap;
+            tempEnabled.question4Answer7Enabled = tempEnabled.question2478Enabled && model.employee.veteranDisabledSet && ! model.employee.veteranDisabled;
+            tempEnabled.question56Enabled = tempEnabled.question2478Enabled && model.employee.veteranDisabledSet && model.employee.veteranDisabled;
+            tempEnabled.question8MoveOnEnabled = tempEnabled.question2478Enabled && model.employee.veteranActive180Set && model.employee.veteranDischargedDisabilitySet
+                    && ! model.employee.veteranActive180 && ! model.employee.veteranDischargedDisability;
+            tempEnabled.question910Enabled = tempEnabled.question2478Enabled && model.employee.veteranActive180Set && model.employee.veteranDischargedDisabilitySet
+                    && (model.employee.veteranActive180 || model.employee.veteranDischargedDisability);
+
+
+            recurseTest(tempEnabled, questionStructure);
+
+            for (var enabledVar:String in tempEnabled) {
+                this[enabledVar] = tempEnabled[enabledVar];
+            }
+
+            syncValidators();
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','veteran_subheader')}"/>
+
+
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="1." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4"
+                 text="{resourceManager.getString('interview','veteran_ever')}"/>
+        <controls:InlineHelp help="{resourceManager.getString('interview','veteran_ever_help')}"/>
+    </mx:HBox>
+    <mx:VBox paddingLeft="40">
+        <controls:YesNoRadio id="veteranEver" yesNoChange="writeToModel()"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question1MoveOnEnabled}"
+                 htmlText="{resourceManager.getString('interview','veteran_move_on')}"/>
+        <mx:VBox paddingLeft="40" enabled="{question2478Enabled}">
+            <mx:Text selectable="false" styleName="pageEmphasis"
+                     htmlText="{resourceManager.getString('interview','veteran_answer_2')}"/>
+            <mx:VBox paddingLeft="40">
+
+                <mx:HBox horizontalGap="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="2." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="520"
+                             text="{resourceManager.getString('interview','veteran_snap')}"/>
+                </mx:HBox>
+                <mx:VBox paddingLeft="40">
+                    <controls:YesNoRadio id="veteranSnap" yesNoChange="writeToModel()"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question2Answer4Enabled}"
+                             htmlText="{resourceManager.getString('interview','veteran_answer_4')}"/>
+                    <mx:VBox enabled="{question3Enabled}">
+                        <mx:HBox horizontalGap="0">
+                            <mx:Text selectable="false" styleName="pageEmphasis"
+                                     text="3." paddingRight="0"/>
+                            <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="420"
+                                     htmlText="{resourceManager.getString('interview','veteran_enter_info')}"/>
+                        </mx:HBox>
+                        <controls:BenefitsInput id="benefitsInput" paddingLeft="40" paddingTop="0" change="writeToModel();"/>
+                    </mx:VBox>
+                </mx:VBox>
+
+                <mx:HBox horizontalGap="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="4." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="460"
+                             text="{resourceManager.getString('interview','veteran_disabled')}"/>
+                </mx:HBox>
+                <mx:VBox paddingLeft="40">
+                    <controls:YesNoRadio id="veteranDisabled" yesNoChange="writeToModel()"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question4Answer7Enabled}"
+                             htmlText="{resourceManager.getString('interview','veteran_answer_7')}"/>
+                    <mx:VBox enabled="{question56Enabled}">
+                        <mx:Text selectable="false" styleName="pageEmphasis"
+                                 htmlText="{resourceManager.getString('interview','veteran_answer_5_6')}"/>
+                        <mx:VBox paddingLeft="40">
+                            <mx:HBox horizontalGap="0">
+                                <mx:Text selectable="false" styleName="pageEmphasis"
+                                         text="5." paddingRight="0"/>
+                                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="420"
+                                         htmlText="{resourceManager.getString('interview','veteran_discharged_year')}"/>
+                            </mx:HBox>
+                            <controls:YesNoRadio paddingLeft="40" id="veteranDischargedYear" yesNoChange="writeToModel()" />
+                            <mx:HBox horizontalGap="0">
+                                <mx:Text selectable="false" styleName="pageEmphasis"
+                                         text="6." paddingRight="0"/>
+                                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="420"
+                                         htmlText="{resourceManager.getString('interview','veteran_unemployed_6')}"/>
+                            </mx:HBox>
+                            <controls:YesNoRadio paddingLeft="40" id="veteranUnemployed6" yesNoChange="writeToModel()" />
+                        </mx:VBox>
+                    </mx:VBox>
+                </mx:VBox>
+
+                <mx:HBox horizontalGap="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="7." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="460"
+                             htmlText="{resourceManager.getString('interview','veteran_active_180')}"/>
+                </mx:HBox>
+                <controls:YesNoRadio paddingLeft="40" id="veteranActive180" yesNoChange="writeToModel()" />
+
+                <mx:HBox horizontalGap="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="8." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="460"
+                             htmlText="{resourceManager.getString('interview','veteran_discharged_disability')}"/>
+                </mx:HBox>
+                <mx:VBox paddingLeft="40">
+                    <controls:YesNoRadio id="veteranDischargedDisability" yesNoChange="writeToModel()" />
+                    <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question8MoveOnEnabled}"
+                             htmlText="{resourceManager.getString('interview','veteran_move_on_8')}"/>
+                    <mx:VBox enabled="{question910Enabled}">
+                        <mx:Text selectable="false" styleName="pageEmphasis"
+                                 htmlText="{resourceManager.getString('interview','veteran_answer_9_10')}"/>
+                        <mx:VBox paddingLeft="40">
+                            <mx:HBox horizontalGap="0">
+                                <mx:Text selectable="false" styleName="pageEmphasis"
+                                         text="9." paddingRight="0"/>
+                                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="420"
+                                         htmlText="{resourceManager.getString('interview','veteran_discharged_5')}"/>
+                            </mx:HBox>
+                            <controls:YesNoRadio paddingLeft="40" id="veteranDischarged5" yesNoChange="writeToModel()" />
+                            <mx:HBox horizontalGap="0">
+                                <mx:Text selectable="false" styleName="pageEmphasis"
+                                         text="10." paddingRight="0"/>
+                                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="420"
+                                         htmlText="{resourceManager.getString('interview','veteran_unemployment_4')}"/>
+                            </mx:HBox>
+                            <controls:YesNoRadio paddingLeft="40" id="veteranUnemployment4" yesNoChange="writeToModel()" />
+                        </mx:VBox>
+                    </mx:VBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+
+
+
+
+
+
+</controls:InterviewPage>

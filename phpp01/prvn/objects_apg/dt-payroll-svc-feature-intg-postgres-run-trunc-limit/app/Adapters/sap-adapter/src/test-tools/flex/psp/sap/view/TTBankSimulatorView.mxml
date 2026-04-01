@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:controls="psp.sap.view.controls.*" 
+	xmlns:pspui="psp.sap.view.*" width="100%"
+	creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.formatters.DefaultCurrencyFormatter;
+			import psp.sap.viewmodel.TTBankSimulatorViewModel;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import psp.sap.viewmodel.events.ViewModelEvent;
+			import mx.controls.Button;
+			import psp.sap.application.SAP;
+			import testTools.model.BankReturn;
+			import testTools.model.EntryDetailRecord;
+			
+			private var mCreationComplete:Boolean = false;
+			private var mViewModel:TTBankSimulatorViewModel = null;
+			private var mTempViewModel:TTBankSimulatorViewModel = null;
+			
+			[Bindable]
+			public function get viewModel():TTBankSimulatorViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:TTBankSimulatorViewModel):void {
+				if (mCreationComplete) {
+					mViewModel = value;
+					
+					mViewModel.addEventListener(ViewModelEvent.SAVE_SUCCEEDED, onSaveSucceeded);
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+	
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				if (mTempViewModel != null)
+					viewModel = mTempViewModel;
+			}
+							
+			public function onSaveSucceeded(event:ViewModelEvent):void {
+			}
+			
+			[Bindable]
+			public var currencyFormatter:DefaultCurrencyFormatter = new DefaultCurrencyFormatter(); 
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="State Date:" />
+		<pspui:SAPDateField id="startDate" />
+		<mx:Spacer width="20" />
+		<mx:Label text="End Date:" />
+		<pspui:SAPDateField id="endDate" />
+		<mx:Spacer width="20" />
+		<mx:Label text="Offload Group:" />
+		<mx:ComboBox id="offloadGrpComboBox" dataProvider="{viewModel.offloadGroupList}" />
+	</mx:HBox>
+	<mx:Button label="Search for Transactions" click="{viewModel.searchTransactions()}" />
+	<mx:Spacer height="20" />
+	<mx:DataGrid
+        	id="offloadGrpDataGrid"
+            width="100%"
+        	dataProvider="{viewModel.entryDetailRecords}"
+        	visible="{viewModel.showGrid}"
+            includeInLayout="{viewModel.showGrid}"
+            rowCount="{UIUtils.getRowCountFor(viewModel.entryDetailRecords)+1}"
+            selectable="false"
+            variableRowHeight="true">
+		<mx:columns>
+        	<mx:DataGridColumn
+        		headerText="Company ID"
+        		dataField="companyId"
+        		textAlign="left"
+        		itemRenderer="mx.controls.Text"/>
+        	<mx:DataGridColumn
+        		headerText="Legal Name"
+        		dataField="companyLegalName"
+        		textAlign="left"
+        		itemRenderer="mx.controls.Text"/>
+        	<mx:DataGridColumn
+        		headerText="Individual Name"
+        		dataField="individualName"
+        		itemRenderer="mx.controls.Text"
+        		textAlign="left"/>
+        	<mx:DataGridColumn
+        		headerText="Sttlmnt Date"
+        		dataField="settlementDate"
+        		itemRenderer="mx.controls.Text"
+        		textAlign="left"/>
+        	<mx:DataGridColumn
+        		headerText="CR/DB"
+        		dataField="creditDebitIndicator"
+        		itemRenderer="mx.controls.Text"
+        		textAlign="left"
+        		width="30"/>
+        	<mx:DataGridColumn
+        		headerText="Routing Number"
+        		dataField="routingNumber"
+        		textAlign="left"
+        		width="120">
+        			<mx:itemRenderer>
+        				<mx:Component>
+	        				<mx:VBox paddingLeft="5">
+	        					<mx:Text text="{data.routingNumber}" visible="{!data.canMakeReturn}" includeInLayout="{!data.canMakeReturn}" />
+	        					<mx:TextInput id="textInp" text="{data.routingNumber}" visible="{data.canMakeReturn}" includeInLayout="{data.canMakeReturn}" width="100"/>
+	        					<mx:Binding source="textInp.text" destination="data.routingNumber" />	        					
+	        					<mx:Binding source="data.routingNumber" destination="textInp.text" />	        					
+	        				</mx:VBox>
+        				</mx:Component>
+        			</mx:itemRenderer>
+			</mx:DataGridColumn>        		
+        	<mx:DataGridColumn
+        		headerText="Account Number"
+        		dataField="accountNumber"
+        		textAlign="left"
+        		width="120">
+        			<mx:itemRenderer>
+        				<mx:Component>
+	        				<mx:VBox paddingLeft="5">
+	        					<mx:Text text="{data.accountNumber}" visible="{!data.canMakeReturn}" includeInLayout="{!data.canMakeReturn}" />
+	        					<mx:TextInput id="textInp" text="{data.accountNumber}" visible="{data.canMakeReturn}" includeInLayout="{data.canMakeReturn}" width="100" />
+	        					<mx:Binding source="textInp.text" destination="data.accountNumber" />	        					
+	        					<mx:Binding source="data.accountNumber" destination="textInp.text" />	        					
+	        				</mx:VBox>
+        				</mx:Component>
+        			</mx:itemRenderer>
+			</mx:DataGridColumn>        		
+        	<mx:DataGridColumn
+        		headerText="Acct Type"
+        		textAlign="left"
+        		width="75">
+        			<mx:itemRenderer>
+        				<mx:Component>
+	        				<mx:VBox paddingLeft="5">
+	        					<mx:Text text="{data.bankAccountType}" visible="{!data.canMakeReturn}" includeInLayout="{!data.canMakeReturn}" />
+	        					<mx:TextInput id="textInp" visible="{data.canMakeReturn}" includeInLayout="{data.canMakeReturn}" width="35" maxChars="1"/>
+	        					<mx:Binding source="textInp.text" destination="data.bankAccountType" />	        					
+	        					<mx:Binding source="data.bankAccountType" destination="textInp.text" />	        					
+	        				</mx:VBox>
+        				</mx:Component>
+        			</mx:itemRenderer>
+			</mx:DataGridColumn>        		
+        	<mx:DataGridColumn
+        		headerText="Trace Number"
+        		dataField="traceNumber"
+        		itemRenderer="mx.controls.Text"
+        		textAlign="left"
+        		width="120"/>
+        	<mx:DataGridColumn
+        		headerText="Amount"
+        		dataField="amount"
+        		textAlign="left"
+        		width="80">
+        		<mx:itemRenderer>
+        			<mx:Component>
+        				<mx:Text text="{outerDocument.currencyFormatter.format(data.amount)}" />
+        			</mx:Component>
+        		</mx:itemRenderer>
+        	</mx:DataGridColumn>
+			<mx:DataGridColumn
+				headerText="Bank Returns"
+				textAlign="left"
+				width="220">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:VBox>
+							<mx:Script>
+								<![CDATA[
+									import psp.sap.viewmodel.TTBankSimulatorViewModel;
+								]]>
+							</mx:Script>
+							<mx:VBox visible="{data.bankReturnsExists}" includeInLayout="{data.bankReturnsExists}">
+								<mx:Repeater id="returnRepeater" dataProvider="{data.bankReturns}" >
+									<mx:Text text="{returnRepeater.currentItem.bankReturnCd}"/>
+									<mx:Text text="{returnRepeater.currentItem.creationDate}"/>
+								</mx:Repeater>
+							</mx:VBox>
+							<mx:VBox visible="{data.canMakeReturn}" includeInLayout="{data.canMakeReturn}">
+								<mx:ComboBox id="bankReturnComboBox" dataProvider="{TTBankSimulatorViewModel.BANK_RETURN_CODES}" />
+							</mx:VBox>
+							<mx:Binding source="bankReturnComboBox.selectedItem" destination="data.bankReturnCd" />							
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>        		
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Text text="Searching..." visible="{viewModel.isSearching}" includeInLayout="{viewModel.isSearching}" paddingBottom="50" />
+	<mx:Text text="No results found." visible="{viewModel.showNoResults}" includeInLayout="{viewModel.showNoResults}" paddingBottom="50" />
+	<mx:Button label="Create Returns" click="{viewModel.save()}" />	
+	<mx:Binding source="startDate.selectedDate" destination="viewModel.startDate" />
+	<mx:Binding source="viewModel.startDate" destination="startDate.selectedDate" />
+	<mx:Binding source="endDate.selectedDate" destination="viewModel.endDate" />
+	<mx:Binding source="viewModel.endDate" destination="endDate.selectedDate" />
+	<mx:Binding source="offloadGrpComboBox.selectedIndex" destination="viewModel.selectedOffloadGrpIndex" />
+	<mx:Binding source="viewModel.selectedOffloadGrpIndex" destination="offloadGrpComboBox.selectedIndex" />
+</mx:VBox>

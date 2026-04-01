@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete();">
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.application.enums.CompanyInspectorPageEnum;
+			import psp.sap.viewmodel.CompanyManageStrikesViewModel;			
+
+			private var mViewModel:CompanyManageStrikesViewModel;
+			private var mTempViewModel:CompanyManageStrikesViewModel;
+			private var mCreationComplete:Boolean = false;			
+
+			
+			[Bindable]
+			public function get viewModel():CompanyManageStrikesViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:CompanyManageStrikesViewModel):void {								
+				if (mCreationComplete) {
+					mViewModel = value;																			
+				} 
+				else {
+					mTempViewModel = value;
+				}								
+			}
+			
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;												
+			} 			
+		]]>
+	</mx:Script>
+	    
+    <mx:HBox width="100%">
+        <mx:Text
+        	id="strikeCountText"
+            width="100%"
+        	styleName="fieldLabel"
+        	text="{viewModel.twelveMonthStrikeCount} strikes within the past 12 months"/>
+        <mx:LinkButton 	
+        	id="strikeButton"
+            label="Manage"
+        	styleName="standardLinkButtonStyle"
+            click="viewModel.changePage(CompanyInspectorPageEnum.STRIKES)"/>
+    </mx:HBox>
+                
+</mx:VBox>

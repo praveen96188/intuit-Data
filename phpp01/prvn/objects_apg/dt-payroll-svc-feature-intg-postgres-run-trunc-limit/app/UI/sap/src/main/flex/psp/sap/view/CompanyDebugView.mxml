@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete();">
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.model.Company;
+			import psp.sap.application.enums.OperationsEnum;
+			import psp.sap.application.enums.CompanyInspectorPageEnum;						
+			import psp.sap.viewmodel.CompanyDebugViewModel;
+			
+			private var mViewModel:CompanyDebugViewModel;
+			private var mTempViewModel:CompanyDebugViewModel;
+			private var mCreationComplete:Boolean = false;			
+			
+			[Bindable]
+			public function get viewModel():CompanyDebugViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:CompanyDebugViewModel):void {								
+				if (mCreationComplete) {
+					mViewModel = value;																			
+				} 
+				else {
+					mTempViewModel = value;
+				}								
+			}
+			
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;												
+			}
+		]]>
+	</mx:Script>
+
+    <mx:VBox width="100%" height="100%">
+        <mx:HBox width="100%" height="100%">
+            <mx:Label text="Debug Logging" styleName="fieldLabel" width="100%"/>
+
+            <mx:LinkButton
+                    id="editDebugLoggingButton"
+                    label="{viewModel.debugLogging ? 'Disable':'Enable'}"
+                    styleName="standardLinkButtonStyle"
+                    enabled="{viewModel.canPerformOperation(OperationsEnum.EDIT_DEBUG_LOGGING)}"
+                    click="{viewModel.callSave(CompanyDebugViewModel.SAVE_DEBUG_LOGGING)}"/>
+        </mx:HBox>
+        <mx:HBox
+                width="100%"
+                height="100%"
+                visible="{viewModel.company.isAssisted || viewModel.company.isDIY}"
+                includeInLayout="{viewModel.company.isAssisted ||  viewModel.company.isDIY}">
+            <mx:Label text="Allow OFX payroll transmissions to be processed" styleName="fieldLabel" width="100%"/>
+
+            <mx:LinkButton
+                    id="editProcessTransmissionsButton"
+                    label="{viewModel.processTransmissions ? 'Disable':'Enable'}"
+                    styleName="standardLinkButtonStyle"
+                    enabled="{viewModel.canPerformOperation(OperationsEnum.EDIT_PROCESS_TRANSMISSIONS)}"
+                    click="{viewModel.callSave(CompanyDebugViewModel.SAVE_PROCESS_REQUESTS)}"/>
+        </mx:HBox>
+        <mx:HBox
+                width="100%"
+                height="100%"
+                visible="{viewModel.company.isAssisted || viewModel.company.isAssistedServiceCancelled || viewModel.company.isDIY}"
+                includeInLayout="{viewModel.company.isAssisted || viewModel.company.isAssistedServiceCancelled || viewModel.company.isDIY}">
+            <mx:Label text="Allow all data transmissions between QuickBooks and PSP" styleName="fieldLabel" width="100%"/>
+
+            <mx:LinkButton
+                    id="editAllowTransmissionsButton"
+                    label="{viewModel.allowTransmissions ? 'Disable':'Enable'}"
+                    styleName="standardLinkButtonStyle"
+                    enabled="{viewModel.canPerformOperation(OperationsEnum.EDIT_ALLOW_TRANSMISSIONS)}"
+                    click="{viewModel.callSave(CompanyDebugViewModel.SAVE_ALLOW_TRANSMISSIONS)}"/>
+        </mx:HBox>
+    </mx:VBox>
+	
+	
+</mx:HBox>

@@ -1,0 +1,100 @@
+// The library version is controled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+@Library(value = 'msaas-shared-lib', changelog = false) _
+
+node {
+    // setup the global static configuration
+    config = setupMsaasPipeline('msaas-config.yaml')
+}
+
+pipeline {
+
+    agent {
+        kubernetes {
+            label "${config.pod_label}"
+            yamlFile 'KubernetesPods.yaml'
+        }
+    }
+
+    post {
+        always {
+            sendMetrics(config)
+        }
+        fixed {
+            emailext(
+                subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' ${currentBuild.result}", 
+                body: """
+                        Job Status for '${env.JOB_NAME} [${env.BUILD_NUMBER}]': ${currentBuild.result}\n\nCheck console output at ${env.BUILD_URL}
+                """, 
+                to: 'some_email@intuit.com'
+            )
+        }
+        unsuccessful {
+            emailext(
+                subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' ${currentBuild.result}", 
+                body: """
+                        Job Status for '${env.JOB_NAME} [${env.BUILD_NUMBER}]': ${currentBuild.result}\n\nCheck console output at ${env.BUILD_URL}
+                """, 
+                to: 'some_email@intuit.com'
+            )
+        }
+    }
+
+    stages {
+        stage('BUILD:') {
+            when {
+                anyOf {
+                    branch 'master'
+                    changeRequest()
+                }
+            }
+            stages {
+                stage('Docker Multi Stage Build') {
+                    steps {
+                        sh 'echo build'
+                    }
+                }
+                stage('Code Scans') {
+                    parallel {
+                        stage('Code Analysis') {
+                            when {expression {return config.SonarQubeAnalysis}}
+                            steps {
+                                container('docker') {
+                                    // copy from container bundle for sonar analysis
+                                    sh label: 'docker cp from build container to outputs', script: "docker cp \$(docker ps -l -a -q -f \"label=image=build\" -f \"label=build=${env.BUILD_URL}\" -f \"status=exited\"):/usr/src /var/run/outputs/bundle"
+                                    sh script: 'cp -R /var/run/outputs/bundle ${WORKSPACE}/bundle'
+                                    sh label: 'docker build', script: "docker build -f Dockerfile.sonar --build-arg=\"sonar=${config.SonarQubeEnforce}\" ."
+                                }
+                            }
+                        }
+                        stage('checkmarx') {
+                            steps {
+                                checkmarx(config)
+                            }
+                        }
+                        stage('Nexus IQ Server Scan') {
+                            steps {
+                                sh 'echo nexus scan'
+                            }
+                        }
+                    }
+                }
+                stage('Publish') {
+                    sh 'echo publish'
+                }
+                // jira transitioning
+                stage('Transition Jira Tickets') {
+                    steps {
+                        script {
+                            if (env.BRANCH_NAME != 'master' && changeRequest()) {
+                                transitionJiraTickets(config, 'Ready for Review')
+                            } else if (env.BRANCH_NAME == 'master') {
+                                transitionJiraTickets(config, 'Closed')
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

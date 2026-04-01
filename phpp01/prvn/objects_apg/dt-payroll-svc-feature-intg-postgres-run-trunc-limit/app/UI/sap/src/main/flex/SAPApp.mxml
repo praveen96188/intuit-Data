@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        backgroundColor="white"
+        modalTransparency="0.6"
+        modalTransparencyColor="#000000"
+        modalTransparencyBlur="5"
+        paddingTop="0" paddingLeft="0" paddingRight="0" paddingBottom="0"
+        enabled="{SAP.instance.session.isOpen}"
+        creationComplete="onCreationCompleted()"
+        keyDown="onKeyDown(event)"
+        error="errorHandler(event)"
+        keyFocusChange="onFocusChange(event)"
+        xmlns:controls="psp.sap.view.controls.*"
+        frameRate="40"
+        themeColor="#4553CD">
+
+
+    <mx:Script>
+		<![CDATA[
+        import flexlib.controls.tabBarClasses.SuperTab;
+
+        import mx.core.Container;
+        import mx.core.IFlexDisplayObject;
+        import mx.events.ItemClickEvent;
+        import mx.events.PropertyChangeEvent;
+        import mx.logging.ILogger;
+        import mx.logging.Log;
+        import mx.managers.PopUpManager;
+        import mx.utils.URLUtil;
+
+        import psp.sap.application.ClientLoggingTarget;
+        import psp.sap.application.SAP;
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.application.enums.ExplorerEnum;
+        import psp.sap.application.enums.PartsEnum;
+        import psp.sap.application.events.SAPEvent;
+        import psp.sap.model.Company;
+        import psp.sap.model.User;
+        import psp.sap.view.LoginView;
+        import psp.sap.view.MRUPopUp;
+        import psp.sap.view.PSPSystemInformationView;
+        import psp.sap.view.ProgressWindow;
+        import psp.sap.view.controls.WindowManager;
+        import psp.sap.viewmodel.AbstractExplorer;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+        import psp.sap.viewmodel.events.EntityChangeEvent;
+
+        private var logger:ILogger;
+        [Bindable]
+        private var mLoginPopup:LoginView;
+        [Bindable]
+        private var redirectTo:String = "";
+        /**
+         * only initilize once
+         */
+        private var mInitialized:Boolean = false;
+        private var mProgressWindow:ProgressWindow = new ProgressWindow();
+
+        /**
+         * global method to display a modal window to indicate progress on long
+         * running operations; creates a pop-up  centered on the application as opposed
+         * to the client area of the current page
+         */
+        public function showProgress(event:SAPEvent):void {
+            var message:String = event.data as String;
+            if (message != null && message != "") {
+                mProgressWindow.progressText = message;
+            } else {
+                mProgressWindow.progressText = "Saving...";
+            }
+            PopUpManager.addPopUp(mProgressWindow, this, true);
+            PopUpManager.centerPopUp(mProgressWindow);
+        }
+
+        public function hideProgress(event:SAPEvent):void {
+            PopUpManager.removePopUp(mProgressWindow);
+        }
+
+        /**
+         * hookup event handling to listen to the application model; events from the
+         * application model will drive the user interface to update itself
+         */
+        public function onCreationCompleted():void {
+            // setup the client side logger
+            logger = Log.getLogger("psp.SAPApp");
+            SAP.instance.session.addEventListener(SAPEvent.SESSION_STARTED, onUserSesssionInitiated, false, 0, true);
+            SAP.instance.session.addEventListener(SAPEvent.SESSION_ENDED, onUserSessionExpired, false, 0, true);
+            SAP.instance.addEventListener("showProgress", showProgress, false, 0, true);
+            SAP.instance.addEventListener("hideProgress", hideProgress, false, 0, true);
+            var menu:ContextMenu = new ContextMenu();
+            menu.hideBuiltInItems();
+            this.contextMenu = menu;
+            MovieClip(systemManager).contextMenu = this.contextMenu.clone();
+            //SSO?
+
+            //Checking if its Browser Application or Desktop Application
+            var unAuthenticatedUser:User = getUnAuthenticatedUser();
+            redirectTo = 'SSO';
+            // if (corpId != null && corpId.length > 0 && authToken != null && authToken.length > 0) {
+            if (unAuthenticatedUser.corpId != null && unAuthenticatedUser.corpId.length > 0) {
+                SAP.instance.session.loginSSO(unAuthenticatedUser,
+                        null,
+                        function (e:Event):void {
+                            showLoginView();
+                        },
+                        function (e:Event):void {
+                            showLoginView();
+                        });
+            } else {
+                redirectTo = 'LDAP';
+                showLoginView();
+            }
+            //Uncomment this line and import to enable performance testing.
+            //PerformanceTester.enable();
+        }
+
+        /**
+         * When a login is successful (i.e. a user session is initiated) setup
+         * the workspace
+         */
+        public function onUserSesssionInitiated(e:SAPEvent):void {
+            PopUpManager.removePopUp(mLoginPopup);
+            mLoginPopup = null;
+            // attach explorer models to explorer views based on label names
+            for each (var explorer:AbstractExplorer in SAP.instance.explorers) {
+                var pageView:Container = workspace.getChildByLabel(explorer.label);
+                pageView["viewModel"] = explorer;
+            }
+            SAP.instance.explorers.refresh();
+            SAP.instance.explorersMenu.refresh();
+            ViewModelSync.associatePageViewModels(this, SAP.instance.partHost);
+            SAP.instance.partHost.activate();
+            //SAPModuleManager.instance.
+            // sync first
+            syncToActiveExplorer(SAP.instance.activeExplorer);
+            // stay in sync going forward
+            SAP.instance.addEventListener(SAP.ACTIVE_EXPLORER_CHANGED, onExplorerChanged, false, 0, true);
+            this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
+        }
+
+        public function onUserSessionExpired(e:SAPEvent):void {
+            showLoginView();
+        }
+
+        public function showLoginView():void {
+            mLoginPopup = new LoginView();
+            PopUpManager.addPopUp(mLoginPopup, this, true);
+            PopUpManager.centerPopUp(mLoginPopup);
+        }
+
+        /**
+         * synchronize the explorer view (i.e. show a different page)
+         * when the application model's activeExplorer property is updated
+         */
+        public function onExplorerChanged(event:PropertyChangeEvent):void {
+            syncToActiveExplorer(AbstractExplorer(event.newValue));
+            SAP.instance.dispatchEvent(SAPEvent.createExplorerChangedEvent());
+        }
+
+        private function syncToActiveExplorer(explorer:AbstractExplorer):void {
+            workspace.selectedChildLabel = explorer.name;
+        }
+
+        public function onMenuLinkClick(e:ItemClickEvent):void {
+            AbstractExplorer(e.item).activate();
+        }
+
+        public function onCompanyMenuLinkClick(e:ItemClickEvent):void {
+            var company:Company = (e.item as CompanyInspectorViewModel).company;
+            company.display();
+        }
+
+        public function onMRUItemClicked(e:MouseEvent):void {
+            var popUpButton:MRUPopUpButton = e.currentTarget as MRUPopUpButton;
+            var popUp:MRUPopUp = popUpButton.popUp as MRUPopUp;
+            if (popUp != null) {
+                // open the last closed company
+                if (popUp.closedList != null && popUp.closedList.length > 0) {
+                    Company(popUp.closedList[0]).display();
+                }
+            }
+        }
+
+        /**
+         * Trap global key strokes.
+         *
+         * F8 - copy log output to clipboard
+         * F9 - page refresh (in IE only)
+         */
+        public function onKeyDown(e:KeyboardEvent):void {
+            if (e.keyCode == Keyboard.F9) {
+                SAP.instance.refreshActivePage();
+                SAP.instance.dispatchEvent(EntityChangeEvent.createEvent(EntityChangeEvent.PAGE_REFRESH));
+            }
+            if (e.keyCode == Keyboard.F8) {
+                System.setClipboard(ClientLoggingTarget.instance.toString());
+            }
+            if (e.ctrlKey && String.fromCharCode(e.charCode) == 'k' && WindowManager.windowList.length == 0) {
+                universalSearch.searchField.searchInput.setFocus();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+            }
+            if (e.ctrlKey && String.fromCharCode(e.charCode) == 't' && WindowManager.windowList.length == 0) {
+                universalSearch.viewModel.displayResults();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+            }
+        }
+
+        public function showAboutBox():void {
+            var systemInformation:IFlexDisplayObject = PopUpManager.createPopUp(this, PSPSystemInformationView, true);
+            PopUpManager.centerPopUp(systemInformation);
+        }
+
+        private function errorHandler(e:ErrorEvent):void {
+            logger.error("An unhandled error event was caught by the application. Type: " + e.type + " Details: " + e.toString());
+        }
+
+        public function getQueryStringParameters():Object {
+            var paramString:String = ExternalInterface.call("window.location.search.toString");
+            if (paramString != null) {
+                return URLUtil.stringToObject(paramString.substr(1), "&");
+            } else {
+                return Application.application.parameters;
+            }
+        }
+
+        private function onFocusChange(event:FocusEvent):void {
+            event.preventDefault();
+            if (focusManager != null && focusManager.getNextFocusManagerComponent(event.shiftKey) != null) {
+                focusManager.getNextFocusManagerComponent(event.shiftKey).setFocus();
+            }
+        }
+
+        public function showSettings():void {
+            SAP.instance.explorers.getExplorer(ExplorerEnum.SETTINGS).activate();
+        }
+
+        public function getUnAuthenticatedUser():User {
+            var corpId:String = Application.application.parameters.corpId;
+            var authToken:String = Application.application.parameters.authToken;
+            var authId:String = Application.application.parameters.authId;
+            var ticket:String = Application.application.parameters.ticket;
+            var realmId:String = Application.application.parameters.realmId;
+            var emailAddress:String = Application.application.parameters.emailAddress;
+
+            //Create Unauthenticated user from EIAM SSO attributes for flex re-authentication
+            var unAuthenticatedUser:User = new User();
+            unAuthenticatedUser.corpId = corpId;
+            unAuthenticatedUser.authorizationToken = authToken;
+            unAuthenticatedUser.authId = authId;
+            unAuthenticatedUser.ticket = ticket;
+            unAuthenticatedUser.realmId = realmId;
+            unAuthenticatedUser.emailAddress = emailAddress;
+            return unAuthenticatedUser;
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:Style source="psp/sap/view/common.css"/>
+    <mx:Style source="psp/sap/view/banner.css"/>
+    <mx:Style source="psp/sap/view/CompanyEditDDLimitsView.css"/>
+    <mx:Style source="psp/sap/view/DDCompanyInspectorView.css"/>
+    <mx:Style source="psp/sap/view/ach.css"/>
+    <mx:Style source="psp/sap/view/CompanyInformationView.css"/>
+    <mx:Style source="psp/sap/view/CompanyNotes.css"/>
+    <mx:Style source="psp/sap/view/CompanyEditFundingModelView.css"/>
+    <mx:Style source="psp/sap/view/CompanyFundingModelHistory.css"/>
+    <mx:Style source="psp/sap/view/CompanySubscriptionStatusHistory.css"/>
+    <mx:Style source="psp/sap/view/DDCompanySearchExplorerView.css"/>
+    <mx:Style source="psp/sap/view/LoginView.css"/>
+    <mx:Style source="psp/sap/view/PayrollLedgerAddEscalationView.css"/>
+    <mx:Style source="psp/sap/view/PayrollAddRedebit.css"/>
+    <mx:Style source="psp/sap/view/PayrollTransactionReverseView.css"/>
+
+    <mx:VBox x="0" y="0" height="100%" width="100%" verticalGap="0" fontFamily="verdana">
+
+        <mx:HBox
+                width="100%" paddingBottom="-5"
+                verticalAlign="middle" id="titleBox">
+
+            <!-- application banner -->
+            <mx:Image source="{SAP.instance.icons.intuitLogo}"/>
+            <pspui:GradientBox
+                    width="100%"
+                    verticalAlign="middle"
+                    gradientDirection="horizontal"
+                    color="black"
+                    colors="[#FFFFFF, #98A6D3]"
+                    direction="horizontal"
+                    height="100%">
+
+                <mx:HBox horizontalGap="0" verticalGap="0" verticalAlign="middle" paddingBottom="0" paddingTop="-5">
+                    <mx:Label paddingTop="4" paddingBottom="0" fontFamily="verdana" fontSize="20" fontWeight="bold"
+                              text="Payroll Services Platform"/>
+                </mx:HBox>
+
+                <mx:Spacer width="70" height="2"/>
+
+                <!-- logged in user -->
+                <mx:HBox verticalAlign="middle" horizontalGap="2">
+                    <mx:Image source="{SAP.instance.icons.user}"/>
+                    <mx:Label fontSize="12" text="{SAP.instance.session.user.fullName}"/>
+                    <mx:LinkButton label="(Settings)" fontSize="12" click="showSettings();" tabEnabled="false"/>
+                </mx:HBox>
+
+                <!-- log out -->
+                <mx:HBox width="100%" horizontalAlign="right" borderStyle="none">
+                    <mx:LinkButton label="Logout" fontSize="12" fontWeight="bold"
+                                   click="{SAP.instance.session.logout()}" tabEnabled="false" visible="{redirectTo = 'LDAP'}" width="{redirectTo == 'LDAP'?NaN:0}"/>
+                    <mx:LinkButton label="Logout" fontSize="12" fontWeight="bold"
+                                   click="{SAP.instance.session.logoutSSO()}" tabEnabled="false" visible="{redirectTo == 'SSO'}" width="{redirectTo == 'SSO'?NaN:0}" />
+                    <mx:LinkButton label="About" fontSize="12" fontWeight="normal" click="showAboutBox()"
+                                   tabEnabled="false"/>
+                </mx:HBox>
+
+            </pspui:GradientBox>
+
+        </mx:HBox>
+
+        <mx:HBox width="100%"
+                 styleName="menuBox"
+                 verticalAlign="middle"
+                 visible="{SAP.instance.session.user.canAccessApplication()}"
+                 includeInLayout="{SAP.instance.session.user.canAccessApplication()}"
+                 horizontalGap="0">
+            <pspui:UniversalSearch label="{PartsEnum.UNIVERSAL_SEARCH}" id="universalSearch" paddingLeft="5"/>
+            <mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle" paddingTop="5" paddingBottom="5">
+                <mx:Label text="Recently Viewed:" verticalCenter="true"/>
+                <pspui:MRUPopUpButton
+                        id="itemMRU"
+                        fontWeight="normal"
+                        width="250"
+                        click="onMRUItemClicked(event)"
+                        closedList="{SAP.instance.recentlyInspectedCompanies}"
+                        openList="{SAP.instance.openCompanies}"
+                        enabled="{SAP.instance.recentlyInspectedCompanies.length > 0}"
+                        tabEnabled="false"/>
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:HBox id="menuBox" styleName="menuBox" width="100%" height="32" verticalScrollPolicy="off"
+                 verticalAlign="middle">
+
+            <mx:VBox verticalGap="0">
+                <pspui:ExplorerLinkBarExt
+                        id="menuLinkBar"
+                        height="100%"
+                        trackSelectionState="true"
+                        fontFamily="verdana"
+                        fontWeight="normal"
+                        itemClick="onMenuLinkClick(event)"
+                        dataProvider="{SAP.instance.explorersMenu}"
+                        selectedIndex="{SAP.instance.activeExplorerMenuIndex}"
+                        separatorWidth="0"
+                        horizontalGap="5"
+                        linkButtonStyleName="topNavigation"
+                        paddingBottom="0"
+                        verticalAlign="bottom"/>
+            </mx:VBox>
+
+            <mx:VBox width="100%" horizontalAlign="right">
+                <controls:CompanySuperTabBar
+                        id="companyTabBar"
+                        closePolicy="{SuperTab.CLOSE_ALWAYS}"
+                        height="100%"
+                        fontFamily="verdana"
+                        fontWeight="normal"
+                        itemClick="onCompanyMenuLinkClick(event)"
+                        dataProvider="{companyExplorerView.viewModel.inspectors}"
+                        horizontalGap="5"
+                        paddingBottom="0"
+                        dragEnabled="false"
+                        dropEnabled="false"
+                        tabStyleName="companyTab"
+                        tabWidth="150"
+                        verticalAlign="bottom"
+                        tabChildren="false"
+                        focusEnabled="false"/>
+            </mx:VBox>
+
+        </mx:HBox>
+
+        <!-- Application Explorers -->
+        <pspui:ViewStackControlEx id="workspace" width="100%" height="100%" historyManagementEnabled="false"
+                                  creationPolicy="auto">
+
+            <pspui:DDCompanyExplorerView id="companyExplorerView" label="{ExplorerEnum.COMPANY}"/>
+
+            <pspui:RiskExplorerView id="riskExplorerView" label="{ExplorerEnum.RISK}"/>
+
+            <pspui:OperatorExplorerView id="achOffloadExplorerView" label="{ExplorerEnum.OPERATOR}"/>
+
+            <!--pspui:ActivationsExplorerView id="activationsExplorerView" label="{ExplorerEnum.ACTIVATIONS}"/-->
+
+            <pspui:AdministrationExplorerView id="administrationExplorerView" label="{ExplorerEnum.ADMINISTRATION}"/>
+
+            <!--pspui:TaxExplorerView id="taxExplorerView" label="{ExplorerEnum.TAX}"/-->
+
+            <pspui:AccountingExplorerView id="accountingExplorerView" label="{ExplorerEnum.ACCOUNTING}"/>
+
+            <pspui:SettingsExplorerView id="settingsExplorerView" label="{ExplorerEnum.SETTINGS}"/>
+
+            <pspui:TaxCreditsExplorerView label="{ExplorerEnum.TAX_CREDITS}"/>
+
+
+            <pspui:EnrollmentsExplorerView label="{ExplorerEnum.ENROLLMENTS}"/>
+
+            <pspui:PaymentsExplorerView label="{ExplorerEnum.PAYMENTS}"/>
+
+            <pspui:EINManagementExplorerView label="{ExplorerEnum.EIN_MANAGEMENT}"/>
+
+            <pspui:RTBExplorerView label="{ExplorerEnum.RTB}"/>
+
+        </pspui:ViewStackControlEx>
+
+    </mx:VBox>
+
+    <mx:Binding source="companyExplorerView.viewModel.activeInspectorIndex" destination="companyTabBar.selectedIndex "/>
+
+</mx:Application>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findTxnRetByCompExclStatus">
+        <![CDATA[
+			Select txnRet
+			from com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet
+			where txnRet.Company =:sourceCompany
+			    and txnRet.ReturnStatusCd !=:excludedStatus
+			]]>
+    </query>
+
+
+    <query name="findTxnRetByCompanyBankAccountExclStatus">
+        <![CDATA[
+			Select txnRet
+			from com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTxn,
+			     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+			     com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet
+			where txnRet.Company =:sourceCompany
+			    and txnRet.ReturnStatusCd !=:excludedStatus
+		        and mmTxn.Id = txnRet.MoneyMovementTransaction.Id
+			    and finTxn.MoneyMovementTransaction.Id = mmTxn.Id
+			    and (finTxn.CreditBankAccount =:bankAccount or finTxn.DebitBankAccount =:bankAccount)
+			]]>
+    </query>
+    
+     <query name="findTxnRetByCompanyAndReturnType">
+        <![CDATA[
+			Select txnRet
+			from com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet
+		    where txnRet.Company = :sourceCompany
+			    and txnRet.ReturnStatusCd = :returnStatus
+			    and txnRet.BankReturnCd like :returnCdWithPercentSigns
+			]]>
+    </query>
+    
+    <query name="findTxnRetByPayrollRunId">
+        <![CDATA[
+                Select distinct txnRet
+                from com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTxn,
+                     com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet,
+                     com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun,
+                     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+                where txnRet.Company = :company
+                    and mmTxn.Id = txnRet.MoneyMovementTransaction.Id
+                    and mmTxn.Company = :company
+                    and finTxn.MoneyMovementTransaction.Id = mmTxn.Id
+                    and finTxn.PayrollRun.Id=payrollRun.Id
+                    and payrollRun.Company = :company
+                    and payrollRun.SourcePayRunId=:sourcePayrollRunId
+                ]]>
+    </query>
+
+    <query name="findTransactionReturnsExcludedStatus">
+        <![CDATA[
+                Select txnRet
+                from com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet
+                where txnRet.MoneyMovementTransaction = :moneyMovementTx
+                    and txnRet.ReturnStatusCd !=:excludedStatus
+            ]]>
+    </query>
+
+    <query name="findTxnReturnCollectionENC">
+        <![CDATA[
+		Select txnRet
+			from com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet,
+			     com.intuit.sbd.payroll.psp.domain.TransactionReturnBatch as txnRetBatch,
+			     com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTxn
+		    where (comp.SourceSystemCd =:sourceSystemCd or :sourceSystemCd is null)
+			    and (comp.SourceCompanyId =:sourceCompanyId or :sourceCompanyId is null)
+		        and (comp.FedTaxIdEnc in (:feinEncList) or 'NONE' in (:feinEncList))
+			    and ((txnRet.ReturnStatusCd = :returnStatusCd1 or :returnStatusCd1 is null)
+			    or (txnRet.ReturnStatusCd = :returnStatusCd2)
+			    or (txnRet.ReturnStatusCd = :returnStatusCd3)
+			    or (txnRet.ReturnStatusCd = :returnStatusCd4))
+			    and (txnRetBatch.ReturnDate >= :fromDate or coalesce(:fromDate, null) is null)
+			    and (txnRetBatch.ReturnDate <= :toDate or coalesce(:toDate, null) is null)
+			    and txnRet.ReturnBatch.Id = txnRetBatch.Id
+			    and mmTxn.Id = txnRet.MoneyMovementTransaction.Id
+			    and mmTxn.Company.Id = comp.Id
+			    order by txnRetBatch.ReturnDate,txnRet.Id
+			]]>
+    </query>
+
+    <query name="findTxnReturnCollectionTotalCountENC">
+        <![CDATA[
+		Select count(*)
+			from com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet,
+			     com.intuit.sbd.payroll.psp.domain.TransactionReturnBatch as txnRetBatch,
+			     com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTxn
+		    where (comp.SourceSystemCd =:sourceSystemCd or :sourceSystemCd is null)
+			    and (comp.SourceCompanyId =:sourceCompanyId or :sourceCompanyId is null)
+		        and (comp.FedTaxIdEnc in (:feinEncList) or 'NONE' in (:feinEncList))
+			    and ((txnRet.ReturnStatusCd = :returnStatusCd1 or :returnStatusCd1 is null)
+			    or (txnRet.ReturnStatusCd = :returnStatusCd2)
+			    or (txnRet.ReturnStatusCd = :returnStatusCd3)
+			    or (txnRet.ReturnStatusCd = :returnStatusCd4))
+			    and (txnRetBatch.ReturnDate >= :fromDate or coalesce(:fromDate, null) is null)
+			    and (txnRetBatch.ReturnDate <= :toDate or coalesce(:toDate, null) is null)
+			    and txnRet.ReturnBatch.Id = txnRetBatch.Id
+			    and mmTxn.Id = txnRet.MoneyMovementTransaction.Id
+			    and mmTxn.Company.Id = comp.Id
+			]]>
+    </query>
+
+    <query name="findTxnReturnByReturnBatchAndReturnType">
+        <![CDATA[
+		Select txnRet
+			  from com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet
+		    where txnRet.ReturnBatch.Id =:txnRetBatchId
+			  and txnRet.BankReturnCd like :returnCdWithPercentSigns
+			  and txnRet.ReturnStatusCd = :txnRetStatusCd
+			]]>
+    </query>
+
+    <query name="findUnresolvedTxnReturnsExcludedTxnTypes">
+        <![CDATA[
+		Select txnRet
+			from com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTxn,
+			     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+			     com.intuit.sbd.payroll.psp.domain.TransactionReturn as txnRet,
+			     com.intuit.sbd.payroll.psp.domain.TransactionType as txnType
+		    where mmTxn.Id = txnRet.MoneyMovementTransaction.Id
+		        and txnRet.Company = :company
+		        and txnRet.ReturnStatusCd !=:excludedStatus
+		        and finTxn.MoneyMovementTransaction.Id = mmTxn.Id
+		        and finTxn.TransactionType = txnType.TransactionTypeCd
+		        and txnType.TransactionCategory !=:txnCategory
+			]]>
+    </query>
+
+    <query name="findTxnReturnBatchByReturnDate">
+        <![CDATA[
+		Select txnRetBatch
+			  from com.intuit.sbd.payroll.psp.domain.TransactionReturnBatch as txnRetBatch
+		    where to_char(txnRetBatch.ReturnDate,'yyyyMMdd') =:returnDate
+		    order by txnRetBatch.CreatedDate
+			]]>
+    </query>
+
+</hibernate-mapping>
+

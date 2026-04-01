@@ -1,0 +1,6 @@
+--
+-- This script will be executed BEFORE the automatically generated
+-- C:\Dev\PSP\main\PSE\Domain\src\main\model\DBUpgradeFrom_2.0.0.23_To_2.0.0.24.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

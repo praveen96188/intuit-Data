@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	height="100%" width="100%"
+	creationComplete="onCreationComplete()">
+
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.RadioButton;
+        import mx.events.CloseEvent;
+
+        import psp.sap.viewmodel.CompanyEditFundingModelViewModel;
+
+        private var mViewModel:CompanyEditFundingModelViewModel;
+        private var mTempViewModel:CompanyEditFundingModelViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyEditFundingModelViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditFundingModelViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            } else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function fundingModel_change(evt:Event):void {
+            var rb:RadioButton = evt.currentTarget as RadioButton;
+            viewModel.fundingModelCd = rb.value as String;
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to edit the ACH Funding Model?";
+            Alert.show(msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK) {
+                viewModel.save();
+            }
+        }
+        ]]>
+	</mx:Script>	
+				
+	
+	<mx:RadioButtonGroup id="fundingModelButtonGroup" selectedValue="{viewModel.fundingModel}"/>		
+	
+	<mx:Repeater dataProvider="{viewModel.fundingModels}" id="sapFundingModels">			
+		<mx:RadioButton 
+			id="fundingModelRadio"
+            group="{fundingModelButtonGroup}"
+			value="{sapFundingModels.currentItem.fundingModelCd}" 
+			label="{sapFundingModels.currentItem.name}" 
+			width="100%" 
+			change="fundingModel_change(event)"							
+			enabled="{sapFundingModels.currentItem.isValidForCompanySourceSystem(viewModel.company.sourceSystemCd)}"
+			toolTip="{sapFundingModels.currentItem.toolTip(viewModel.company.sourceSystemCd)}"			
+    		styleName="fieldLabel"/>
+	</mx:Repeater>
+	
+	<mx:HBox width="100%" horizontalAlign="right">
+		<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+		<mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}" width="{cancelButton.width}" />
+	</mx:HBox>
+
+		
+</mx:VBox>

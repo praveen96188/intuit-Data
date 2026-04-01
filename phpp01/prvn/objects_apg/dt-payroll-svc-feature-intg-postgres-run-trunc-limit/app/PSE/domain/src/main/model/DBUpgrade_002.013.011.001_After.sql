@@ -1,0 +1,8 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- D:\dev\psp\dev\PSE\Domain\src\main\model\DBUpgrade_002.013.011.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--
+
+update psp_company_note set alert = 0;

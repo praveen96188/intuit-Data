@@ -1,0 +1,915 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by Dustin Hunter (Intuit, Inc.) -->
+<!-- Release Notes - Jul 22, 2008
+    - Changed ClientApplicationType to string
+    - Created ApplicationType Complex Element
+    - Changed app version to VersionType
+    - Required the efeSchemaVersion and increased it
+    - Added Support for IP Address (IPv4 & IPv6)
+    - Added Customer Timezone - offset from GMT
+    - Made ClientFilingID Required
+    - Added AuthorizationCode
+    - Added FilingType to return message
+    - Faults will be returned as Status Messages - Failed Validation
+    - Added GetStatusByFilerId Operation
+    - Removed optional tag for FormsetType, Periods
+	 - Removed tokenId from BaseMsg. sync now returns the lastToken number to the user separately in the return object.
+ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:efe="http://www.intuit.com/engine/efp/efe/filer/wsdl/v2" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" targetNamespace="http://www.intuit.com/engine/efp/efe/filer/wsdl/v2" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0" jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.0">
+	<xs:annotation>
+		<xs:appinfo>
+			<jaxb:globalBindings>
+				<jaxb:serializable uid="123456"/>
+			</jaxb:globalBindings>>
+        </xs:appinfo>
+	</xs:annotation>
+	<!-- Dates -->
+	<xs:simpleType name="DayOfYearType">
+		<xs:annotation>
+			<xs:documentation>Defines a daily interval as a numeric between 1 and 366</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="366"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="WeekType">
+		<xs:annotation>
+			<xs:documentation>Defines a week as a numeric between 1 and 53</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="53"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonthType">
+		<xs:annotation>
+			<xs:documentation>Defines a month as a numeric between 1 and 12</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="QuarterType">
+		<xs:annotation>
+			<xs:documentation>Defines a quarter as a numeric between 1 and 4</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="YearType">
+		<xs:annotation>
+			<xs:documentation>Defines a year as a numeric between 2000 and 3000 (yes, we plan on being in business that long).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="2000"/>
+			<xs:maxInclusive value="3000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PeriodType">
+		<xs:annotation>
+			<xs:documentation>Defines a filing period. EFE uses this information to detect duplicate and amended submissions. In general, you should define a period that makes sense for the form that you are submitting to EFE. For example, if you are submitting a quarterly form, include the quarter; if this is an annual form (such as the 1040) just include the year.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="year" type="efe:YearType"/>
+			<xs:choice minOccurs="0">
+				<xs:element name="dayOfYear" type="efe:DayOfYearType"/>
+				<xs:element name="week" type="efe:WeekType"/>
+				<xs:element name="month" type="efe:MonthType"/>
+				<xs:element name="quarter" type="efe:QuarterType"/>
+				<xs:element name="date" type="xs:dateTime"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="GMTTimezoneType">
+		<xs:annotation>
+			<xs:documentation>Defines the offset from GMT. For instance, California is 8 hours behind GMT and thus would require -8:00</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="6"/>
+			<xs:pattern value="[\-]?(0|1)?\d:[0-5]\d"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Simple Types -->
+	<xs:simpleType name="string255">
+		<xs:annotation>
+			<xs:documentation>Defines a string with length no longer than 255 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+		    <xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DollarType">
+		<xs:annotation>
+			<xs:documentation>A dollar amount allowing only two decimal places.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DollarNNType">
+		<xs:annotation>
+			<xs:documentation>A non-negative dollar amount allowing only two decimal places.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+			<xs:minInclusive value="0.00"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmailAddressType">
+		<xs:annotation>
+			<xs:documentation>Used for an email address. The User ID portion of the email address allows: A-Z, a-z, 0-9, underscore, hyphen and period.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="75"/>
+			<xs:pattern value="[\w\-\.\+_]+@([\w\-_]+\.)+[\w\-]{2,}">
+				<xs:annotation>
+					<xs:documentation>Domain Name Email Address</xs:documentation>
+				</xs:annotation>
+			</xs:pattern>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IPAddressType">
+		<xs:annotation>
+			<xs:documentation>IP Address. Can be either IP4 or IP6</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="39"/>
+			<xs:pattern value="^[\d]{1,3}.[\d]{1,3}.[\d]{1,3}.[\d]{1,3}$|^([0-9a-fA-F]{4}|0)(:([0-9a-fA-F]{4}|0)){7}$"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VersionType">
+		<xs:annotation>
+			<xs:documentation>Defines a well-structured version format for EFE. Using this format allows EFE to more easily manage version ranges. Valid version may contain a major, minor, patch and build number. The following are all valid versions: 2, 2.3, 2.3.4, 2.3.4.5</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="75"/>
+			<xs:pattern value="[\d]+(\.[\d]+){0,3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EfinType">
+		<xs:annotation>
+			<xs:documentation>Defines an EFIN (electronic filing identification number) that uniquely identifies the client to the agency. The EFIN is an ID supplied by the agency.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[\d]{6}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="FormsetType">
+		<xs:annotation>
+			<xs:documentation>Describes the formset and TPS engine used to compile the payload on the client. Note that EFE may block clients based on the formset version number when an client upgrade is required in order to ensure compatability between the client-side and server-side tax engines.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="formsetId" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>The type of formset. Example: FSDYF, FSDYS, FSDYP, etc</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="version" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>The formset version.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="engineVersion" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>The version of the Tax Engine</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="ClientFilingIdType">
+		<xs:annotation>
+			<xs:documentation>Optional identifier from the client. This identifier, if used, should be unique to the client.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="efe:string255"/>
+	</xs:simpleType>
+	<!-- Routing Transit Number Type -->
+	<xs:simpleType name="RoutingTransitNumberType">
+		<xs:annotation>
+			<xs:documentation>Routing Transit Number - 9 digits beginning with 01 through 12, or 21 through 32, or 65 for SSA</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="(01|02|03|04|05|06|07|08|09|10|11|12|21|22|23|24|25|26|27|28|29|30|31|32|65)[0-9]{7}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Bank Account Number Type -->
+	<xs:simpleType name="BankAccountNumberType">
+		<xs:annotation>
+			<xs:documentation>Bank Account Number - 17 alphanumeric characters with blanks and hyphens</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="17"/>
+			<xs:pattern value="([A-Za-z0-9\-] ?)*[A-Za-z0-9\-]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Enumerations -->
+	<xs:simpleType name="SubmissionType">
+		<xs:annotation>
+			<xs:documentation>Defines the different submission categories accepted by EFE. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ENROLLMENT"/>
+			<xs:enumeration value="PAYMENT"/>
+			<xs:enumeration value="TAXRETURN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FilingStateType">
+		<xs:annotation>
+			<xs:documentation>Defines the extenal filing states that a filing may be in. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PENDING_EFE"/>
+			<xs:enumeration value="PENDING_AGENCY"/>
+			<xs:enumeration value="ACK_SUCCEEDED"/>
+			<xs:enumeration value="ACK_REJECTED"/>
+			<xs:enumeration value="FAILED_VALIDATION"/>
+			<xs:enumeration value="FAILED_PROCESSING"/>
+			<xs:enumeration value="CANCELLED"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FeatureStateType">
+		<xs:annotation>
+			<xs:documentation>Defines the extenal states for EFE features (i.e. RT, BalDue, etc). </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PENDING"/>
+			<xs:enumeration value="SUCCESSFUL"/>
+			<xs:enumeration value="FAILED"/>
+			<xs:enumeration value="CANCELLED"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MessageScopeType">
+		<xs:annotation>
+			<xs:documentation>Defines the different scopes an EFE message can be in.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ALL"/>
+			<xs:enumeration value="FILING"/>
+			<xs:enumeration value="CLIENT_APP"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ApplicationType">
+		<xs:annotation>
+			<xs:documentation>Defines the application that is transmitting to EFE. EFE will ensure that the application name is on a valid list of applications, and that the version transmitted is within a valid range of supported versions. Contact EFE developers to obtain the exact expected application name for your app.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="efe:string255"/>
+			<xs:element name="productCode" type="efe:string255" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The product code of the application (if there is one).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="version" type="efe:VersionType">
+				<xs:annotation>
+					<xs:documentation>The version of the clientApp.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="gatewayVersion" type="efe:string255" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The version of the gateway used by the clientApp. This currently is a Quickbooks Desktop specific field. Other applications can safely ignore it.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CredentialsType">
+		<xs:annotation>
+			<xs:documentation>Defines the credentials that EFE requires in order to login and submit data on the filer's behalf. These are not required for most agencies, but if they are required, they must be provided or EFE will be rejected when attempting to transmit to the agency.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="credId" type="efe:string255" minOccurs="0"/>
+			<xs:element name="pin" type="efe:string255" minOccurs="0"/>
+			<xs:element name="password" type="efe:string255" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AgencyType">
+		<xs:annotation>
+			<xs:documentation>Defines the agency to whom the filing belongs.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>
+                        Defines the agency target where a given filing should be transmitted to.
+                        This string must exactly match the value expected by EFE. Usually,
+                        this is the 2 letter state abbreviation for the jurisdiction of the 
+                        form type. However, JELF states require 'IRS', and other Federal forms 
+                        (MeF, SSA, etc) will have different requirements. If you are unsure,
+                        ask an EFE developer for the agency type.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="creds" type="efe:CredentialsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SenderInfoType">
+		<xs:annotation>
+			<xs:documentation>Describes who and where the filing is originated from.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="filerId" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>
+                        Unique identifier for the filer. May be the EIN, SSN or other TIN. 
+                        This will be the primary way to identify customers used by customer support.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="senderId" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>
+                        Unique identifier for the sender (or Tax Preparer). This may be the same value as
+                        filerId if the sender and filer are the same individual.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="efin" type="efe:EfinType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+                        This field is optional in general, but is enforced by EFE for
+                        business income filings.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="senderEmail" type="efe:EmailAddressType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Email address for the sender.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="legalName" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>The legal name of the individual or corporate filer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="app" type="efe:ApplicationType">
+				<xs:annotation>
+					<xs:documentation>The Intuit application that the client is using.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ipAddress" type="efe:IPAddressType">
+				<xs:annotation>
+					<xs:documentation>The IP Address of the end user. EFE requires the clients IP address as we can be requested to block users by IP Address by the government.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="timezone" type="efe:GMTTimezoneType">
+				<xs:annotation>
+					<xs:documentation>The customer's timezone. Generally, this is used in order to determine filing cutoff times, but may also be used by Customer Support.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="authCode" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>
+                        The customer's authorization code. This code will be used to 
+                        verify the customer's identity when checking status in other 
+                        operations. This will be primarily used through websites like 
+                        TurboTax.com where only the TIN and the user's authorization code 
+                        will be required to retrieve status. For most applications this 
+                        will likely be the user's zip code. 
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="efeSchemaVersion" type="efe:VersionType" default="5.0">
+				<xs:annotation>
+					<xs:documentation>Defines the version of the EFE schema supplied to the client. The client application should not change this value. EFE uses the version to maintain backwards compatibility with old clients.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ExtendedAttributeType">
+		<xs:annotation>
+			<xs:documentation>Supplementary information regarding the filing. EFE will not use this information directly, but it may be used for reporting or by customer service.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="efe:string255"/>
+			<xs:element name="value" type="efe:string255"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AttachmentType">
+		<xs:annotation>
+			<xs:documentation>An attachment</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="name" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>
+                        The file name of the attachment.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>
+                        The type of attachment. The value should match an expect
+                        value type defined by EFE. If EFE does not recognize
+                        the type, the submission will be rejected by EFE.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="compressed" type="xs:boolean" default="false">
+				<xs:annotation>
+					<xs:documentation>
+                        Indicates whether the attachment is already compressed
+                        using the Deflator algorithm. Compressing on the client
+                        ensures a much faster server response time from EFE,
+                        and is highly recommended.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="data">
+				<xs:annotation>
+					<xs:documentation>
+                        The raw attachment data.
+                    </xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:base64Binary">
+						<xs:maxLength value="10485760"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FeatureType">
+		<xs:annotation>
+			<xs:documentation>Describes an EFE Feature (i.e. RT, RAL, BalDue). Note that multiple features can be attached to a filing, but only one of each type can. For example, you cannot attach multiple RT features to a filing.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="type" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation> The feature type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="data">
+					<xs:simpleType>
+						<xs:restriction base="xs:base64Binary">
+							<xs:maxLength value="10485760"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<!-- EFE Documents -->
+	<xs:complexType name="FilingType">
+		<xs:annotation>
+			<xs:documentation>Wrapper for filings (tax return, payment, enrollments).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="taxReturn" type="efe:TaxReturnType"/>
+				<xs:element name="payment" type="efe:PaymentType"/>
+				<xs:element name="enrollment" type="efe:EnrollmentType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BaseFilingType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Defines the most basic document that EFE will accept, including attributes that EFE requires to route and process the document.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="formType" type="efe:string255">
+				<xs:annotation>
+					<xs:documentation>The formset of the document. Should be a valid string returned by getFormTypes operation.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="linked" type="xs:boolean" default="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+                        Indicates whether this submission is 'linked' with 
+                        another.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="agency" type="efe:AgencyType"/>
+			<xs:choice>
+				<xs:element name="payload">
+					<xs:simpleType>
+						<xs:restriction base="xs:base64Binary">
+							<xs:maxLength value="10485760"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="payloadRef" type="efe:ClientFilingIdType">
+					<xs:annotation>
+						<xs:documentation>Reference to clientFilingId of BaseFilingType with shared payload.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="compressed" type="xs:boolean" default="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+                        Indicates whether the payload has been compressed using the 
+                        Deflator algorithm on the client side. Compressing on
+                        the client side is encouraged and will decrease EFE's
+                        response time.                      
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="formset" type="efe:FormsetType">
+				<xs:annotation>
+					<xs:documentation>The version of the formset used to create the payload.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="clientFilingId" type="efe:ClientFilingIdType">
+				<xs:annotation>
+					<xs:documentation>The clients unique representation of this filing. It is 
+                    very important that clients ensure that this value is unique within there
+                    application's scope.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="requestsEmailNotification" type="xs:boolean" default="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Indicates whether the sender wants an email notification when the status of their filing change.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="feature" type="efe:FeatureType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Attach a feature (RT, RAL, PayBalDue) to this filing.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="attachment" type="efe:AttachmentType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Attachments that are required with the filing.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="extAttr" type="efe:ExtendedAttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Optional information that may be used by Customer Service or during reporting.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EnrollmentType">
+		<xs:annotation>
+			<xs:documentation>Represents a user enrollment to an agency.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="efe:BaseFilingType">
+				<xs:sequence>
+					<xs:element name="period" type="efe:PeriodType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>This field is only used for Income Tax filings, specifically SBBT-Y-ENROLLMENT records.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PaymentType">
+		<xs:annotation>
+			<xs:documentation>Represents a Payment.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="efe:BaseFilingType">
+				<xs:sequence>
+					<xs:element name="settlementDate" type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation>The settlement date of the payment transaction.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="period" type="efe:PeriodType">
+						<xs:annotation>
+							<xs:documentation>The period that the payment applies to.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="paymentAmount" type="efe:DollarType">
+						<xs:annotation>
+							<xs:documentation>The dollar amount transmitted.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="routingNumber" type="efe:RoutingTransitNumberType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+                                The routing number of the financial institute where the payment will be made.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="accountNumber" type="efe:BankAccountNumberType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+                                The account number of the financial institute where the payment will be made.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TaxReturnType">
+		<xs:annotation>
+			<xs:documentation>Represents Tax Return Filing. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="efe:BaseFilingType">
+				<xs:sequence>
+					<xs:element name="period" type="efe:PeriodType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- EFE Messages -->
+	<xs:complexType name="MsgDetailsType">
+		<xs:annotation>
+			<xs:documentation>Defines a container for supplementary information that may be supplied with the messages.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="errorDetails" type="efe:ErrorDetailsType"/>
+				<xs:element name="ackDetails" type="efe:AckDetailsType"/>
+                <xs:element name="additionalDetails" type="xs:string"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ErrorDetailsType">
+		<xs:annotation>
+			<xs:documentation>Defines an error message that will should be returned with error states.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="errorCode" type="xs:string" nillable="true">
+				<xs:annotation>
+					<xs:documentation>The EFE Error Code that corresponds to the error.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="problemMsg" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Text that describes the problem in clear user-oriented language.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="solutionMsg" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Text that describes the solution to the problem in clear user-oriented language.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="formsAndFields" type="efe:FormsAndFieldsType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+                        A list of supplementary Forms and Fields information that is harvested from the TaxDev ESFF database.
+                    </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AckDetailsType">
+		<xs:annotation>
+			<xs:documentation>Defines a container for acknowledgement information corresponding to a ACK_SUCCEEDED state.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="rawAck" type="xs:base64Binary">
+				<xs:annotation>
+					<xs:documentation>The raw acknowledgement returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ackTimestamp" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>
+                The timestamp when EFE received the acknowledgement.
+              </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+            <xs:element name="confirmationNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The agency confirmation number (may not be supported by all agencies).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="refundDate" type="xs:date" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Estimated date the agency will be process a refund.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="refundMessage" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Agency messaging/notes regarding refund.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EfeMessageType">
+		<xs:annotation>
+			<xs:documentation>Wrapper for status and cs messages.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="statusMsg" type="efe:StatusMessageType"/>
+				<xs:element name="featureMsg" type="efe:FeatureStatusType"/>
+				<xs:element name="custSvcMsg" type="efe:CustomerServiceMessageType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BaseMsgType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Defines an abstract message which is returned to the client.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<!--xs:element name="tokenId" type="xs:long" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The token number for this message. EFE will not return the token number for messages returned by the submit operation.</xs:documentation>
+				</xs:annotation>
+			</xs:element-->
+            <xs:element name="responseVersion" type="efe:VersionType" minOccurs="0"/>
+			<xs:element name="clientFilingId" type="xs:string"/>
+			<xs:element name="filingId" type="xs:long" minOccurs="0"/>
+			<xs:element name="filingType" type="xs:string"/>
+            <xs:element name="period" type="efe:PeriodType" minOccurs="0"/>
+			<xs:element name="scope" type="efe:MessageScopeType"/>
+			<xs:element name="timestamp" type="xs:dateTime"/>
+			<xs:element name="message" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="StatusMessageType">
+		<xs:annotation>
+			<xs:documentation>Defines a message indicating that the current state of a filing. EFE automatically generates a status message each time there is a state transition for a filing.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="efe:BaseMsgType">
+				<xs:sequence>
+					<xs:element name="submissionType" type="efe:SubmissionType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+                                Indicates the type of submission (i.e. Payment vs. TaxReturn).
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="filingState" type="efe:FilingStateType">
+						<xs:annotation>
+							<xs:documentation>
+                                The external state of the filing.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="rxTimestamp" type="xs:dateTime">
+						<xs:annotation>
+							<xs:documentation>
+                                The timestamp that EFE received this submission.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="postmark" type="xs:dateTime" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+                                The postmark is the date and time that the agency considers 
+                                that they have received the submission. In cases where EFE has
+                                postmark authority, this will be the time that it has been
+                                received by EFE. 
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dcn" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+                                The document control number for the submission. This is primarily 
+                                used for Income Tax filings. EFE will only return this element
+                                for Agencies where the DCN is used. Additionally, EFE will only
+                                return this element when we have a value for it. For instance,
+                                with IIT, EFE generates the DCN at the time of submission to the
+                                agency. Any status requests prior to this point will be missing 
+                                the DCN. All status requests afterwards should contain the DCN.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+                    <xs:element name="app" type="efe:ApplicationType" minOccurs="0"/>
+                    <xs:element name="trackingNumber" type="efe:string255" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Unique number generated by EFE for each filing. This number can be
+                                used to check status via the getMessagesByTrackingNumber.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+					<xs:element name="details" type="efe:MsgDetailsType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+                                A list of details for this status. If this status is an accept
+                                or reject, it will contain an AckDetails object, and potentially
+                                several ErrorDetails which indicate any agency errors encountered.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FeatureStatusType">
+		<xs:annotation>
+			<xs:documentation>Defines a message indicating that the current state of a filing. EFE automatically generates a status message each time there is a state transition for a filing.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="efe:BaseMsgType">
+				<xs:sequence>
+					<xs:element name="type" type="efe:string255">
+		                <xs:annotation>
+		                    <xs:documentation>The type of feature. Same value as passed in during the submit.</xs:documentation>
+		                </xs:annotation>
+		            </xs:element>
+					<xs:element name="status" type="efe:FeatureStateType">
+						<xs:annotation>
+							<xs:documentation>The external feature state of the filing.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CustomerServiceMessageType">
+		<xs:annotation>
+			<xs:documentation>Defines a message written by Customer Service directed to the end-user. Examples may be "There was a problem processing your filing. Please call customer service to resolve the issue."</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="efe:BaseMsgType">
+				<xs:sequence>
+					<xs:element name="severity" type="xs:int" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+                                Current values are 0, 1, 2, but more may be added in the future. Severity is 
+                                only returned to the client if the gateway version is present and >= 2.
+                            </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="EDIFormsAndFieldsType">
+		<xs:annotation>
+			<xs:documentation>EDI specific forms and field information. (ex. Used by 1040 EMS agency)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="errorId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The error ID as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="formId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The form ID as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="form" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The form description as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fieldId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The field ID as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="field" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The field desciption as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="copyNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The copy number as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="XMLFormsAndFieldsType">
+		<xs:annotation>
+			<xs:documentation>XML specific forms and field information (ex. Used by MeF agencies)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="xpath" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The xpath as returned by the agency.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FormsAndFieldsType">
+		<xs:annotation>
+			<xs:documentation>Defines the TaxDev data returned from Errors and Solutions. This information is used by TaxDev to aid the customer in correcting their return. Note that the information returned depends on the type of agency EFE transmits to.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="intuitFormId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Intuit's internal form id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="intuitFieldId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Intuit's internal field id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="intuitFieldOccurance" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Intuit's internal field occurance</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+            <xs:element name="taxDevType" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Tax Dev Type definition. Used by CG for "top 12" rejects.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<xs:choice>
+				<xs:element name="edi" type="efe:EDIFormsAndFieldsType"/>
+				<xs:element name="xml" type="efe:XMLFormsAndFieldsType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

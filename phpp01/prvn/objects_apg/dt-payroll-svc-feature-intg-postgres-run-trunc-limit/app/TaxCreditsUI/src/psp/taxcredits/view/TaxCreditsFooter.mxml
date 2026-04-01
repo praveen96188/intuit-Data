@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*" width="100%"
+         horizontalGap="0">
+    <mx:Script>
+		<![CDATA[
+
+        import psp.taxcredits.model.TaxCreditsModel;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private function onLink(e:TextEvent):void {
+            if (e.text == "aboutIntuit") {
+                model.tracker.trackEvent("Navigation","Click About Intuit");
+                navigateToURL(new URLRequest("http://about.intuit.com/about_intuit/"));
+            } else if (e.text == "careers") {
+                model.tracker.trackEvent("Navigation","Click Careers");
+                navigateToURL(new URLRequest("http://about.intuit.com/careers/"));
+            } else if (e.text == "privacy") {
+                model.tracker.trackEvent("Navigation","Click Privacy Policy", "Footer");
+                navigateToURL(new URLRequest("PrivacyPolicy.html"));
+            } else if (e.text == "legal") {
+                model.tracker.trackEvent("Navigation","Click Legal");
+                navigateToURL(new URLRequest("http://about.intuit.com/legal/"));
+            } else if (e.text == "tos") {
+                model.tracker.trackEvent("Navigation","Click TOS");
+                navigateToURL(new URLRequest("TOS.html"));
+            }
+        }
+
+        private function onTrustE():void {
+            model.tracker.trackEvent("Navigation","Click TrustE");
+            navigateToURL(new URLRequest("http://www.truste.org/ivalidate.php?companyName=Intuit&sealid=101&ctv_group=IntuitSMB"));
+        }
+
+		]]>
+    </mx:Script>
+
+    <controls:SupText link="onLink(event);" htmlText="{'© ' + resourceManager.getString('header','footer')}" width="600"/>
+
+    <mx:HBox width="100%" horizontalAlign="right" paddingRight="35">
+        <mx:Image source="psp/taxcredits/view/assets/TRUSTe.png" buttonMode="true" useHandCursor="true" click="onTrustE();"/>
+    </mx:HBox>
+    
+</mx:HBox>

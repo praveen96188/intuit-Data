@@ -1,0 +1,135 @@
+-- CREATED  DATE: 1.13.2009
+-- MODIFIED DATE: 2.19.2009  09:10
+--                - commented out drop int table
+--                - uncommented drop int table due to constraint conflict issues
+--                - split part 2 from this file to allow for recovery.
+--                - changed one block to individual blocks for DBMS_REPARTITION
+--                - moved alter row movement to prior work to avoid ora error
+--                - split files event further.  structure is now the following:
+--                    file-a1     = create int table
+--                    file-a2     = run can_redef_table
+--                    file-a3     = run start_redef_table
+--                    file-a4     = run copy_dependents
+--                    file-a5     = run finish_redef_table
+--                    file-aPart2 = drop int table, and add additional objects
+--
+-- AUTHOR       : EMR
+--
+-- PURPOSE: 
+--   This script will change the PSE financial transaction state table from no partitions
+--   to monthly, or twelve per year.  The partition key will be on TRANSACTION_STATE_EFF_DATE.
+--   Applicable indexes will also be modified.
+--
+-- LOGON AS : PSPADM
+
+
+-- question: is this needed GRANT ROLE EXECUTE_CATALOG_ROLE
+-- grant using SYS
+
+-- GRANT execute ON DBMS_REDEFINITION TO PSPADM;
+-- GRANT create materialized view     TO PSPADM;
+-- GRANT alter  any table             TO PSPADM;
+-- GRANT create any table             TO PSPADM;
+-- GRANT drop   any table             TO PSPADM;
+-- GRANT lock   any table             TO PSPADM;
+-- GRANT select any table             TO PSPADM;
+-- GRANT create any trigger           TO PSPADM; -- used for COPY_TABLE_DEPENDENTS
+-- GRANT create any index             TO PSPADM; -- used for COPY_TABLE_DEPENDENTS
+
+
+SET SERVEROUTPUT ON
+SET LINESIZE     1000
+SET PAGESIZE     0
+SET DEFINE       OFF
+
+SPOOL dbupgrade_PSRV001099b1.log
+
+SELECT USER FROM DUAL;
+SELECT TO_CHAR(SYSDATE, 'MM.DD.YYYY HH24:MI') AS TIME_MARK FROM DUAL;
+
+
+PROMPT . 
+PROMPT Get initial table count for PSP_FINANCIAL_TRANS_STATE ...
+
+SELECT COUNT(*) FROM PSP_FINANCIAL_TRANS_STATE;
+
+
+PROMPT . 
+PROMPT Create an interim table ...
+
+-- design note: the partition format is M<01-12>YYYY, where 
+--                M    = month, Jan to Dec
+--                YYYY = year
+-- questions: 
+--   how many partitions to initially create - eg stop at 2010 or more. can add later?
+--   less than, or less than equal to
+
+-- this is simply to compare to at the end
+CREATE TABLE Z_REDEF_FINANCIAL_TXN_STATE AS
+SELECT * FROM PSP_FINANCIAL_TRANS_STATE WHERE 1=0;
+
+-- this is the real deal for DBMS_REDEFINITION
+CREATE TABLE INT_FINANCIAL_TXN_STATE
+(
+  FINANCIAL_TRANS_STATE_SEQ   VARCHAR2(255),  -- no primary key so can use COPY_TABLE_DEPENDENTS
+  VERSION                     NUMBER(19),
+  CREATOR_ID                  VARCHAR2(30),
+  CREATED_DATE                TIMESTAMP(6),
+  MODIFIER_ID                 VARCHAR2(30),
+  MODIFIED_DATE               TIMESTAMP(6),
+  REALM_ID                    NUMBER(19) DEFAULT -1,
+  TRANSACTION_STATE_EFF_DATE  TIMESTAMP(6),
+  INSERT_USER_ID              VARCHAR2(30),
+  GEMS_UPLOAD_BATCH_FK        VARCHAR2(255),
+  FINANCIAL_TRANSACTION_FK    VARCHAR2(255),
+  TRANSACTION_STATE_FK        VARCHAR2(255),
+  TRANSACTION_RESPONSE_FK     VARCHAR2(255)
+)
+PARTITION BY RANGE (TRANSACTION_STATE_EFF_DATE)
+(
+ PARTITION FINANCIAL_TXN_STATE_2008    VALUES LESS THAN (TO_DATE('01/01/2009', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M012009 VALUES LESS THAN (TO_DATE('02/01/2009', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M022009 VALUES LESS THAN (TO_DATE('03/01/2009', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M032009 VALUES LESS THAN (TO_DATE('04/01/2009', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M042009 VALUES LESS THAN (TO_DATE('05/01/2009', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M052009 VALUES LESS THAN (TO_DATE('06/01/2009', 'MM/DD/YYYY')),   
+ PARTITION FINANCIAL_TXN_STATE_M062009 VALUES LESS THAN (TO_DATE('07/01/2009', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M072009 VALUES LESS THAN (TO_DATE('08/01/2009', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M082009 VALUES LESS THAN (TO_DATE('09/01/2009', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M092009 VALUES LESS THAN (TO_DATE('10/01/2009', 'MM/DD/YYYY')),  
+ PARTITION FINANCIAL_TXN_STATE_M102009 VALUES LESS THAN (TO_DATE('11/01/2009', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M112009 VALUES LESS THAN (TO_DATE('12/01/2009', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M122009 VALUES LESS THAN (TO_DATE('01/01/2010', 'MM/DD/YYYY')),  
+ PARTITION FINANCIAL_TXN_STATE_M012010 VALUES LESS THAN (TO_DATE('02/01/2010', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M022010 VALUES LESS THAN (TO_DATE('03/01/2010', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M032010 VALUES LESS THAN (TO_DATE('04/01/2010', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M042010 VALUES LESS THAN (TO_DATE('05/01/2010', 'MM/DD/YYYY')),
+ PARTITION FINANCIAL_TXN_STATE_M052010 VALUES LESS THAN (TO_DATE('06/01/2010', 'MM/DD/YYYY')),   
+ PARTITION FINANCIAL_TXN_STATE_M062010 VALUES LESS THAN (TO_DATE('07/01/2010', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M072010 VALUES LESS THAN (TO_DATE('08/01/2010', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M082010 VALUES LESS THAN (TO_DATE('09/01/2010', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M092010 VALUES LESS THAN (TO_DATE('10/01/2010', 'MM/DD/YYYY')),  
+ PARTITION FINANCIAL_TXN_STATE_M102010 VALUES LESS THAN (TO_DATE('11/01/2010', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M112010 VALUES LESS THAN (TO_DATE('12/01/2010', 'MM/DD/YYYY')), 
+ PARTITION FINANCIAL_TXN_STATE_M122010 VALUES LESS THAN (TO_DATE('01/01/2011', 'MM/DD/YYYY')),  
+ PARTITION FINANCIAL_TXN_STATE_9999    VALUES LESS THAN (MAXVALUE)
+);
+
+CREATE UNIQUE INDEX INT_XPKFINANCIAL_TXN_STATE
+  ON INT_FINANCIAL_TXN_STATE (FINANCIAL_TRANS_STATE_SEQ, REALM_ID);
+
+ALTER TABLE INT_FINANCIAL_TXN_STATE ADD (
+  CONSTRAINT INT_XPKFINANCIAL_TXN_STATE
+  PRIMARY KEY (FINANCIAL_TRANS_STATE_SEQ, REALM_ID));
+
+-- 02.18.2009 EMR  to avoid resource busy ora error do prior to redef
+-- ALTER TABLE PSP_FINANCIAL_TRANS_STATE ENABLE ROW MOVEMENT;
+ALTER TABLE INT_FINANCIAL_TXN_STATE   ENABLE ROW MOVEMENT;
+
+
+PROMPT . 
+PROMPT Part b1 complete, please run part b2 if successful ...
+
+SELECT TO_CHAR(SYSDATE, 'MM.DD.YYYY HH24:MI') AS TIME_MARK FROM DUAL;
+
+SPOOL OFF

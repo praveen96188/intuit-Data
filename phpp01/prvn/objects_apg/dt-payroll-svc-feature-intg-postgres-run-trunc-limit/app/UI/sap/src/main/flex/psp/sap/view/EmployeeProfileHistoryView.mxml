@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*">
+
+    <mx:Script>
+	<![CDATA[
+        import psp.sap.viewmodel.EmployeeProfileHistoryViewModel;
+
+        import psp.sap.model.PropertyAudit;
+        import mx.utils.ObjectUtil;
+        import psp.sap.application.SAP;
+
+        private var mViewModel:EmployeeProfileHistoryViewModel;
+
+        [Bindable]
+        public function get viewModel():EmployeeProfileHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeProfileHistoryViewModel):void {
+            mViewModel = value;
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return dateFormatter.format(item.auditDate);
+        }
+
+        ]]>
+</mx:Script>
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateTimeFormatDateOverTime}"/>
+    <mx:DateFormatter id="mediumDateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox width="750">
+        <mx:VBox visible="{!viewModel.hasEmployeeProfileHistory &amp;&amp; !viewModel.isDataLoading}"
+                 includeInLayout="{!viewModel.hasEmployeeProfileHistory &amp;&amp; !viewModel.isDataLoading}"
+                 width="100%"
+                 styleName="grayDataGridVBox">
+            <mx:Text
+                    id="noPayrollsText"
+                    text="No Employee Profile History was found."
+                    width="100%"
+                    textAlign="center"
+                    fontWeight="bold"/>
+        </mx:VBox>
+        <mx:VBox styleName="grayDataGridVBox"
+                 width="100%"
+                 visible="{viewModel.hasEmployeeProfileHistory &amp;&amp; !viewModel.isDataLoading}"
+                 includeInLayout="{viewModel.hasEmployeeProfileHistory &amp;&amp; !viewModel.isDataLoading}">
+
+            <mx:HBox horizontalGap="0" verticalAlign="middle" >
+                <mx:Label id="filterBy" text="Filter By:"/>
+                <mx:ComboBox id="filterListComboBox" dataProvider="{viewModel.propertyFilters}"/>
+            </mx:HBox>
+            <mx:Spacer height="5" />
+            <controls:SAPDataGrid
+                    dataProvider="{viewModel.filteredPropertyHistory}"
+                    variableRowHeight="true"
+                    selectable="false"
+                    width="100%"
+                    maxRows="5"
+                    draggableColumns="false"
+                    backgroundColor="#ffffff">
+                <controls:columns>
+                    <mx:DataGridColumn
+                            headerText="Property"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            dataField="propertyName"/>
+                    <mx:DataGridColumn
+                            headerText="From"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            dataField="oldPropertyValue"/>
+                    <mx:DataGridColumn
+                            headerText="To"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            dataField="newPropertyValue"/>
+                    <mx:DataGridColumn
+                            headerText="Change Date"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            labelFunction="formatDate"
+                            dataField="auditDate"/>
+                    <mx:DataGridColumn
+                            headerText="Changed By"
+                            textAlign="center"
+                            headerStyleName="directDepositHeader"
+                            color="green"
+                            dataField="userId"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Binding source="filterListComboBox.selectedItem as String" destination="viewModel.currentFilter"/>
+    <mx:Binding source="viewModel.currentFilter" destination="filterListComboBox.selectedItem"/>
+</mx:VBox>

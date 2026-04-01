@@ -1,0 +1,42 @@
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findPaymentBatchAssocsByBatch">
+        <![CDATA[
+			Select pba
+			from com.intuit.sbd.payroll.psp.domain.PaymentBatchAssoc as pba
+			     join fetch pba.MoneyMovementTransaction as mmt
+			     left join fetch pba.Company as c
+			where mmt.Company.Id=pba.Company.Id
+			    and pba.AgencyCheckBatch = :agencyCheckBatch
+			order by mmt.ReferenceNumber asc
+
+			]]>
+    </query>
+
+    <query name="findPaymentBatchAssocsByBatchFetchFinancialTransactions">
+        <![CDATA[
+			Select pba
+			from com.intuit.sbd.payroll.psp.domain.PaymentBatchAssoc as pba
+			     join fetch pba.MoneyMovementTransaction as mmt
+			     left join fetch mmt.FinancialTransactionSet as ft
+			     left join fetch pba.Company as c
+			where mmt.Company.Id=pba.Company.Id
+			    and ft.Company.Id=pba.Company.Id
+			    and pba.AgencyCheckBatch = :agencyCheckBatch
+			order by mmt.ReferenceNumber asc
+
+			]]>
+    </query>
+
+</hibernate-mapping>

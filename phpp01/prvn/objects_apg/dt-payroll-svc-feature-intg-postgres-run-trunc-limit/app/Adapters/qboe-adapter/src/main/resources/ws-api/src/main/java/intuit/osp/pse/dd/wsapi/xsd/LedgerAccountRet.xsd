@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ns="http://ledgeraccountret.xsd.wsapi.dd.pse.osp.intuit" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" targetNamespace="http://ledgeraccountret.xsd.wsapi.dd.pse.osp.intuit" elementFormDefault="qualified">
+	<xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+	<xs:complexType name="LedgerAccountRet">
+		<xs:sequence>
+			<xs:element name="SourceSystemCd" type="dd:SourceSystemType" nillable="false"/>
+			<xs:element name="CompanyID" type="dd:IDType" nillable="false"/>
+			<xs:element name="DDTxBatchID" type="dd:IDType" nillable="true" minOccurs="0"/>
+			<xs:element name="LedgerAccountCd" type="dd:LedgerAccountType" nillable="false"/>
+			<xs:element name="LedgerAccountDesc" type="xs:string" minOccurs="0"/>
+			<xs:element name="LedgerBalance" type="dd:AmountType" minOccurs="0"/>
+			<xs:element name="Credit" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="AllowedOperation" type="ns:OperationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OperationType">
+		<xs:sequence>
+			<xs:element name="OperationCd" type="ns:OperationCdType" nillable="false"/>
+			<xs:element name="OperationDesc" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="OperationCdType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BadDebtWriteOff"/>
+			<xs:enumeration value="BadDebtRecover"/>
+			<xs:enumeration value="DDRefund"/>
+			<xs:enumeration value="ERReturnRefund"/>
+			<xs:enumeration value="EEReturnRefund"/>
+			<xs:enumeration value="Intuit5DayReturnTransfer"/>
+			<xs:enumeration value="FeeTransfer"/>
+			<xs:enumeration value="EEReturnTransfer"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

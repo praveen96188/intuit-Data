@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name:\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAccountABCSImpl\IntuitCustomerAccountABO.xsd
+
+Domain: Account
+Source of Truth, Perforce Location: wcgbosp4.bos.intuit.com_1666\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAccountABCSImpl
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====      Intuit ABO Customer Account ABO Schema Module               ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/iep/CustomerAccount/IntuitCustomerAccountABO/V1" xmlns:cab="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" targetNamespace="http://www.intuit.com/iep/CustomerAccount/IntuitCustomerAccountABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00.00">
+	<xsd:import namespace="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" schemaLocation="CustomerAccountBase.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ==============       Intuit Communication ABO      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="IntuitCustomerAccountABO" type="IntuitCustomerAccountABOType">
+		<xsd:annotation>
+			<xsd:documentation>xx</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="IntuitCustomerAccountABOType">
+		<xsd:annotation>
+			<xsd:documentation>Intuit CustomerAccount ABO</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="cab:CustomerAccountType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAccountHeaderType">
+		<xsd:annotation>
+			<xsd:documentation>CustomerAccount Header</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocumentId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The unique Identifier assigned to this business transaction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DocumentDateTime" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which this service request is created or recorded</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAccountRequestType">
+		<xsd:sequence>
+			<xsd:element name="CustomerAccountNumber" type="cab:AccountNumberType"/>
+			<xsd:element name="SourceId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Identify the requestor of MDM data, ie. EIS01, QBPW01</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAccountResponseType">
+		<xsd:annotation>
+			<xsd:documentation>A data typa to represent a response to CustomerAccountRequest.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Result"/>
+			<xsd:element name="CustomerAccount" type="IntuitCustomerAccountABOType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Result" type="ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the header information that can be supplied to DigiComms.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="CreationDateTime" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="CallerSystem" type="xsd:string"/>
+			<xsd:element name="SourceSystem" type="xsd:string"/>
+			<xsd:element name="Endpoint" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="ServiceVersion" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:element name="Header" type="HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the header information that can be supplied to DigiComms</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the error information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Category">
+				<xsd:annotation>
+					<xsd:documentation>The category of the error. i.e. Functional, Input, Operational, Transitory</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:annotation>
+						<xsd:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xsd:documentation>
+					</xsd:annotation>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="Functional"/>
+						<xsd:enumeration value="Input"/>
+						<xsd:enumeration value="Operational"/>
+						<xsd:enumeration value="Transitory"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Code" type="xsd:string"/>
+			<xsd:element name="Description" type="xsd:string"/>
+			<xsd:element name="Source" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Error" type="ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Represents error information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the response retruned by DigiComms.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element name="Success" type="xsd:string"/>
+			<xsd:element name="Error" type="ErrorType"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="TransactionInfoType">
+		<xsd:annotation>
+			<xsd:documentation>Transaction Info</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionDatetime" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Datetime</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SalesOrganization" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Sales Organization requesting the service</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+           width="100%" height="100%"
+           xmlns:pspui="psp.sap.view.*"
+           creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.viewmodel.ACHSecondaryOffloadConfirmationViewModel;
+
+        private var mViewModel:ACHSecondaryOffloadConfirmationViewModel;
+        private var mTempViewModel:ACHSecondaryOffloadConfirmationViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():ACHSecondaryOffloadConfirmationViewModel {
+            return mViewModel;
+        }
+
+
+        public function set viewModel(value:ACHSecondaryOffloadConfirmationViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+			
+		]]>
+	</mx:Script>
+
+    <mx:VBox>
+        <mx:Label text="Confirmation" color="#F62817" fontSize="15" fontWeight="bold" paddingLeft="0"/>
+        <mx:VBox styleName="companyInformationBoxStyle" paddingLeft="0" horizontalGap="0">
+            <mx:VBox width="400"  paddingLeft="5" paddingTop = "3"  paddingRight="5">
+                <mx:Text text="This operation cannot be undone. Are you sure that you would like to schedule a secondary offload for the following date and time:"
+                         width="390"/>
+                <mx:Label id="dateLabel" text="{viewModel.date}" color="#F62817" fontWeight="bold" />
+            </mx:VBox>
+            <mx:Spacer height="5"/>
+            <mx:VBox>
+                <mx:HBox  paddingLeft="5" paddingBottom="10">
+                    <mx:Button id="saveButton" label="Submit" enabled="{viewModel.canSave}" click="viewModel.save()"/>
+                    <mx:Button id="cancelButton"
+                               label="Cancel Request"
+                               click="viewModel.cancel()"/>
+                </mx:HBox>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+</mx:Canvas>

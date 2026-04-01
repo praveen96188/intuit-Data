@@ -1,0 +1,28 @@
+
+SET SERVEROUTPUT ON;
+
+SPOOL dbupgrade_PSRV001454.log
+
+SELECT 'START Time = ' || TO_CHAR (SYSDATE, 'MM.DD.YYYY HH24:MI')
+  FROM DUAL;
+
+
+
+UPDATE PSP_OFFER
+SET END_DATE = TO_TIMESTAMP('08/31/2009 11:59:01.000000 PM','fmMMfm/fmDDfm/YYYY fmHH12fm:MI:SS.FF AM')
+WHERE offer_cd ='P61460';
+
+
+PROMPT .
+PROMPT Dont forget to update DBPopulate scripts ...
+PROMPT .
+PROMPT IF number of rows=1 commit
+
+
+SELECT 'End Time = ' || TO_CHAR (SYSDATE, 'MM.DD.YYYY HH24:MI')
+  FROM DUAL;
+
+PROMPT .
+PROMPT Done.
+
+SPOOL OFF

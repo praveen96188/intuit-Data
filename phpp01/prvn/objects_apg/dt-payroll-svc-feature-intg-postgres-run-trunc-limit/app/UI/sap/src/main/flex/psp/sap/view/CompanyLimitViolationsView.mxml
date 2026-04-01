@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        verticalGap="10"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:controls="psp.sap.view.controls.*" 
+	width="100%" height="100%">
+	
+	<mx:Script>
+        <![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.ServiceCodeEnum;
+        import psp.sap.viewmodel.CompanyLimitViolationsViewModel;
+
+        private var mViewModel:CompanyLimitViolationsViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanyLimitViolationsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyLimitViolationsViewModel):void {
+            mViewModel = value;
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatDateOverTime.format(item.eventDate);
+        }
+
+        private function formatOverByLimit(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item.details.ViolationAmount - item.details.LimitAmount);
+        }
+
+        private function formatViolationAmount(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item.details.ViolationAmount);
+        }
+
+        private function getEmployeeName(item:Object, dgc:DataGridColumn):String {
+            return item.details.EmployeeName;
+        }
+
+        private function getPayeeName(item:Object, dgc:DataGridColumn):String {
+            return item.details.PayeeName;
+        }
+
+        private function sortViolationAmount(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(formatOverByLimit(itemA, null), formatOverByLimit(itemB, null));
+        }
+
+        private function sortOverLimitAmount(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(formatOverByLimit(itemA, null), formatOverByLimit(itemB, null));
+        }
+
+        private function sortEmployeeName(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(getEmployeeName(itemA, null), getEmployeeName(itemB, null));
+        }
+
+        private function sortPayeeName(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(getPayeeName(itemA, null), getPayeeName(itemB, null));
+        }
+
+        private function formatServiceCd(item:Object, dgc:DataGridColumn):String {
+            return ServiceCodeEnum.valueOf(item.details.ServiceCode).label;
+        }
+
+        private function sortServiceCd(itemA:Object, itemB:Object):int {
+            return UIUtils._sortCompareFunc(formatServiceCd(itemA, null), formatServiceCd(itemB, null));
+        }
+
+        ]]>        
+    </mx:Script>
+	
+	<mx:VBox width="100%" styleName="grayDataGridVBox" id="dataContainer">
+		<mx:Label text="Payroll Limit Violations" styleName="grayDataGridHeading"/>
+		<mx:Label text="(all history)" styleName="grayDataGridSubText"/>
+		<mx:DataGrid id="payrollViolationsGrid" variableRowHeight="true" dataProvider="{viewModel.payrollViolations}" selectable="false" width="100%" backgroundColor="#ffffff">
+			<mx:columns>
+				<mx:DataGridColumn 
+						id='dateColumn'
+                        headerText="Failure Date Time"
+						headerStyleName="directDepositHeader"	
+						textAlign="center" 
+						wordWrap="true"
+						labelFunction="formatDate"
+						dataField="eventDateTime"
+						sortCompareFunction="{UIUtils._sortCompareFunc}"/>
+				<mx:DataGridColumn
+						headerText="Service"
+						headerStyleName="directDepositHeader"
+						textAlign="left"
+						labelFunction="formatServiceCd"
+						sortCompareFunction="sortServiceCd"/>
+                <mx:DataGridColumn
+						headerText="Amount"
+						headerStyleName="directDepositHeader"	
+						textAlign="center" 
+						labelFunction="formatViolationAmount"
+						sortCompareFunction="sortViolationAmount"/>
+				<mx:DataGridColumn 
+						headerText="Over Limit By"
+						headerStyleName="directDepositHeader"	
+						textAlign="center"
+						labelFunction="formatOverByLimit"
+						sortCompareFunction="sortOverLimitAmount"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+	
+	<mx:VBox width="100%" styleName="grayDataGridVBox">
+		<mx:Label text="Employee Limit Violations" styleName="grayDataGridHeading"/>
+		<mx:Label text="(all history)" styleName="grayDataGridSubText"/>
+		<mx:DataGrid id="eeViolationsGrid" variableRowHeight="true" dataProvider="{viewModel.employeeViolations}" selectable="false" width="100%" backgroundColor="#ffffff">
+			<mx:columns>
+				<mx:DataGridColumn 
+						headerText="Failure Date Time"
+						textAlign="center" 
+						wordWrap="true"
+						headerStyleName="directDepositHeader"	
+						labelFunction="formatDate"
+						dataField="eventDate"/>
+				<mx:DataGridColumn 
+						headerText="Employee"
+						textAlign="center"
+						labelFunction="getEmployeeName"
+						headerStyleName="directDepositHeader"	
+						color="green"
+						sortCompareFunction="sortEmployeeName"/>
+				<mx:DataGridColumn 
+						headerText="Amount"
+						textAlign="center" 
+						headerStyleName="directDepositHeader"	
+						labelFunction="formatViolationAmount"
+						sortCompareFunction="sortViolationAmount"/>
+				<mx:DataGridColumn 
+						headerText="Over Limit By"
+						textAlign="center"
+						headerStyleName="directDepositHeader"	
+						labelFunction="formatOverByLimit"
+						sortCompareFunction="sortOverLimitAmount"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+
+    <mx:VBox width="100%" styleName="grayDataGridVBox">
+		<mx:Label text="Payee Limit Violations" styleName="grayDataGridHeading"/>
+		<mx:Label text="(all history)" styleName="grayDataGridSubText"/>
+		<mx:DataGrid id="payeeViolationsGrid" variableRowHeight="true" dataProvider="{viewModel.payeeViolations}" selectable="false" width="100%" backgroundColor="#ffffff">
+			<mx:columns>
+				<mx:DataGridColumn
+						headerText="Failure Date Time"
+						textAlign="center"
+						wordWrap="true"
+						headerStyleName="directDepositHeader"
+						labelFunction="formatDate"
+						dataField="eventDate"/>
+				<mx:DataGridColumn
+						headerText="Payee"
+						textAlign="center"
+						labelFunction="getPayeeName"
+						headerStyleName="directDepositHeader"
+						color="green"
+						sortCompareFunction="sortPayeeName"/>
+				<mx:DataGridColumn
+						headerText="Amount"
+						textAlign="center"
+						headerStyleName="directDepositHeader"
+						labelFunction="formatViolationAmount"
+						sortCompareFunction="sortViolationAmount"/>
+				<mx:DataGridColumn
+						headerText="Over Limit By"
+						textAlign="center"
+						headerStyleName="directDepositHeader"
+						labelFunction="formatOverByLimit"
+						sortCompareFunction="sortOverLimitAmount"/>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:VBox>
+
+</mx:VBox>

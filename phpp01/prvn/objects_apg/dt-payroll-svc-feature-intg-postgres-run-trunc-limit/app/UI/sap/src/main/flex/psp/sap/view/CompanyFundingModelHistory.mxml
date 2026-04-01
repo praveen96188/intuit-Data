@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 	
+	xmlns="*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%" height="100%"
+	>
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.ObjectUtil;
+			import psp.sap.viewmodel.CompanyFundingModelHistoryViewModel;
+			import psp.sap.service.LookupService;
+			import psp.sap.service.UserService;
+        	import psp.sap.model.FundingModel;
+        	import mx.controls.Label;
+        	import mx.containers.VBox;
+  			import flash.events.MouseEvent;
+  			import mx.events.DataGridEvent;
+            
+            import psp.sap.model.PropertyAudit;
+            import psp.sap.application.SAP;
+            
+            private var mViewModel:CompanyFundingModelHistoryViewModel;
+            
+            [Bindable]
+            public function get viewModel():CompanyFundingModelHistoryViewModel {
+            	return mViewModel;
+            }
+            
+            public function set viewModel(value:CompanyFundingModelHistoryViewModel):void {
+            	mViewModel = value;
+            }
+                	  	
+             public function fundingModelLabel(statusCd:String):String {
+             	var fundingModel:FundingModel=
+					 FundingModel(SAP.instance.lookupService.fundingModels.getItemByKey(statusCd));
+				
+             	return (fundingModel != null) ? fundingModel.name : statusCd;
+             }
+             
+            public function fundingModelNewValueLabel(item:Object, column:DataGridColumn):String
+            {
+            	var statusCd:String = PropertyAudit(item).newPropertyValue;
+            	return fundingModelLabel(statusCd);
+            	
+            }    	 	 
+            
+            public function fundingModelOldValueLabel(item:Object, column:DataGridColumn):String
+            {
+            	var statusCd:String = PropertyAudit(item).oldPropertyValue;
+            	return fundingModelLabel(statusCd);
+            	
+            }
+            
+            public function get lookupService():LookupService {
+            	return SAP.instance.lookupService;
+            }
+            
+            public function formatDate(item:Object, dgc:DataGridColumn):String{
+            	return viewModel.dateFormatter.format(item.auditDate)
+            }
+
+        ]]>        
+    </mx:Script>    
+        
+    
+	<mx:DataGrid 
+		id="propertyHistoryGrid"
+        variableRowHeight="true"
+		dataProvider="{viewModel.propertyHistory}" 
+		selectable="false" 
+		width="85%">
+		<mx:columns>
+			<mx:DataGridColumn 
+					headerText="Change Date Time"
+					textAlign="center" 
+					labelFunction="formatDate"
+					wordWrap="true"
+					dataField="auditDateTime"/>							
+			<mx:DataGridColumn 
+					headerText="Changed By"
+					textAlign="center" 
+					color="green"
+					headerStyleName="directDepositHeader"
+					dataField="userId"/>
+			<mx:DataGridColumn 
+					headerText="From"
+					textAlign="center" 
+					dataField="oldPropertyValue"
+					labelFunction="fundingModelOldValueLabel"/>								
+			<mx:DataGridColumn 
+					headerText="To"
+					textAlign="center" 
+					dataField="newPropertyValue"
+					labelFunction="fundingModelNewValueLabel"/>
+		</mx:columns>
+	</mx:DataGrid>
+		
+</mx:VBox>

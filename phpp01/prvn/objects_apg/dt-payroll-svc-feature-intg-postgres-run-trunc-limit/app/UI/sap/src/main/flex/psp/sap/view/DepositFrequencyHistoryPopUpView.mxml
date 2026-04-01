@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="540"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.viewmodel.DepositFrequencyHistoryPopUpViewModel;
+
+        private var mViewModel:DepositFrequencyHistoryPopUpViewModel;
+        private var mTempViewModel:DepositFrequencyHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():DepositFrequencyHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:DepositFrequencyHistoryPopUpViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Deposit Frequency History for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:Text text="Follows federal deposit frequency.  IRS-941-PAYMENT history shown below."
+             paddingTop="6"
+             visible="{viewModel.paymentTemplate.followsFedDepositFrequency}"
+             includeInLayout="{viewModel.paymentTemplate.followsFedDepositFrequency}"/>
+    <mx:Text text="Default deposit frequency: {viewModel.defaultDepositFrequency}" paddingTop="3"/>
+    <controls:SAPDataGrid
+            width="100%"
+            paddingRight="10"
+            selectable="false"
+            draggableColumns="false"
+            dataProvider="{viewModel.depositFrequencies}"
+            maxRows="12">
+        <controls:columns>
+            <controls:SAPDataGridColumn
+                    headerText="Frequency"
+                    width="130"
+                    dataField="depositFrequency"/>
+            <controls:SAPDataGridColumn headerText="Effective Date"
+                                        width="120"
+                                        dataField="effectiveDate">
+                <controls:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:Script><![CDATA[
+                                import psp.sap.formatters.SAPDateFormatters;
+                                import psp.sap.model.DepositFrequency;
+                                ]]></mx:Script>
+                            <mx:Text fontWeight="{DepositFrequency(data).isCurrent ? 'bold' : 'normal'}"
+                                     fontStyle="{DepositFrequency(data).invalidDate == null ? 'normal' : 'italic'}"
+                                     text="{SAPDateFormatters.dateFormatMedium.format(DepositFrequency(data).effectiveDate)}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </controls:itemRenderer>
+            </controls:SAPDataGridColumn>
+
+            <controls:SAPDataGridColumn
+                    headerText="Change Date"
+                    width="140"
+                    resizable="false"
+                    dataField="modifiedDate"
+                    labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+
+            <controls:SAPDataGridColumn
+                    headerText="Changed By"
+                    width="130"
+                    dataField="modifierId"/>
+
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

@@ -1,0 +1,89 @@
+// The library version is controled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+@Library('msaas-shared-lib') _
+
+node {
+  // setup the global static configuration
+  config = setupMsaasPipeline('msaas-config.yaml')
+}
+
+pipeline {
+  agent {
+      kubernetes {
+          label "${config.pod_label}"
+          yamlFile 'KubernetesPods.yaml'
+      }
+  }
+
+  parameters {
+      choice(name: 'ENVIRONMENT', choices: ['QAL', 'E2E', 'PRF'], description: 'Environment to Deploy')
+      string(name: 'IMAGE', defaultValue: '', description: 'PSP image in format {branchName}-commitId. Ex: develop-81d78a6')
+  }
+
+  environment{
+    IMAGE_PATH = "docker.intuit.com/payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc:${params.IMAGE}"
+  }
+
+  stages {
+      stage('QAL:') {
+          when {
+               expression { params.ENVIRONMENT =='QAL'}
+           }
+          options {
+              lock(resource: getEnv(config, 'qal-usw2').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 10, label: "Deploy-qal-usw2-milestone")
+                          gitOpsDeploy(config, "qal-usw2", "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+      stage('E2E:') {
+          when {
+               expression { params.ENVIRONMENT =='E2E'}
+            }
+          options {
+              lock(resource: getEnv(config, 'e2e-usw2').namespace, inversePrecedence: true)
+              timeout(time: 32, unit: 'MINUTES')
+          }
+          stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: "Deploy-e2e-usw2-milestone")
+                          gitOpsDeploy(config, "e2e-usw2", "${IMAGE_PATH}",,1800)
+                      }
+                  }
+              }
+          }
+      }
+        stage('PRF:') {
+         when {
+           expression { params.ENVIRONMENT =='PRF'}
+        }
+            options {
+                lock(resource: getEnv(config, 'prf-usw2').namespace, inversePrecedence: true)
+                timeout(time: 35, unit: 'MINUTES')
+            }
+            stages {
+                stage('Deploy') {
+                    steps {
+                        container('cdtools') {
+                            //This has to be the first action in the first sub-stage.
+                            milestone(ordinal: 20, label: "Deploy-prf-usw2-milestone")
+                            gitOpsDeploy(config, "prf-usw2", "${IMAGE_PATH}", 2, 1800)
+                        }
+                    }
+                }
+            }
+        }
+   }
+}

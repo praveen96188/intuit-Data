@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ns="http://ddcompanystrikeadd.xsd.wsapi.dd.pse.osp.intuit"
+           xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit"
+           xmlns:cm="http://company.xsd.wsapi.dd.pse.osp.intuit"
+           targetNamespace="http://ddcompanystrikeadd.xsd.wsapi.dd.pse.osp.intuit"
+           elementFormDefault="qualified">
+    <xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+    <xs:element name="DDCompanyStrikeAdd">
+        <xs:annotation>
+            <xs:documentation>Data Transfer Object DDCompanyStrikeAdd</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="SourceSystemCd" type="dd:SourceSystemType" nillable="false"/>
+                <xs:element name="CompanyID" type="dd:IDType" nillable="false"/>
+                <xs:element name="StrikeReason" type="ns:StrikeReasonType" nillable="false"/>
+                <xs:element name="StrikeDate" type="xs:dateTime" nillable="false"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <!--Manual Strike Reason -->
+     <xs:simpleType name="StrikeReasonType">
+         <xs:annotation>
+             <xs:documentation>Description used for manual strikes. DB field is 200 bytes</xs:documentation>
+         </xs:annotation>
+         <xs:restriction base="xs:string">
+             <xs:minLength value="1"/>
+             <xs:maxLength value="200"/>
+             <xs:whiteSpace value="collapse"/>
+         </xs:restriction>
+     </xs:simpleType>
+</xs:schema>

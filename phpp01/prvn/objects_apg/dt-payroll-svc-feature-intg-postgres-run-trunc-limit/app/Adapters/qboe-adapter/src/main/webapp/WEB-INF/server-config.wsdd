@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <globalConfiguration>
+  <parameter name="sendMultiRefs" value="true"/>
+  <parameter name="disablePrettyXML" value="true"/>
+  <parameter name="adminPassword" value="admin"/>
+  <parameter name="attachments.Directory" value="./attachments"/>
+  <parameter name="dotNetSoapEncFix" value="true"/>
+  <parameter name="enableNamespacePrefixOptimization" value="true"/>
+  <parameter name="sendXMLDeclaration" value="true"/>
+  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <parameter name="sendXsiTypes" value="true"/>
+  <requestFlow>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="session"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="request"/>
+    <parameter name="extension" value=".jwr"/>
+   </handler>
+  </requestFlow>
+ </globalConfiguration>
+ <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <service name="Company" provider="java:RPC">
+    <wsdlFile>/Company.wsdl</wsdlFile>
+    <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.Company"/>
+    <parameter name="allowedMethods" value="systemEventSync"/>
+    <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+ </service>
+ <service name="EmployeeBankAccount" provider="java:RPC">
+  <wsdlFile>/EmployeeBankAccount.wsdl</wsdlFile>
+  <parameter name="allowedMethods" value="add update deactivate"/>
+  <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.EmployeeBankAccount"/>
+ </service>
+ <service name="CompanyBankAccount" provider="java:RPC">
+  <wsdlFile>/CompanyBankAccount.wsdl</wsdlFile>
+  <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.CompanyBankAccount"/>
+  <parameter name="allowedMethods" value="add deactivate update verify"/>
+ </service>
+ <service name="AdminService" provider="java:MSG">
+  <parameter name="allowedMethods" value="AdminService"/>
+  <parameter name="enableRemoteAdmin" value="false"/>
+  <parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <namespace>http://xml.apache.org/axis/wsdd/</namespace>
+ </service>
+ <service name="Version" provider="java:RPC">
+  <parameter name="allowedMethods" value="getVersion"/>
+  <parameter name="className" value="org.apache.axis.Version"/>
+ </service>
+ <service name="Employee" provider="java:RPC">
+  <wsdlFile>/Employee.wsdl</wsdlFile>
+  <parameter name="allowedMethods" value="add update deactivate"/>
+  <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.Employee"/>
+ </service>
+ <service name="DDCompany" provider="java:RPC">
+  <wsdlFile>/DDCompany.wsdl</wsdlFile>
+  <parameter name="allowedMethods" value="add getInfo update cancel"/>
+  <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.DDCompany"/>
+ </service>
+ <service name="DDTransaction" provider="java:RPC">
+  <wsdlFile>/DDTransaction.wsdl</wsdlFile>
+  <parameter name="allowedMethods" value="submit sync recall"/>
+  <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.DDTransaction"/>
+ </service>
+ <service name="SourceSystemParam" provider="java:RPC">
+   <wsdlFile>/SourceSystemParam.wsdl</wsdlFile>
+   <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.SourceSystemParam"/>
+   <parameter name="allowedMethods" value="query"/>
+ </service> 
+ <transport name="http">
+  <requestFlow>
+   <handler type="URLMapper"/>
+   <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+   <handler name="WSFAuditHandler" type="java:com.intuit.sbd.payroll.psp.webservices.WSFAuditHandler"/>
+  </requestFlow>
+  <parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </transport>
+ <transport name="local">
+  <responseFlow>
+   <handler type="LocalResponder"/>
+  </responseFlow>
+ </transport>
+</deployment>

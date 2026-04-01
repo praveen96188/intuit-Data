@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:flexlib="flexlib.controls.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete()">
+    <!-- Note that this screen is a complete hack job and we need to rewrite PayrollMultiItemEnteringPage, etc.-->
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.formatters.SAPCurrencyFormatters;
+			import mx.binding.utils.BindingUtils;
+			import psp.sap.application.enums.CompanyInspectorPageEnum;
+			import psp.sap.validators.SAPDateValidator;
+			import psp.sap.formatters.SAPCurrencyFormatters;
+			import psp.sap.model.PayrollBillingTransactions;
+			import mx.validators.NumberValidator;
+            import mx.utils.StringUtil;
+
+            import psp.sap.viewmodel.PayrollLedgerRecoverBadDebtViewModel;
+            import psp.sap.viewmodel.events.ViewModelUserConfirmationEvent;
+            import psp.sap.model.SettlementTypeEnum;
+            import psp.sap.model.BillingTransaction;
+            import mx.validators.Validator;
+            import mx.collections.ArrayCollection;
+            import mx.events.CloseEvent;
+            import mx.controls.Alert;
+            import psp.sap.viewmodel.PayrollMultiItemEnteringPageViewModel;
+            import psp.sap.viewmodel.CompanyInspectorViewModel;
+            import mx.events.ValidationResultEvent;
+            import psp.sap.application.events.SAPEvent;
+            import psp.sap.application.SAP;
+            
+            private static const COL_WIDTH_1:int = 230;
+			private static const COL_WIDTH_2:int = 240;
+			private static const COL_WIDTH_3:int = 240;
+
+            /**
+             * Passed to ViewModel to control available settlement type selections.
+             */
+            public var settlementTypes:Array;
+
+            /**
+             * The default settlement type to display
+             */
+            public var defaultSettlementType:SettlementTypeEnum;
+
+            /**
+             * The confirmation message to show
+             */
+            public var saveString:String;
+
+            /**
+             * The header for column one
+             */
+            [Bindable]
+            public var column1Header:String;
+
+            /**
+             * The header for column two
+             */
+            [Bindable]
+            public var column2Header:String;
+
+
+            private var mViewModel:PayrollLedgerRecoverBadDebtViewModel;
+            private var mTempViewModel:PayrollLedgerRecoverBadDebtViewModel;
+            private var mCreationComplete:Boolean = false;
+
+
+            [Bindable]
+            public function get viewModel():PayrollLedgerRecoverBadDebtViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:PayrollLedgerRecoverBadDebtViewModel):void {
+                if (mCreationComplete) {
+                	if(mViewModel != null){
+                		mViewModel.removeEventListener(PayrollMultiItemEnteringPageViewModel.EVENT_DATE_WARNING, onDateChangeConfirmation);
+                	}
+                    
+                    mViewModel = value;
+                    
+                    if (mViewModel != null){                    		
+	                    mViewModel.settlementTypes = settlementTypes;
+	                    mViewModel.defaultSettlementType = defaultSettlementType;
+	                    mViewModel.settlementType = defaultSettlementType;                	                    
+                        mViewModel.totalAmountValidator.listener = paymentTotalInput;
+                        
+                        mViewModel.addEventListener(PayrollMultiItemEnteringPageViewModel.EVENT_DATE_WARNING, onDateChangeConfirmation, false, 0, true);
+                    }
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+            }                        
+
+            public function onDateChangeConfirmation(e:ViewModelUserConfirmationEvent):void {
+                var oldValue:String = String(e.data);
+
+                Alert.show(	"Are you sure you want to select a date more than 5 days into the future?\n\nSelect OK to continue with the date selected or Cancel to revert.",
+                        "Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (e:CloseEvent):void {
+                            if(e.detail == Alert.CANCEL) {
+                                viewModel.date = oldValue;
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            }
+
+            /**
+             * Confirmation dialog
+             */
+            private function confirm():void {
+                Alert.show(	saveString, "Confirmation",
+                        Alert.YES | Alert.CANCEL,
+                        this,
+                        function (e:CloseEvent):void {
+                            if(e.detail == Alert.YES) {
+                                viewModel.save();
+                            }
+                        },
+                        null,
+                        Alert.YES);
+            }
+            
+            public function clearAll(event:Event):void {
+                var clearAll:Button = event.currentTarget as Button;
+                var payroll:PayrollBillingTransactions = clearAll.getRepeaterItem() as PayrollBillingTransactions;
+                viewModel.clearAll(payroll);
+            }
+
+            /**
+             * change empty or null values to DEFAULT_AMOUNT
+             */
+            public function onTextFocusOut(e:FocusEvent):void {
+                var txt:TextInput = e.currentTarget as TextInput;
+                if (txt.text == null || StringUtil.trim(txt.text).length == 0)
+                    txt.text = PayrollMultiItemEnteringPageViewModel.DEFAULT_AMOUNT_STRING;
+            }
+
+            public function initDDValidator(event:Event):void {
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var txn:BillingTransaction = txtInput.getRepeaterItem() as BillingTransaction;
+                if (txn != null && txn.hasFinancialTxn) {
+                    for each (var validator:Validator in viewModel.getValidators(txn, "financialReturnAmountString")) {
+                        validator.listener = txtInput;
+                        BindingUtils.bindProperty(txtInput, "text", txn, "financialReturnAmountString")
+                    }
+                }
+            }
+
+
+            public function initTaxTxnValidator(event:Event):void {
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var payroll:PayrollBillingTransactions = txtInput.getRepeaterItem() as PayrollBillingTransactions;
+                var txn:BillingTransaction = payroll.taxTransaction;
+                if (txn != null && txn.hasFinancialTxn) {
+                    payroll.taxTransactionACHValidator.listener = txtInput;
+                    payroll.taxTransactionNonACHValidator.listener = txtInput;
+                    BindingUtils.bindProperty(txtInput, "text", txn, "financialReturnAmountString");
+                }
+            }            
+
+            // To accomodate the 2 way binding for Fee amount
+            public function onTaxTextChange(event:Event):void {
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var payroll:PayrollBillingTransactions = txtInput.getRepeaterItem() as PayrollBillingTransactions;                
+                var txn:BillingTransaction = payroll.taxTransaction;
+                if(txn != null){
+                	txn.financialReturnAmountString = txtInput.text;
+                }
+            } 
+            
+            public function initInitiationDateValidator(event:Event):void {
+                var dateField:SAPDateField = event.currentTarget as SAPDateField;
+                var payroll:PayrollBillingTransactions = dateField.getRepeaterItem() as PayrollBillingTransactions;               
+                var validator:SAPDateValidator = viewModel.getValidator(payroll, "initiationDate") as SAPDateValidator;
+                validator.listener = dateField;
+                dateField.selectableRange = validator.validDateRange;
+                BindingUtils.bindProperty(dateField, "text", payroll, "initiationDateString");
+                BindingUtils.bindProperty(payroll, "initiationDateString", dateField, "text");                                              
+            }                                  
+            
+            public function initFeeValidator(event:Event):void {
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var txn:BillingTransaction = txtInput.getRepeaterItem() as BillingTransaction;
+                if (txn != null && txn.hasFinancialTxn) {
+                    var validator:Validator = viewModel.getValidator(txn, "financialReturnAmountString");
+                    validator.listener = txtInput;
+                    BindingUtils.bindProperty(txtInput, "text", txn, "financialReturnAmountString");
+                }
+            }
+
+            public function initTaxValidator(event:Event):void {
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var txn:BillingTransaction = txtInput.getRepeaterItem() as BillingTransaction;
+                if (txn != null && txn.hasSalesTaxTxn) {
+                    var validator:Validator = viewModel.getValidator(txn, "salesTaxReturnAmountString");
+                    validator.listener = txtInput;
+                    BindingUtils.bindProperty(txtInput, "text", txn, "salesTaxReturnAmountString");
+                }
+            }
+
+            // To accomodate the 2 way binding for Fee amount
+            public function onTextChange(event:Event):void {
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var txn:BillingTransaction = txtInput.getRepeaterItem() as BillingTransaction;
+                txn.financialReturnAmountString = txtInput.text;
+            }
+
+            // To accomodate the 2 way binding for sales tax amount
+            public function  onSalesTaxChange(event:Event):void{
+                var txtInput:TextInput = event.currentTarget as TextInput;
+                var txn:BillingTransaction = txtInput.getRepeaterItem() as BillingTransaction;
+                txn.salesTaxReturnAmountString = txtInput.text;
+            }                        
+         ]]>
+	</mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+	<mx:DateFormatter id="dateFormatterMed" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+	<mx:DateFormatter id="dateFormatterShort" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+
+    <mx:VBox
+        id="dataContainer"
+        paddingTop="10"
+        verticalGap="10"
+        width="717"
+        visible="{!viewModel.isDataLoading}"
+        includeInLayout="{!viewModel.isDataLoading}">
+        <pspui:ActionLink 
+	    	label="Change Redebit to Pending Wire?" 
+	    	click="viewModel.goToWireExpected()" 
+	    	paddingTop="10" paddingLeft="0" 
+	    	tabEnabled="false"
+	    	visible="{!viewModel.editAmounts}"
+	    	includeInLayout="{!viewModel.editAmounts}"/>
+        <mx:Text id="achNotAvailableText" 
+        	text="ACH is not available.  The company does not have an active bank account."
+            styleName="errorMessageStyle"
+            includeInLayout="{!viewModel.canExecute}"
+            visible="{!viewModel.canExecute}" />
+
+        <mx:VBox
+        	width="100%"
+        	paddingTop="10">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="100%">                
+				<mx:VBox
+					verticalGap="0"
+					width="100%"
+					styleName="padderBox">
+					<mx:HBox>
+                        <mx:Text text="Recovered from" fontWeight="bold" width="130"/>
+                        <mx:VBox verticalGap="1">
+                            <mx:RadioButtonGroup id ="recoveryType"/>
+                            <mx:RadioButton group="{recoveryType}" value="agency" label="Collection Agency (No transfer)" selected="true"/>
+                            <mx:RadioButton group="{recoveryType}" value="customer" label="Customer (Transfer Return->Fee)"/>
+                        </mx:VBox>
+                    </mx:HBox>
+					<mx:HBox width="100%">											
+		                <mx:HBox verticalAlign="middle"  width="100%" visible="{!viewModel.isCustomer}" includeInLayout="{!viewModel.isCustomer}" >
+		                    <mx:Label id="settlementLabel" text="Settlement Type" fontWeight="bold" width="130"/>
+		                    <mx:ComboBox 
+		                    	id="settlementTypeCombo" 
+		                    	width="100" 
+		                    	dataProvider="{viewModel.settlementTypes}"
+		                        visible="{viewModel.canSelectNonStandardSettlementTypes ? viewModel.settlementTypes.length > 1 : false}" 
+		                        includeInLayout="{viewModel.canSelectNonStandardSettlementTypes ? viewModel.settlementTypes.length > 1 : false}"/>
+		                    <mx:Label 
+		                    	id="settlementTypeLabel" 
+		                    	width="100" 
+		                    	fontWeight="bold"
+		                    	text="{viewModel.settlementType}"
+		                        visible="{viewModel.settlementTypes.length == 1 ? true : !viewModel.canSelectNonStandardSettlementTypes}" 
+		                        includeInLayout="{viewModel.settlementTypes.length == 1 ? true: !viewModel.canSelectNonStandardSettlementTypes}"/>
+		                </mx:HBox>
+		                <mx:HBox 
+		                	verticalAlign="middle"  
+		                	width="100%" 
+		                	visible="{viewModel.settlementType != SettlementTypeEnum.ACH ? viewModel.showPaymentAmountBox : false}" 
+		                    includeInLayout="{viewModel.settlementType != SettlementTypeEnum.ACH ? viewModel.showPaymentAmountBox : false}">
+		                    <pspui:RequiredLabel 
+				                    	text="Total Payment" 
+				                    	validator="{viewModel.totalAmountRequiredValidator}"
+				                    	fontWeight="bold"
+				                    	width="130"/>		                    
+		                    <mx:TextInput 
+		                    	id="paymentTotalInput"
+		                    	textAlign="right" 
+		                    	width="100"/>
+		                </mx:HBox>
+	                </mx:HBox>
+	                
+	                <mx:HBox
+	                	visible="{viewModel.settlementType == SettlementTypeEnum.ACH}"
+	                 	includeInLayout="{viewModel.settlementType == SettlementTypeEnum.ACH}" 
+	                	verticalAlign="middle"  
+	                	width="100%">
+	                    <mx:Label 
+	                    	id="bankAccountLabel" 
+	                    	text="Bank Account"
+	                    	fontWeight="bold" 
+	                    	width="130"/>
+	                    <mx:Text 
+	                    	id="bankAccountText"
+	                    	text="{viewModel.bankAccountLabel}" 
+	                    	fontWeight="bold" 
+	                    	textAlign="left" 
+	                    	width="100%"/>
+	                </mx:HBox>
+	                
+	                <mx:HBox
+	                	visible="{!viewModel.overrideShowDateField &amp;&amp; viewModel.settlementType != SettlementTypeEnum.ACH &amp;&amp; !viewModel.isCustomer}"
+	                 	includeInLayout="{!viewModel.overrideShowDateField &amp;&amp; viewModel.settlementType != SettlementTypeEnum.ACH &amp;&amp; !viewModel.isCustomer}"
+	                	verticalAlign="middle"  
+	                	width="100%">
+	                    <mx:Label 
+	                    	id="dateLabel" 
+	                    	text="Date"
+	                    	fontWeight="bold" 
+	                    	width="130"/>
+	                    <mx:Text 
+	                    	id="dateText"
+	                    	text="{viewModel.date}" 
+	                    	fontWeight="bold" 
+	                    	textAlign="left" 
+	                    	width="100%"/>
+	                </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+        
+        <mx:Canvas
+        	width="100%"
+        	visible="{viewModel.canExecute}" 
+            includeInLayout="{viewModel.canExecute}">
+            
+            <mx:VBox
+            	width="100%">            	                        
+        
+	        <mx:Repeater
+	        	id="payrollRepeater" 
+	        	dataProvider="{viewModel.payrolls}"> 
+	            
+		        <mx:VBox verticalGap="0" width="100%">       	               		        			              
+			
+			        <mx:Grid 
+			        	width="100%" 
+			        	styleName="gridBoxStyle"
+			            horizontalGap="0" 
+			            verticalGap="0">
+			            
+			            <mx:GridRow
+			            	visible="{viewModel.overrideShowDateField || viewModel.settlementType == SettlementTypeEnum.ACH}"
+			            	includeInLayout="{viewModel.overrideShowDateField || viewModel.settlementType == SettlementTypeEnum.ACH}"
+			            	borderColor="black"
+			            	borderSides="bottom"
+			            	borderStyle="solid">
+			            	<mx:GridItem 
+			            		colSpan="5"
+			            		paddingLeft="5">
+			            		<mx:HBox
+				                	verticalAlign="middle"
+				                    width="100%"
+				                    styleName="padderBox">
+				                    <pspui:RequiredLabel 
+				                    	text="Initiation Date" 
+				                    	validator="{payrollRepeater.currentItem.dateRequiredValidator}" width="130"/>
+				                    <pspui:SAPDateField
+				                    	id="initiationDateInput"	                                    	                                    	                                    
+	                                    creationComplete="initInitiationDateValidator(event)"			                    	 
+				                    	width="100"   
+				                    	editable="true"/>
+			                	</mx:HBox>
+			            	</mx:GridItem>
+			            </mx:GridRow>			            	
+			
+			            <!-- Headers -->
+			            <mx:GridRow>
+			                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" horizontalAlign="center">
+			                	<mx:Label text="Check Date" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2}" colSpan="2" styleName="borderRight" horizontalAlign="center">
+			                    <mx:Label text="Amount" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3}" colSpan="2" horizontalAlign="center">
+			                    <mx:Label text="Sales Tax" fontWeight="bold"/>
+			                </mx:GridItem>
+			            </mx:GridRow>
+			
+			            <mx:GridRow>
+			                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRightTopBottom" horizontalAlign="center">
+			                	<mx:Label text="{dateFormatterMed.format(payrollRepeater.currentItem.checkDate)}" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightTopBottom" horizontalAlign="center">
+			                    <mx:Label id="column1HeaderLabel1" text="{column1Header}" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightTopBottom" horizontalAlign="center">
+			                    <mx:Label id="column2HeaderLabel1" text="{column2Header}" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderRightTopBottom" horizontalAlign="center">
+			                    <mx:Label id="column1HeaderLabel2" text="{column1Header}" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderTopBottom" horizontalAlign="center">
+			                    <mx:Label id="column2HeaderLabel2" text="{column2Header}" fontWeight="bold"/>
+			                </mx:GridItem>
+			            </mx:GridRow>
+			
+			            <!-- Spacer row -->
+			            <mx:GridRow height="5">
+			                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightGrey">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRight">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderRightGrey">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" horizontalScrollPolicy="off">
+			                </mx:GridItem>
+			            </mx:GridRow>
+			            
+			            <!-- tax amount -->
+			            <mx:GridRow 
+			            	height="30"
+			            	visible="{payrollRepeater.currentItem.taxTransaction != null}"
+			            	includeInLayout="{payrollRepeater.currentItem.taxTransaction != null}">
+		                    <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" verticalAlign="middle" paddingLeft="5">
+		                        <mx:Label text="Tax Transactions" fontWeight="bold"/>
+		                    </mx:GridItem>
+		                    <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightGrey">
+		                        <mx:Label id="taxAmountLabel" width="118"
+		                                  text="{SAPCurrencyFormatters.defaultFormatter.format(payrollRepeater.currentItem.taxTransaction.financialAmount)}"
+		                                  visible="{payrollRepeater.currentItem.taxTransaction.hasFinancialTxn}"
+		                                  textAlign="right"/>
+		                    </mx:GridItem>
+		                    <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRight">
+		                        <mx:HBox horizontalGap="0" paddingRight="3"
+		                                 visible="{payrollRepeater.currentItem.taxTransaction.hasFinancialTxn}">
+		                            <mx:Label id="taxDollarLabel" text="$" textAlign="right"/>
+		                            <mx:TextInput 
+		                            	id="taxInputTxnAmount"
+                                        text="{payrollRepeater.currentItem.taxTransaction.financialReturnAmountString}"
+                                        change="onTaxTextChange(event)"
+                                        focusOut="onTextFocusOut(event)"
+                                        creationComplete="initTaxTxnValidator(event)" 
+                                        width="95"
+                                        textAlign="right"
+                                        enabled="{viewModel.editAmounts}"
+                                        disabledColor="black"/>
+		                        </mx:HBox>
+		                    </mx:GridItem>
+		                    <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderRightGrey">
+		                        <mx:Label id="taxSalesTaxAmtLabel"
+		                                  width="118"		                                  
+		                                  visible="{payrollRepeater.currentItem.taxTransaction.hasSalesTaxTxn}"
+		                                  textAlign="right"/>
+		                    </mx:GridItem>
+		                    <mx:GridItem width="{COL_WIDTH_3/2}" horizontalScrollPolicy="off">
+		                        <mx:HBox 
+		                        	horizontalGap="0"
+		                        	paddingRight="3"
+		                            visible="{payrollRepeater.currentItem.taxTransaction.hasSalesTaxTxn}">
+		                            <mx:Label text="$" textAlign="right"/>
+		                            <mx:TextInput 
+		                            	id="taxInputSalesTaxAmount"
+		                                width="95" textAlign="right"
+		                                text="{payrollRepeater.currentItem.taxTransaction.salesTaxReturnAmountString}"
+		                                enabled="{viewModel.editAmounts}"
+		                                disabledColor="black"/>
+		                        </mx:HBox>
+		                    </mx:GridItem>
+		                </mx:GridRow>
+			
+                        <!-- dd amount -->
+                        <mx:GridRow
+                                visible="{PayrollBillingTransactions(payrollRepeater.currentItem).ddTransactions != null ? PayrollBillingTransactions(payrollRepeater.currentItem).ddTransactions.length > 0 : false}"
+                                includeInLayout="{PayrollBillingTransactions(payrollRepeater.currentItem).ddTransactions != null ? PayrollBillingTransactions(payrollRepeater.currentItem).ddTransactions.length > 0 : false}">
+                            <mx:GridItem styleName="borderRight" paddingLeft="5">
+                                <mx:Label text="Direct Deposit Transactions" fontWeight="bold"/>
+                            </mx:GridItem>
+                            <mx:GridItem styleName="borderRightGrey"/>
+                            <mx:GridItem styleName="borderRight"/>
+                            <mx:GridItem styleName="borderRightGrey"/>
+                            <mx:GridItem/>
+                        </mx:GridRow>
+                        <mx:Repeater id="ddTransactions" dataProvider="{PayrollBillingTransactions(payrollRepeater.currentItem).ddTransactions}" >
+                            <mx:GridRow height="25">
+                                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" paddingLeft="5">
+                                    <mx:Label textIndent="15" width="100%" text="{BillingTransaction(ddTransactions.currentItem).financialTxnType}" />
+                                </mx:GridItem>
+                                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightGrey">
+                                    <mx:Label width="118"
+                                              text="{SAPCurrencyFormatters.defaultFormatter.format(BillingTransaction(ddTransactions.currentItem).financialAmount)}"
+                                              visible="{BillingTransaction(ddTransactions.currentItem).hasFinancialTxn}"
+                                              textAlign="right"/>
+                                </mx:GridItem>
+                                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRight">
+                                    <mx:HBox horizontalGap="0" paddingRight="3"
+                                             visible="{BillingTransaction(ddTransactions.currentItem).hasFinancialTxn}">
+                                        <mx:Label text="$" textAlign="right"/>
+                                        <mx:TextInput text="{BillingTransaction(ddTransactions.currentItem).financialReturnAmountString}"
+                                                      change="onTextChange(event)"
+                                                      focusOut="onTextFocusOut(event)"
+                                                      creationComplete="initDDValidator(event)" width="95" textAlign="right"
+                                                      enabled="{viewModel.editAmounts}"
+                                                      disabledColor="black"/>
+                                    </mx:HBox>
+                                </mx:GridItem>
+                                <mx:GridItem styleName="borderRightGrey"/>
+                                <mx:GridItem/>
+                            </mx:GridRow>
+                        </mx:Repeater>
+			
+			            <!-- Other ACH Fees -->
+			            <mx:GridRow
+			            	visible="{payrollRepeater.currentItem.feeTransactions != null ? payrollRepeater.currentItem.feeTransactions.length > 0 : false}"
+			            	includeInLayout="{payrollRepeater.currentItem.feeTransactions != null ? payrollRepeater.currentItem.feeTransactions.length > 0 : false}">
+			                <mx:GridItem styleName="borderRight" paddingLeft="5">
+			                    <mx:Label text="Fee Transactions" fontWeight="bold"/>
+			                    <mx:TextInput id="input" width="95" textAlign="right" visible="false" includeInLayout="false"/>
+			                </mx:GridItem>
+			                <mx:GridItem styleName="borderRightGrey"/>
+			                <mx:GridItem styleName="borderRight"/>
+			                <mx:GridItem styleName="borderRightGrey"/>
+			                <mx:GridItem/>
+			            </mx:GridRow>
+			            <mx:Repeater id="feeTransactions" dataProvider="{payrollRepeater.currentItem.feeTransactions}" >
+			                <mx:GridRow height="25">
+			                    <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" paddingLeft="5">
+			                        <mx:Label id="txnTypeLabel" textIndent="15" width="100%" text="{feeTransactions.currentItem.financialTxnType}" />
+			                    </mx:GridItem>
+			                    <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightGrey">
+			                        <mx:Label id="feeTxnAmtLabel" width="118"
+			                                  text="{SAPCurrencyFormatters.defaultFormatter.format(feeTransactions.currentItem.financialAmount)}"
+			                                  visible="{feeTransactions.currentItem.hasFinancialTxn}"
+			                                  textAlign="right"/>
+			                    </mx:GridItem>
+			                    <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRight">
+			                        <mx:HBox horizontalGap="0" paddingRight="3"
+			                                 visible="{feeTransactions.currentItem.hasFinancialTxn}">
+			                            <mx:Label id="feeDollarLabel" text="$" textAlign="right"/>
+			                            <mx:TextInput id="inputTxnAmount"
+			                                          text="{feeTransactions.currentItem.financialReturnAmountString}"
+			                                          change="onTextChange(event)"
+			                                          focusOut="onTextFocusOut(event)"
+			                                          creationComplete="initFeeValidator(event)" width="95" textAlign="right"
+			                                          enabled="{viewModel.editAmounts}"
+			                                          disabledColor="black"/>
+			                        </mx:HBox>
+			                    </mx:GridItem>
+			                    <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderRightGrey">
+			                        <mx:Label id="salesTaxAmtLabel"
+			                                  width="118"
+			                                  text="{SAPCurrencyFormatters.defaultFormatter.format(feeTransactions.currentItem.salesTaxAmount)}"
+			                                  visible="{feeTransactions.currentItem.hasSalesTaxTxn}"
+			                                  textAlign="right"/>
+			                    </mx:GridItem>
+			                    <mx:GridItem width="{COL_WIDTH_3/2}" horizontalScrollPolicy="off">
+			                        <mx:HBox horizontalGap="0" paddingRight="3"
+			                                 visible="{feeTransactions.currentItem.hasSalesTaxTxn}">
+			                            <mx:Label text="$" textAlign="right"/>
+			                            <mx:TextInput id="inputsalesTaxAmount"
+			                                          width="95" textAlign="right"
+			                                          text="{feeTransactions.currentItem.salesTaxReturnAmountString}"
+			                                          change="onSalesTaxChange(event)"
+			                                          focusOut="onTextFocusOut(event)"
+			                                          creationComplete="initTaxValidator(event)"
+			                                          enabled="{viewModel.editAmounts}"
+			                                          disabledColor="black"/>
+			                        </mx:HBox>
+			                    </mx:GridItem>
+			                </mx:GridRow>
+			            </mx:Repeater>
+			
+			            <!-- Spacer Row -->
+			            <mx:GridRow height="8">
+			                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightGrey">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRight">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderRightGrey">
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" verticalAlign="middle" horizontalScrollPolicy="off">
+			                </mx:GridItem>
+			            </mx:GridRow>
+			
+			            <!-- totals -->
+			            <mx:GridRow height="30" verticalAlign="middle">
+			                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" verticalAlign="middle" paddingLeft="5">
+			                    <mx:Label text="Total Amount" fontWeight="bold"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRightGrey" verticalAlign="middle">
+			                    <mx:Label width="118" text=" " textAlign="right" paddingTop="2"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_2/2}" styleName="borderRight" verticalAlign="middle">
+			                    <mx:Label id="totalFeeAmount"
+			                              width="118"
+			                              text="{SAPCurrencyFormatters.defaultFormatter.format(payrollRepeater.currentItem.amountsTotal)}"
+			                              textAlign="right"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" styleName="borderRightGrey" verticalAlign="middle">
+			                    <mx:Label width="118"  text=" " textAlign="right" paddingTop="2"/>
+			                </mx:GridItem>
+			                <mx:GridItem width="{COL_WIDTH_3/2}" verticalAlign="middle">
+			                    <mx:Label id="totalSalesTaxAmount"
+			                              width="118"
+			                              text="{SAPCurrencyFormatters.defaultFormatter.format(payrollRepeater.currentItem.salesTaxTotal)}"
+			                              textAlign="right"/>
+			                </mx:GridItem>
+			            </mx:GridRow>					            
+			
+			        </mx:Grid>
+			        
+			        <mx:Spacer height="5"/>
+			        
+			        <mx:Button 
+			        	id="clearAllRedebits" 
+			        	label="Clear All" 
+			        	click="clearAll(event)" 
+			        	visible="{viewModel.editAmounts}"
+			        	includeInLayout="{viewModel.editAmounts}"/>
+			        	
+		        </mx:VBox>
+	        </mx:Repeater>
+	        </mx:VBox>
+        </mx:Canvas>
+        
+        <mx:Grid         	
+        	styleName="gridBoxStyle"
+            horizontalGap="0" 
+            verticalGap="0">                        		            
+            
+            <mx:GridRow>
+                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" horizontalAlign="left" paddingLeft="5">
+                	<mx:Label text="Payment Amount" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_2}" colSpan="2" horizontalAlign="right">
+                    <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.paymentAmountTotal)}" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_3}" colSpan="2" horizontalAlign="center">
+                    <mx:Label text="" fontWeight="bold"/>
+                </mx:GridItem>                
+            </mx:GridRow>
+            <mx:GridRow
+            	visible="{viewModel.settlementType != SettlementTypeEnum.ACH ? viewModel.showPaymentAmountBox : false}"
+            	includeInLayout="{viewModel.settlementType != SettlementTypeEnum.ACH ? viewModel.showPaymentAmountBox : false}">
+            	<mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" horizontalAlign="left" paddingLeft="5">
+                	<mx:Label text="Applied Amount" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_2}" colSpan="2" horizontalAlign="right">
+                    <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.appliedAmountTotal)}" fontWeight="bold"/>
+                </mx:GridItem> 
+                <mx:GridItem width="{COL_WIDTH_3}" colSpan="2" horizontalAlign="center">
+                    <mx:Label text="" fontWeight="bold"/>
+                </mx:GridItem>               
+            </mx:GridRow>
+            <mx:GridRow
+            	visible="{viewModel.settlementType != SettlementTypeEnum.ACH ? viewModel.showPaymentAmountBox : false}"
+            	includeInLayout="{viewModel.settlementType != SettlementTypeEnum.ACH ? viewModel.showPaymentAmountBox : false}">
+            	<mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" horizontalAlign="left" paddingLeft="5">
+                	<mx:Label text="Remaining Balance" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_2}" colSpan="2" horizontalAlign="right">
+                    <mx:Label 
+                    	text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.balance)}"
+                    	color="{viewModel.balance == 0 ? 0x000000 : 0xFF0000}" 
+                    	fontWeight="bold" 
+                    	errorString="{viewModel.balance == 0 ? '' : 'Remaining balance must equal $0.00'}"/>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_3}" colSpan="2" horizontalAlign="center">
+                    <mx:Label text="" fontWeight="bold"/>
+                </mx:GridItem>                
+            </mx:GridRow>
+        </mx:Grid>
+
+        <mx:Grid
+                styleName="gridBoxStyle"
+                horizontalGap="0"
+                verticalGap="0">
+            <mx:GridRow visible="{!viewModel.isCustomer}" includeInLayout="{!viewModel.isCustomer}">
+                <mx:GridItem width="{COL_WIDTH_1}" styleName="borderRight" horizontalAlign="left" paddingLeft="5">
+                    <mx:Label text="Collection Agency Expense" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_2}" colSpan="2" horizontalAlign="right">
+                    <mx:HBox horizontalGap="0" paddingRight="3">
+                        <mx:Label text="$" textAlign="right"/>
+                        <controls:SAPTextInput dataField="collectionAmountText"
+                                               width="95" textAlign="right"/>
+                    </mx:HBox>
+                </mx:GridItem>
+                <mx:GridItem width="{COL_WIDTH_3}" colSpan="2" horizontalAlign="center"/>
+            </mx:GridRow>
+        </mx:Grid>
+
+
+        <!-- Actions -->
+        <mx:HBox horizontalAlign="right" width="717">
+            
+            <mx:HBox horizontalAlign="right" width="100%">
+                <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+                <mx:Button id="saveButton"
+                           label="Save"
+                           click="confirm()"
+                           enabled="{viewModel.canSave}"
+                           width="{cancelButton.width}"/>
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+
+    <!-- Bindings -->
+    <mx:Binding source="settlementTypeCombo.selectedItem as SettlementTypeEnum" destination="viewModel.settlementType" />
+    <mx:Binding source="viewModel.settlementType" destination="settlementTypeCombo.selectedItem"/>
+    
+    <mx:Binding source="paymentTotalInput.text" destination="viewModel.totalPayment"/>
+    <mx:Binding source="viewModel.totalPayment" destination="paymentTotalInput.text"/>
+
+    <mx:Binding source="String(recoveryType.selectedValue)" destination="viewModel.recoveryType"/>
+    <mx:Binding destination="recoveryType.selectedValue" source="viewModel.recoveryType"/>
+
+</mx:VBox>
+

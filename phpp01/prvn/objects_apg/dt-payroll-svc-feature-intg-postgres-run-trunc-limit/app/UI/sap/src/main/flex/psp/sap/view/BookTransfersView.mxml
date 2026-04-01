@@ -1,0 +1,226 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+		 creationComplete="onCreationComplete()">
+
+	<mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.events.MenuEvent;
+
+        import psp.sap.application.enums.TransactionPageEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.ActionEvent;
+        import psp.sap.model.ActionEventCode;
+        import psp.sap.model.BookTransferTransaction;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.BookTransfersViewModel;
+
+        private var mViewModel:BookTransfersViewModel;
+        private var mTempViewModel:BookTransfersViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():BookTransfersViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:BookTransfersViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+
+                viewModel.sameFromAndToAccountValidator.property2Listener = fromToInputErrorBox;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function confirmTransfer():void {
+            Alert.show("Are you sure you want to transfer " + SAPCurrencyFormatters.defaultFormatter.format(viewModel.amount) + " from " + viewModel.fromAccount + " account to " + viewModel.toAccount + " account?",
+                    "Transfer Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.createBookTransfer();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        public function actionEventButtonHandler(event:MenuEvent, data:BookTransferTransaction):void {
+            var action:ActionEvent = ActionEvent(event.item);
+
+            if (action.code == ActionEventCode.TX_STATE_HISTORY) {
+                viewModel.viewHistory(data);
+            } else if (action.code == ActionEventCode.FINANCIAL_TRANSACTION_CANCEL) {
+                Alert.show("Are you sure you want to cancel this transaction?",
+                        "Cancel Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.cancelTransaction(data.transactionId);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            }
+        }
+        ]]>
+    </mx:Script>
+
+	<mx:VBox verticalGap="15">
+		<mx:Canvas>
+			<mx:VBox y="11" width="800" borderColor="black" borderStyle="solid" cornerRadius="5">
+				<mx:HBox width="100%" paddingTop="15" paddingBottom="15" paddingLeft="10" paddingRight="10">
+					<pspui:RequiredLabel text="From" validator="{viewModel.fromRequiredValidator}" fontWeight="bold"/>
+					<controls:SAPComboBox width="170" rowCount="7" dataField="fromAccount"
+										  dataProvider="{viewModel.intuitAccounts}"/>
+					<pspui:RequiredLabel text="To" validator="{viewModel.toRequiredValidator}" paddingLeft="20"
+										 fontWeight="bold"/>
+					<pspui:ErrorBox width="172" id="fromToInputErrorBox" changeThemeColor="false">
+						<controls:SAPComboBox width="170" rowCount="7" dataField="toAccount"
+											  dataProvider="{viewModel.intuitAccounts}"/>
+					</pspui:ErrorBox>
+					<pspui:RequiredLabel text="Amount" validator="{viewModel.amountValidator}" paddingLeft="20"
+										 fontWeight="bold"/>
+					<controls:SAPTextInput width="80" dataField="amount" restrict="0-9."/>
+
+					<mx:HBox paddingLeft="20" horizontalAlign="right">
+						<mx:Button label="Transfer" click="confirmTransfer();" enabled="{viewModel.canSave}"/>
+					</mx:HBox>
+				</mx:HBox>
+
+			</mx:VBox>
+			<mx:Label opaqueBackground="#FFFFFF" x="11" text="Initiate Transfer" fontWeight="bold"/>
+		</mx:Canvas>
+
+		<mx:Canvas>
+			<mx:VBox y="11" width="800" borderColor="black" borderStyle="solid" cornerRadius="5">
+
+				<mx:HBox paddingTop="15" paddingRight="10" paddingLeft="10" paddingBottom="15" width="100%">
+
+					<mx:VBox horizontalAlign="left">
+						<mx:HBox>
+							<mx:Label text="From" fontWeight="bold"/>
+							<pspui:SAPDateField id="fromDateInput" width="125" editable="true"/>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:VBox>
+						<mx:HBox>
+							<mx:Label paddingLeft="85" text="To" fontWeight="bold"/>
+							<pspui:SAPDateField id="toDateInput" width="125" editable="true"/>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:VBox paddingLeft="85">
+						<controls:SAPComboBox width="170" rowCount="7" dataProvider="{viewModel.intuitAccounts}"
+											  dataField="accountSearch"/>
+					</mx:VBox>
+					<mx:VBox horizontalAlign="right" width="100%">
+						<mx:Button label="Search" click="viewModel.search();"/>
+					</mx:VBox>
+
+				</mx:HBox>
+			</mx:VBox>
+			<mx:Label opaqueBackground="#FFFFFF" x="11" text="Search Global Book Transfers" fontWeight="bold"/>
+		</mx:Canvas>
+
+		<pspui:PagingDataGrid width="840"
+							  horizontalAlign="right"
+							  verticalGap="0"
+							  rowCount="11"
+							  isDataLoading="{viewModel.isDataLoading}"
+							  loadDataFunction="{viewModel.pageDataGridLoadDataFunction}"
+							  dataProvider="{viewModel.searchResults}">
+			<pspui:columns>
+				<controls:SAPDataGridColumn
+						headerText="From Account"
+						width="110"
+						minWidth="110"
+						resizable="false"
+						sortable="false"
+						dataField="fromAccount"/>
+				<controls:SAPDataGridColumn
+						headerText="To Account"
+						width="110"
+						minWidth="110"
+						resizable="false"
+						sortable="false"
+						dataField="toAccount"/>
+				<controls:SAPDataGridColumn
+						headerText="Amount"
+						width="90"
+						minWidth="90"
+						resizable="false"
+						dataField="amount"
+						labelFunction="SAPDataGrid.formatCurrency"/>
+				<controls:SAPDataGridColumn
+						headerText="Settlement {String('\n')} Date"
+						textAlign="center"
+						width="100"
+						minWidth="100"
+						resizable="false"
+						dataField="settlementDate"
+						labelFunction="SAPDataGrid.formatDateShort"/>
+				<controls:SAPDataGridColumn
+						headerText="Status"
+						width="90"
+						minWidth="90"
+						resizable="false"
+						dataField="status"/>
+				<controls:SAPDataGridColumn
+						headerText="Created By"
+						resizable="false"
+						width="130"
+						minWidth="100"
+						sortable="false"
+						dataField="createdBy"/>
+				<controls:SAPDataGridColumn
+						headerText="Actions"
+						width="105"
+						minWidth="105"
+						resizable="false"
+						sortable="false">
+					<controls:itemRenderer>
+						<mx:Component>
+							<mx:VBox paddingLeft="5" paddingRight="3">
+								<mx:Script><![CDATA[
+									import psp.sap.model.BookTransferTransaction;
+									]]></mx:Script>
+								<mx:PopUpMenuButton dataProvider="{BookTransferTransaction(data).actionCollection}"
+													fontWeight="normal"
+													width="100%"
+													paddingLeft="5"
+													textAlign="left"
+													itemClick="outerDocument.actionEventButtonHandler(event, BookTransferTransaction(data))"
+													labelField="description"/>
+							</mx:VBox>
+						</mx:Component>
+					</controls:itemRenderer>
+				</controls:SAPDataGridColumn>
+			</pspui:columns>
+		</pspui:PagingDataGrid>
+
+	</mx:VBox>
+
+	<mx:Binding source="viewModel.fromDateSearch" destination="fromDateInput.text"/>
+	<mx:Binding source="fromDateInput.text" destination="viewModel.fromDateSearch"/>
+
+	<mx:Binding source="viewModel.toDateSearch" destination="toDateInput.text"/>
+	<mx:Binding source="toDateInput.text" destination="viewModel.toDateSearch"/>
+
+	<controls:PopUpPart label="{TransactionPageEnum.TRANSACTION_HISTORY+'_pup'}" showCloseButton="true"
+						resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+						verticalResizeEnabled="false">
+		<pspui:TransactionHistoryPopUpView label="{TransactionPageEnum.TRANSACTION_HISTORY}"/>
+	</controls:PopUpPart>
+
+</mx:VBox>

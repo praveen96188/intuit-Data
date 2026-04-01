@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*" creationComplete="onCreationComplete();" verticalGap="1">
+    <mx:Script><![CDATA[
+        import mx.events.PropertyChangeEvent;
+
+        import psp.sap.viewmodel.CompanySalesTaxEditViewModel;
+
+        [Bindable] public var viewModel:CompanySalesTaxEditViewModel;
+
+         private function onCreationComplete():void {
+            if (viewModel != null) {
+                viewModel.expirationDateValidator.listener = expirationDate;
+            } else {
+                this.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, function(e:PropertyChangeEvent):void {
+                    if (e.property == "viewModel") {
+                        onCreationComplete();
+                        this.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, arguments.callee);
+                    }
+                }, false, 0, false)
+            }
+        }
+
+        ]]></mx:Script>
+
+    <mx:Label text="Sales Tax Exemption Status:" styleName="boldText"/>
+    <mx:RadioButtonGroup id="exemptionRBG" selectedValue="{viewModel.exemptionStatus}"/>
+    <mx:RadioButton label="Not Exempt" value="{CompanySalesTaxEditViewModel.TAX_NON_EXEMPT}" group="{exemptionRBG}"/>
+    <mx:RadioButton label="Exempt" value="{CompanySalesTaxEditViewModel.TAX_EXEMPT}" group="{exemptionRBG}"/>
+
+    <mx:HBox enabled="{viewModel.exemptionStatus == CompanySalesTaxEditViewModel.TAX_EXEMPT}" paddingLeft="10">
+        <controls:RequiredLabel text="Expiration date:" validator="{viewModel.expirationDateValidator}"/>
+        <pspui:SAPDateField id="expirationDate" editable="true"/>
+    </mx:HBox>
+
+    <mx:Spacer height="10"/>
+
+	<mx:HBox horizontalAlign="right" width="100%">
+			<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+			<mx:Button id="saveButton" label="Save" click="viewModel.save();" enabled="{viewModel.canSave}"/>
+	</mx:HBox>
+
+    <mx:Binding source="viewModel.exemptionStatus" destination="exemptionRBG.selectedValue"/>
+    <mx:Binding source="String(exemptionRBG.selectedValue)" destination="viewModel.exemptionStatus"/>
+    <mx:Binding source="viewModel.expirationDateText" destination="expirationDate.text"/>
+    <mx:Binding source="expirationDate.text" destination="viewModel.expirationDateText"/>
+</mx:VBox>

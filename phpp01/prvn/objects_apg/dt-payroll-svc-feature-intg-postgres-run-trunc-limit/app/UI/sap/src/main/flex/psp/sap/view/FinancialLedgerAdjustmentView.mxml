@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         creationComplete="onCreationComplete()">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.viewmodel.FinancialLedgerAdjustmentViewModel;
+
+        private var mViewModel:FinancialLedgerAdjustmentViewModel;
+        private var mTempViewModel:FinancialLedgerAdjustmentViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():FinancialLedgerAdjustmentViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:FinancialLedgerAdjustmentViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+
+                viewModel.creditRequiredValidator.listener = creditAccountInput;
+                viewModel.debitRequiredValidator.listener = debitAccountInput;
+                viewModel.lawValidator.listener = lawInput;
+                viewModel.notesValidator.listener = notesInput;
+                viewModel.amountValidator.listener = amountInput;
+                viewModel.sameDebitAndCreditAccountValidator.property2Listener = creditAccountInputErrorBox;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function confirmFLA():void {
+            var msgString:String = "Are you sure you want to create FLA Transaction?";
+            Alert.show(msgString,
+                "FLA Confirmation",
+                Alert.YES | Alert.NO,
+                null,
+                function(e:CloseEvent):void {
+                    if (e.detail == Alert.YES) {
+                        viewModel.save();
+                    }
+                },
+                null,
+                Alert.YES);
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Label text="Selected Payroll: Check Date {viewModel.paycheckDate}"
+              textAlign="right"
+              fontWeight="bold"
+              visible="{viewModel.sourcePayrollRunId != null}"
+              includeInLayout="{viewModel.sourcePayrollRunId != null}"/>
+
+    <mx:VBox>
+        <mx:HBox verticalAlign="middle">
+            <pspui:RequiredLabel text="Debit" validator="{viewModel.debitRequiredValidator}" paddingLeft="0" fontWeight="bold"/>
+            <controls:SAPComboBox id="debitAccountInput" width="200" dataField="selectedDebit"  dataProvider="{viewModel.ledgerAccounts}" labelField="name"/>
+            <pspui:RequiredLabel text="Credit" validator="{viewModel.creditRequiredValidator}" paddingLeft="0" fontWeight="bold"/>
+            <pspui:ErrorBox id="creditAccountInputErrorBox" changeThemeColor="false">
+                <controls:SAPComboBox id="creditAccountInput" width="200" dataField="selectedCredit" dataProvider="{viewModel.ledgerAccounts}" labelField="name"/>
+            </pspui:ErrorBox>
+        </mx:HBox>
+        <mx:HBox visible="{viewModel.showLawDropDown}" includeInLayout="{viewModel.showLawDropDown}" verticalAlign="middle">
+            <pspui:RequiredLabel text="Law" validator="{viewModel.lawValidator}" paddingLeft="0" fontWeight="bold"/>
+            <controls:SAPComboBox id="lawInput" width="200" dataField="law" dataProvider="{viewModel.laws}" labelField="name"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:HRule width="550"/>
+    <mx:VBox visible="{viewModel.showDetailPanel}">
+        <mx:HBox paddingTop="10" verticalAlign="middle">
+            <pspui:RequiredLabel text="Amount" validator="{viewModel.amountValidator}" paddingLeft="0" fontWeight="bold"/>
+            <controls:SAPTextInput id="amountInput" paddingLeft="0" width="80" dataField="amount" restrict="0-9."/>
+        </mx:HBox>
+        <mx:HBox paddingTop="10">
+            <mx:VBox>
+                <mx:Label text="Resulting Balance" styleName="grayDataGridHeading"/>
+                <controls:SAPDataGrid selectable="false" maxRows="100" dataProvider="{viewModel.accountBalances}">
+                    <controls:columns>
+                        <mx:DataGridColumn
+                                width="200"
+                                headerText="Account"
+                                dataField="accountName"/>
+                        <mx:DataGridColumn
+                                width="100"
+                                headerText="Company Balance"
+                                headerWordWrap="true"
+                                dataField="companyBalance"
+                                labelFunction="SAPDataGrid.formatCurrency"/>
+                        <mx:DataGridColumn
+                                width="100"
+                                headerText="Payroll Balance"
+                                headerWordWrap="true"
+                                dataField="payrollBalance"
+                                labelFunction="SAPDataGrid.formatCurrency"
+                                visible="{viewModel.showPayrollBalance}"/>
+                        <mx:DataGridColumn
+                                width="100"
+                                headerText="Quarter/ law balance"
+                                headerWordWrap="true"
+                                dataField="lawBalance"
+                                labelFunction="SAPDataGrid.formatCurrency"
+                                visible="{viewModel.showLawBalance}"/>
+                        <mx:DataGridColumn
+                                headerText=""
+                                width="100"
+                                headerWordWrap="true"
+                                dataField="accountType"/>
+                    </controls:columns>
+                </controls:SAPDataGrid>
+            </mx:VBox>
+        </mx:HBox>
+        <mx:HBox verticalAlign="middle" paddingTop="10">
+            <pspui:RequiredLabel text="Notes" validator="{viewModel.notesValidator}" paddingLeft="0" fontWeight="bold"/>
+            <mx:TextArea id="notesInput" width="400" height="80" />
+        </mx:HBox>
+        <mx:HBox horizontalAlign="right" width="100%">
+            <mx:Button label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button label="Save" click="confirmFLA();" enabled="{viewModel.canSave}"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:Binding source="viewModel.notes" destination="notesInput.text"/>
+    <mx:Binding source="notesInput.text" destination="viewModel.notes"/>
+
+</mx:VBox>

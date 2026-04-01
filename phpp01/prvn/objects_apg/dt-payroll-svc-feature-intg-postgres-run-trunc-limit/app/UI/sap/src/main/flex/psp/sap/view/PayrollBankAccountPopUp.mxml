@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderStyle="solid"
+	borderColor="#9B9EA0"
+	backgroundColor="#CED5E5"
+	color="black"
+	dropShadowEnabled="true"
+	cornerRadius="5" 
+	verticalGap="0"
+	rollOver="mouseOver = true"
+	rollOut="onMouseOut(event)">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import psp.sap.model.CompanyBankAccount;
+
+			private var mMouseOver:Boolean = false;
+
+			[Bindable]
+			public var bankAccount:CompanyBankAccount;
+
+            [Bindable]
+            public var employerDDDebitTxnNumber:String;
+			
+			[Bindable]
+			public function get mouseOver():Boolean {
+				return mMouseOver;
+			}
+			
+			public function set mouseOver(value:Boolean):void {
+				mMouseOver = value;				
+			}
+			
+			private function onMouseOut(e:MouseEvent):void {
+				// check if the mouse is over the popup
+				if(this.mouseY > 0 || (this.mouseY < 0 && owner.mouseX < 0)){
+    				mouseOver = false;
+    			}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox horizontalGap="3">
+		<mx:Text text="Bank Name:"/>
+		<mx:Text id="bankNameText" text="{bankAccount.bankName}"/>		
+	</mx:HBox>
+	<mx:HBox horizontalGap="3">
+		<mx:Text text="Type:"/>
+		<mx:Text id="accountTypeText" text="{bankAccount.accountType}"/>
+	</mx:HBox>
+	<mx:HBox horizontalGap="3">
+		<mx:Text text="Routing #:"/>
+		<mx:Text id="routingNumberText" text="{bankAccount.routingNumber}"/>
+	</mx:HBox>
+	<mx:HBox horizontalGap="3">
+		<mx:Text text="Account #:"/>
+		<mx:Text id="accountNumberText" text="{UIUtils.maskBankAccountNumbers(bankAccount.accountNumber)}"/>		
+	</mx:HBox>
+	<mx:HBox horizontalGap="3" visible="{employerDDDebitTxnNumber != null}">
+		<mx:Text text="TransactionID #:"/>
+		<mx:Text id="employerDDDebitTxnNumberText" text="{employerDDDebitTxnNumber}"/>
+	</mx:HBox>
+	
+</mx:VBox>

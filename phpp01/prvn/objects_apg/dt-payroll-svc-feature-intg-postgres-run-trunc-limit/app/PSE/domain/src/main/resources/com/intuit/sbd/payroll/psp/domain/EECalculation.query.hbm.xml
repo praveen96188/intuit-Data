@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+
+    <sql-query name="calcEmployeeLawQuarterlyTotals">
+    <return-scalar column="TotalWages" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+    <return-scalar column="TaxableWages" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+    <return-scalar column="TipsTaxableWagesAmount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+    <return-scalar column="TaxAmount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+    <return-scalar column="employee_fk" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+    <return-scalar column="companyLaw_fk" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        SELECT
+            SUM (TotalWages) TotalWages,
+            SUM (TaxableWages) TaxableWages,
+            SUM (TipsTaxableWagesAmount) TipsTaxableWagesAmount,
+            SUM (TaxAmount) TaxAmount,
+            employee_fk,
+            companyLaw_fk
+        FROM ( SELECT
+                    SUM (COALESCE (tax.Total_Wages_Amount, 0)) AS TotalWages,
+                    SUM (COALESCE (tax.Taxable_Wages_Amount, 0)) AS TaxableWages,
+                    SUM (COALESCE (tax.Tips_Taxable_Wage_Amount, 0)) AS TipsTaxableWagesAmount,
+                    SUM (COALESCE (tax.Tax_Liability_Amount, 0)) AS TaxAmount,
+                    PC.SOURCE_EMPLOYEE_FK AS employee_fk,
+                    tax.company_law_fk AS companyLaw_fk
+                FROM
+                    psp_Tax tax
+                    JOIN psp_paycheck pc ON TAX.PAYCHECK_FK = pc.paycheck_seq and pc.company_fk = :companySeqId
+                    JOIN psp_company_law cl2 ON TAX.company_law_fk = cl2.company_law_seq
+                WHERE
+                    tax.company_fk = :companySeqId
+                    and pc.Status = 'Active'
+                    AND pc.SOURCE_PAYCHECK_ID not like '-%'
+                    AND exists (select '1' from psp_emp_totals_payroll_run etpr join psp_payroll_run pr on pr.payroll_run_seq = etpr.PAYROLL_RUN_FK where etpr.PAYROLL_RUN_FK = PC.PAYROLL_RUN_FK and etpr.COMPANY_FK = :companySeqId and etpr.quarter_start_date = :quarterStartDate AND pr.PAYROLL_RUN_STATUS != 'Superseded')
+                    and cl2.is_archived = 0
+                GROUP BY
+                    PC.SOURCE_EMPLOYEE_FK,
+                    tax.company_law_fk
+                UNION ALL
+                SELECT
+                    SUM (COALESCE (la.Total_Wages, 0)) AS TotalWages,
+                    SUM (COALESCE (la.Taxable_Wages, 0)) AS TaxableWages,
+                    0 AS TipsTaxableWagesAmount,
+                    SUM (COALESCE (la.Amount, 0)) AS TaxAmount,
+                    LA.EMPLOYEE_FK AS employee_fk,
+                    LA.company_law_fk AS companyLaw_fk
+                FROM
+                    psp_Liability_Adjustment la
+                    JOIN psp_company_law cl3 ON la.company_law_fk = cl3.company_law_seq
+                WHERE
+                    exists (select '1' from psp_emp_totals_payroll_run etpr  where etpr.PAYROLL_RUN_FK = la.PAYROLL_RUN_FK and etpr.COMPANY_FK = :companySeqId and etpr.quarter_start_date = :quarterStartDate)
+                    and la.employee_fk is not null
+                    and cl3.is_archived = 0
+                GROUP BY
+                    LA.EMPLOYEE_FK,
+                    LA.company_law_fk) result
+        GROUP BY
+            employee_fk,
+            companyLaw_fk
+        ORDER BY
+            employee_fk,
+            companyLaw_fk
+    </sql-query>
+
+    <sql-query name="calculateEmployeeMonthlyTotals">
+        <return-scalar column="TotalWages" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="TaxableWages" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="TipsTaxableWagesAmount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="TaxAmount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="employee_fk" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="company_fk" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        SELECT SUM (TotalWages) TotalWages,
+               SUM (TaxableWages) TaxableWages,
+               SUM (TipsTaxableWagesAmount) TipsTaxableWagesAmount,
+               SUM (TaxAmount) TaxAmount,
+               employee_fk,
+               company_fk
+        FROM ( SELECT SUM (COALESCE (tax.Total_Wages_Amount, 0)) AS TotalWages,
+                      SUM (COALESCE (tax.Taxable_Wages_Amount, 0)) AS TaxableWages,
+                      SUM (COALESCE (tax.Tips_Taxable_Wage_Amount, 0)) AS TipsTaxableWagesAmount,
+                      SUM (COALESCE (tax.Tax_Liability_Amount, 0)) AS TaxAmount,
+                      PC.SOURCE_EMPLOYEE_FK AS employee_fk,
+                      pr.company_fk as company_fk
+                FROM psp_Tax tax
+                 JOIN psp_paycheck pc ON TAX.PAYCHECK_FK = pc.paycheck_seq and pc.company_fk = tax.company_fk
+                 JOIN psp_payroll_run pr ON PR.PAYROLL_RUN_SEQ = PC.PAYROLL_RUN_FK
+                 JOIN psp_company_law cl2 ON TAX.company_law_fk = cl2.company_law_seq
+                 JOIN psp_company co ON co.company_seq = tax.company_fk
+                WHERE pc.Status = 'Active'
+                AND pc.SOURCE_PAYCHECK_ID not like '-%'
+                AND pr.Paycheck_Date  between  :fromDate and :toDate
+                AND TAX.LAW_FK = :lawId
+                AND PR.company_fk  in ( select distinct company_fk
+                                        from psp_company_law cl
+                                         inner join psp_company_agency ca on CA.COMPANY_AGENCY_SEQ = CL.COMPANY_AGENCY_FK
+                                         inner join psp_law l on l.law_id = cl.law_fk
+                                        where law_fk = :lawId )
+                and tax.company_fk = pr.company_fk
+                and cl2.is_archived = 0
+                AND pr.PAYROLL_RUN_STATUS != 'Superseded'
+                AND (CASE WHEN (:excludeDeletedCompany = 1) THEN co.is_dg_disassociated ELSE 0 END) = 0
+                GROUP BY pr.company_fk,  PC.SOURCE_EMPLOYEE_FK
+        UNION ALL
+              SELECT SUM (COALESCE (la.Total_Wages, 0)) AS TotalWages,
+                     SUM (COALESCE (la.Taxable_Wages, 0)) AS TaxableWages,
+                     0 AS TipsTaxableWagesAmount,
+                     SUM (COALESCE (la.Amount, 0)) AS TaxAmount,
+                     LA.EMPLOYEE_FK AS employee_fk,
+                     LA.COMPANY_FK as company_fk
+             FROM psp_Liability_Adjustment la
+              JOIN psp_payroll_run pr ON LA.PAYROLL_RUN_FK = PR.PAYROLL_RUN_SEQ
+              JOIN psp_company_law cl3 ON la.company_law_fk = cl3.company_law_seq
+              JOIN psp_company pco on pco.COMPANY_SEQ = la.COMPANY_FK
+             WHERE pr.Paycheck_Date between :fromDate and :toDate
+             AND LA.LAW_FK = :lawId
+             AND LA.EMPLOYEE_FK IS NOT NULL
+             AND la.company_fk  in ( select distinct company_fk
+                                     from psp_company_law cl
+                                     inner join psp_company_agency ca on CA.COMPANY_AGENCY_SEQ = CL.COMPANY_AGENCY_FK
+                                     inner join psp_law l on l.law_id = cl.law_fk
+                                     where law_fk = :lawId)
+             and cl3.is_archived = 0
+             AND pr.PAYROLL_RUN_STATUS != 'Superseded'
+             AND (CASE WHEN (:excludeDeletedCompany = 1) THEN pco.is_dg_disassociated ELSE 0 END) = 0
+             GROUP BY  la.company_fk, LA.EMPLOYEE_FK) x
+        WHERE EXISTS (select 'x' from psp_company_service cs where cs.company_fk = x.company_fk and cs.service_fk = 'Tax')
+        GROUP BY company_fk, employee_fk
+        ORDER BY company_fk, employee_fk
+    </sql-query>
+
+    <sql-query name="calculateEmployeeMonthlyTotals_postgres">
+        <return-scalar column="TotalWages" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="TaxableWages" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="TipsTaxableWagesAmount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="TaxAmount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="employee_fk" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="company_fk" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        SELECT SUM (TotalWages) TotalWages,
+        SUM (TaxableWages) TaxableWages,
+        SUM (TipsTaxableWagesAmount) TipsTaxableWagesAmount,
+        SUM (TaxAmount) TaxAmount,
+        employee_fk,
+        company_fk
+        FROM ( SELECT SUM (COALESCE (tax.Total_Wages_Amount, 0)) AS TotalWages,
+        SUM (COALESCE (tax.Taxable_Wages_Amount, 0)) AS TaxableWages,
+        SUM (COALESCE (tax.Tips_Taxable_Wage_Amount, 0)) AS TipsTaxableWagesAmount,
+        SUM (COALESCE (tax.Tax_Liability_Amount, 0)) AS TaxAmount,
+        PC.SOURCE_EMPLOYEE_FK AS employee_fk,
+        pr.company_fk as company_fk
+        FROM psp_Tax tax
+        JOIN psp_paycheck pc ON TAX.PAYCHECK_FK = pc.paycheck_seq and pc.company_fk = tax.company_fk
+        JOIN psp_payroll_run pr ON PR.PAYROLL_RUN_SEQ = PC.PAYROLL_RUN_FK
+        JOIN psp_company_law cl2 ON TAX.company_law_fk = cl2.company_law_seq
+        JOIN psp_company co ON co.company_seq = tax.company_fk
+        WHERE pc.Status = 'Active'
+        AND pc.SOURCE_PAYCHECK_ID not like '-%'
+        AND pr.Paycheck_Date  between  :fromDate and :toDate
+        AND TAX.LAW_FK = :lawId
+        AND PR.company_fk  in ( select distinct company_fk
+        from psp_company_law cl
+        inner join psp_company_agency ca on CA.COMPANY_AGENCY_SEQ = CL.COMPANY_AGENCY_FK
+        inner join psp_law l on l.law_id = cl.law_fk
+        where law_fk = :lawId )
+        and tax.company_fk = pr.company_fk
+        and cl2.is_archived = 0
+        AND pr.PAYROLL_RUN_STATUS != 'Superseded'
+        AND (CASE WHEN (:excludeDeletedCompany = TRUE) THEN co.is_dg_disassociated ELSE 0 END) = 0
+        GROUP BY pr.company_fk,  PC.SOURCE_EMPLOYEE_FK
+        UNION ALL
+        SELECT SUM (COALESCE (la.Total_Wages, 0)) AS TotalWages,
+        SUM (COALESCE (la.Taxable_Wages, 0)) AS TaxableWages,
+        0 AS TipsTaxableWagesAmount,
+        SUM (COALESCE (la.Amount, 0)) AS TaxAmount,
+        LA.EMPLOYEE_FK AS employee_fk,
+        LA.COMPANY_FK as company_fk
+        FROM psp_Liability_Adjustment la
+        JOIN psp_payroll_run pr ON LA.PAYROLL_RUN_FK = PR.PAYROLL_RUN_SEQ
+        JOIN psp_company_law cl3 ON la.company_law_fk = cl3.company_law_seq
+        JOIN psp_company pco on pco.COMPANY_SEQ = la.COMPANY_FK
+        WHERE pr.Paycheck_Date between :fromDate and :toDate
+        AND LA.LAW_FK = :lawId
+        AND LA.EMPLOYEE_FK IS NOT NULL
+        AND la.company_fk  in ( select distinct company_fk
+        from psp_company_law cl
+        inner join psp_company_agency ca on CA.COMPANY_AGENCY_SEQ = CL.COMPANY_AGENCY_FK
+        inner join psp_law l on l.law_id = cl.law_fk
+        where law_fk = :lawId)
+        and cl3.is_archived = 0
+        AND pr.PAYROLL_RUN_STATUS != 'Superseded'
+        AND (CASE WHEN (:excludeDeletedCompany = TRUE) THEN pco.is_dg_disassociated ELSE 0 END) = 0
+        GROUP BY  la.company_fk, LA.EMPLOYEE_FK) x
+        WHERE EXISTS (select 'x' from psp_company_service cs where cs.company_fk = x.company_fk and cs.service_fk = 'Tax')
+        GROUP BY company_fk, employee_fk
+        ORDER BY company_fk, employee_fk
+    </sql-query>
+
+    <sql-query name="findCompanySeqForTaxCompanies">
+        <return-scalar column="company_seq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+            SELECT distinct cs.company_fk as company_seq
+            FROM psp_company_service cs
+            INNER JOIN psp_company_agency ca ON ca.company_fk = cs.company_fk
+            INNER JOIN psp_company_law cl ON cl.company_agency_fk= ca.company_agency_seq
+            INNER JOIN psp_company c on ca.company_fk = c.company_seq
+            WHERE cl.law_fk = :lawId
+            AND cs.service_fk = 'Tax'
+            AND cl.filing_status = 'Active'
+            AND cl.exemption_status = 'NonExempt'
+            AND (CASE WHEN (:excludeDeletedCompany = 1) THEN c.is_dg_disassociated ELSE 0 END) = 0
+    </sql-query>
+
+    <sql-query name="findCompanySeqForTaxCompanies_postgres">
+        <return-scalar column="company_seq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        SELECT distinct cs.company_fk as company_seq
+        FROM psp_company_service cs
+        INNER JOIN psp_company_agency ca ON ca.company_fk = cs.company_fk
+        INNER JOIN psp_company_law cl ON cl.company_agency_fk= ca.company_agency_seq
+        INNER JOIN psp_company c on ca.company_fk = c.company_seq
+        WHERE cl.law_fk = :lawId
+        AND cs.service_fk = 'Tax'
+        AND cl.filing_status = 'Active'
+        AND cl.exemption_status = 'NonExempt'
+        AND (CASE WHEN (:excludeDeletedCompany = TRUE) THEN c.is_dg_disassociated ELSE 0 END) = 0
+    </sql-query>
+
+    <sql-query name="findFlushCurrentQuarterCompanies">
+        <return-scalar column="companyId" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="fromDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        select
+            distinct company_fk companyId, quarter_start_date fromDate
+        from
+            psp_emp_totals_payroll_run etpr
+        where
+            etpr.quarter_start_date = :fromDate
+                or etpr.status = 'Pending'
+    </sql-query>
+
+    <sql-query name="findFlushCurrentQuarterCompaniesWithPattern">
+        <return-scalar column="companyId" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="fromDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        select
+            distinct company_fk companyId, quarter_start_date fromDate
+        from
+            psp_emp_totals_payroll_run etpr
+        where
+            REGEXP_LIKE(etpr.company_fk, :compSeqPattern)
+            and (etpr.quarter_start_date = :fromDate
+                    or etpr.status = 'Pending')
+    </sql-query>
+
+    <sql-query name="findFlushPreviousQuarterCompanies">
+        <return-scalar column="companyId" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        select distinct
+            company_fk companyId
+        from
+            psp_emp_totals_payroll_run etpr
+        where
+            etpr.quarter_start_date = :fromDate
+    </sql-query>
+
+    <sql-query name="findFlushPreviousQuarterCompaniesWithPattern">
+    <return-scalar column="companyId" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        select distinct
+            company_fk companyId
+        from
+            psp_emp_totals_payroll_run etpr
+        where
+            REGEXP_LIKE(etpr.company_fk, :compSeqPattern)
+                and etpr.quarter_start_date = :fromDate
+    </sql-query>
+
+    <sql-query name="findCompaniesWithNewPayrolls">
+        <return-scalar column="companyId" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="fromDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        select distinct
+            company_fk companyId, quarter_start_date fromDate
+        from
+            psp_emp_totals_payroll_run etpr
+        where
+            etpr.status = 'Pending'
+    </sql-query>
+
+    <sql-query name="findCompaniesWithBackdatedPayrolls">
+        <return-scalar column="companyId" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="fromDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        select distinct
+            company_fk companyId, quarter_start_date fromDate
+        from
+            psp_emp_totals_payroll_run etpr
+        where
+            etpr.quarter_start_date &lt; :cutOffDate
+            and etpr.status = 'Pending'
+    </sql-query>
+
+    <sql-query name="calculateW2Counts">
+        <return-scalar column="companyId" type="java.lang.String"/>
+        <return-scalar column="state" type="java.lang.String"/>
+        <return-scalar column="W2Count" type="java.lang.Long"/>
+                select c.source_company_id as companyId,
+                       SUBSTR(PAYMENT_TEMPLATE_CD, 1 ,INSTR(PAYMENT_TEMPLATE_CD, '-', 1, 1)-1) as state,
+                       count(distinct et.employee_fk) as "W2Count"
+                from psp_employee_w2_totals et
+                   inner join psp_company c on c.company_seq = et.company_fk
+                   inner join psp_law l on et.law_fk = L.LAW_ID
+                   inner join psp_payment_template pt on PT.PAYMENT_TEMPLATE_CD = L.PAYMENT_TEMPLATE_FK
+                where year = :processingYear
+                    and et.taxable_wages > 0
+                    and l.law_category_code = 'Withholding'
+                    and (CASE WHEN (:excludeDeletedCompany = 1) THEN c.is_dg_disassociated ELSE 0 END) = 0
+                group by c.source_company_id, SUBSTR(PAYMENT_TEMPLATE_CD, 1 ,INSTR(PAYMENT_TEMPLATE_CD, '-', 1, 1)-1)
+                order by c.source_company_id, SUBSTR(PAYMENT_TEMPLATE_CD, 1 ,INSTR(PAYMENT_TEMPLATE_CD, '-', 1, 1)-1)
+    </sql-query>
+
+    <sql-query name="calculateW2Counts_postgres">
+        <return-scalar column="companyId" type="java.lang.String"/>
+        <return-scalar column="state" type="java.lang.String"/>
+        <return-scalar column="W2Count" type="java.lang.Long"/>
+        select c.source_company_id as companyId,
+        SUBSTR(PAYMENT_TEMPLATE_CD, 1 ,STRPOS(PAYMENT_TEMPLATE_CD, '-')-1) as state,
+        count(distinct et.employee_fk) as "W2Count"
+        from psp_employee_w2_totals et
+        inner join psp_company c on c.company_seq = et.company_fk
+        inner join psp_law l on et.law_fk = L.LAW_ID
+        inner join psp_payment_template pt on PT.PAYMENT_TEMPLATE_CD = L.PAYMENT_TEMPLATE_FK
+        where year = :processingYear
+        and et.taxable_wages > 0
+        and l.law_category_code = 'Withholding'
+        and (CASE WHEN (:excludeDeletedCompany = TRUE) THEN c.is_dg_disassociated ELSE 0 END) = 0
+        group by c.source_company_id, SUBSTR(PAYMENT_TEMPLATE_CD, 1 ,STRPOS(PAYMENT_TEMPLATE_CD, '-')-1)
+        order by c.source_company_id, SUBSTR(PAYMENT_TEMPLATE_CD, 1 ,STRPOS(PAYMENT_TEMPLATE_CD, '-')-1)
+    </sql-query>
+
+    <query name="getHiredOrTerminatedEmployees">
+        <![CDATA[
+            select pe.Id, pe.HireDate, pe.TerminationDate
+                from com.intuit.sbd.payroll.psp.domain.Employee as pe
+                    where pe.Company.Id = :companyId
+                        and ((pe.TerminationDate between :fromDate and :toDate) or
+                                (pe.HireDate between :fromDate and :toDate))
+        ]]>
+    </query>
+
+    <sql-query name="findAgentLiabilityAdjustments">
+        <return-scalar column="companySeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="lawId" type="java.lang.String"/>
+        <return-scalar column="amount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="fromDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        select LA.COMPANY_FK as companySeq, LA.LAW_FK as lawId, sum(LA.AMOUNT)as amount, min(LA.created_date) as fromDate
+        from psp_liability_adjustment la
+        inner join psp_law l on l.law_id = la.law_fk
+        inner join psp_payment_template pt on pt.payment_template_cd = l.payment_template_fk
+        where REGEXP_LIKE(la.creator_id, '^[0-9]+$')
+        and LA.EFFECTIVE_DATE between :fromDate and  :toDate
+        and pt.CATEGORY = 'SUI'
+        group by la.company_fk, la.law_fk
+    </sql-query>
+
+    <sql-query name="getEmployeesHourlyRate">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="rate" type="double"/>
+        select employeeSeq, rate from (
+                select  PC.SOURCE_EMPLOYEE_FK employeeSeq, qbdtLineInfo.rate rate, pr.paycheck_date,
+                        ROW_NUMBER ()  OVER ( PARTITION BY PC.SOURCE_EMPLOYEE_FK ORDER BY pr.paycheck_date desc, rate desc) rn
+                    from psp_payroll_run pr
+                        join psp_paycheck pc on pr.payroll_run_seq = pc.payroll_run_fk and pc.Status = 'Active' AND pc.SOURCE_PAYCHECK_ID not like '-%' AND pc.company_fk = :companyId
+                        join psp_tax pt on PC.PAYCHECK_SEQ = PT.PAYCHECK_FK AND pt.company_fk = :companyId
+                        JOIN psp_compensation comp ON comp.paycheck_fk = pc.paycheck_seq AND comp.company_fk = :companyId
+                        JOIN psp_company_payroll_item cpritem  ON comp.company_payroll_item_fk = cpritem.company_payroll_item_seq AND cpritem.payroll_item_fk = 'Hourly' AND cpritem.is_archived = 0
+                        join psp_qbdt_payroll_item_info qbdtInfo on qbdtInfo.company_payroll_item_fk = comp.company_payroll_item_fk and qbdtInfo.pay_type = 'REG'
+                        join psp_qbdt_payline_info qbdtLineInfo ON qbdtLineInfo.compensation_fk = comp.compensation_seq AND qbdtLineInfo.company_fk = :companyId
+                    where
+                        exists (select '1' from psp_emp_totals_payroll_run etpr where etpr.payroll_run_fk = pr.payroll_run_seq and etpr.company_fk = :companyId and etpr.quarter_start_date =  :quarterStartDate)
+                        AND pr.PAYROLL_RUN_STATUS != 'Superseded') result
+        where rn = 1
+
+    </sql-query>
+
+    <sql-query name="getEmployeesHourlyRateLA">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="rate" type="double"/>
+        select employeeSeq, rate from (
+        select  PC.SOURCE_EMPLOYEE_FK employeeSeq, qbdtLineInfo.rate rate, pr.paycheck_date,
+        ROW_NUMBER ()  OVER ( PARTITION BY PC.SOURCE_EMPLOYEE_FK ORDER BY pr.paycheck_date desc, rate desc) rn
+        from psp_payroll_run pr
+        join psp_paycheck pc on pr.payroll_run_seq = pc.payroll_run_fk and pc.Status = 'Active' AND pc.SOURCE_PAYCHECK_ID not like '-%' AND pc.company_fk = :companyId
+        join psp_tax pt on PC.PAYCHECK_SEQ = PT.PAYCHECK_FK AND pt.company_fk = :companyId
+        JOIN psp_compensation comp ON comp.paycheck_fk = pc.paycheck_seq AND comp.company_fk = :companyId
+        JOIN psp_company_payroll_item cpritem  ON comp.company_payroll_item_fk = cpritem.company_payroll_item_seq AND cpritem.payroll_item_fk = 'Hourly' AND cpritem.is_archived = 0 AND cpritem.source_description NOT LIKE 'Overtime%'
+        join psp_qbdt_payroll_item_info qbdtInfo on qbdtInfo.company_payroll_item_fk = comp.company_payroll_item_fk and qbdtInfo.pay_type = 'REG'
+        join psp_qbdt_payline_info qbdtLineInfo ON qbdtLineInfo.compensation_fk = comp.compensation_seq AND qbdtLineInfo.company_fk = :companyId
+        where
+        exists (select '1' from psp_emp_totals_payroll_run etpr where etpr.payroll_run_fk = pr.payroll_run_seq and etpr.company_fk = :companyId and etpr.quarter_start_date =  :quarterStartDate)
+        AND pr.PAYROLL_RUN_STATUS != 'Superseded') result
+        where rn = 1
+
+    </sql-query>
+
+    <sql-query name="getEmployeeMonthsWorkedForRequiredLaws">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="lawId" type="java.lang.String"/>
+        <return-scalar column="m1" type="boolean"/>
+        <return-scalar column="m2" type="boolean"/>
+        <return-scalar column="m3" type="boolean"/>
+        select
+            source_employee_fk as employeeSeq,
+            law_id as lawId,
+            least(1, sum(m1_ind)) as m1,
+            least(1, sum(m2_ind)) as m2,
+            least(1, sum(m3_ind)) as m3
+        from (
+            select
+                source_employee_fk,
+                law_id,
+                case when :m1 between trunc(pay_period_begin_date) and trunc(pay_period_end_date)
+                    then 1
+                    else 0
+                end as m1_ind,
+                case when :m2 between trunc(pay_period_begin_date) and trunc(pay_period_end_date)
+                    then 1
+                    else 0
+                end as m2_ind,
+                case when :m3 between trunc(pay_period_begin_date) and trunc(pay_period_end_date)
+                    then 1
+                    else 0
+                end as m3_ind
+            from
+                psp_paycheck pc
+                join psp_tax t on t.paycheck_fk = pc.paycheck_seq and t.company_fk = :companyId
+                join psp_law l on l.law_id = t.law_fk and requires_month_counts = '1'
+            where
+                exists (select '1' from psp_emp_totals_payroll_run etpr join psp_payroll_run pr on pr.payroll_run_Seq = etpr.PAYROLL_RUN_FK where etpr.payroll_run_fk = pc.payroll_run_fk and etpr.company_fk = :companyId and etpr.quarter_start_date = :qtrStart and pr.PAYROLL_RUN_STATUS != 'Superseded')
+                and pc.status = 'Active' AND pc.SOURCE_PAYCHECK_ID not like '-%'
+                and pc.source_employee_fk is not null
+                and pc.pay_period_begin_date is not null
+                and pc.pay_period_end_date is not null
+                and pc.company_fk = :companyId
+        ) result
+        group by
+            source_employee_fk, law_id
+    </sql-query>
+
+    <sql-query name="getEmployeeMonthsWorkedForRequiredLaws_postgres">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="lawId" type="java.lang.String"/>
+        <return-scalar column="m1" type="boolean"/>
+        <return-scalar column="m2" type="boolean"/>
+        <return-scalar column="m3" type="boolean"/>
+        select
+        source_employee_fk as employeeSeq,
+        law_id as lawId,
+        least(1, sum(m1_ind)) as m1,
+        least(1, sum(m2_ind)) as m2,
+        least(1, sum(m3_ind)) as m3
+        from (
+        select
+        source_employee_fk,
+        law_id,
+        case when :m1 between date_trunc('day',pay_period_begin_date) and date_trunc('day',pay_period_end_date)
+        then 1
+        else 0
+        end as m1_ind,
+        case when :m2 between date_trunc('day',pay_period_begin_date) and date_trunc('day',pay_period_end_date)
+        then 1
+        else 0
+        end as m2_ind,
+        case when :m3 between date_trunc('day',pay_period_begin_date) and date_trunc('day',pay_period_end_date)
+        then 1
+        else 0
+        end as m3_ind
+        from
+        psp_paycheck pc
+        join psp_tax t on t.paycheck_fk = pc.paycheck_seq and t.company_fk = :companyId
+        join psp_law l on l.law_id = t.law_fk and requires_month_counts = '1'
+        where
+        exists (select '1' from psp_emp_totals_payroll_run etpr join psp_payroll_run pr on pr.payroll_run_Seq = etpr.PAYROLL_RUN_FK where etpr.payroll_run_fk = pc.payroll_run_fk and etpr.company_fk = :companyId and etpr.quarter_start_date = :qtrStart and pr.PAYROLL_RUN_STATUS != 'Superseded')
+        and pc.status = 'Active' AND pc.SOURCE_PAYCHECK_ID not like '-%'
+        and pc.source_employee_fk is not null
+        and pc.pay_period_begin_date is not null
+        and pc.pay_period_end_date is not null
+        and pc.company_fk = :companyId
+        ) result
+        group by
+        source_employee_fk, law_id
+    </sql-query>
+
+    <sql-query name="getEmployeesSUIHoursWorked">
+        <return-scalar column="employeeSeq" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType"/>
+        <return-scalar column="lawId" type="java.lang.String"/>
+        <return-scalar column="hours" type="double"/>
+        select
+            source_employee_fk as employeeSeq,
+            law_id as lawId,
+            sum(hours) as hours
+        from (
+            select
+                source_employee_fk,
+                law_id,
+                cmp.paycheck_fk,
+                COALESCE(sum(hours_worked), 0) as hours
+            from
+                psp_paycheck pc
+                join psp_compensation cmp on cmp.paycheck_fk = pc.paycheck_seq and cmp.company_fk = :companyId
+                join psp_tax t on t.paycheck_fk = cmp.paycheck_fk and t.company_fk = :companyId
+                join psp_law l on l.law_id = t.law_fk
+                    and l.law_id in (:lawIds)
+                join psp_company_payroll_item cpi on company_payroll_item_seq = cmp.company_payroll_item_fk
+                join psp_qbdt_payroll_item_info qpii on qpii.company_payroll_item_fk = company_payroll_item_seq
+                join psp_payroll_item on payroll_item_fk = payroll_item_code
+                    and (payroll_item_code='Salary' or payroll_item_code='Hourly')
+                join psp_hours_worked_exception hwe on hwe.law_fk = law_id
+                    and payroll_item_code = payroll_item_cd
+                    and qpii.pay_type = hwe.pay_type
+            where
+                pc.status = 'Active' AND pc.SOURCE_PAYCHECK_ID not like '-%'
+                and exists (select '1' from psp_emp_totals_payroll_run etpr join psp_payroll_run pr on pr.PAYROLL_RUN_SEQ = etpr.PAYROLL_RUN_FK where etpr.payroll_run_fk = pc.payroll_run_fk and etpr.company_fk = :companyId and etpr.quarter_start_date =  :qtrStart and pr.PAYROLL_RUN_STATUS != 'Superseded')
+                and cpi.is_archived = 0
+                and pc.company_fk = :companyId
+            group by
+                source_employee_fk,
+                law_id,
+                cmp.paycheck_fk
+        ) result
+        group by source_employee_fk, law_id
+        having sum(hours)>0
+    </sql-query>
+</hibernate-mapping>

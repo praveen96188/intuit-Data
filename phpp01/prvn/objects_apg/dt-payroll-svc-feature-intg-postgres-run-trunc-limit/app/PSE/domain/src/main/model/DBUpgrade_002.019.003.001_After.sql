@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\Dev\psp\Payroll-Services\PSE\domain\src\main\model\DBUpgrade_002.019.003.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

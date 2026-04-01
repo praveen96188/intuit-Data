@@ -1,0 +1,6 @@
+set termout off timing on
+spool IND_FFS_STAGING
+
+select /*+ index_ffs(PSP_FINANCIAL_TRANS_STATE PSP_FINANCIAL_TRANS_STATE_PK) parallel_index(PSP_FINANCIAL_TRANS_STATE PSP_FINANCIAL_TRANS_STATE_PK)*/ count(*) from pspadm.PSP_FINANCIAL_TRANS_STATE PSP_FINANCIAL_TRANS_STATE;
+
+spool off

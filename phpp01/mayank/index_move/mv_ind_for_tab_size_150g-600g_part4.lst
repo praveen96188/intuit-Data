@@ -1,0 +1,240 @@
+01:03:11 SQL> set echo on feedback on timing on
+01:03:11 SQL> 
+01:03:11 SQL> --disable online index rebuild cleanup job
+01:03:11 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+28-MAY-22 05.00.41.534053 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.10
+01:03:11 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+01:03:11 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+28-MAY-22 05.00.41.534053 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+01:03:11 SQL> 
+01:03:11 SQL> exec dbms_streams.set_tag (hextoraw(3));
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+01:03:11 SQL> 
+01:03:11 SQL> alter index PSPADM.SYS_C008432 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:41:38.95
+01:44:50 SQL> alter index PSPADM.SYS_C008432 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+01:44:50 SQL> alter index PSPADM.PSP_QBDTTRANSACTIONINFO_FK1 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+01:44:50 SQL> alter index PSPADM.PSP_QBDTTRANSACTIONINFO_FK1 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:11:38.58
+01:56:28 SQL> alter index PSPADM.PSP_QBDTTRANSACTIONINFO_FK1 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+01:56:28 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+01:56:28 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK3 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:03:08.32
+01:59:37 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+01:59:37 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK5 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+01:59:37 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK5 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:03:14.49
+02:02:51 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK5 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:02:51 SQL> alter index PSPADM.SYS_C0020599 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:06:57.90
+02:09:49 SQL> alter index PSPADM.SYS_C0020599 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:09:49 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:09:49 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK2 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:07:35.93
+02:17:25 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:17:25 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK6 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:17:25 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK6 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:03:57.27
+02:21:22 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK6 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:21:22 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:21:22 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK4 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:03:23.50
+02:24:46 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:24:46 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK1 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:24:46 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK1 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:04:07.91
+02:28:54 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK1 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:28:54 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK7 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+02:28:54 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK7 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:06:58.64
+02:35:52 SQL> alter index PSPADM.PSP_QBDT_TRANSACTION_INFO_FK7 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:35:52 SQL> 
+02:35:52 SQL> --enable online index rebuild cleanup job
+02:35:52 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+28-MAY-22 05.00.41.534053 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+02:35:52 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+02:35:52 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+28-MAY-22 06.00.41.841640 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+02:35:52 SQL> 
+02:35:52 SQL> spool off

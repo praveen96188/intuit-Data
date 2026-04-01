@@ -1,0 +1,42 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column VERSION;
+ALTER TABLE PSP_AUTH_USER
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_COMPANY
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_QUICKBOOKS_INFO
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column W2_CODE;
+ALTER TABLE PSP_COMPANY_LAW
+ ADD (W2_CODE  NUMBER(10) DEFAULT -1)  ;
+
+Prompt Column VERSION;
+ALTER TABLE PSP_ENTITLEMENT_UNIT
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column W2_CODE;
+ALTER TABLE PSP_COMPANY_PAYROLL_ITEM
+ ADD (W2_CODE  NUMBER(10) DEFAULT -1);
+
+Prompt Column OVERTIME_MULTIPLIER;
+ALTER TABLE PSP_QBDT_PAYROLL_ITEM_INFO
+ ADD (OVERTIME_MULTIPLIER  NUMBER(19,7) DEFAULT 1.0);
+
+Prompt Column DETAIL_TYPE;
+ALTER TABLE PSP_QBDT_PAYROLL_ITEM_INFO
+ ADD (DETAIL_TYPE  NUMBER(19) DEFAULT -1);
+
+PROMPT finishedDBUpgrade_002.013.004.006.sql

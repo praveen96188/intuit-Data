@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+    <![CDATA[
+
+        import psp.sap.model.PItem;
+        import psp.sap.viewmodel.PayrollPItemsViewModel;
+
+        private var mViewModel:PayrollPItemsViewModel;
+        private var mTempViewModel:PayrollPItemsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PayrollPItemsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollPItemsViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function displayTaxableToLink(item:PItem):Boolean {
+            if (item.taxableToLawIds != null && item.taxableToLawIds.length > 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+
+        ]]>
+    </mx:Script>
+
+    <mx:VBox
+            id="payrollItemsContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}"
+            width="100%"
+            height="100%">
+        <controls:SAPDataGrid
+                width="100%"
+                variableRowHeight="true"
+                selectable="false" draggableColumns="false"
+                visible="{viewModel.hasCompanyPayrollItems}"
+                includeInLayout="{viewModel.hasCompanyPayrollItems}"
+                dataProvider="{viewModel.pitems}"
+                autoResizeToFitContent="true"
+                id="payrollItemsDataGrid">
+            <controls:columns>
+                <controls:SAPDataGridColumn sortable="true"
+                                   headerText="PItem{String('\n')}ID"
+                                   width="25"
+                                   dataField="pitemNumber"
+                                   draggable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:HBox horizontalGap="0" width="100%" paddingRight="5">
+                                    <mx:Text id="pitemText"
+                                             text="{data.pitemNumber}"
+                                             textAlign="center"/>
+                                    <mx:Image source="{SAP.instance.icons.redAsterisk}" toolTip="Latest Payroll Item is Item Id: {PItem(data).latestId}"
+                                              visible="{PItem(data).latestId != null}"
+                                              includeInLayout="{PItem(data).latestId != null}"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.model.PItem;
+                                        ]]></mx:Script>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="PItem Name"
+                        dataField="pitemName"
+                        minWidth="40"/>
+                <controls:SAPDataGridColumn
+                        headerText="Description"
+                        dataField="groupTitle"
+                        minWidth="60"/>
+                <controls:SAPDataGridColumn sortable="true"
+                                   headerText="Taxability"
+                                   dataField="taxability"
+                                   minWidth="50"
+                                   width="50"
+                                   draggable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:HBox horizontalGap="0" width="100%"
+                                         visible="{outerDocument.displayTaxableToLink(PItem(data))}"
+                                         includeInLayout="{outerDocument.displayTaxableToLink(PItem(data))}">
+                                    <mx:LinkButton id="taxableToLink"
+                                                   label="{PItem(data).taxability}"
+                                                   styleName="standardLinkButtonStyle"
+                                                   click="outerDocument.viewModel.viewTaxability(PItem(data))"
+                                                   width="100%"
+                                                   textAlign="center"/>
+                                </mx:HBox>
+                                <mx:HBox horizontalGap="0" width="100%"
+                                         visible="{!outerDocument.displayTaxableToLink(PItem(data))}"
+                                         includeInLayout="{!outerDocument.displayTaxableToLink(PItem(data))}">
+                                    <mx:Text id="pitemNameText"
+                                             text="No Affect"
+                                             textAlign="left"
+                                             width="100%"/>
+                                </mx:HBox>
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.PItem;
+                                    ]]></mx:Script>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Tax Form Line"
+                        dataField="taxFormLine"
+                        minWidth="50"/>
+                <controls:SAPDataGridColumn
+                        headerText="Delete {String('\n')}Status Flag"
+                        dataField="deleteStatus"
+                        minWidth="50"
+                        width="50"/>
+                <controls:SAPDataGridColumn
+                        headerText="Status"
+                        dataField="status"
+                        minWidth="40"
+                        width="40"/>
+                <controls:SAPDataGridColumn
+                        headerText="COA Liability"
+                        dataField="coaLiability"
+                        minWidth="50">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:Label text="{PItem(data).coaLiability}">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.PItem;
+                                    ]]></mx:Script>
+                            </mx:Label>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="COA Expense"
+                        dataField="coaExpense"
+                        minWidth="50">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:Label text="{PItem(data).coaExpense}">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.PItem;
+                                    ]]></mx:Script>
+                            </mx:Label>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Token"
+                        dataField="token"
+                        width="35"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+        <mx:Text
+                id="noPayrollsText"
+                text="No PItems were found for this company."
+                width="100%"
+                textAlign="center"
+                visible="{!viewModel.hasCompanyPayrollItems}"
+                includeInLayout="{!viewModel.hasCompanyPayrollItems}"
+                fontWeight="bold"/>
+    </mx:VBox>
+</mx:VBox>

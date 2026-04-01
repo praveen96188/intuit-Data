@@ -1,0 +1,586 @@
+// The library version is controled from the Jenkins configuration
+// To force a version add after lib '@' followed by the version.
+@Library(value = 'msaas-shared-lib') _
+repo="payroll-dtpayroll/dt-payroll-svc"
+nextVersion=""
+dbDeployment=""
+dbBuild=""
+pomVersion=""
+deployToQalOrE2E=""
+dockerRegistryCredsId = 'artifactory-dt-payroll-svc'
+dockerRegistryName = 'docker.intuit.com'
+//adding monolith and audit params to capture db configuration before going live in prod (Currently oracle is hardcoded)
+auditDB="postgres"
+monolithDB="oracle"
+
+
+node {
+    // setup the global static configuration
+    config = setupMsaasPipeline('msaas-config.yaml')
+    //TODO : Check if setupMigration needs to be uncommented or not
+    setupMigration(config)
+}
+
+pipeline {
+
+    agent {
+        kubernetes {
+            label "${config.pod_label}"
+            yamlFile 'KubernetesPods.yaml'
+        }
+    }
+
+    post {
+        //TODO : Check if we need to sendMetrics
+        //always {
+        //    sendMetrics(config)
+        //}
+        fixed {
+            emailext(
+                subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' ${currentBuild.result}",
+                body: """
+                        Job Status for '${env.JOB_NAME} [${env.BUILD_NUMBER}]': ${currentBuild.result}\n\nCheck console output at ${env.BUILD_URL}
+                """,
+                to: 'dhanendra_jain@intuit.com'
+            )
+        }
+        unsuccessful {
+            emailext(
+                subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' ${currentBuild.result}",
+                body: """
+                        Job Status for '${env.JOB_NAME} [${env.BUILD_NUMBER}]': ${currentBuild.result}\n\nCheck console output at ${env.BUILD_URL}
+                """,
+                to: 'dhanendra_jain@intuit.com'
+            )
+        }
+    }
+
+    environment {
+        GITHUB_CREDENTIALS = credentials("github-svc-sbseg-ci")
+        TEST_CLIENT_APP_SECRET = credentials("service-gateway-credentials")
+        SANITY_USER_CREDENTIALS = credentials("sanity-user-credentials")
+        GITHUB_USER = "${env.GITHUB_CREDENTIALS_USR}"
+        GITHUB_TOKEN = "${env.GITHUB_CREDENTIALS_PSW}"
+        NEXUS_RELEASE_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_SNAPSHOT_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_RELEASE_REPO_USERNAME = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_USR}"
+        NEXUS_RELEASE_REPO_PASSWORD = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_PSW}"
+        NEXUS_SNAPSHOT_REPO_USERNAME = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_USR}"
+        NEXUS_SNAPSHOT_REPO_PASSWORD = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_PSW}"
+    }
+
+    stages {
+        stage('User-input?') {
+            options {
+                timeout(time: 1, unit: 'DAYS')
+            }
+            steps {
+                script {
+                    userInputs = input( id: 'userInputs',message: 'Please provide below details?',parameters: [
+                        [$class: 'ChoiceParameterDefinition',name:'DbBuild',description:'Do you want database build?',choices: "No\nYes"],
+                        [$class: 'ChoiceParameterDefinition',name:'DbDeploy',description:'Do you want database to deploy..(used for IKS)?',choices: "No\nYes"]
+                    ])
+                    dbDeployment = userInputs.DbDeploy
+                    dbBuild = userInputs.DbBuild
+
+                    println("DbBuild: " + dbBuild + " -- DbDeploy: " + dbDeployment );
+                }
+            }
+        }
+
+        stage('Decide on the Next PSP Version') {
+            steps {
+                script {
+                    pom = readMavenPom file: './app/pom.xml'
+                    pomVersion = pom.version
+                    println("pomVersion:: " + pomVersion)
+                    if(BRANCH_NAME == "master") {
+                        def userInput = input(
+                            id: 'userInput',
+                            message: 'Change Type?',
+                            parameters: [
+                                [$class: 'ChoiceParameterDefinition',description:'Change type', name:'changeType', choices: "Patch\nMinor\nMajor"],
+                                string(defaultValue: '',description: 'Release wiki location..Required for production release and tagging.',name: 'releaseWiki')]
+                        )
+                        println("ChangeType::  " + userInput.changeType);
+                        println("releaseWiki::  " + userInput.releaseWiki);
+
+                        def currentTag = getCurrentTag()
+                        println("CurrentTag:: " + currentTag)
+
+                        nextVersion = getNextVersion(currentTag, userInput.changeType)
+                        updateGitTag(nextVersion, userInput.releaseWiki)
+                    } else {
+                        def versionWithoutSnapShots = pomVersion.tokenize("-")[0]
+                        nextVersion = "${versionWithoutSnapShots}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}-SNAPSHOT"
+                    }
+                    println("Next version to be build :: " + nextVersion)
+                }
+            }
+        }
+
+        stage('checkmarx') {
+            when { anyOf { branch 'master'} }
+                steps {
+                    println("Starting checkmarx as this is master branch")
+                    checkmarx(config)
+                }
+        }
+
+        stage('BUILD:') {
+            when {
+                anyOf {
+                    branch 'master'; branch 'develop'; branch 'feature-*'; changeRequest()
+                }
+            }
+            stages {
+                stage('Podman Build') {
+                    steps {
+                        container('pspmavensql') {
+                            sh "chmod 775 ./package/build_psp.sh"
+                            sh "./package/build_psp.sh  ${dbBuild} ${nextVersion} ${pomVersion}"
+                        }
+                        container('podman') {
+                            // Build Docker Image using podmanBuild
+                            podmanBuild("--rm=false" +
+                                        " --build-arg=\"build=${env.BUILD_URL}\"" +
+                                        " --build-arg=\"nextVersion=${nextVersion}\"" +
+                                        " --build-arg=\"dbDeployment=${dbDeployment}\"" +
+                                        " -t ${config.image_full_name} .")
+
+                            // Mounting Docker Image using podmanMount is not required
+                            // as we are not building our code during docker build and artifacts are already present in ${env.WORKSPACE} directory
+                            // podmanMount(podmanFindImage([image: 'build', build: env.BUILD_URL]),
+                            //    {steps,mount -> sh(label: 'copy outputs to workspace', script: "cp -r ${env.WORKSPACE}/app/artifacts ${env.WORKSPACE}")})
+
+                            // Push Docker Image using podmanPush
+                            podmanPush(config)
+                        }
+                    }
+                // End of stage('Podman Build')
+                }
+
+                stage('Publish') {
+                    post {
+                        always {
+                            sendBuildMetrics(config)
+                        }
+                    }
+                    parallel {
+                        stage('Report Coverage & Unit Test Results') {
+                            steps {
+                                sh "echo We are running JUnits as part of Integration Test Jenkins Job and not in this build"
+                                // junit '**/surefire-reports/**/*.xml'
+                                // codeCov(config)
+                                // jacoco()
+                            }
+                        // End of Stage : Report Coverage & Unit Test Results
+                        }
+                        stage('CPD Certification & Publish') {
+                            steps {
+                                container('cpd2') {
+                                    intuitCPD2Podman(config, "-i ${config.image_full_name} --buildfile Dockerfile")
+                                }
+                                container('podman') {
+                                    podmanPull(config, config.image_full_name)
+                                    podmanInspect(config, '-s', 'image-metadata.json')
+                                    archiveArtifacts(artifacts: 'image-metadata.json', allowEmptyArchive: true)
+                                }
+                            }
+
+                        // End of Stage : CPD Certification & Publish
+                        }
+                        stage('Code Analysis') {
+                            when {expression {return config.SonarQubeAnalysis}}
+                            steps {
+                                container('podman') {
+                                    // Commenting below default code as we have not enabled SonarQubeAnalysis
+                                    // copy from container bundle for sonar analysis
+                                    // podmanMount(
+                                    //            podmanFindImage([image: 'build', build: env.BUILD_URL]),
+                                    //            {   steps,mount -> sh(label: 'copy outputs to workspace', script: "cp -r ${mount}/usr/src ${env.WORKSPACE}/bundle")}
+                                    //            )
+                                    //podmanBuild("-f Dockerfile.sonar --build-arg=\"sonar=${config.SonarQubeEnforce}\" .")
+                                }
+                            }
+                        // End of Stage : Code Analysis
+                        }
+                        stage('Nexus IQ Server Scan') {
+                            when { anyOf { branch 'master'; branch 'develop'} }
+                            steps {
+                                nexusPolicyEvaluation failBuildOnNetworkError: false, iqApplication: "${config.asset_id}", iqStage: 'build'
+                            }
+                        // End of Stage : Nexus IQ Server Scan
+                        }
+
+
+                    // End of parallel
+                    }
+
+                // End of stage('Publish')
+                }
+
+            // End of stages under stage('BUILD:')
+            }
+
+        // End of stage('BUILD:')
+        }
+
+        stage('output') {
+            steps {
+                script {
+                    println("Version Uploaded to nexus::" + nextVersion)
+                    println("Image Uploaded to Artifactory::" + config.image_full_name)
+                }
+            }
+        // End of stage('output')
+        }
+
+        stage('Pre-Prod Deployment') {
+            steps {
+                script {
+                    def userInput = input(
+                        id: 'userInput',
+                        message: 'Pre-prod env for deployment ',
+                        parameters: [
+                            [$class: 'ChoiceParameterDefinition',description:'Environment to Deploy',name:'deployToQalOrE2E',
+                            choices: "qal-usw2-eks\ne2e-usw2-eks\nprf-usw2-eks\nds2-usw2-eks\ndo-not-deploy"]
+                             ]
+                        )
+                    if(userInput != "do-not-deploy") {
+                        def userInputDB = input(
+                            id: 'userInputDB',
+                            message: 'DB to connect ',
+                            parameters: [
+                                [$class: 'ChoiceParameterDefinition',description:'Monolith db to connect to',name:'MONOLITH',
+                                choices: "oracle\npostgres"]
+                                 ]
+                            )
+                        deployToQalOrE2E=userInput?:""
+                        monolithDB=userInputDB?:""
+                        println("PreProd environment for testing::  " + deployToQalOrE2E);
+                        println("MonolithDB:: " + monolithDB)
+                        println("AuditDB:: " + auditDB)
+                    }
+                }
+            }
+        }
+
+        stage('qal-usw2-eks:') {
+            when { expression { deployToQalOrE2E == 'qal-usw2-eks' } }
+            options {
+                lock(resource: getEnv(config, 'qal-usw2-eks').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+                stage('TestOverwatch-SYS-Before') {
+                    steps {
+                        // Put your tests here
+                        container('test') {
+                        overwatchTests("qal-usw2", "qal", config)
+                        }
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        container('cdtools') {
+                            //This has to be the first action in the first sub-stage.
+                            milestone(ordinal: 10, label: 'Deploy-qal-usw2-eks-milestone')
+                            script {
+                                def dbConfig = load "DBConfig.groovy"
+                                //to generate and commit config map in deployment repo with selected db configuration before deployment
+                                dbConfig.commitDBConfigFile(config, 'qal-usw2-eks',1800, monolithDB, auditDB)
+                            }
+                            gitOpsDeploy(config, 'qal-usw2-eks', config.image_full_name,,1800)
+                        }
+                    }
+                }
+                stage('TestOverwatch-SYS-After') {
+                    steps {
+                        // Put your tests here
+                        container('test') {
+                        overwatchTests("qal-usw2", "qal", config)
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('e2e-usw2-eks:') {
+            when { expression { deployToQalOrE2E == 'e2e-usw2-eks' } }
+            options {
+                lock(resource: getEnv(config, 'e2e-usw2-eks').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+                stage('TestOverwatch-PDS-Before') {
+                    steps {
+                        // Put your tests here
+                        container('test') {
+                        overwatchTests("e2e-usw2", "e2e", config)
+                        }
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        container('cdtools') {
+                            //This has to be the first action in the first sub-stage.
+                            milestone(ordinal: 20, label: 'Deploy-e2e-usw2-eks-milestone')
+                            script {
+                                def dbConfig = load "DBConfig.groovy"
+                                //to generate and commit config map in deployment repo with selected db configuration before deployment
+                                dbConfig.commitDBConfigFile(config, 'e2e-usw2-eks',1800, monolithDB, auditDB)
+                            }
+                            gitOpsDeploy(config, 'e2e-usw2-eks', config.image_full_name,,1800)
+                        }
+                    }
+                }
+                stage('TestOverwatch-PDS-After') {
+                    steps {
+                        // Put your tests here
+                        container('test') {
+                        overwatchTests("e2e-usw2", "e2e", config)
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('prf-usw2-eks:') {
+            when { expression { deployToQalOrE2E == 'prf-usw2-eks'} }
+            options {
+                lock(resource: getEnv(config, 'prf-usw2-eks').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-prf-usw2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'prf-usw2-eks',1800, monolithDB, auditDB)
+                          }
+                          gitOpsDeploy(config, 'prf-usw2-eks', config.image_full_name,,1800)
+                      }
+                  }
+              }
+            }
+        }
+
+        stage('ds2-usw2-eks:') {
+            when { expression { deployToQalOrE2E == 'ds2-usw2-eks'} }
+            options {
+                lock(resource: getEnv(config, 'ds2-usw2-eks').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-ds2-usw2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'ds2-usw2-eks',1800, monolithDB, auditDB)
+                          }
+                          gitOpsDeploy(config, 'ds2-usw2-eks', config.image_full_name,,1800)
+                      }
+                  }
+              }
+            }
+        }
+
+        /*stage('ds1-usw2-eks:') {
+            when { expression { deployToQalOrE2E == 'ds1-usw2-eks'} }
+            options {
+                lock(resource: getEnv(config, 'ds1-usw2-eks').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+              stage('Deploy') {
+                  steps {
+                      container('cdtools') {
+                          //This has to be the first action in the first sub-stage.
+                          milestone(ordinal: 20, label: 'Deploy-ds1-usw2-eks-milestone')
+                          script {
+                              def dbConfig = load "DBConfig.groovy"
+                              //to generate and commit config map in deployment repo with selected db configuration before deployment
+                              dbConfig.commitDBConfigFile(config, 'ds1-usw2-eks',1800, monolithDB, auditDB)
+                          }
+                          gitOpsDeploy(config, 'ds1-usw2-eks', config.image_full_name,,1800)
+                      }
+                  }
+              }
+            }
+        }*/
+
+        stage('Go Live in Prod Approval') {
+            when { allOf { branch 'master'; not {changeRequest()}; not { expression {return config.preprodOnly} } } }
+            agent none
+            options {
+                timeout(time: 2, unit: 'DAYS')
+            }
+            steps {
+                gitOpsApproval(config, "prd-usw2-eks")
+            }
+        }
+        /* stage('DB-input?') {
+            options {
+                timeout(time: 1, unit: 'DAYS')
+            }
+            steps {
+            // to capture db config before prod deployment
+                script {
+                    dbInputs = input( id: 'userInputs',message: 'Please provide the db connection details',parameters: [
+                        [$class: 'ChoiceParameterDefinition',name:'Monolith',description:'Which monolith db to connect to?',choices: "oracle\npostgres"],
+                        [$class: 'ChoiceParameterDefinition',name:'Audit',description:'Which audit db to connect to?',choices: "oracle\npostgres"],
+                    ])
+                    monolithDB = "oracle" //dbInputs.Monolith -> after oracle-oracle testing
+                    auditDB = "oracle" //dbInputs.Audit -> after oracle-oracle testing
+
+                    println("MonolithDB: " + monolithDB + " -- AuditDB: " + auditDB );
+                }
+            }
+        }*/
+
+
+
+        stage('prd-usw2-eks:') {
+            when { allOf { branch 'master'; not {changeRequest()}; not { expression {return config.preprodOnly} } } }
+            options {
+                lock(resource: getEnv(config, 'prd-usw2-eks').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+                stage('Create CR') {
+                    steps {
+                        container('servicenow') {
+                            sh label: "Uncomment to open CR", script: "exit 0"
+                            // openSnowCR(config, "prd-usw2", config.image_full_name)
+                        }
+                    }
+                }
+                stage('TestOverwatch-PRD-Before') {
+                    steps {
+                        // Put your tests here
+                        container('test') {
+                        overwatchTests("prd-usw2", "prd", config)
+                        }
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        container('cdtools') {
+                            //This has to be the first action in the first sub-stage.
+                            gitOpsDeploy(config, "prd-usw2-eks", config.image_full_name,,1800)
+                        }
+                    }
+                }
+                stage('Send Metrics to PROD') {
+                    when {  branch 'master' }
+                    steps {
+                        sendMetrics(config, 'metrics_api_key', 'prd-usw2-eks')
+                    }
+                }
+                stage('TestOverwatch-PRD-After') {
+                    steps {
+                        // Put your tests here
+                        container('test') {
+                        overwatchTests("prd-usw2", "prd", config)
+                        }
+                    }
+                }
+                // If any failure, CR remains open and MUST be closed manually with cause.
+                stage('Close CR') {
+                    steps {
+                        container('servicenow') {
+                            sh label: "Uncomment to close CR", script: "exit 0"
+                            // closeSnowCR(config, "prd-usw2")
+                        }
+                    }
+                }
+            }
+        }
+
+
+    //End of stages
+    }
+//End of pipeline
+}
+
+def getCurrentTag(){
+    withCredentials([usernamePassword(credentialsId: 'github-svc-sbseg-ci', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+        container('maven') {
+            latestRelease = """
+                curl -X GET \
+                  -u ${GIT_USERNAME}:${GIT_PASSWORD} \
+                  https://github.intuit.com/api/v3/repos/${repo}/releases/latest \
+                  -H 'Content-Type: application/json' \
+                  -H 'cache-control: no-cache' \
+            """
+            def response = sh(returnStdout: true, script: "${latestRelease}").trim()
+            def responseJson = readJSON text: response
+            echo "response.tag_name: ${responseJson.tag_name}"
+            return responseJson.tag_name
+        }
+    }
+}
+
+def getNextVersion(String version, String userInput){
+
+    def majorVersion = version.tokenize(".")[0] as int
+ 	def minorVersion = version.tokenize(".")[1] as int
+ 	def patchVersion = version.tokenize(".")[2] as int
+
+ 	echo "BeforeChange ==> majorVersion: ${majorVersion} -- minorVersion: ${minorVersion} -- patchVersion: ${patchVersion} "
+
+    if (userInput == 'Major'){
+        majorVersion = majorVersion + 1
+        minorVersion = 0
+        patchVersion = 0
+    }
+    if (userInput == 'Minor'){
+        minorVersion = minorVersion + 1
+        patchVersion = 0
+    }
+
+    if (userInput == 'Patch'){
+        patchVersion = patchVersion + 1
+    }
+
+
+    echo "AfterChange ==> majorVersion: ${majorVersion} -- minorVersion: ${minorVersion} -- patchVersion: ${patchVersion} "
+
+    return "${majorVersion}.${minorVersion}.${patchVersion}"
+}
+
+def updateGitTag(String version, String releaseWiki){
+    withCredentials([usernamePassword(credentialsId: 'github-svc-sbseg-ci', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+        container('maven') {
+            latestRelease = """
+                curl -X POST \
+                      -u ${GIT_USERNAME}:${GIT_PASSWORD} \
+                      https://github.intuit.com/api/v3/repos/${repo}/releases \
+                      -H 'Content-Type: application/vnd.github.v3.html+json' \
+                      -H 'cache-control: no-cache' \
+                      -d '{
+                      "tag_name":"${version}",
+                      "name":"${version}",
+                      "body":"Release wiki location: ${releaseWiki}",
+                      "target_commitish":"master",
+                      "draft":false,
+                      "prerelease":false
+                    }'
+            """
+            def response = sh(returnStdout: true, script: "${latestRelease}").trim()
+            echo "response: ${response}"
+            def responseJson = readJSON text: response
+            echo "response.tag_name: ${responseJson.tag_name}"
+            return responseJson.tag_name
+        }
+    }
+}

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Gateways</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>iam-gateway</artifactId>
+    <name>iam-gateway</name>
+
+    <dependencies>
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>desktop-payroll-spring-security</artifactId>
+        </dependency>
+        <!-- End of Module dependency -->
+
+        <!-- Dependencies Read from Maven Repository -->
+        <dependency>
+            <groupId>com.intuit.client.ius</groupId>
+            <artifactId>IUSClient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.identity.idlm.spring</groupId>
+            <artifactId>idlm-springboot-java-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>identity-services-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.resources.dir}</directory>
+                <excludes>
+                    <exclude>**/*.jks</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${project.test.resources.dir}</directory>
+                <includes>
+                    <include>**/*.jks</include>
+                </includes>
+                <targetPath>resources</targetPath>
+            </testResource>
+        </testResources>
+        <plugins>
+            <!-- For tests only to access truncateTables.sql-->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-remote-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>com.intuit.sbg.psp:domain:${psp.project.version}</resourceBundle>
+                                <resourceBundle>com.intuit.sbg.psp:domain-secondary:${psp.project.version}</resourceBundle>
+                            </resourceBundles>
+                            <attachToMain>false</attachToMain>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

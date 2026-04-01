@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module:AbstractModule xmlns:module="psp.sap.application.modules.*" xmlns:pspui="psp.sap.view.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300" implements="psp.sap.application.modules.IModuleInterface">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.view.TTCompanyChangeOffloadGroupView;
+			import psp.sap.view.TTCompanySearchResultsDataGrid;
+			import mx.controls.Label;
+			import psp.sap.application.modules.SAPModuleManager;
+			import mx.core.UIComponentDescriptor;
+			import psp.sap.application.enums.TestToolsExplorerEnum;
+			import psp.sap.view.TestToolsExplorerView;
+			import psp.sap.viewmodel.TestToolsExplorerViewModel;
+			import psp.sap.application.collections.ExplorersCollection;
+			import psp.sap.application.collections.InspectorTopicPagesCollection;
+			import psp.sap.application.enums.InterchangeableContentEnum;
+			import psp.sap.view.SinglePartPageView;
+			import psp.sap.application.SAP;
+			import mx.events.FlexEvent;
+			import psp.sap.view.PageVBox;
+			import mx.containers.VBox;
+			import mx.collections.ArrayCollection;
+			import mx.core.Container;
+			import psp.sap.application.enums.CompanyInspectorPageEnum;
+			import psp.sap.viewmodel.CompanyInspectorViewModel;
+			import psp.sap.view.ViewStackControlEx;
+			import testTools.service.TestService;
+//			import psp.sap.application.DisplayItem;
+			import mx.controls.Alert;
+			import mx.rpc.Responder;
+			import psp.sap.application.DisplayRegistry;
+			
+
+			override public function initializeDisplays(value:Dictionary):Dictionary {
+				return value;
+			}
+
+			/*override public function syncCompanyViewsToModuleOverlay(value:ViewStackControlEx):ViewStackControlEx {
+				
+				for (var key:Object in displayOverlays)
+				{
+				    var labelKey:String = key.toString();
+				    var pageView:SinglePartPageView = value.getChildByLabel(labelKey) as SinglePartPageView;
+					
+					if(pageView != null)
+					{
+						var partViewFactory:ClassFactory = new ClassFactory(displayOverlays[key]);
+						var singlePartView:DisplayObject = partViewFactory.newInstance();
+
+						pageView.children = [singlePartView];
+
+					}
+				}
+
+				return value;
+			}*/
+			
+			override public function createModuleViews(viewStack:ViewStackControlEx, explorersCollection:ExplorersCollection):void
+			{
+				var explorerView:TestToolsExplorerView = new TestToolsExplorerView();
+				viewStack.addChild(explorerView);
+				
+				explorerView.label = TestToolsExplorerEnum.TEST_TOOLS;
+				explorerView.viewModel = new TestToolsExplorerViewModel();
+				explorersCollection.addItem(explorerView.viewModel);
+				
+				SAPModuleManager.instance.addDisplayRegistry("searchResultsPanel", new TTCompanySearchResultsDataGrid());
+				SAPModuleManager.instance.addDisplayRegistry("companyOffloadGroup", new TTCompanyChangeOffloadGroupView());
+			}
+				
+			override public function get moduleName():String {
+				return "Test Tools - Application for QA";
+			}
+			
+			override public function optionalLoad():Boolean {
+				return true;
+			}
+
+		]]>
+	</mx:Script>
+</module:AbstractModule>

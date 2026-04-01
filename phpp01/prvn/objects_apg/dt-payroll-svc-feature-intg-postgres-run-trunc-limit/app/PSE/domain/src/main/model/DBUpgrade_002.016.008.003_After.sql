@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\Dev\psp\dev-maven\PSE\domain\src\main\model\DBUpgrade_002.016.008.003.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:pspui="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete()">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.events.MenuEvent;
+
+        import psp.sap.application.enums.PenaltiesAndInterestPageEnum;
+        import psp.sap.application.enums.TransactionPageEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.ActionEvent;
+        import psp.sap.model.ActionEventCode;
+        import psp.sap.model.Transaction;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.PenaltiesAndInterestViewModel;
+
+        private var mViewModel:PenaltiesAndInterestViewModel;
+        private var mTempViewModel:PenaltiesAndInterestViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():PenaltiesAndInterestViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PenaltiesAndInterestViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.totalAmountValidator.listener = totalAmountErrorBox;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function confirmRefunds():void {
+            Alert.show("Are you sure you want to create refunds?",
+                    "Refunds Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.createRefunds();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        public function actionEventButtonHandler(event:MenuEvent, data:Transaction):void {
+            var action:ActionEvent = ActionEvent(event.item);
+
+            if (action.code == ActionEventCode.TX_STATE_HISTORY) {
+                viewModel.viewHistory(data);
+            } else if (action.code == ActionEventCode.FINANCIAL_TRANSACTION_CANCEL) {
+                Alert.show("Are you sure you want to cancel this transaction?",
+                        "Cancel Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.cancelTransaction(data.transactionId);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action.code == ActionEventCode.FINANCIAL_TRANSACTION_VOID_TX) {
+                Alert.show("Are you sure you want to void this transaction?",
+                        "Void Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.voidTransaction(data.transactionId);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action.code == ActionEventCode.REFUND_DEBIT) {
+                viewModel.createRefundDebit(data);
+            }
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox verticalGap="15">
+        <mx:Canvas>
+            <mx:VBox y="11" width="550" borderColor="black" borderStyle="solid" cornerRadius="5">
+                <mx:HBox width="100%" paddingTop="15" paddingBottom="5" paddingLeft="10" paddingRight="10">
+                    <mx:VBox width="30%" verticalAlign="middle">
+                        <mx:HBox>
+                            <pspui:RequiredLabel text="Penalties" validator="{viewModel.penaltiesAmountValidator}"
+                                                 fontWeight="bold" width="105" horizontalAlign="right"/>
+                            <controls:SAPTextInput width="80" dataField="penaltiesAmount" restrict="0-9."/>
+                        </mx:HBox>
+                        <mx:HBox>
+                            <pspui:RequiredLabel text="Interest" validator="{viewModel.interestAmountValidator}"
+                                                 fontWeight="bold" width="105" horizontalAlign="right"/>
+                            <controls:SAPTextInput width="80" dataField="interestAmount" restrict="0-9."/>
+                        </mx:HBox>
+                        <mx:HRule width="100%"/>
+                        <mx:HBox>
+                            <pspui:RequiredLabel text="Total Refund" validator="{viewModel.totalAmountValidator}"
+                                                 fontWeight="bold" width="105" horizontalAlign="right"/>
+                            <pspui:ErrorBox width="82" id="totalAmountErrorBox" changeThemeColor="false">
+                                <mx:Label width="80" id="totalAmount" text="{SAPCurrencyFormatters.currencyFormatterNoSymbolNoComma.format(viewModel.totalAmount)}"/>
+                            </pspui:ErrorBox>
+                        </mx:HBox>
+
+                    </mx:VBox>
+
+                    <mx:VBox verticalAlign="middle" width="70%" paddingLeft="25">
+                        <mx:HBox>
+                            <mx:Label text="Settlement Type" fontWeight="bold"/>
+                            <mx:HBox horizontalGap="0" horizontalAlign="left">
+                                <controls:SAPComboBox dataField="settlementType" width="100"
+                                                      dataProvider="{viewModel.settlementTypes}"
+                                                      visible="{viewModel.canSelectNonStandardSettlementTypes}"
+                                                      includeInLayout="{viewModel.canSelectNonStandardSettlementTypes}"/>
+                                <mx:Label fontWeight="bold" textAlign="center" width="100"
+                                          text="{viewModel.settlementType}"
+                                          visible="{!(viewModel.canSelectNonStandardSettlementTypes)}"
+                                          includeInLayout="{!(viewModel.canSelectNonStandardSettlementTypes)}"/>
+                            </mx:HBox>
+                        </mx:HBox>
+                    </mx:VBox>
+                </mx:HBox>
+                <mx:HBox width="100%" paddingBottom="5" paddingLeft="10" paddingRight="10">
+                    <pspui:RequiredLabel text="Notes" validator="{viewModel.notesValidator}" fontWeight="bold"
+                                         width="105" horizontalAlign="right"/>
+                    <mx:TextArea id="notesInput" width="400" height="80"/>
+                </mx:HBox>
+                <mx:HBox width="100%" paddingTop="5" paddingBottom="5" paddingLeft="10" paddingRight="25"
+                         horizontalAlign="right">
+                    <mx:Button label="Create" click="confirmRefunds();" enabled="{viewModel.canSave}"/>
+                </mx:HBox>
+
+            </mx:VBox>
+            <mx:Label opaqueBackground="#FFFFFF" x="11" text="Create Refund" fontWeight="bold"/>
+        </mx:Canvas>
+
+        <mx:VBox width="100%" height="100%"
+                 visible="{!viewModel.transactionResults.length > 0}"
+                 includeInLayout="{!viewModel.transactionResults.length > 0}"
+                 styleName="grayDataGridVBox">
+            <mx:Text
+                    text="No refunds exist."
+                    width="100%"
+                    textAlign="center"
+                    fontWeight="bold"/>
+        </mx:VBox>
+
+        <controls:SAPDataGrid width="840" autoResizeToFitContent="true" autoResizeHeightBuffer="600"
+                              dataProvider="{viewModel.transactionResults}" verticalScrollPolicy="auto"
+                              selectable="false"
+                              visible="{viewModel.transactionResults.length > 0}"
+                              includeInLayout="{viewModel.transactionResults.length > 0}">
+            <controls:columns>
+                <controls:SAPDataGridColumn
+                        headerText="Txn Date"
+                        width="80"
+                        minWidth="80"
+                        resizable="false"
+                        sortable="false"
+                        dataField="settlementDate"
+                        labelFunction="SAPDataGrid.formatDateMedium"/>
+                <controls:SAPDataGridColumn
+                        headerText="Amount"
+                        width="75"
+                        minWidth="75"
+                        resizable="false"
+                        sortable="false"
+                        dataField="amount"
+                        labelFunction="SAPDataGrid.formatCurrency"/>
+                <controls:SAPDataGridColumn
+                        headerText="Txn Type"
+                        width="175"
+                        minWidth="175"
+                        resizable="false"
+                        dataField="transactionType"/>
+                <controls:SAPDataGridColumn
+                        headerText="Settlement {String('\n')} Type"
+                        width="75"
+                        minWidth="75"
+                        resizable="false"
+                        dataField="settlementType"/>
+                <controls:SAPDataGridColumn
+                        headerText="Status"
+                        width="70"
+                        minWidth="70"
+                        resizable="false"
+                        dataField="status"/>
+                <controls:SAPDataGridColumn
+                        headerText="Rtn Cd"
+                        width="60"
+                        minWidth="60"
+                        resizable="false"
+                        dataField="returnCd"/>
+                <controls:SAPDataGridColumn
+                        headerText="Created By"
+                        resizable="false"
+                        width="130"
+                        minWidth="100"
+                        sortable="false"
+                        dataField="createdBy"/>
+                <controls:SAPDataGridColumn
+                        headerText="Actions"
+                        width="105"
+                        minWidth="105"
+                        resizable="false"
+                        sortable="false">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox paddingLeft="5" paddingRight="3" horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.Transaction;
+                                    ]]></mx:Script>
+                                <mx:PopUpMenuButton dataProvider="{Transaction(data).actionCollection}"
+                                                    fontWeight="normal"
+                                                    width="105"
+                                                    paddingLeft="5"
+                                                    textAlign="left"
+                                                    itemClick="outerDocument.actionEventButtonHandler(event, Transaction(data))"
+                                                    labelField="description"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+            </controls:columns>
+        </controls:SAPDataGrid>
+
+    </mx:VBox>
+
+    <mx:Binding source="viewModel.notes" destination="notesInput.text"/>
+    <mx:Binding source="notesInput.text" destination="viewModel.notes"/>
+
+    <mx:Binding source="viewModel.totalAmount" destination="totalAmount.text"/>
+    <mx:Binding source="totalAmount.text" destination="viewModel.totalAmount"/>
+
+    <controls:PopUpPart label="{TransactionPageEnum.TRANSACTION_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:TransactionHistoryPopUpView label="{TransactionPageEnum.TRANSACTION_HISTORY}"/>
+    </controls:PopUpPart>
+
+    <controls:PopUpPart label="{PenaltiesAndInterestPageEnum.REFUND_DEBIT_POPUP+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false"
+                        verticalResizeEnabled="false">
+        <pspui:RefundDebitPopUpView label="{PenaltiesAndInterestPageEnum.REFUND_DEBIT_POPUP}"/>
+    </controls:PopUpPart>
+
+</mx:VBox>

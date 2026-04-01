@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CompanySearchResultsDataGrid 
+		xmlns="psp.sap.view.*" 
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+		focusAlpha="0"																																			
+		width="100%" 							
+		dataProvider="{parentViewModel.searchResults}" 
+		selectable="false"
+		selectionColor="white"														
+		rowCount="{parentViewModel.rowCountObject.rowCount}"								
+		editable="true"		
+		focusOut="focusManager.defaultButtonEnabled = true;"
+		focusIn="focusManager.defaultButtonEnabled = true;"
+		itemEditBegin="focusManager.defaultButtonEnabled = true;"							
+		itemEditEnd="focusManager.defaultButtonEnabled = true;"
+		> 
+				<!-- TODO remove when they fix JIRA SDK-15512.
+					 If they fix it.
+					 F*** it, we're keeping it -->
+ 				<!-- Sure selectable=false should make it so
+					the dg isn't selectable, but it doesn't
+					when you try scrolling with the tab key.
+					So I made it white so users would be tricked
+					into thinking the flex framework isn't stupid. -->
+					
+		<mx:Script>
+			<![CDATA[
+				import mx.events.DataGridEvent;
+				
+				[Bindable]
+				public var parentViewModel:Object;
+				
+				private var mParentDisplayObject:Object;
+				
+				[Bindable]
+				public function get parentDisplayObject():Object {
+					return mParentDisplayObject;
+				}
+				
+				public function set parentDisplayObject(value:Object):void {
+					if (mParentDisplayObject != null) {
+						this.removeEventListener("companyClick", mParentDisplayObject.onCompanyClick);
+					}
+					
+					mParentDisplayObject = value;
+					
+					if (mParentDisplayObject != null) {
+						DataGridColumn(this.columns[4]).labelFunction = mParentDisplayObject.directDepositServiceStatusLabel;
+						DataGridColumn(this.columns[4]).sortCompareFunction = mParentDisplayObject.directDepositServiceStatusSortCompare;
+						this.addEventListener("companyClick", mParentDisplayObject.onCompanyClick);
+					}
+				}
+				
+			]]>
+		</mx:Script>
+							
+		<columns>
+			<mx:DataGridColumn		
+					editorUsesEnterKey="true"						
+				    rendererIsEditor="true"
+					minWidth="250" 
+					width="250"	
+					headerText="Company Legal Name"
+					textAlign="center" 
+					headerWordWrap="true"
+					dataField="legalName"
+					itemRenderer="psp.sap.view.CompanyLinkGridItemRenderer">
+			</mx:DataGridColumn>
+			
+			<mx:DataGridColumn
+					editable="false"
+					width="120"
+					resizable="false" 
+					headerText="Source{String('\n')}Payroll System"
+					textAlign="center" 
+					dataField="sourceSystemCd"/>								
+			
+			<mx:DataGridColumn
+					editable="false"
+					width="80" 
+					resizable="false"
+					headerText="EIN"
+					textAlign="center" 
+					dataField="fein"
+					itemRenderer="mx.controls.Text"/>
+			
+			<mx:DataGridColumn 
+					editable="false"
+					headerText="Company ID"
+					textAlign="center" 
+					dataField="companyId"
+					minWidth="80"
+					itemRenderer="mx.controls.Text" />
+								
+			<mx:DataGridColumn
+					id="seviceStatusColumn"
+					editable="false"
+					headerText="Status"
+					textAlign="left"
+					headerWordWrap="true" 
+					sortable = "true"
+					paddingLeft="5">	
+					<mx:itemRenderer>
+						<mx:Component id="statusLabel">
+								<DirectDepositStatusLabel serviceStatusCd="{data.directDepositService.serviceStatusCd}" isOnHold="{data.onHold}"/>
+						</mx:Component>
+					</mx:itemRenderer>
+			</mx:DataGridColumn>
+			
+			<mx:DataGridColumn
+					editable="false"
+					headerText="gseq"
+					textAlign="left"
+					headerWordWrap="true"
+					sortable="true"
+					paddingLeft="5"
+					itemRenderer="mx.controls.Text"
+					dataField="gseq" />
+
+		</columns>
+</CompanySearchResultsDataGrid>

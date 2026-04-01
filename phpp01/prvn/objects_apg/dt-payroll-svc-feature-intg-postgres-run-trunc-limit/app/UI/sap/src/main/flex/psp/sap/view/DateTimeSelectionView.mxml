@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        verticalAlign="middle">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.model.DateRangeEnum;
+        import psp.sap.viewmodel.DateTimeSelectionViewModel;
+
+        private const DEFAULT_BEGIN_DATE_LABEL:String = "From:";
+        private const DEFAULT_END_DATE_LABEL:String = "To:";
+
+        private var mViewModel:DateTimeSelectionViewModel;
+        private var mBeginDateLabel:String;
+        private var mEndDateLabel:String;
+        private var mBeginDateLabelWidth:Number;
+        private var mEndDateLabelWidth:Number;
+
+        [Bindable]
+        public function get viewModel():DateTimeSelectionViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:DateTimeSelectionViewModel):void {
+            if (value != null) {
+                if (mViewModel != null) {
+                    mViewModel.startDateValidator.listener = null;
+                    mViewModel.endDateValidator.listener = null;
+                    mViewModel.startAndEndValidator.startDateListener = null;
+                    mViewModel.startAndEndValidator.endDateListener = null;
+                    mViewModel.startTimeValidator.listener = null;
+                    mViewModel.endTimeValidator.listener = null;
+                }
+
+                mViewModel = value;
+
+                if (mViewModel != null) {
+                    mViewModel.startDateValidator.listener = fromDateInput;
+                    mViewModel.endDateValidator.listener = toDateInput;
+                    mViewModel.startAndEndValidator.startDateListener = fromDateInput;
+                    mViewModel.startAndEndValidator.endDateListener = toDateInput;
+                    mViewModel.startTimeValidator.listener = fromTimeTI;
+                    mViewModel.endTimeValidator.listener = toTimeTI;
+                }
+            }
+        }
+
+        [Bindable]
+        public function get beginDateLabel():String {
+            if (mBeginDateLabel == null) {
+                return DEFAULT_BEGIN_DATE_LABEL;
+            }
+            return mBeginDateLabel;
+        }
+
+        public function set beginDateLabel(value:String):void {
+            mBeginDateLabel = value;
+        }
+
+        [Bindable]
+        public function get endDateLabel():String {
+            if (mEndDateLabel == null) {
+                return DEFAULT_END_DATE_LABEL;
+            }
+            return mEndDateLabel;
+        }
+
+        public function set endDateLabel(value:String):void {
+            mEndDateLabel = value;
+        }
+
+        [Bindable]
+        public function get beginDateLabelWidth():Number {
+            return mBeginDateLabelWidth;
+        }
+
+        public function set beginDateLabelWidth(value:Number):void {
+            mBeginDateLabelWidth = value;
+        }
+
+        [Bindable]
+        public function get endDateLabelWidth():Number {
+            return mEndDateLabelWidth;
+        }
+
+        public function set endDateLabelWidth(value:Number):void {
+            mEndDateLabelWidth = value;
+        }
+
+		]]>
+	</mx:Script>
+    <mx:HBox verticalAlign="middle">
+        <mx:Label id="beginDateIdLabel" text="{beginDateLabel}" fontWeight="bold" width="{beginDateLabelWidth}"/>
+        <pspui:SAPDateField
+                id="fromDateInput"
+                width="100"
+                editable="true"/>
+        <mx:TextInput id="fromTimeTI" width="50" restrict="0-9:" toolTip="Time in HH:mm (24 Hr) Format"></mx:TextInput>
+    </mx:HBox>
+    <mx:HBox verticalAlign="middle">
+        <mx:Label id="endDateIdLabel" text="{endDateLabel}" fontWeight="bold" width="{endDateLabelWidth}"/>
+        <pspui:SAPDateField
+                id="toDateInput"
+                width="100"
+                editable="true"/>
+        <mx:TextInput id="toTimeTI" width="50" restrict="0-9:" toolTip="Time in HH:mm (24 Hr) Format"></mx:TextInput>
+    </mx:HBox>
+
+    <!-- start date -->
+    <mx:Binding source="fromDateInput.text" destination="viewModel.startDate"/>
+    <mx:Binding source="viewModel.startDate" destination="fromDateInput.text"/>
+    <!-- start time -->
+    <mx:Binding source="viewModel.startTime" destination="fromTimeTI.text"/>
+    <mx:Binding source="fromTimeTI.text" destination="viewModel.startTime"/>
+
+    <!-- end date -->
+    <mx:Binding source="toDateInput.text" destination="viewModel.endDate"/>
+    <mx:Binding source="viewModel.endDate" destination="toDateInput.text"/>
+    <!-- end time -->
+    <mx:Binding source="viewModel.endTime" destination="toTimeTI.text"/>
+    <mx:Binding source="toTimeTI.text" destination="viewModel.endTime"/>
+
+</mx:Box>

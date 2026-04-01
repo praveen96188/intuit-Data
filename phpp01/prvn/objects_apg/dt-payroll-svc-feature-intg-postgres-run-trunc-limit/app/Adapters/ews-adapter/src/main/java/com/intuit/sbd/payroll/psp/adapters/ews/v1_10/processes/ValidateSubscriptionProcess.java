@@ -1,0 +1,462 @@
+package com.intuit.sbd.payroll.psp.adapters.ews.v1_10.processes;
+
+import com.intuit.ems.payroll.psp.gateways.ers.ERSGatewayFactory;
+import com.intuit.ems.payroll.psp.gateways.ers.EntitlementInfoDTO;
+import com.intuit.ems.payroll.psp.gateways.ers.IERSGateway;
+import com.intuit.platform.services.ebpi.billing.v2.PaymentProfile;
+import com.intuit.platform.services.ebpi.billing.v2.PaymentProfileImpl;
+import com.intuit.platform.services.ebpi.common.v2.CCPaymentMethod;
+import com.intuit.platform.services.ebpi.common.v2.PaymentMethod;
+import com.intuit.sbd.payroll.psp.Application;
+import com.intuit.sbd.payroll.psp.PSPDate;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.EwsMessage;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.EwsMessages;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.dtos.psp.EwsSubscriptionBillingInfo;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.dtos.psp.EwsValidateSubscription;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.dtos.psp.EwsValidateSubscriptionResponse;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.enums.EwsCreditCardType;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.enums.EwsEinSubscriptionStatus;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.enums.EwsPaymentMethod;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.exceptions.EwsException;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.exceptions.EwsRuntimeException;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.factories.EwsFactory;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.factories.PspFactory;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.utils.LoggingUtils;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.utils.PSPTransmission;
+import com.intuit.sbd.payroll.psp.adapters.ews.v1_10.utils.TransmissionsList;
+import com.intuit.sbd.payroll.psp.api.PayrollServices;
+import com.intuit.sbd.payroll.psp.api.dtos.CompanyDTO;
+import com.intuit.sbd.payroll.psp.api.dtos.EntitlementDTO;
+import com.intuit.sbd.payroll.psp.api.dtos.EntitlementUnitDTO;
+import com.intuit.sbd.payroll.psp.batchjobs.ers.ERSListener;
+import com.intuit.sbd.payroll.psp.domain.*;
+import com.intuit.sbd.payroll.psp.gateways.aia.paymentsprofile.PaymentProfileGateway;
+import com.intuit.sbd.payroll.psp.gateways.amo.AMOListener;
+import com.intuit.sbd.payroll.psp.gateways.amo.AMOWSGatewayFactory;
+import com.intuit.sbd.payroll.psp.gateways.amo.GetCustomerAssetResponseTypeDTO;
+import com.intuit.sbd.payroll.psp.gateways.amo.IAMOWSGateway;
+import com.intuit.sbd.payroll.psp.processes.iam.AddOrUpdateGrantProcessor;
+import com.intuit.sbd.payroll.psp.processes.ProcessResult;
+import com.intuit.sbd.payroll.psp.util.CalendarUtils;
+import com.intuit.sbd.payroll.psp.util.OFXAPPVERObject;
+import com.intuit.sbd.payroll.psp.util.launchdarkly.FeatureFlags;
+import com.intuit.sbg.payroll.application.context.PayrollApplicationBeanFactory;
+import com.intuit.spc.foundations.portability.SpcfUniqueId;
+import com.intuit.spc.foundations.portability.util.SpcfCalendar;
+import com.intuit.spc.foundations.primary.logging.SpcfLogger;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.FlushMode;
+
+import java.util.Objects;
+
+/**
+ * User: rnorian
+ * Date: Jul 13, 2010
+ * Time: 9:39:27 PM
+ */
+public class ValidateSubscriptionProcess extends BaseProcess {
+    private static SpcfLogger logger = PayrollServices.getLogger(ValidateSubscriptionProcess.class);
+
+    private EwsValidateSubscription mRequest;
+
+    private TransmissionsList mTransmissionsList;
+    private PSPTransmission mPSPTransmission;
+
+    public ValidateSubscriptionProcess(EwsValidateSubscription pRequest) {
+        this.mRequest = pRequest;
+        this.mPSID = pRequest.getPsid();
+        this.mEIN = pRequest.getEin();
+        this.mRealmID = pRequest.getRealmID();
+
+        mTransmissionsList = new TransmissionsList();
+        mPSPTransmission = new PSPTransmission();
+        mTransmissionsList.add(mPSPTransmission);
+
+        logger.info("Processing Validate_Subscription Request / PSID: " + this.mPSID);
+    }
+
+    @Override
+    public EwsValidateSubscriptionResponse execute() {
+        EwsValidateSubscriptionResponse response = null;
+
+        try {
+            PayrollServices.beginUnitOfWork(FlushMode.MANUAL);
+
+            mPSPTransmission.setInitializeDateTime(PSPDate.getPSPTime());
+            mPSPTransmission.setTransmissionType(TransmissionType.ValidateSubscription);
+            mPSPTransmission.setRequest(mRequest);
+
+            validate();
+            response = process();
+
+            PayrollServices.commitUnitOfWork();
+        } catch (EwsException e) {
+            response = new EwsValidateSubscriptionResponse();
+            processEwsException(e, response);
+        } catch (Throwable t){
+            response = new EwsValidateSubscriptionResponse();
+            processThrowable(t, response);
+        } finally {
+            PayrollServices.rollbackUnitOfWork();
+
+            try {
+                mPSPTransmission.setFinalizeDateTime(PSPDate.getPSPTime());
+                mPSPTransmission.setResponse(response);
+
+                LoggingUtils.logTransmissions(mTransmissionsList);
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
+        }
+
+        return response;
+
+    }
+
+    @Override
+    protected void validate() throws Exception {
+        mRequest.validate();
+    }
+
+    @Override
+    protected EwsValidateSubscriptionResponse process() throws Exception {
+        // defaults to code = 0, message = 'Success'
+        EwsValidateSubscriptionResponse response = new EwsValidateSubscriptionResponse();
+
+        //todo_rhn: does PSP store subscription numbers w/leading zeroes?
+        Entitlement entitlement = Entitlement.findEntitlementBySubscriptionNumber(mRequest.getSubscriptionNumber());
+        if (entitlement == null) {
+            throw new EwsException(EwsMessages.subscriptionNumberDoesNotExistError());
+        }
+        
+        EntitlementUnit entitlementUnit = null;
+        for (EntitlementUnit eu : entitlement.getActiveEntitlementUnitCollection()) {
+            if (eu.getFedTaxId().equals(mRequest.getEin())) {
+                entitlementUnit = eu;
+                break;
+            }
+        }
+
+        if (entitlementUnit == null) {
+            response.setSubscriptionStatus(EwsEinSubscriptionStatus.EinNotSubscribed);
+            return response;
+        }
+
+        mPspCompany = entitlementUnit.getCompany();
+        updateCompanyQuickBooksInfo(mPspCompany);
+        mTransmissionsList.setCompanySeq(mPspCompany.getId().toString());
+
+        // Sync data from ERS to PSP if needed
+        if (entitlement.hasDummyEntitlementCode()) {
+            Entitlement ersEntitlement = syncEntitlementDataFromERS(mPspCompany, entitlement);
+            if (ersEntitlement != null) {
+                entitlement = ersEntitlement;
+                entitlementUnit = Application.refresh(entitlementUnit);
+            }
+        }
+
+        boolean isAMOSyncEnabled = SystemParameter.findBooleanValue(SystemParameter.Code.AMO_WS_EWS_SYNC_ENABLED, true);
+        if (isAMOSyncEnabled) {
+            // Sync data from AMO to PSP if needed
+            SpcfCalendar spcfCalendar = PSPDate.getPSPTime();
+            spcfCalendar.addDays(15);
+            if (entitlement.getNextChargeDate() != null && entitlement.getNextChargeDate().before(spcfCalendar)) {
+                //Sync data from AMO to PSP to make sure we have the current next charge date and subscription end date.
+                EntitlementUnitDTO entitlementUnitDTO = PayrollServices.dtoFactory.create(entitlementUnit);
+                EntitlementUnit amoEntitlementUnit = syncEntitlementUnitDataFromAMO(mPspCompany, entitlementUnit.getId(), entitlementUnitDTO);
+                if (amoEntitlementUnit != null) {
+                    entitlementUnit = amoEntitlementUnit;
+                    entitlement = amoEntitlementUnit.getEntitlement();
+                }
+            }
+        }
+
+        EwsSubscriptionBillingInfo billingInfo = new EwsSubscriptionBillingInfo();
+        response.setSubscriptionBillingInfo(billingInfo);
+        response.setSubscriptionStatus(determineSubscriptionStatus(entitlementUnit));
+        response.setEntitlementCreationDate(CalendarUtils.convertToCalendar(entitlement.getCreatedDate()));
+        response.setSubType(String.valueOf(entitlement.getEntitlementCode().getQuickBooksSubtype()));
+        response.setPsid(mPspCompany.getSourceCompanyId());
+        response.setFundingModel(mPspCompany.getFundingModel().getFundingModelCd());
+        response.setCompanyLegalInfo(EwsFactory.createEwsLegalInfo(mPspCompany.getLegalName(), mPspCompany.getLegalAddress()));
+
+        if (entitlement.getSubscriptionEndDate() != null) {
+            response.setSubscriptionEndDate(CalendarUtils.convertToCalendar(entitlement.getSubscriptionEndDate()));
+        }
+
+        // if AMO message has not arrived, these values will be null
+        if (entitlement.getNextChargeDate() != null && !entitlement.getEntitlementCode().isAssisted()) {
+            billingInfo.setSubscriptionNextBillDate(CalendarUtils.convertToCalendar(entitlement.getNextChargeDate()));
+            if (response.getSubscriptionEndDate() == null) {
+                response.setSubscriptionEndDate(billingInfo.getSubscriptionNextBillDate());
+            }
+        }
+
+        setBillingInfo(entitlement, billingInfo);
+
+        try {
+            CompanyBankAccount companyBankAccount = PspFactory.findCompanyBankAccount(mPspCompany);
+            if (companyBankAccount != null) {
+                response.setQbAccountName(companyBankAccount.getSourceBankAccountName());
+            }
+        } catch (Exception e) {
+            //do nothing
+        }
+
+        if (entitlementUnit.getLastValidationDate() == null ||
+                CalendarUtils.getDifferenceInHours(entitlementUnit.getLastValidationDate(), PSPDate.getPSPTime()) >= 1) {
+            //Update the lastValidationDate with pspDate
+            entitlementUnit.setLastValidationDate(PSPDate.getPSPTime());
+            Application.save(entitlementUnit);
+        }
+
+        if (mRequest.getPsid() != null && mRequest.getPsid().length() > 0) {
+            if (!mRequest.getPsid().equals(mPspCompany.getSourceCompanyId())) {
+                EwsMessage ewsMessage = EwsMessages.psidMismatch(mRequest.getEin(), mRequest.getSubscriptionNumber(), mRequest.getPsid(), mPspCompany.getSourceCompanyId());
+                logger.warn(ewsMessage);
+                CompanyEvent.createPSIDMismatchEvent(mPspCompany, mPSID, String.valueOf(ewsMessage.getCode()), ewsMessage.getMessage());
+            }
+        }
+
+        return response;
+    }
+
+    private void setBillingInfo(Entitlement entitlement, EwsSubscriptionBillingInfo billingInfo) {
+        boolean isNGPEnabled = FeatureFlags.get().booleanValue(FeatureFlags.Key.NGP_WALLET, false);
+        boolean readFromChash = FeatureFlags.get().booleanValue(FeatureFlags.Key.NGP_WALLET_READ_CASH, false);
+        if (isNGPEnabled){
+            if (readFromChash
+                    && isCashUpdated(entitlement)){
+                logger.info("Setting billing info from DB NGP=true Cache=true");
+                setBillingInfoFromEntitlement(entitlement, billingInfo);
+            } else {
+                logger.info("Setting billing info from BillingProfile NGP=true Cache="+readFromChash);
+                setBillingInfoFromBillingProfile(entitlement, billingInfo);
+                if (readFromChash){
+                    updateEntitlementBillingInfoCache(entitlement, billingInfo);
+                }
+            }
+        } else {
+            logger.info("Setting billing info from BillingProfile Cache=false NGP=false");
+            setBillingInfoFromEntitlement(entitlement, billingInfo);
+        }
+    }
+
+    private boolean isCashUpdated(Entitlement entitlement) {
+        return Objects.nonNull(entitlement.getCreditCardType())
+                && Objects.nonNull(entitlement.getCreditCardNumber())
+                && Objects.nonNull(entitlement.getCreditCardExpiration())
+                && Objects.nonNull(entitlement.getPaymentMethodType());
+    }
+
+    private void updateEntitlementBillingInfoCache(Entitlement entitlement, EwsSubscriptionBillingInfo billingInfo) {
+        entitlement.setCreditCardType(billingInfo.getCreditCardType());
+        entitlement.setCreditCardNumber(billingInfo.getCreditCardNumber());
+        entitlement.setCreditCardExpiration(billingInfo.getCreditCardExp());
+        if (entitlement.getPaymentMethodType() != null) {
+            entitlement.setPaymentMethodType(EntitlementPaymentMethodType.valueOf(billingInfo.getPaymentMethod().name()));
+        }
+        Application.save(entitlement);
+    }
+
+    private void setBillingInfoFromEntitlement(Entitlement entitlement, EwsSubscriptionBillingInfo billingInfo) {
+        billingInfo.setCreditCardType(entitlement.getCreditCardType());
+        billingInfo.setCreditCardNumber(entitlement.getCreditCardNumber());
+        billingInfo.setCreditCardExp(entitlement.getCreditCardExpiration());
+        if (entitlement.getPaymentMethodType() != null) {
+            billingInfo.setPaymentMethod(EwsPaymentMethod.valueOf(entitlement.getPaymentMethodType().name()));
+        }
+    }
+
+    private void setBillingInfoFromBillingProfile(Entitlement entitlement, EwsSubscriptionBillingInfo billingInfo) {
+        try {
+            PaymentProfileGateway paymentProfileGateway = PayrollApplicationBeanFactory.getBean(PaymentProfileGateway.class);
+            PaymentProfile paymentProfile = paymentProfileGateway.getPaymentProfileDetailsFromEOCLIC(
+                    entitlement.getEntitlementOfferingCode(),
+                    entitlement.getLicenseNumber(),
+                    entitlement.getCustomerId());
+            if (paymentProfile != null) {
+                PaymentMethod paymentMethod = paymentProfile.getPaymentMethod();
+                if (Objects.nonNull(paymentProfile.getPaymentMethodType())
+                        && Objects.nonNull(paymentMethod)) {
+                    if (paymentMethod.isEFTPaymentMethod()) {
+                        billingInfo.setPaymentMethod(EwsPaymentMethod.EFT);
+                    } else if (paymentMethod.isCCPaymentMethod()) {
+                        billingInfo.setPaymentMethod(EwsPaymentMethod.CC);
+                        CCPaymentMethod ccPaymentMethod = paymentMethod.getCCPaymentMethod();
+                        if (Objects.nonNull(paymentMethod.getCCPaymentMethod())) {
+                            EwsCreditCardType ewsCreditCardType
+                                    = EwsCreditCardType.mapPaymentProfileCardType(ccPaymentMethod.getCardBrand());
+                            if (Objects.nonNull(ewsCreditCardType)) {
+                                billingInfo.setCreditCardType(ewsCreditCardType.name());
+                            }
+                            String ccNo = ccPaymentMethod.getTokenizedAccountNumber();
+                            billingInfo.setCreditCardNumber(ccNo.length() > 4 ? ccNo.substring(ccNo.length()-4): ccNo);
+                            billingInfo.setCreditCardExp(ccPaymentMethod.getExpirationMonth()
+                                    + "/" + ccPaymentMethod.getExpirationYear());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e){
+            logger.error("Error in fetching the Billing details from Payments profile",e);
+        }
+    }
+
+    private EwsEinSubscriptionStatus determineSubscriptionStatus(EntitlementUnit pEntitlementUnit) {
+        EwsEinSubscriptionStatus ewsSubscriptionStatus = null;
+
+        Entitlement entitlement = pEntitlementUnit.getEntitlement();
+        switch (entitlement.getEntitlementState()) {
+            case Enabled:
+                switch (pEntitlementUnit.getEntitlementUnitStatus()) {
+                    case PendingActivation:
+                    case PendingReactivation:
+                    case Activated:
+                    case ErrorActivating:
+                    case ActivationHold:
+                        ewsSubscriptionStatus = EwsEinSubscriptionStatus.Activated;
+                        break;
+                    case PendingDeactivation:
+                    case Deactivated:
+                    case ErrorDeactivating:
+                    case DeactivationHold:
+                        ewsSubscriptionStatus = EwsEinSubscriptionStatus.EinNotSubscribed;
+                        break;
+                }
+                break;
+            case Disabled:
+                ewsSubscriptionStatus = EwsEinSubscriptionStatus.Deactivated;
+                break;
+        }
+
+        return ewsSubscriptionStatus;
+    }
+
+    private void updateCompanyQuickBooksInfo(Company company) {
+        if (mRequest.getQuickBooks() == null)
+            return;
+
+        try {
+            CompanyDTO companyDTO = PayrollServices.dtoFactory.create(company);
+
+            OFXAPPVERObject ofxappverObject = new OFXAPPVERObject(mRequest.getQuickBooks().getAppVersion());
+            companyDTO.getQuickBooksInfo().setApplicationVersion(ofxappverObject.getQBVersionStr());
+            companyDTO.getQuickBooksInfo().setTaxTableId(ofxappverObject.getTaxTableId());
+            companyDTO.getQuickBooksInfo().setQuickbooksSku(ofxappverObject.getFlavorId());
+
+            companyDTO.getQuickBooksInfo().setLicenseNumber(mRequest.getQuickBooks().getLicenseNumber());
+
+            ProcessResult pr = PayrollServices.companyManager.updateQBCompanyInfo(company.getSourceSystemCd(),
+                                                                            company.getSourceCompanyId(),
+                                                                            companyDTO);
+            if (!pr.isSuccess()) {
+                logger.warn("could not update company QuickBooks information during account validation -\n" + pr);
+            }
+
+            String requestRealmId = mRequest.getRealmID();
+            String requestFileGuid = mRequest.getQuickBooks().getFileID();
+            String realmIdGuidSyncFlag = FeatureFlags.get().stringValue(FeatureFlags.Key.REALMID_GUID_SYNC_FLAG,"DISABLE");
+
+            if ("READ".equals(realmIdGuidSyncFlag)) {
+                if (StringUtils.isEmpty(mPspCompany.getQuickbooksInfo().getFileId())) {
+                    logger.info("FileGUID for the company=" + company.getSourceCompanyId() + " is null or empty");
+                }
+
+                if (!StringUtils.equals(mPspCompany.getQuickbooksInfo().getFileId(),
+                        requestFileGuid)) {
+                    logger.info("Mismatch between company and validation request FileID, dbFileId=" +
+                            mPspCompany.getQuickbooksInfo().getFileId() + " and requestFileGuid=" + requestFileGuid);
+                }
+            }
+
+            addOrUpdateGrant(requestRealmId);
+
+        } catch (Throwable t) {
+            logger.warn("could not update company QuickBooks information during account validation", t);
+        }
+    }
+
+    private Entitlement syncEntitlementDataFromERS(Company pCompany, Entitlement pEntitlement) throws EwsException {
+        if (pEntitlement.hasPendingOrRecentMessages()) {
+            throw new EwsException(EwsMessages.ersConnectionError());
+        }
+
+        EntitlementDTO entitlementDTO = PayrollServices.dtoFactory.create(pEntitlement);
+
+        ERSListener ersListener = new ERSListener(pCompany, TransmissionType.QueryEntitlement);
+        IERSGateway ersGateway = ERSGatewayFactory.createInstance();
+
+        if(ersGateway == null) {
+            throw new EwsException(EwsMessages.ersConnectionError());
+        }
+
+        EntitlementInfoDTO entitlementInfoDTO;
+        try {
+            entitlementInfoDTO = ersGateway.getEntitlementInfo(pEntitlement.getLicenseNumber(),
+                                                               pEntitlement.getEntitlementOfferingCode(),
+                                                               false,
+                                                               ersListener);
+        } catch (Throwable t) {
+            logger.error("Error occurred while calling ERS", t);
+            throw new EwsException(EwsMessages.ersConnectionError());
+        }
+
+        entitlementDTO.setAssetItemNumber(pEntitlement.getEntitlementCode().getAssetItemNumber());
+        entitlementDTO.setEditionType(entitlementInfoDTO.getEditionType());
+        entitlementDTO.setNumberOfEmployeesType(entitlementInfoDTO.getNumberOfEmployeesType());
+
+        if (pEntitlement.hasPendingOrRecentMessages()) {
+            throw new EwsException(EwsMessages.ersConnectionError());
+        }
+
+        ProcessResult<Entitlement> processResult = PayrollServices.entitlementManager.updateEntitlement(entitlementDTO);
+        if (!processResult.isSuccess()) {
+            logger.warn(String.format("PSID:%s EIN:%s - ", mPSID, mEIN) + processResult.toString());
+        }
+
+        return processResult.getResult();
+    }
+
+    private EntitlementUnit syncEntitlementUnitDataFromAMO(Company pCompany, SpcfUniqueId pEntitlementUnitId, EntitlementUnitDTO pEntitlementUnitDTO) {
+        EntitlementUnit entitlementUnit = null;
+
+        try {
+            String license = pEntitlementUnitDTO.getLicenseNumber();
+            String eoc = pEntitlementUnitDTO.getEntitlementOfferingCode();
+
+            AMOListener amoListener = new AMOListener(pCompany, TransmissionType.QueryCustomerAsset);
+            IAMOWSGateway amowsGateway = AMOWSGatewayFactory.createInstance();
+            if (amowsGateway == null) {
+                return entitlementUnit;
+            }
+
+            GetCustomerAssetResponseTypeDTO getCustomerAssetResponseTypeDTO = amowsGateway.getCustomerAsset(license, eoc, amoListener);
+            if (getCustomerAssetResponseTypeDTO == null) {
+                return entitlementUnit;
+            }
+
+            getCustomerAssetResponseTypeDTO.copyAmoDtoToPspDto(pEntitlementUnitDTO);
+
+            ProcessResult<EntitlementUnit> processResult = PayrollServices.entitlementManager.syncEntitlementUnit(pEntitlementUnitId, pEntitlementUnitDTO);
+            if (!processResult.isSuccess()) {
+                logger.warn(String.format("PSID:%s - ", mPSID) + processResult.toString());
+            }
+
+            entitlementUnit = processResult.getResult();
+        } catch (Throwable t) {
+            logger.warn(t.getMessage(), t);
+        }
+
+        return entitlementUnit;
+    }
+
+    private ProcessResult addOrUpdateGrant(String requestRealmId) {
+        AddOrUpdateGrantProcessor addOrUpdateGrantProcessor = new AddOrUpdateGrantProcessor(mPspCompany, requestRealmId);
+        ProcessResult addOrUpdateGrantProcessResult = addOrUpdateGrantProcessor.execute();
+        if (!addOrUpdateGrantProcessResult.isSuccess()) {
+            logger.warn("could not Add or update company Grant information during account validation -\n" + addOrUpdateGrantProcessResult);
+        }
+        return addOrUpdateGrantProcessResult;
+    }
+}

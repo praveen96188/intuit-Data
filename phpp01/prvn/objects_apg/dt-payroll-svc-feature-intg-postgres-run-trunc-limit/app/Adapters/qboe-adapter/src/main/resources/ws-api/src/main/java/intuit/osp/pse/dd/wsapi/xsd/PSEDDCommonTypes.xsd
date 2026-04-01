@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" targetNamespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" elementFormDefault="qualified">
+	<xs:annotation>
+		<xs:documentation>Base types commonly used across schema files</xs:documentation>
+	</xs:annotation>
+	<!-- Source System Code Type -->
+	<xs:simpleType name="SourceSystemType">
+		<xs:annotation>
+			<xs:documentation>Enum types for clients that use PSE DD</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="QBOE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--ID Type -->
+	<xs:simpleType name="IDType">
+		<xs:annotation>
+			<xs:documentation>Used for ID fields  min= 1 max 50</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--E-Mail Type -->
+	<xs:simpleType name="EmailType">
+		<xs:annotation>
+			<xs:documentation>Used for an email address.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="100"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--Amount Type -->
+	<xs:simpleType name="AmountType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="15"/>
+			<xs:fractionDigits value="2"/>
+			<xs:minInclusive value="0.00"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IntType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:int">
+			<xs:totalDigits value="38"/>
+			<xs:fractionDigits value="0"/>
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--Frequency Type -->
+	<xs:simpleType name="FrequencyType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="12"/>
+			<xs:enumeration value="24"/>
+			<xs:enumeration value="26"/>
+			<xs:enumeration value="52"/>
+			<xs:enumeration value="260"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FEINType">
+		<xs:restriction base="xs:string">
+			<xs:length value="9"/>
+			<xs:pattern value="[0-9]{9}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FundingModelType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Phone Number Type -->
+	<xs:simpleType name="PhoneType">
+		<xs:annotation>
+			<xs:documentation>Used for a phone no. - 10 digits</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="80"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SSNType">
+		<xs:annotation>
+			<xs:documentation>Type for Social Security No. - 9 digits</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{9}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TxStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CR"/>
+			<xs:enumeration value="EX"/>
+			<xs:enumeration value="CLD"/>
+			<xs:enumeration value="RTN"/>
+			<xs:enumeration value="CP"/>
+			<xs:enumeration value="VOID"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TxType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EEDDCR"/>
+			<xs:enumeration value="EEDDRVDB"/>
+			<xs:enumeration value="EEESCR"/>
+			<xs:enumeration value="ER2PRFCR"/>
+			<xs:enumeration value="ERDDDB"/>
+			<xs:enumeration value="ERDDREDB"/>
+			<xs:enumeration value="ERDDRFCR"/>
+			<xs:enumeration value="ERDDRJRFCR"/>
+			<xs:enumeration value="ERDDRTRFCR"/>
+			<xs:enumeration value="ERDDRVRFCR"/>
+			<xs:enumeration value="ERESCR"/>
+			<xs:enumeration value="ERFERTDB"/>
+			<xs:enumeration value="ERFERTREDB"/>
+			<xs:enumeration value="ERFERTRFCR"/>
+			<xs:enumeration value="ERFERVDB"/>
+			<xs:enumeration value="ERFERVREDB"/>
+			<xs:enumeration value="ERFERVRFCR"/>
+			<xs:enumeration value="ERFUNDS"/>
+			<xs:enumeration value="ERPREFUND"/>
+			<xs:enumeration value="ERVERDB"/>
+			<xs:enumeration value="ERWO"/>
+			<xs:enumeration value="INT5DRTXFR"/>
+			<xs:enumeration value="INTEERTXFR"/>
+			<xs:enumeration value="INTERFERTX"/>
+			<xs:enumeration value="INTERFERVX"/>
+			<xs:enumeration value="INTERVRRTX"/>
+			<xs:enumeration value="WODEBTRCVR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmployeeBankAccountStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTV"/>
+			<xs:enumeration value="INACTV"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FirstNameType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="80"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LastNameType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="80"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MiddleNameType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="80"/>
+			<xs:whiteSpace value="collapse"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CompanyStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTV"/>
+			<xs:enumeration value="INACTV"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DDCompanyStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PNDACTVN"/>
+			<xs:enumeration value="ACTV"/>
+			<xs:enumeration value="PNDTERMN"/>
+			<xs:enumeration value="TERMD"/>
+			<xs:enumeration value="HOLD"/>
+			<xs:enumeration value="SSPND"/>
+			<xs:enumeration value="CNCLD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TxSettlementType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACH"/>
+			<xs:enumeration value="WIRE"/>
+			<xs:enumeration value="CHECK"/>
+			<xs:enumeration value="CASH"/>
+			<xs:enumeration value="OTHER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CompanyBankAccountStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTV"/>
+			<xs:enumeration value="INACTV"/>
+			<xs:enumeration value="PNDVER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NonACHTxSettlementType">
+		<xs:restriction base="ns:TxSettlementType">
+			<xs:enumeration value="WIRE"/>
+			<xs:enumeration value="CHECK"/>
+			<xs:enumeration value="CASH"/>
+			<xs:enumeration value="OTHER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BankReturnType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="R"/>
+			<xs:enumeration value="C"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ReturnStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CR"/>
+			<xs:enumeration value="ERR"/>
+			<xs:enumeration value="OPEN"/>
+			<xs:enumeration value="RSLVD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FeeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="REVFEEAMT"/>
+			<xs:enumeration value="NSFFEEAMT"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EETxType">
+		<xs:restriction base="ns:TxType">
+			<xs:enumeration value="EEDDCR"/>
+			<xs:enumeration value="EEDDRVDB"/>
+			<xs:enumeration value="EEESCR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IntTxType">
+		<xs:restriction base="ns:TxType">
+			<xs:enumeration value="INT5DRTXFR"/>
+			<xs:enumeration value="INTEERTXFR"/>
+			<xs:enumeration value="INTERFERTX"/>
+			<xs:enumeration value="INTERFERVX"/>
+			<xs:enumeration value="INTERVRRTX"/>
+            <xs:enumeration value="ERWO" />
+            <xs:enumeration value="WODEBTRCVR"/>
+        </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ERTxType">
+		<xs:restriction base="ns:TxType">
+			<xs:enumeration value="ERDDDB"/>
+			<xs:enumeration value="ERDDREDB"/>
+			<xs:enumeration value="ERDDRFCR"/>
+			<xs:enumeration value="ERDDRJRFCR"/>
+			<xs:enumeration value="ERDDRVRFCR"/>
+			<xs:enumeration value="ERDDRTRFCR"/>
+			<xs:enumeration value="ERFUNDS"/>
+			<xs:enumeration value="ERVERDB"/>
+			<xs:enumeration value="ERWO"/>
+			<xs:enumeration value="ERFERTDB"/>
+			<xs:enumeration value="ERPREFUND"/>
+			<xs:enumeration value="ERESCR"/>
+			<xs:enumeration value="ERFERVDB"/>
+			<xs:enumeration value="ERFERTRFCR"/>
+			<xs:enumeration value="ERFERVRFCR"/>
+			<xs:enumeration value="ER2PRFCR"/>
+			<xs:enumeration value="ERFERTREDB"/>
+			<xs:enumeration value="ERFERVREDB"/>
+			<xs:enumeration value="INTERFERTX"/>
+			<xs:enumeration value="INTERFERVX"/>
+			<xs:enumeration value="INTERVRRTX"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LedgerAccountType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DDFR"/>
+			<xs:enumeration value="DDFL"/>
+			<xs:enumeration value="DDCC"/>
+			<xs:enumeration value="DDCL"/>
+			<xs:enumeration value="ERRR"/>
+			<xs:enumeration value="ERRC"/>
+			<xs:enumeration value="EERC"/>
+			<xs:enumeration value="EERL"/>
+			<xs:enumeration value="FR"/>
+			<xs:enumeration value="FCBS"/>
+			<xs:enumeration value="FCR"/>
+			<xs:enumeration value="FI"/>
+			<xs:enumeration value="BD"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="FieldNameType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CompanyDDStatus"/>
+			<xs:enumeration value="CompanyLimitAmt"/>
+			<xs:enumeration value="EmployeeLimitAmt"/>
+			<xs:enumeration value="FundingModelCd"/>
+			<xs:enumeration value="NotificationEmailAddress"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ServiceUnitType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PerPayroll"/>
+			<xs:enumeration value="PerPaycheck"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="OfferDiscountType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AmountOff"/>
+			<xs:enumeration value="PercentOff"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="OfferBeginEvent">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SignupEvent"/>
+			<xs:enumeration value="ActivationEvent"/>
+			<xs:enumeration value="FirstUseEvent"/>
+			<xs:enumeration value="RedemptionEvent"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="OfferEndEvent">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DateEvent"/>
+			<xs:enumeration value="DurationEvent"/>
+			<xs:enumeration value="PayrollUsageEvent"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

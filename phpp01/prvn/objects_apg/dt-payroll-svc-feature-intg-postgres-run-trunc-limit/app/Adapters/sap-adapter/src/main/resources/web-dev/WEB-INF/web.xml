@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+    <!-- Http Flex Session attribute and binding listener support -->
+    <display-name>PSP SAP Servlets</display-name>
+    <description>LCDS-RPC</description>
+
+    <listener>
+        <listener-class>flex.messaging.HttpFlexSession</listener-class>
+    </listener>
+
+    <!-- MessageBroker Servlet -->
+    <servlet>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+        <servlet-class>flex.messaging.MessageBrokerServlet</servlet-class>
+        <init-param>
+            <param-name>services.configuration.file</param-name>
+            <param-value>/WEB-INF/flex/services-config-dev.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>flex.write.path</param-name>
+            <param-value>/WEB-INF/flex</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ViewFullOFXServlet</servlet-name>
+        <display-name>View Full OFX.</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.viewofx.ViewFullOFXServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ViewFullOFXServlet</servlet-name>
+        <url-pattern>/ViewFullOFX</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ViewRAFEnrollmentsServlet</servlet-name>
+        <display-name>View RAF Enrollments.</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.viewraf.ViewRAFEnrollmentsServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ViewRAFEnrollmentsServlet</servlet-name>
+        <url-pattern>/ViewRAFEnrollments</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PrintServlet</servlet-name>
+        <display-name>Helper for printing.</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.printing.PrintServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PrintServlet</servlet-name>
+        <url-pattern>/Print</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SSOServlet</servlet-name>
+        <display-name>SSO SAP Servlet</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.authentication.SSOServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SSOServlet</servlet-name>
+        <url-pattern>/SAPSSO</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SSORedirectServlet</servlet-name>
+        <display-name>SSO SAP Redirect Servlet</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.authentication.SiebelRedirectServlet</servlet-class>
+        <init-param>
+            <param-name>target.url</param-name>
+            <param-value>/SAP/authenticate</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SSORedirectServlet</servlet-name>
+        <url-pattern>/SAPSSORedirect</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>RedirectServlet</servlet-name>
+        <display-name>SAP Redirect Servlet</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.authentication.SiebelRedirectServlet</servlet-class>
+        <init-param>
+            <param-name>target.url</param-name>
+            <param-value>/SAP/SAP.html</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RedirectServlet</servlet-name>
+        <url-pattern>/SAPRedirect</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UploadLedgerOperationsJobServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.upload.UploadLedgerOperationJob</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UploadLedgerOperationsJobServlet</servlet-name>
+        <url-pattern>/UploadLedgerOperationsJob</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadRTBSampleFileServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.download.DownloadRTBSampleFile</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DownloadRTBSampleFileServlet</servlet-name>
+        <url-pattern>/DownloadRTBSampleFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadTextContentServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.download.DownloadTextContent</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DownloadTextContentServlet</servlet-name>
+        <url-pattern>/DownloadTextContent</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadLedgerOperationJobServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.download.DownloadLedgerOperationJob</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DownloadLedgerOperationJobServlet</servlet-name>
+        <url-pattern>/DownloadLedgerOperationsJob</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadSUICreditsJobServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.download.DownloadSUICreditsJob</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DownloadSUICreditsJobServlet</servlet-name>
+        <url-pattern>/DownloadSUICreditsJob</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TaxCreditsFormServlet</servlet-name>
+        <display-name>Retrieves Tax Credit WOTC 9061 Forms</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.printing.PrintTaxCreditsServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>TaxCreditsFormServlet</servlet-name>
+        <url-pattern>/TaxCreditsForms</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InitSpcfServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.web.InitSpcfServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InitSpcfServlet</servlet-name>
+        <url-pattern>/InitSpcfServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MessageBrokerServlet</servlet-name>
+        <url-pattern>/messagebroker/*</url-pattern>
+    </servlet-mapping>
+
+	<servlet>
+        <servlet-name>SAPSSOServlet</servlet-name>
+        <display-name>SAPSSO SAP Servlet</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.authentication.SAPSSOServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SAPSSOServlet</servlet-name>
+        <url-pattern>/authenticate</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>SSOLogoutServlet</servlet-name>
+        <display-name>SAPSSO Logout Servlet</display-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.authentication.SAPSSOLogoutServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SSOLogoutServlet</servlet-name>
+        <url-pattern>/ssoLogout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadReportServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.sap.download.DownloadReportFile</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DownloadReportServlet</servlet-name>
+        <url-pattern>/DownloadReport</url-pattern>
+    </servlet-mapping>
+
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+    </welcome-file-list>
+
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+
+    <session-config>
+        <session-timeout>1</session-timeout>
+    </session-config>
+
+</web-app>

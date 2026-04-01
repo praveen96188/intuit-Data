@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Min (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name:integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAssetABCSImpl\IntuitCustomerAssetABM.xsd
+
+Domain: Asset
+Source of Truth, Perforce Location: 
+wcgbosp4.bos.intuit.com_1666\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAssetABCSImpl
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====          Intuit ABO Customer Account ABM Schema Module           ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xacml-context="urn:oasis:names:tc:xacml:2.0:context:schema:cd:04" xmlns:xacml="urn:oasis:names:tc:xacml:2.0:policy:schema:cd:04" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/iep/CustomerAsset/IntuitCustomerAssetABO/V1" xmlns:ent="http://www.intuit.com/iep/entitlement/EntitlementService/xsd" targetNamespace="http://www.intuit.com/iep/CustomerAsset/IntuitCustomerAssetABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.01">
+	<!-- ====================================================================== -->
+	<!-- ==============  Imports and Includes   =============================== -->
+	<!-- ====================================================================== -->
+	<xsd:include schemaLocation="IntuitCustomerAssetABO.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/entitlement/EntitlementService/xsd" schemaLocation="EntitlementServiceBase.xsd"/>
+	<!-- ====================================================================== -->
+	<xsd:annotation>
+		<xsd:documentation>
+			<svcdoc:ABO>
+				<svcdoc:Description>IntuitCustomerAsset ABM identifies all the service operations that are supported for the CustomerAsset ABO</svcdoc:Description>
+				<svcdoc:Type>ABM</svcdoc:Type>
+				<svcdoc:Industry/>
+				<svcdoc:ABOName>IntuitCustomerAssetABO</svcdoc:ABOName>
+			</svcdoc:ABO>
+		</xsd:documentation>
+	</xsd:annotation>
+	<!-- ====================================================================== -->
+	<xsd:complexType name="IntuitCustomerAssetABMType">
+		<xsd:complexContent>
+			<xsd:extension base="IntuitCustomerAssetABOType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ==================    GetCustomerAsset Service     =================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="GetCustomerAssetABM" type="GetCustomerAssetDataAreaType"/>
+	<xsd:complexType name="GetCustomerAssetDataAreaType">
+		<xsd:sequence>
+			<xsd:element name="TransactionInfo" type="TransactionInfoType">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Info</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="GetCustomerAsset"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="GetCustomerAssetType">
+		<xsd:complexContent>
+			<xsd:extension base="CustomerAssetRequestType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="GetCustomerAsset" type="GetCustomerAssetType"/>
+	<!-- ====================================================================== -->
+	<!-- =============      GetCustomerAsset Response Service     ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="GetCustomerAssetResponseABM" type="GetCustomerAssetResponseDataAreaType"/>
+	<xsd:complexType name="GetCustomerAssetResponseDataAreaType">
+		<xsd:sequence>
+			<xsd:element ref="GetCustomerAssetResponse"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="GetCustomerAssetResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="CustomerAssetResponseType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="GetCustomerAssetResponse" type="GetCustomerAssetResponseType"/>
+	<!-- ====================================================================== -->
+	<!-- =============     CustomerAsset EventService     ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="SyncCustomerAssetABM" type="SyncCustomerAssetDataAreaType"/>
+	<xsd:complexType name="SyncCustomerAssetDataAreaType">
+		<xsd:sequence>
+			<xsd:element name="TransactionInfo" type="TransactionInfoType"/>
+			<xsd:element ref="SyncCustomerAsset"/>
+			<xsd:element name="Event">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="EventReason" type="AssetChangeReasonType"/>
+						<xsd:element name="PaymentFailure" minOccurs="0">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="FailureType" type="xsd:string">
+										<xsd:annotation>
+											<xsd:documentation>indicates the PaymentFailureType. Possible values are SOFT and FINAL</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SyncCustomerAssetType">
+		<xsd:complexContent>
+			<xsd:extension base="CustomerAssetType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="SyncCustomerAsset" type="SyncCustomerAssetType"/>
+</xsd:schema>

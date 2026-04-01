@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 	xmlns="*"
+             xmlns:mx="http://www.adobe.com/2006/mxml"
+             xmlns:pspui="psp.sap.view.*"
+             xmlns:controls="psp.sap.view.controls.*"
+             backgroundColor="white"
+             width="100%"
+             height="100%"
+             show="fraudIndicatorCombo.setFocus(); focusManager.showFocus();"
+             horizontalScrollPolicy="off">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.model.FraudEvent;
+        import psp.sap.model.FraudIndicatorEnum;
+        import psp.sap.viewmodel.FraudSearchViewModel;
+
+        private var mViewModel:FraudSearchViewModel;
+
+        [Bindable]
+        public function get viewModel():FraudSearchViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:FraudSearchViewModel):void {
+            if (mViewModel != null) {
+                mViewModel.payrollAmountValidator.listener = null;
+            }
+
+            mViewModel = value;
+
+            if (mViewModel != null) {
+                mViewModel.payrollAmountValidator.listener = payrollAmountInput;
+            }
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return dateFormatter.format(item.eventTimeStamp);
+        }
+
+        private function cidOverEin(item:Object, dgc:DataGridColumn):String {
+            return item.companyId + "\n" + item.companyEin;
+        }
+
+        private function formatCurrency(item:Object, dgc:DataGridColumn):String {
+            if (item.payrollAmount != SAP.instance.configuration.specialNumberForDefault) {
+                return viewModel.currencyFormatter.format(item.payrollAmount);
+            }
+            return "N/A";
+        }
+
+        public function goToTarget(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var fraudEvent:FraudEvent = link.data as FraudEvent;
+            viewModel.selectedIndex = viewModel.searchResults.getItemIndex(fraudEvent);
+
+            if (link.data.fraudIndicator == "SignUp") {
+                viewModel.goToCompanyInfo(link.data as FraudEvent);
+            } else if (link.data.fraudIndicator == "Payroll") {
+                viewModel.goToFraudCompany(link.data as FraudEvent);
+            }
+        }
+
+        public function confirmRemoveFraudFlag(event:ActionLinkEvent):void
+        {
+            viewModel.selectedFraudEvent = event.data as FraudEvent;
+
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var msgString:String = "Are you sure you want to remove the fraud flag?";
+            Alert.show(msgString,
+                    "Remove Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function confirmVerifyHandler(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK)
+                        {
+                            viewModel.removeFraudFlag(link.data.sourceSystemCd,
+                                    link.data.companyId);
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        public function showToolTip(item:Object):String {
+            if (String(item.details).indexOf("...") > 0) {
+                return "See company notes for more information.";
+            }
+            return "";
+        }
+
+        public function resizeDataGrid():void
+        {
+            if (searchResults != null) {
+                searchResults.height = parent.parent.parent.parent.height - mainSearchBox.height - 130;
+            }
+        }
+		]]>
+	</mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{searchResults}" isLoading="{viewModel.isDataLoading}" />
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateTimeFormatDateOverTime}"/>
+
+    <mx:VBox styleName="standardTabbedBody" height="100%" width="100%" verticalGap="0">
+
+        <mx:HBox horizontalGap="0" styleName="padderBox">
+            <mx:Label text="Fraud" styleName="heading"/>
+        </mx:HBox>
+        <pspui:SaveStatusMessage id="saveMessage" paddingTop="10"/>
+
+        <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="825" id="mainSearchBox"
+                            openOnStartup="true"
+                            filterStringFunction="{viewModel.getFilterString}"
+                            transitionEffectEnd="resizeDataGrid();">
+            <mx:VBox>
+                <mx:HBox styleName="padderBox" horizontalGap="10" verticalAlign="bottom">
+
+                    <mx:VBox verticalGap="10">
+                        <mx:HBox horizontalGap="5">
+                            <mx:Label text="Fraud Indicator" fontWeight="bold"/>
+                            <mx:ComboBox
+                                    id="fraudIndicatorCombo"
+                                    dataProvider="{viewModel.fraudIndicators}"
+                                    rowCount="{viewModel.fraudIndicators.length}"/>
+                        </mx:HBox>
+
+                        <mx:FormItem label="EIN or CID" labelStyleName="boldText" defaultButton="{searchButton}">
+                            <mx:TextInput id="einInput" width="157"/>
+                        </mx:FormItem>
+                    </mx:VBox>
+                    <mx:VBox>
+                        <mx:HBox
+                                id="datesAmountBox"
+                                height="100%"
+                                horizontalGap="10"
+                                verticalAlign="bottom"
+                                visible="{fraudIndicatorCombo.selectedItem == FraudIndicatorEnum.PAYROLL || fraudIndicatorCombo.selectedItem == FraudIndicatorEnum.ALL}"
+                                includeInLayout="{fraudIndicatorCombo.selectedItem == FraudIndicatorEnum.PAYROLL || fraudIndicatorCombo.selectedItem == FraudIndicatorEnum.ALL}"
+                                >
+                            <pspui:DateSelectionView
+                                    id="dateSelection"
+                                    viewModel="{viewModel.dateSelectionViewModel}"
+                                    displayDateRangeCombo="{false}"
+                                    beginDateLabel="Payroll Start Date"
+                                    endDateLabel="Payroll End Date"
+                                    direction="vertical"
+                                    beginDateLabelWidth="125"
+                                    endDateLabelWidth="125"
+                                    verticalGap="10"/>
+                            <mx:HBox
+                                    horizontalGap="5"
+                                    horizontalAlign="left"
+                                    width="100%">
+                                <mx:Label text="Payroll Amount" fontWeight="bold"/>
+                                <mx:TextInput id="payrollAmountInput" width="103"/>
+                            </mx:HBox>
+                        </mx:HBox>
+                    </mx:VBox>
+                </mx:HBox>
+                <mx:HBox>
+                    <mx:Label text="Triggers" fontWeight="bold"/>
+                    <controls:CheckBoxList id="eventTypes"
+                                           dataProvider="{SAP.instance.lookupService.fraudEventTypes}"
+                                           height="100"
+                                           width="510"
+                                           labelField="eventTypeName"/>
+                    <mx:Button
+                            id="searchButton"
+                            label="Find"
+                            enabled="{viewModel.canSave}"
+                            click="viewModel.searchFraud(); mainSearchBox.collapse();"
+                            width="125"/>
+                </mx:HBox>
+            </mx:VBox>
+        </controls:FilterBox>
+
+        <mx:Spacer height="10"/>
+
+        <mx:VBox width="100%"
+                 paddingRight="10"
+                 horizontalAlign="right"
+                 verticalGap="0"
+                 visible="{!viewModel.isDataLoading}"
+                 includeInLayout="{!viewModel.isDataLoading}">
+
+            <controls:SAPDataGrid
+                    id="searchResults"
+                    width="100%"
+                    dataProvider="{viewModel.searchResults}"
+                    selectable="false"
+                    variableRowHeight="true">
+                <controls:columns>
+                    <mx:DataGridColumn
+                            headerText="Fraud Indicator"
+                            minWidth="115"
+                            dataField="fraudIndicator">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox width="100%"
+                                         horizontalAlign="left"
+                                         verticalGap="0"
+                                         verticalScrollPolicy="off"
+                                         horizontalScrollPolicy="off">
+                                    <mx:Script>
+											<![CDATA[
+                                        import psp.sap.model.FraudEvent;
+                                        import psp.sap.model.FraudIndicatorEnum;
+
+											]]>
+										</mx:Script>
+                                    <mx:Text text="{FraudIndicatorEnum.getLabelFromCode(FraudEvent(data).fraudIndicator)}" paddingLeft="5" fontWeight="bold"/>
+                                    <pspui:ActionLink
+                                            visible="{FraudEvent(data).fraudFlagSet}"
+                                            includeInLayout="{FraudEvent(data).fraudFlagSet}"
+                                            label="Remove Flag"
+                                            actionClick="outerDocument.confirmRemoveFraudFlag"
+                                            data="{data}"
+                                            fontSize="10"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                    <mx:DataGridColumn
+                            minWidth="140"
+                            dataField="companyName">
+                        <mx:headerRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        verticalGap="0"
+                                        horizontalAlign="left"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <mx:Label text="Company Name" styleName="padderLeftRight"/>
+                                    <mx:Label
+                                            text="And EE name if EE return"
+                                            fontWeight="normal"
+                                            fontSize="9"
+                                            styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </mx:headerRenderer>
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        width="100%"
+                                        horizontalAlign="left"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <mx:Script>
+											<![CDATA[
+                                        import psp.sap.model.FraudEvent;
+
+											]]>
+										</mx:Script>
+                                    <pspui:ActionLink
+                                            label="{FraudEvent(data).companyName}"
+                                            actionClick="{outerDocument.goToTarget}"
+                                            data="{data}"/>
+                                    <mx:HBox visible="{FraudEvent(data).employeeName != null}" includeInLayout="{FraudEvent(data).employeeName != null}">
+                                        <mx:Label text="EE:" styleName="padderLeftRight"/>
+                                        <mx:Text text="{FraudEvent(data).employeeName}" styleName="padderLeftRight"/>
+                                    </mx:HBox>
+                                </mx:VBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                    <mx:DataGridColumn
+                            minWidth="110"
+                            headerText="Company ID{String('\n')}EIN"
+                            labelFunction="cidOverEin"
+                            fontWeight="bold"
+                            dataField="companyId"/>
+                    <mx:DataGridColumn
+                            headerText="Payroll Amount"
+                            minWidth="110"
+                            textAlign="right"
+                            labelFunction="formatCurrency"
+                            fontWeight="bold"
+                            dataField="payrollAmount"/>
+                    <mx:DataGridColumn
+                            headerText="Date / Time"
+                            minWidth="90"
+                            textAlign="center"
+                            labelFunction="formatDate"
+                            fontWeight="bold"
+                            dataField="eventTimeStamp"/>
+                    <mx:DataGridColumn
+                            headerText="Trigger"
+                            dataField="details"
+                            textAlign="left"
+                            wordWrap="true"
+                            minWidth="250"
+                            sortable="false"
+                            dataTipFunction="showToolTip"
+                            showDataTips="true"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+        </mx:VBox>
+    </mx:VBox>
+
+
+    <!-- ein bindings -->
+    <mx:Binding source="einInput.text" destination="viewModel.ein" />
+    <mx:Binding source="viewModel.ein" destination="einInput.text" />
+
+    <!-- payroll amount bindings -->
+    <mx:Binding source="payrollAmountInput.text" destination="viewModel.payrollAmount" />
+    <mx:Binding source="viewModel.payrollAmount" destination="payrollAmountInput.text" />
+
+    <!-- fraud indicator bindings -->
+    <mx:Binding source="fraudIndicatorCombo.selectedItem as FraudIndicatorEnum" destination="viewModel.fraudIndicator" />
+    <mx:Binding source="viewModel.fraudIndicator" destination="fraudIndicatorCombo.selectedItem"/>
+
+    <!-- error message -->
+    <mx:Binding source="viewModel.saveMsg" destination="saveMessage.text" />
+    <mx:Binding source="viewModel.saveFaulted" destination="saveMessage.isError" />
+
+    <mx:Binding source="viewModel.selectedEventTypes.source" destination="eventTypes.selectedItems"/>
+    <mx:Binding source="eventTypes.selectedItems" destination="viewModel.selectedEventTypes.source"/>
+
+
+</mx:VBox>

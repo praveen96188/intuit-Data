@@ -1,0 +1,42 @@
+23:52:53 SQL> 
+23:52:53 SQL> DECLARE
+23:52:53   2  	  RECORD_COUNT	    INTEGER := 0;
+23:52:53   3  	  MAX_RECORDS	    INTEGER := 285200;
+23:52:53   4  	  PROCESSED_RECORDS INTEGER := 0;
+23:52:53   5  	  MAX_FETCH_RECORDS INTEGER := 285100;
+23:52:53   6  BEGIN
+23:52:53   7  	  SELECT count(*) INTO RECORD_COUNT FROM PSPADM.PSP_COMPANY pc
+23:52:53   8  	  where pc.COMPANY_SEQ in (select company_seq
+23:52:53   9  				   from PSPADM.PSP_COMPANY pc
+23:52:53  10  					    join MCHOUBEY.tmp_custid on pc.COMPANY_SEQ = tmp_custid.entity_Id
+23:52:53  11  				   where not regexp_like(pc.PUBLISH_STATUS, '...3............'));
+23:52:53  12  
+23:52:53  13  	  DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+23:52:53  14  
+23:52:53  15  	  WHILE RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS
+23:52:53  16  	      LOOP
+23:52:53  17  		  UPDATE PSPADM.PSP_COMPANY
+23:52:53  18  		  SET PUBLISH_STATUS = (substr(PUBLISH_STATUS,1,3) || '3' || substr(PUBLISH_STATUS, 5))
+23:52:53  19  		  WHERE company_seq IN (select COMPANY_SEQ
+23:52:53  20  					from (select company_seq
+23:52:53  21  					      from PSPADM.PSP_COMPANY pc
+23:52:53  22  						       join MCHOUBEY.tmp_custid on pc.COMPANY_SEQ = tmp_custid.entity_Id
+23:52:53  23  					      where not regexp_like(pc.PUBLISH_STATUS, '...3............'))
+23:52:53  24  					where ROWNUM < MAX_FETCH_RECORDS);
+23:52:53  25  		  COMMIT;
+23:52:53  26  		  PROCESSED_RECORDS := PROCESSED_RECORDS + MAX_FETCH_RECORDS;
+23:52:53  27  		  DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+23:52:53  28  	      END LOOP;
+23:52:53  29  EXCEPTION
+23:52:53  30  	  WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error updating the record');
+23:52:53  31  END;
+23:52:53  32  /
+Found 285063 Records                                                            
+Processed 285100 records successfully                                           
+Processed 570200 records successfully                                           
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:01:46.99
+23:54:40 SQL> 
+23:54:40 SQL> spool off

@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         paddingLeft="5"
+         paddingRight="5"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.DataGridEvent;
+        import mx.managers.PopUpManager;
+        import mx.utils.StringUtil;
+        import mx.skins.ProgrammaticSkin;
+
+        import psp.sap.model.DataSyncDetailPayrollTransaction;
+
+        import psp.sap.model.DataSyncSelectedItem;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.DataSyncSearchViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+
+        private var mViewModel:DataSyncSearchViewModel;
+        private var mTempViewModel:DataSyncSearchViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():DataSyncSearchViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:DataSyncSearchViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                if (mViewModel != null) {
+                    mViewModel.actionSelectionRequiredValidator.listener = actionType;
+                    mViewModel.addEventListener(ViewModelEvent.MODEL_DATA_SETUP_COMPLETED, function (e:Event):void {
+                        updateTabVisibility();
+                        revertSelectedItemsSort();
+                    }, false, 0, false);
+                }
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function updateTabVisibility():void {
+            if (foundItemsTabNav != null) {
+                for (var i:int = 0; i < foundItemsTabNav.numChildren; i++) {
+                    var tabShouldBeVisible:Boolean = shouldTabBeVisible(i);
+                    if (!tabShouldBeVisible && foundItemsTabNav.selectedIndex == i) {
+                        if (foundItemsTabNav.numChildren > i + 1) {
+                            foundItemsTabNav.selectedIndex = i + 1;
+                        } else {
+                            for (var j:int = 0; j < foundItemsTabNav.numChildren; j++) {
+                                if (shouldTabBeVisible(j)) {
+                                    foundItemsTabNav.selectedIndex = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    foundItemsTabNav.getTabAt(i).visible = tabShouldBeVisible;
+                    foundItemsTabNav.getTabAt(i).includeInLayout = tabShouldBeVisible;
+                    foundItemsTabNav.getTabAt(i).enabled = tabShouldBeVisible;
+                }
+            }
+        }
+
+        private function shouldTabBeVisible(tabIndex:int):Boolean {
+            switch (tabIndex) {
+                case 0:
+                    return viewModel.paycheckSearchResults.totalRecords > 0;
+                case 1:
+                    return viewModel.payrollTransactionSearchResults.totalRecords > 0;
+                case 2:
+                    return viewModel.employeeSearchResults.totalRecords > 0;
+                case 3:
+                    return viewModel.payrollItemSearchResults.totalRecords > 0;
+            }
+            return false;
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+
+        public function doRemoveSelectedItem(selectedItem:DataSyncSelectedItem):void {
+            viewModel.removeSelectedItemFromSelection(selectedItem);
+        }
+
+
+        public static function formatY_N(item:Object, column:DataGridColumn):String {
+            if (item[column.dataField] == null)
+                return 'N';
+            return (Boolean(item[column.dataField])) ? 'Y' : 'N';
+        }
+
+        private function onSelectedItemsHeaderRelease(event:DataGridEvent):void {
+            if (event.columnIndex == 0) {
+                revertSelectedItemsSort();
+                event.preventDefault();
+            }
+        }
+
+        private function revertSelectedItemsSort():void {
+            viewModel.selectedItems.sort = null;
+            viewModel.selectedItems.refresh();
+            selectedItems.setStyle("sortArrowSkin", ProgrammaticSkin);
+            selectedItems.clearStyle("sortArrowSkin");
+
+        }
+
+        //noinspection JSUnusedLocalSymbols
+        private static function formatEmployeeId(item:Object, dgc:DataGridColumn):String {
+            var detail:DataSyncDetailPayrollTransaction = DataSyncDetailPayrollTransaction(item);
+            if (detail.employeeName != null) {
+                return detail.employeeId;
+            } else {
+                return "";
+            }
+        }
+
+        private var popup:CaseIdSave;
+
+        private function processSave():void {
+            openPopUpWindow();
+        }
+
+        // method to open the PopUp Window on creationComplete
+        private function openPopUpWindow():void {
+            // open the PopUp Window as a modal popup window
+            // and store it in a variable for later use
+            popup = PopUpManager.createPopUp(this, CaseIdSave, true) as CaseIdSave;
+            popup.heading.label="Please provide Case Id";
+            popup.addEventListener("close", removeMe);
+            popup.cancel.addEventListener("click", removeMe);
+            popup.save.addEventListener("click", submitData);
+            PopUpManager.centerPopUp(popup);
+
+        }
+
+        private function removeMe(event:Event):void {
+            PopUpManager.removePopUp(popup);
+        }
+
+        private function submitData(event:Event):void {
+            if (popup.caseIdInput.text == null || StringUtil.trim(popup.caseIdInput.text) == "") {
+                popup.caseIdMandatoryItem.visible = true;
+            } else {
+                viewModel.caseId = popup.caseIdInput.text;
+                PopUpManager.removePopUp(popup);
+                viewModel.save();
+            }
+        }
+
+        ]]>
+
+    </mx:Script>
+    <pspui:SAPDataSyncSearchFilterView viewModel="{viewModel.filterViewModel}" id="filterView"
+                                       width="750"/>
+    <mx:HBox
+		width="100%"
+		horizontalAlign="center"
+		visible="{!viewModel.isDataLoading &amp;&amp; viewModel.searchButtonClicked &amp;&amp; !viewModel.anyResults}"
+		includeInLayout="{!viewModel.isDataLoading &amp;&amp; viewModel.searchButtonClicked &amp;&amp; !viewModel.anyResults}"
+		verticalGap="0"
+		height="30"
+		verticalAlign="middle"
+		backgroundColor="#F4F4F4"
+		borderStyle="solid"
+		cornerRadius="5"
+		borderColor="black"
+		color="#000000"
+		fontWeight="normal"
+		dropShadowEnabled="false">
+		<mx:Text id="noDataFoundText" text="No data found for the search criteria."/>
+	</mx:HBox>
+    <mx:VBox width="100%" id="searchResults" paddingTop="0" visible="{!viewModel.isDataLoading &amp;&amp; viewModel.anyResults}" includeInLayout="{!viewModel.isDataLoading &amp;&amp; viewModel.anyResults}">
+        <mx:VBox width="100%" borderThickness="1"  borderStyle="solid" borderColor="0x444444">
+            <mx:Label text="Found Items" fontWeight="bold"/>
+            <mx:TabNavigator
+                    id="foundItemsTabNav"
+                    width="100%" resizeToContent="true"
+                    horizontalGap="4"
+                    verticalGap="0">
+                <pspui:DataSyncDetailPagingDataGrid label="Paychecks"
+                                                    dataProvider="{viewModel.paycheckSearchResults}"
+                                                    viewModel="{viewModel}">
+                    <pspui:dataGridColumns>
+                        <controls:SAPDataGridColumn
+                                headerText="Paycheck ID"
+                                width="120"
+                                dataField="paycheckId"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Paycheck Type"
+                                width="120"
+                                dataField="paycheckType"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Employee ID"
+                                dataField="employeeId"
+                                width="120"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Employee Name"
+                                dataField="employeeName"
+                                fixWidth="false"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Check Date"
+                                dataField="checkDate"
+                                labelFunction="SAPDataGrid.formatDateShort"
+                                width="120"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Check Number"
+                                dataField="checkNumber"
+                                width="120"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Amount"
+                                dataField="amount"
+                                labelFunction="SAPDataGrid.formatCurrency"
+                                width="120"/>
+                        <controls:SAPDataGridColumn
+                                visible="{filterView.memoColumnSelected}"
+                                headerText="Memo"
+                                dataField="memo"
+                                sortable="false"
+                                fixWidth="false"/>
+                    </pspui:dataGridColumns>
+                </pspui:DataSyncDetailPagingDataGrid>
+                <pspui:DataSyncDetailPagingDataGrid label="Payroll Transactions"
+                                                    dataProvider="{viewModel.payrollTransactionSearchResults}"
+                                                    viewModel="{viewModel}">
+                    <pspui:dataGridColumns>
+                        <controls:SAPDataGridColumn
+                                headerText="Payroll Txn ID"
+                                width="120"
+                                dataField="payrollTransactionId"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Payroll Transaction Type"
+                                dataField="payrollTransactionType"
+                                width="160"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Employee ID"
+                                labelFunction="formatEmployeeId"
+                                dataField="employeeId"
+                                width="120"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Employee Name"
+                                dataField="employeeName"
+                                fixWidth="false"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Transaction Date"
+                                dataField="transactionDate"
+                                labelFunction="SAPDataGrid.formatDateShort"
+                                width="130"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Amount"
+                                labelFunction="SAPDataGrid.formatCurrency"
+                                dataField="amount"
+                                width="120"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Is Deleted"
+                                width="80"
+                                resizable="false"
+                                dataField="isDeleted"
+                                sortable="false"
+                                labelFunction="formatY_N"/>
+                        <controls:SAPDataGridColumn
+                                visible="{filterView.memoColumnSelected}"
+                                headerText="Memo"
+                                dataField="memo"
+                                sortable="false"
+                                fixWidth="false"/>
+                    </pspui:dataGridColumns>
+                </pspui:DataSyncDetailPagingDataGrid>
+                <pspui:DataSyncDetailPagingDataGrid label="Employees"
+                                                    dataProvider="{viewModel.employeeSearchResults}"
+                                                    viewModel="{viewModel}">
+                    <pspui:dataGridColumns>
+                        <controls:SAPDataGridColumn
+                                headerText="Employee ID"
+                                width="120"
+                                dataField="employeeId"
+                                />
+                        <controls:SAPDataGridColumn
+                                headerText="Employee Name"
+                                dataField="employeeName"
+                                fixWidth="false"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Is Deleted"
+                                width="80"
+                                resizable="false"
+                                dataField="isDeleted"
+                                sortable="false"
+                                labelFunction="formatY_N"/>
+                        <controls:SAPDataGridColumn
+                                visible="{filterView.classColumnSelected}"
+                                headerText="Class"
+                                dataField="classString"
+                                sortable="false"
+                                fixWidth="false"/>
+                    </pspui:dataGridColumns>
+                </pspui:DataSyncDetailPagingDataGrid>
+                <pspui:DataSyncDetailPagingDataGrid label="Payroll Items"
+                                                    dataProvider="{viewModel.payrollItemSearchResults}"
+                                                    viewModel="{viewModel}">
+                    <pspui:dataGridColumns>
+                        <controls:SAPDataGridColumn
+                                headerText="Payroll Item ID"
+                                width="120"
+                                dataField="payrollItemId"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Item Name"
+                                fixWidth="false"
+                                dataField="payrollItemName"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Item Type"
+                                width="110"
+                                dataField="payrollItemType"
+                                sortable="false"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Is EE"
+                                width="50"
+                                resizable="false"
+                                dataField="EE"
+                                sortable="false"
+                                labelFunction="formatY_N"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Inactive"
+                                width="80"
+                                resizable="false"
+                                dataField="inactive"
+                                sortable="false"
+                                labelFunction="formatY_N"/>
+                        <controls:SAPDataGridColumn
+                                headerText="Is Deleted"
+                                width="80"
+                                resizable="false"
+                                dataField="isDeleted"
+                                sortable="false"
+                                labelFunction="formatY_N"/>
+                    </pspui:dataGridColumns>
+                </pspui:DataSyncDetailPagingDataGrid>
+
+
+            </mx:TabNavigator>
+        </mx:VBox>
+
+        <mx:VBox width="100%" paddingTop="5" borderThickness="1"  borderStyle="solid" borderColor="0x444444">
+            <controls:RequiredLabel text="Selected Items" fontWeight="bold" validator="{viewModel.selectedItemRequiredValidator}"/>
+            <controls:SAPDataGrid id="selectedItems"
+                                  width="100%" height="100%"
+                                  dataProvider="{viewModel.selectedItems}"
+                                  rowCount="5"
+                                  draggableColumns="false"
+                                  fixWidths="true"
+                                  selectable="false"
+                                  headerRelease="onSelectedItemsHeaderRelease(event)">
+                <controls:columns>
+                    <mx:DataGridColumn sortable="true" width="110">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox horizontalAlign="center" paddingLeft="0" paddingRight="0">
+                                    <mx:Button height="19"
+                                               width="100"
+                                            click="outerDocument.doRemoveSelectedItem(DataSyncSelectedItem(data))"
+                                            label="Remove"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.DataSyncSelectedItem;
+                                        ]]></mx:Script>
+                                </mx:VBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                    <controls:SAPDataGridColumn headerText="Token" width="80" dataField="token"/>
+                    <controls:SAPDataGridColumn headerText="ID" width="80" dataField="itemId"/>
+                    <controls:SAPDataGridColumn headerText="Type" width="140" dataField="itemType"/>
+                    <controls:SAPDataGridColumn headerText="Description" fixWidth="false" dataField="description"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+        </mx:VBox>
+
+        <mx:VBox>
+            <mx:RadioButtonGroup id="actionType"/>
+            <mx:HBox verticalAlign="middle">
+                <mx:VBox verticalGap="1">
+                    <pspui:RequiredLabel id="actionRequiredLabel" text="Action on selected items:"
+                                         validator="{viewModel.actionSelectionRequiredValidator}"/>
+                    <mx:HBox>
+                        <mx:RadioButton label="Push" value="Push" id="pushRadioButton" group="{actionType}"/>
+                        <mx:Spacer width="20"/>
+                        <mx:CheckBox label="Un-delete" id="undeleteCheckBox" enabled="{pushRadioButton.selected}"/>
+                    </mx:HBox>
+                    <mx:RadioButton label="Stop" value="Stop" id="stopRadioButton" group="{actionType}"/>
+                </mx:VBox>
+                <pspui:RequiredLabel id="commentRequiredLabel" text="Comment:" paddingLeft="20"
+                                     validator="{viewModel.commentRequiredValidator}" fontWeight="bold"/>
+                <controls:SAPTextInput width="400" height="60" id="commentText" dataField="comment"/>
+                <mx:VBox>
+                    <mx:Button label="Process" enabled="{viewModel.canSave}" click="processSave()"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+
+    </mx:VBox>
+
+    <mx:Binding source="String(actionType.selectedValue)" destination="viewModel.selectedAction"/>
+    <mx:Binding source="undeleteCheckBox.selected" destination="viewModel.undelete"/>
+    <mx:Binding source="viewModel.undelete" destination="undeleteCheckBox.selected"/>
+    <mx:Binding source="viewModel.selectedAction" destination="actionType.selectedValue"/>
+</mx:VBox>

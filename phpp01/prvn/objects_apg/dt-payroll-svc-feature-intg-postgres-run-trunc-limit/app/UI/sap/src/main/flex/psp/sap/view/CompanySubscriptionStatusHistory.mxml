@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%" height="100%"
+	>
+
+	<mx:Script>
+        <![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.ServiceStatusHistoryItem;
+        import psp.sap.service.LookupService;
+        import psp.sap.viewmodel.CompanySubscriptionStatusHistoryViewModel;
+
+        private var mViewModel:CompanySubscriptionStatusHistoryViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanySubscriptionStatusHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanySubscriptionStatusHistoryViewModel):void {
+            mViewModel = value;
+        }
+
+        public function get lookupService():LookupService {
+            return SAP.instance.lookupService;
+        }
+
+        public function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatDateOverTime.format(item.changeDate);
+        }
+
+        public function formatAuditDate(item:Object, dgc:DataGridColumn):String{
+            return SAPDateFormatters.dateTimeFormatDateOverTime.format(item.auditDate);
+        }
+
+        public function changeDateCompare(objA:Object, objB:Object):int {
+            if (objA == null || objB == null) {
+                return 0;
+            }
+
+            var dateA:Date = ServiceStatusHistoryItem(objA).changeDate;
+            var dateB:Date = ServiceStatusHistoryItem(objB).changeDate;
+
+            return ObjectUtil.dateCompare(dateA, dateB);
+        }
+
+        public function formatOldCurrency(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item.oldPropertyValue);
+        }
+
+        public function formatNewCurrency(item:Object, dgc:DataGridColumn):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item.newPropertyValue);
+        }
+
+        private function serviceName(item:Object, dgc:DataGridColumn):String {
+            return (item.serviceCodeEnum != null) ? item.serviceCodeEnum.label : item.serviceCd;
+        }
+
+        public function serviceCompare(objA:Object, objB:Object):int {
+            if (objA == null || objB == null) {
+                return 0;
+            }
+
+            return ObjectUtil.stringCompare(objA.serviceCodeEnum.label, objB.serviceCodeEnum.label);
+        }
+        ]]>        
+    </mx:Script>
+
+    <controls:Expander title="Service Status History" width="85%" label="serviceStatusHistory_expander">
+        <controls:SAPDataGrid id="ddStatusHistoryGrid" variableRowHeight="true" dataProvider="{viewModel.serviceStatusHistories}" selectable="false" width="100%" backgroundColor="#ffffff"
+                              maxRows="5" rowHeight="42">
+            <controls:columns>
+                <mx:DataGridColumn
+                        headerWordWrap="true"
+                        wordWrap="true"
+                        headerText="Change Date Time"
+                        width="180"
+                        textAlign="center"
+                        labelFunction="formatDate"
+                        sortCompareFunction="changeDateCompare"/>
+                <mx:DataGridColumn
+                        headerWordWrap="true"
+                        wordWrap="true"
+                        headerText="Service"
+                        width="100"
+                        textAlign="left"
+                        labelFunction="serviceName"
+                        sortCompareFunction="serviceCompare"/>
+                <mx:DataGridColumn
+                        headerText="Changed By"
+                        textAlign="center"
+                        width="200"
+                        headerStyleName="directDepositHeader"
+                        color="green"
+                        dataField="changedBy"/>
+                <mx:DataGridColumn
+                        headerText="From"
+                        width="400"
+                        textAlign="center"
+                        dataField="oldServiceStatus">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%" verticalGap="0" horizontalAlign="center">
+                                <mx:Label id="oldStatusLabel" text="{data.oldServiceStatus}" fontWeight="bold"/>
+                                <mx:Text id="oldOnHoldText" width="200" text="{data.oldOnHoldString}" visible="{data.wasOnHold}" includeInLayout="{data.wasOnHold}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                        headerText="To"
+                        width="400"
+                        textAlign="center"
+                        dataField="newServiceStatus">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox width="100%" verticalGap="0" horizontalAlign="center">
+                                <mx:Label id="newStatusLabel" text="{data.newServiceStatus}" fontWeight="bold"/>
+                                <mx:Text id="newOnHoldText" width="200" text="{data.newOnHoldString}" visible="{data.isOnHold}" includeInLayout="{data.isOnHold}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </controls:columns>
+        </controls:SAPDataGrid>
+    </controls:Expander>
+
+    <controls:Expander title="Per Payroll Limit Change History" width="85%" label="perPayrollHistory_expander">
+		<controls:SAPDataGrid id="companyLimitHistoryGrid" variableRowHeight="true" dataProvider="{viewModel.companyLimitHistory}" selectable="false" width="100%" backgroundColor="#ffffff" paddingLeft="8"
+			maxRows="5">
+			<controls:columns>
+				<mx:DataGridColumn
+						headerText="End Date Time"
+						textAlign="center"
+						labelFunction="formatAuditDate"
+						wordWrap="true"
+						dataField="auditDateTime"/>
+                <mx:DataGridColumn
+                        headerWordWrap="true"
+                        wordWrap="true"
+                        headerText="Service"
+                        width="100"
+                        textAlign="left"
+                        labelFunction="serviceName"
+                        sortCompareFunction="serviceCompare"/>
+				<mx:DataGridColumn
+						headerText="Changed By"
+						textAlign="center"
+						dataField="userId"
+						headerStyleName="directDepositHeader"
+						color="green"/>
+				<mx:DataGridColumn
+						headerText="Old Limit"
+						textAlign="center"
+						labelFunction="formatOldCurrency"
+						dataField="oldPropertyValue"/>
+				<mx:DataGridColumn
+						headerText="New Limit"
+						textAlign="center"
+						labelFunction="formatNewCurrency"
+						dataField="newPropertyValue"/>
+			</controls:columns>
+		</controls:SAPDataGrid>
+	</controls:Expander>
+
+	<controls:Expander title="Per Employee Limit Change History" width="85%" label="perEmployeeHistory_expander">
+
+		<controls:SAPDataGrid id="eeLimitHistoryGrid" variableRowHeight="true" dataProvider="{viewModel.employeeLimitHistory}" selectable="false" width="100%" backgroundColor="#ffffff" paddingLeft="8"
+			maxRows="5">
+			<controls:columns>
+				<mx:DataGridColumn
+						headerText="End Date Time"
+						textAlign="center"
+						labelFunction="formatAuditDate"
+						wordWrap="true"
+						dataField="auditDate"/>
+				<mx:DataGridColumn
+						headerText="Changed By"
+						textAlign="center"
+						dataField="userId"
+						headerStyleName="directDepositHeader"
+						color="green"/>
+				<mx:DataGridColumn
+						headerText="Old Limit"
+						textAlign="center"
+						labelFunction="formatOldCurrency"
+						dataField="oldPropertyValue"/>
+				<mx:DataGridColumn
+						headerText="New Limit"
+						textAlign="center"
+						labelFunction="formatNewCurrency"
+						dataField="newPropertyValue"/>
+			</controls:columns>
+		</controls:SAPDataGrid>
+	</controls:Expander>
+
+    <controls:Expander title="Per Payee Limit Change History" width="85%" label="perPayeeHistory_expander">
+
+		<controls:SAPDataGrid variableRowHeight="true" dataProvider="{viewModel.payeeLimitHistory}" selectable="false" width="100%" backgroundColor="#ffffff" paddingLeft="8"
+			maxRows="5">
+			<controls:columns>
+				<mx:DataGridColumn
+						headerText="End Date Time"
+						textAlign="center"
+						labelFunction="formatAuditDate"
+						wordWrap="true"
+						dataField="auditDate"/>
+				<mx:DataGridColumn
+						headerText="Changed By"
+						textAlign="center"
+						dataField="userId"
+						headerStyleName="directDepositHeader"
+						color="green"/>
+				<mx:DataGridColumn
+						headerText="Old Limit"
+						textAlign="center"
+						labelFunction="formatOldCurrency"
+						dataField="oldPropertyValue"/>
+				<mx:DataGridColumn
+						headerText="New Limit"
+						textAlign="center"
+						labelFunction="formatNewCurrency"
+						dataField="newPropertyValue"/>
+			</controls:columns>
+		</controls:SAPDataGrid>
+	</controls:Expander>
+
+    <controls:Expander title="W-2 Printing Preference History" width="85%" label="w2History_expander">
+
+        <controls:SAPDataGrid variableRowHeight="true" dataProvider="{viewModel.w2History}" selectable="false" width="100%" backgroundColor="#ffffff" paddingLeft="8"
+                              maxRows="5">
+            <controls:columns>
+                <mx:DataGridColumn
+                        headerText="End Date Time"
+                        textAlign="center"
+                        labelFunction="formatAuditDate"
+                        wordWrap="true"
+                        dataField="auditDate"/>
+                <mx:DataGridColumn
+                        headerText="Changed By"
+                        textAlign="center"
+                        dataField="userId"
+                        headerStyleName="directDepositHeader"
+                        color="green"/>
+                <mx:DataGridColumn
+                        headerText="Old Preference"
+                        textAlign="center"
+                        dataField="oldPropertyValue"/>
+                <mx:DataGridColumn
+                        headerText="New Preference"
+                        textAlign="center"
+                        dataField="newPropertyValue"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+    </controls:Expander>
+			
+	
+</mx:VBox>

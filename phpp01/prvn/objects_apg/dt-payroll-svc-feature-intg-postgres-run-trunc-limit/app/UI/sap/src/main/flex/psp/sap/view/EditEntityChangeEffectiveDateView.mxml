@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         creationComplete="onCreationComplete()"
+         width="330" height="290">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.events.PropertyChangeEvent;
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.EditEntityChangeEffectiveDateViewModel;
+
+        private var mViewModel:EditEntityChangeEffectiveDateViewModel;
+        private var mTempViewModel:EditEntityChangeEffectiveDateViewModel;
+        private var mCreationComplete:Boolean = false;
+        private static const labelWidth:int = 115;
+
+        [Bindable]
+        public function get viewModel():EditEntityChangeEffectiveDateViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EditEntityChangeEffectiveDateViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                viewModel.effectiveDateValidator.listener = effectiveDateField;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function formatY_N(obj:Boolean):String {
+            return (obj) ? 'Y' : 'N';
+        }
+
+        private function confirmSave():void {
+            var msgString:String = "Are you sure you want to edit this entity change info?";
+            Alert.show(msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK) {
+                viewModel.save();
+            }
+        }
+        ]]>
+    </mx:Script>
+
+
+    <mx:VBox height="100%" width="100%" paddingLeft="15" paddingRight="15" paddingTop="10" paddingBottom="10">
+        <mx:Label
+                text="Edit Effective Date"
+                styleName="heading" id="headerLabel"/>
+
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="New EIN:"/>
+            <mx:Text id="newEINText" text="{viewModel.entityChange.oldEIN}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Old EIN:"/>
+            <mx:Text id="oldEINText" text="{viewModel.entityChange.newEIN}"/>
+        </mx:HBox>
+        <mx:VBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Is Successor:"/>
+            <mx:RadioButtonGroup id="successorRBG" selectedValue="{viewModel.successor}"/>
+            <mx:RadioButton label="Non-successor" value="{EditEntityChangeEffectiveDateViewModel.NON_SUCCESSOR}"
+                            group="{successorRBG}"/>
+            <mx:RadioButton label="Successor" value="{EditEntityChangeEffectiveDateViewModel.SUCCESSOR}"
+                            group="{successorRBG}"/>
+        </mx:VBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Has New Data File?:"/>
+            <mx:Text id="newDataFileText" text="{formatY_N(viewModel.entityChange.hasNewDataFile)}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <controls:RequiredLabel styleName="fieldLabel" text="Effective Date:"
+                                    validator="{viewModel.effectiveDateValidator}" dataField="effectiveDate"/>
+            <pspui:SAPDateField text="{SAPDateFormatters.dateFormatShort.format(viewModel.entityChange.effectiveDate)}"
+                                id="effectiveDateField" editable="true"/>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:HBox horizontalAlign="right" width="100%">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+    <mx:Binding source="viewModel.effectiveDate" destination="effectiveDateField.text"/>
+    <mx:Binding source="effectiveDateField.text" destination="viewModel.effectiveDate"/>
+    <mx:Binding source="viewModel.successor" destination="successorRBG.selectedValue"/>
+    <mx:Binding source="String(successorRBG.selectedValue)" destination="viewModel.successor"/>
+</mx:VBox>
+		
+		

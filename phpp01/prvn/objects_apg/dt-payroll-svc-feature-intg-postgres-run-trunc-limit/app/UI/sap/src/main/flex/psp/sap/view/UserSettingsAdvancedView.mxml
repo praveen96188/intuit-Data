@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+        creationComplete="onCreationComplete();">
+    <mx:Script><![CDATA[
+        import psp.sap.viewmodel.UserSettingsAdvancedViewModel;
+
+        private var mViewModel:UserSettingsAdvancedViewModel;
+        private var mTempViewModel:UserSettingsAdvancedViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():UserSettingsAdvancedViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:UserSettingsAdvancedViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+    ]]>
+    </mx:Script>
+    <controls:SAPDataGrid
+            editable="true"
+            dataProvider="{viewModel.settings}"
+            autoResizeToFitContent="true"
+            selectable="false"
+            width="100%">
+        <controls:columns>
+            <mx:DataGridColumn
+                    dataField="key"
+                    editable="false">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox width="100%" height="100%">
+                            <mx:Script>
+                                <![CDATA[
+                                    import psp.sap.model.UserSetting;
+                                 ]]>
+                                </mx:Script>
+                            <mx:Text text="{UserSetting(data).key}" fontWeight="{UserSetting(data).isDefault ? 'normal' : 'bold'}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer>
+                    </mx:DataGridColumn>
+            <mx:DataGridColumn
+                    dataField="value"
+                    editable="true"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+    <mx:HBox horizontalAlign="center">
+        <mx:Button id="cancelButton" label="Clear" click="viewModel.refresh()"/>
+        <mx:Button id="saveButton" label="Save" click="viewModel.save();" enabled="{viewModel.canSave}"
+                   width="{cancelButton.width}"/>
+    </mx:HBox>
+</mx:VBox>

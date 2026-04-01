@@ -1,0 +1,21 @@
+CREATE OR REPLACE FUNCTION FN_GET_ENV() returns VARCHAR
+AS $$
+
+
+  DECLARE
+
+  ENV VARCHAR(200);
+--TODO_ORACLE EXIT : Add DB names
+--Decide service name required or not
+BEGIN
+SELECT (CASE
+
+          WHEN ( upper(current_database()) in
+               ('PSPUWP01','PSPUWP02','PSPUEP01','PSPUEP02', 'PSPPP001', 'PSPSP001', 'PSPWP001', 'PSPEP001', 'PSPTS005', 'PSPTSIB5', 'PSPUE005', 'PSPUEIB5'))
+            THEN 'PROD'
+          ELSE 'NONPROD' END) INTO ENV
+;
+RETURN ENV;
+END;
+$$
+LANGUAGE plpgsql;

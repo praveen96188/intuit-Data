@@ -1,0 +1,396 @@
+<project name="generate" basedir="." default="all">
+  <property name="model" location="${basedir}/src/main/model"/>
+  <property name="target" location="${model}/target"/>
+  <property name="domainsource" location="${target}/src"/>
+  <property name="generated" location="${target}/src/resources"/>
+  <property name="sql" location="${basedir}/src/main/sql"/>
+  <property name="initialdata" location="${sql}/InitialData"/>
+  <property name="sequence" location="${sql}/Sequence"/>
+  <property name="index" location="${sql}/Index"/>
+  <property name="trigger" location="${sql}/Trigger"/>
+  <property name="procedure" location="${sql}/Procedure"/>
+  <property name="function" location="${sql}/Function"/>
+  <property name="package" location="${sql}/Package"/>
+  <property name="codegen" location="${basedir}/../psp-codegen/target"/>
+  <property name="latest-codegen-jar" value="psp-codegen-${psp.project.version}-jar-with-dependencies.jar"/>
+  <echo message="${codegen}"/>
+
+  <target name="model-generation-required-check">
+  	<uptodate property="model-generation.notRequired" srcfile="${model}/PSP.bedl.xml" targetfile="${domainsource}/java/com/intuit/sbd/payroll/psp/domain/Company.java"/>
+  </target>
+
+  <target name="clean-target" depends="model-generation-required-check" unless="model-generation.notRequired">
+  <delete dir="${basedir}/target"/>
+  <mkdir dir="${basedir}/target/src/sql"/>
+  </target>
+
+  <target name="psp-custom-code-generation-before-oracle" depends="clean-target" unless="model-generation.notRequired">
+    <exec dir="${model}" executable="java" failonerror="true">
+      <arg line="-Ddatabase=&quot;oracle&quot; -DbedlFileName=&quot;${model}/PSP.bedl.xml&quot; -Dagencies.sql=&quot;${initialdata}/populate_agency.sql&quot; -jar ${codegen}/${latest-codegen-jar}"/>
+    </exec>
+  </target>
+
+  <target name="psp-custom-code-generation-before-postgres" depends="psp-custom-code-generation-before-oracle" unless="model-generation.notRequired">
+    <exec dir="${model}" executable="java" failonerror="true">
+      <arg line="-Ddatabase=&quot;postgres&quot; -DbedlFileName=&quot;${model}/PSP.bedl.xml&quot; -Dagencies.sql=&quot;${initialdata}/populate_agency.sql&quot; -jar ${codegen}/${latest-codegen-jar}"/>
+    </exec>
+  </target>
+
+  <!-- model-to-java 
+  -->
+  <target name="dropTables-concat-sql" depends="psp-custom-code-generation-before-postgres" unless="model-generation.notRequired">
+    <echo message="Appending to ${generated}/oracle.dropTables.sql..."/>
+    <concat destfile="${generated}/oracle.dropTables.sql" append="yes">
+      <fileset file="${sql}/DropAllObjects.sql"/>
+    </concat>
+  </target>
+
+  <!-- createTable-concat-sql -->
+  <target name="createTables-concat-sql" depends="dropTables-concat-sql" unless="model-generation.notRequired">
+    <echo message="Appending to ${model}/CreateTables.sql..."/>
+    <concat destfile="${model}/CreateTables.sql" append="yes">
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${index}/create_indexes.sql"/>  
+	  <fileset file="${initialdata}/separator.sql"/>	  
+    </concat>
+  </target>
+
+    <!-- createData-concat-sql  -->
+  <target name="createData-concat-sql" depends="createTables-concat-sql" unless="model-generation.notRequired">
+    <echo message="Appending to ${generated}/oracle.createData.sql..."/>
+    <concat destfile="${generated}/oracle.createData.sql">
+      <fileset file="${sequence}/tp_401k_upload_batch_id_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/tp_401k_signup_batch_id_sequence.sql"/>             
+      <fileset file="${initialdata}/separator.sql"/>      
+      <fileset file="${sequence}/token_number_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/trace_number_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/trace_nbr_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/nacha_file_unique_id_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/qbdt_source_comp_id_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/subscription_number_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>  
+      <fileset file="${sequence}/gems_upload_batch_id_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>     
+      <fileset file="${sequence}/payrollfraudbatch_token_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/usage_billing_token_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/ee_calculation_token_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/atf_batch_id_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/psid_sequences_by_state.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_get_env.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_sourcesystem.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_payroll_item.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>      
+      <fileset file="${initialdata}/populate_ledgeraccount.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_transactiontype.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_transactionstate.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_postingrule.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_bankaccount.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_intuitbankaccount.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_intuitbankaccnttxntype.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_bankholiday.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_industry_type.sql"/>
+      <fileset file="${initialdata}/populate_ownership_type.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_eventtype.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_fundingmodel.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_payrollfrequency.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_systemparameter.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offloadgroup.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_service.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_sourcepayrollparameter.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_fee.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_action_event.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_financial_transaction_action.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_payroll_run_action.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_ledger_account_action.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_intuitbabatchfiletype.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_limit_rule.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_fraud_rule.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offering.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offering_svcchg_grp.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offering_svcchg.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_svcchg_price.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offer.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offer_svcchg_assoc.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>      
+      <fileset file="${initialdata}/populate_offer_price.sql"/>      
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_entitlement.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_entitlement_offering.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>	  
+      <fileset file="${initialdata}/populate_service_status.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_txntypesrvstatskuofld.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_system_capability.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_service_status_capability.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_service_status_sps.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_service_status_service.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_gems_ledger_postingrule.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_auth_domain.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_auth_operation.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_collection_stage.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_auth_role.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_role_substatus.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_return_reason_desc.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_role_operation_assoc.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_report_job_setup.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_user_preference.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_batch_job_setup.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="src/main/sql/InitialData/populate_batch_job_parameter.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_ach_transaction_code.sql"/> 
+      <fileset file="${initialdata}/separator.sql"/> 
+      <fileset file="${initialdata}/populate_address.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_reporting_agent.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${basedir}/target/src/sql/populate_psp_agency.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_agency_checklist_item.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_service_checklist_item.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_agency_status.sql"/> 
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_company.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_get_psp_timestamp.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_date_add.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_get_last_day_of_quarter.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_format_sysguid.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_offloadbatch_and_nachafile.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_get_mmt_count.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_get_edr_count.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>        
+      <fileset file="${function}/fn_get_ledger_balance.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${function}/fn_get_psid.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${trigger}/tr_ins_payroll_fraud_token.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${trigger}/tr_upd_company_event_timestamp.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${trigger}/tr_upd_payroll_fraud_token.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_remove_company.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${model}/prc_remove_company_fast.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_calculate_ledger_balance.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_calculate_w2_totals.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_update_ledger_balance.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_set_psp_event_log.sql"/>                
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_offload.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_offload_update_ft.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_offload_insert_fts.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_offload_update_payroll.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_offload_update_mmt.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_recalculate_atf_payments.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_offload_upd_agency_status.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_achtransactionprocessor.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_upd_company_ledger_balance.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_recalc_atf_payments_eftps.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+			<fileset file="${procedure}/prc_recalc_atf_payments_eftps.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>						
+      <fileset file="${procedure}/prc_eftps_payments_mmt_status.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="${procedure}/prc_eftps_payments_events.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="${procedure}/prc_eftps_payments_sent_events.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>			
+	  <fileset file="${procedure}/prc_eftps_payments_sent.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_cost_co_plsql_jobs_processor.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${procedure}/prc_payroll_fraudbatch_purge_dbupgrade_plsql_jobs_processor.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="${procedure}/prc_eftps_payments_response.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="${procedure}/prc_eftps_payments_return.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${trigger}/tr_upd_dd_limits.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${model}/generated_audit_triggers.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${basedir}/target/src/sql/populate_psp_payment_template.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${basedir}/target/src/sql/populate_psp_law.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${basedir}/target/src/sql/populate_psp_wage_limit.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_transactiontype_svc_assoc.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${basedir}/target/src/sql/populate_psp_pmt_template_frequency.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_agency.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_payment_template.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_pmt_template_frequency.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${basedir}/target/src/sql/populate_psp_form_template.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_form_template.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_law.sql"/>		
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_wage_limit.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_sourcesystemlawassoc.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_depositfrequencycode.sql"/>	
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="${initialdata}/populate_intuitshipperinfo.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_law_rate_range.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_law_rate_value.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_ade_law_map.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/update_batch_job_status.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_paymenttemplate_bankaccount.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_paymenttemplate_agencyid.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_paymenttemplate_paymentmethod.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_paymentmethod_requirement.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${package}/pk_gems_accounts_receivable.pks"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${package}/pk_payroll_item_totals.pks"/>
+      <fileset file="${initialdata}/separator.sql"/>
+	  <fileset file="${initialdata}/populate_source_system_printed_check_info.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_payment_template_printed_check_info.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_additional_filing_amounts.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${initialdata}/populate_hours_worked_exception.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${package}/pk_gems_accounts_receivable.pkb"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${package}/pk_payroll_item_totals.pkb"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/eftps_file_sequence.sql"/>
+      <fileset file="${sequence}/eftps_segment_sequence.sql"/>
+      <fileset file="${sequence}/eftps_payment_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/assisted_usage_billing_token_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+      <fileset file="${sequence}/mmt_transaction_number_sequence.sql"/>
+      <fileset file="${initialdata}/separator.sql"/>
+   </concat>
+  </target>
+
+  <target name="psp-custom-code-generation-after-oracle" depends="createData-concat-sql" unless="model-generation.notRequired">
+    <echo message="PSP custom code generation - after..."/>
+    <exec dir="${model}" executable="java" failonerror="true">
+      <arg line="-Ddatabase=&quot;oracle&quot; -DbedlFileName=&quot;${model}/PSP.bedl.xml&quot; -DisAfterCodeGen=&quot;true&quot; -jar ${codegen}/psp-codegen-${psp.project.version}-jar-with-dependencies.jar"/>
+    </exec>
+  </target>
+
+  <target name="psp-custom-code-generation-after-postgres" depends="psp-custom-code-generation-after-oracle" unless="model-generation.notRequired">
+    <echo message="PSP custom code generation - after..."/>
+    <exec dir="${model}" executable="java" failonerror="true">
+      <arg line="-Ddatabase=&quot;postgres&quot; -DbedlFileName=&quot;${model}/PSP.bedl.xml&quot; -DisAfterCodeGen=&quot;true&quot; -jar ${codegen}/psp-codegen-${psp.project.version}-jar-with-dependencies.jar"/>
+    </exec>
+  </target>
+
+
+  <target name="move-spcf-generated-code-to-target" depends="psp-custom-code-generation-after-postgres" unless="model-generation.notRequired">
+      <delete dir="${basedir}/src/main/java/generated"/>
+      <move file="${domainsource}/java/com" tofile="${basedir}/src/main/java/generated/com"/>      
+      <move file="${domainsource}/java/resources" tofile="${basedir}/target/classes/resources"/>      
+  </target>
+
+  <target name="delete-target-as-client" depends="move-spcf-generated-code-to-target" unless="model-generation.notRequired">
+      <delete dir="${basedir}/target/src/com/intuit/sbd/payroll/psp/domain/client"/>
+  </target>
+
+<target name="generate" depends="delete-target-as-client"/>
+
+  <!-- all -->
+  <target name="all" depends="generate"/>
+</project>

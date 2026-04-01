@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:pspui="psp.sap.view.*"
+        xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.ActionEventCode;
+        import psp.sap.model.PayrollRun;
+        import psp.sap.application.SAP;
+        import psp.sap.model.CompanyLedgerAccount;
+
+        import mx.events.CloseEvent;
+        import mx.controls.Alert;
+
+        import psp.sap.viewmodel.PayrollLedgerViewModel;
+
+        private var mViewModel:PayrollLedgerViewModel;
+
+        [Bindable]
+        public function get viewModel():PayrollLedgerViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollLedgerViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+            }
+        }
+
+        /* Actions */
+        public function viewLedgerEntry(link:ActionLinkEvent):void {
+            viewModel.viewLedgerEntry(link.data as CompanyLedgerAccount);
+        }
+
+
+        public function actionEventButtonHandler(event:Event):void {
+            var button:PayrollActionEventButton = event.currentTarget as PayrollActionEventButton;
+
+            //BadDebtWriteOff
+            if (button.action.code == ActionEventCode.BAD_DEBT_WRITE_OFF)
+            {
+                Alert.show("Are you sure you want to write off bad debt?\n\n" +
+                        "Writing off balances due will prevent any further collection attempts like DD reversals.",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.writeOffBadDebt();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (button.action.code == ActionEventCode.BAD_DEBT_WRITE_OFF_EE_RETURN) {
+                Alert.show("Are you sure you want to execute an employee reversal bad debt write off?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.writeOffEmployeeBadDebt();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (button.action.code == ActionEventCode.EE_RETURN_TRANSFER) {
+                Alert.show("Are you sure you want to execute an employee return transfer?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.employerReturnTransfer();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (button.action.code == ActionEventCode.INTUIT_5_DAY_RETURN_TRANSFER) {
+                Alert.show("Are you sure you want to execute an intuit 5 day return transfer?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.intuit5DayReturnTransfer();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (button.action.code == ActionEventCode.VOID_PAYROLL_TAX_PAYMENT) {
+                Alert.show("Are you sure you want to void this payroll's tax payments?",
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(evt_obj:CloseEvent):void {
+                            if(evt_obj.detail == Alert.OK)
+                            {
+                                viewModel.voidPayrollTaxPayment();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else {
+                viewModel.performPayrollLedgerAction(button.action, button.payrollLedgerAccount);
+            }
+        }
+
+
+        /* View logic */
+        public function isNonZero(companyPayrollLedgerObject:Object):Boolean {
+            var companyPayrollLedger:CompanyLedgerAccount = companyPayrollLedgerObject as CompanyLedgerAccount;
+            return (companyPayrollLedger.balance != 0);
+        }
+
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataGrid}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox width="100%">
+
+        <mx:VBox id="dataGrid"
+                 horizontalGap="0" verticalGap="0"
+                 styleName="grayDataGridVBox"
+                 paddingTop="0"
+                 verticalScrollPolicy="off" horizontalScrollPolicy="off"
+                 visible="{!viewModel.isDataLoading}" includeInLayout="{!viewModel.isDataLoading}">
+
+            <mx:Grid horizontalGap="0" verticalGap="0" height="100%" width="100%">
+                <mx:GridRow width="100%">
+                    <mx:GridItem horizontalAlign="center" minWidth="100" styleName="headerBorder">
+                        <mx:Label text="Account"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="200" styleName="headerBorderRight">
+                        <mx:Label text="Balance"/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="center" minWidth="130" styleName="headerBorderRight">
+                        <mx:Label text=""/>
+                    </mx:GridItem>
+                    <mx:GridItem horizontalAlign="right" minWidth="275" styleName="headerBorderRight">
+                        <mx:Label text=""/>
+                    </mx:GridItem>
+                </mx:GridRow>
+                <mx:Repeater id="ledgerAccounts" dataProvider="{viewModel.ledgerAccounts}">
+                    <mx:GridRow backgroundColor="{UIUtils.getRowColor(ledgerAccounts.currentIndex)}">
+                        <mx:GridItem  horizontalAlign="left" height="100%" styleName="borderBottomLeftRight">
+                            <pspui:ActionLink 
+                            	id="ledgerAccountLink"
+                            	automationName="ledgerAccountLink_{ledgerAccounts.currentItem.name}"
+                            	data="{ledgerAccounts.currentItem}" label="{ledgerAccounts.currentItem.name}" action="{ledgerAccounts.currentItem.ledgerAccountCode}" actionClick="viewLedgerEntry"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="right" height="100%" styleName="borderBottomRight">
+                            <mx:Text id="ledgerBalanceText" automationName="ledgerBalanceText_{ledgerAccounts.currentItem.name}" text="{SAPCurrencyFormatters.defaultFormatter.format(Math.abs(ledgerAccounts.currentItem.balance))}"/>
+                        </mx:GridItem>
+                        <mx:GridItem horizontalAlign="left" height="100%" styleName="borderBottomRight">
+                            <mx:VBox horizontalAlign="left" verticalGap="0" height="100%" verticalScrollPolicy="off">
+                                <mx:Label
+                                        id="ledgerAccountTypeLabel"
+                                        automationName="ledgerAccountTypeLabel_{ledgerAccounts.currentItem.name}"
+                                        text="{ledgerAccounts.currentItem.accountType}"
+                                        visible="{isNonZero(ledgerAccounts.currentItem)}"
+                                        includeInLayout="{isNonZero(ledgerAccounts.currentItem)}"
+                                        fontWeight="bold"
+                                        paddingLeft="5"
+                                        color="{ledgerAccounts.currentItem.credit ? UIUtils.COLOR_BLACK : UIUtils.COLOR_RED}" />
+                            </mx:VBox>
+                        </mx:GridItem>
+                        <mx:GridItem styleName="borderBottomRight" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+                            <mx:VBox width="100%" horizontalAlign="left" verticalGap="0">
+                                <mx:Repeater id="actionCollection" dataProvider="{ledgerAccounts.currentItem.actionCollection}">
+                                    <mx:HBox verticalGap="0" horizontalGap="0" verticalAlign="middle">
+                                        <mx:Image horizontalAlign="center" width="25" source="{SAP.instance.icons.blackBullet}" />
+                                        <pspui:PayrollActionEventButton styleName="payrollActionEvent" label="{actionCollection.currentItem.description}" action="{actionCollection.currentItem}"
+                                                                        automationName="actionLink_{actionCollection.currentItem.description}"
+                                                                        enabled="{actionCollection.currentItem.canPreformAction()}" payrollLedgerAccount="{(actionCollection.currentItem as CompanyLedgerAccount)}" click="actionEventButtonHandler(event)"/>
+                                    </mx:HBox>
+                                </mx:Repeater>
+                            </mx:VBox>
+                        </mx:GridItem>
+                    </mx:GridRow>
+                </mx:Repeater>
+            </mx:Grid>
+
+
+        </mx:VBox>
+
+        <mx:LinkButton label="Add an escalation credit"
+                       click="viewModel.viewAddEscalation()"
+                       visible="{viewModel.canAddEscalationCredit}"
+                       includeInLayout="{viewModel.canAddEscalationCredit}"
+                       styleName="inlineLinkButtonStyleBoldNoUnderline"/>
+
+        <mx:LinkButton label="Create FLA Transaction"
+                       toolTip="Mark the returned payments as finalized"
+                       click="viewModel.viewFinancialLedgerAdjustment();"
+                       visible="{SAP.canPerformOperation(OperationsEnum.CREATE_FLA)}"
+                       includeInLayout="{SAP.canPerformOperation(OperationsEnum.CREATE_FLA)}"
+                       styleName="inlineLinkButtonStyleBoldNoUnderline"/>
+
+
+
+    </mx:VBox>
+
+</mx:VBox>

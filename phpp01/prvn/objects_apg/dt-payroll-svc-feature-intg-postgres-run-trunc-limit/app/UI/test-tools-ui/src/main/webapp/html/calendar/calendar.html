@@ -1,0 +1,986 @@
+<html>
+<head>
+<style>
+td
+{
+font-size:9px;
+}
+body
+{
+background-color:#D6D3CE;
+border: none;
+margin-top: 0;
+margin-left: 0;
+margin-right: 0;
+margin-bottom: 0;
+}
+.OuterTable
+{
+width:180px;
+height:139px;
+border:#000000 1px solid
+}
+.cells
+{
+border-top:#D6D3CE 1px solid;
+border-right:#D6D3CE 5px solid;
+border-bottom:#D6D3CE 0px none;
+border-left:#D6D3CE 5px solid;
+cursor:default;
+}
+.MonthYear
+{
+color: black;
+text-align:center;
+font-size:12px;
+font-weight:bold;
+font-family:Arial;
+}
+.Days
+{
+color:black;
+text-align:right;
+font-family:Arial;
+font-weight:bold;
+font-size:11px;
+border-color:black;
+border-style:none none solid none;
+border-top-width:0;
+border-right-width:0px;
+border-bottom-width:1px;
+border-left-width:0px;
+width:26px;
+}
+.Day
+{
+color:black;
+text-align:right;
+font-family:Arial;
+font-size:12px;
+width:24px;
+height:17px;
+}
+
+</style>
+
+<script language="JavaScript">
+
+        var months = new Array("January", "February", "March", "April", "May", "June", "July", "August",
+        "September", "October", "November", "December");
+
+        var g_control, g_frame, g_image;
+        var today, g_date;
+        var input_day, input_month, input_year;
+        var Warning = "The date is formatted wrong, or is out of range. \n" +
+        "The date format should be one of these: \n" +
+        "MM/DD/YY \n" +
+        "MM/DD/YYYY \n\n" +
+        "The years may be between 1901 and 9999. \n\n" +
+        "Examples: 12/15/03 12/15/2003 12152003";
+
+        var now = new Date();
+        var nowDay = now.getDate();
+        var nowMonth = now.getMonth();
+
+        // bnsec = starting speed of calendar spin
+        // accel = acceleration of spin
+        var bnsec = 500;
+        var nsec = bnsec;
+        var accel = 0.75
+        var id;
+        var bstop = true;
+        var highlightedDay;
+
+        // A year entered after cutoffYear will become 19xx
+        // A year at or before cutoffYear will become 20xx
+        var cutoffYear = 30;
+
+        function populate(iMonth, iDay, iYear) {
+
+        //Swaps which one is highlighted
+        var swapIt = false;
+        if(swapIt) { var aDay = iDay; iDay = nowDay; nowDay = aDay; }
+
+        highlightedDay = new Date(iYear, iMonth, iDay);
+        var startColumn = getStartColumn();
+        var daysInMonth = getDaysInMonth(iMonth, iYear);
+        for (i = 0, day = 1; i < 6; i++) {
+        for (j = 0; j < 7; j++) {
+        document.all("Cell" + j + i).innerText = " ";
+        document.all("Cell" + j + i).style.fontWeight = "normal";
+        document.all("Cell" + j + i).style.borderStyle = "none";
+
+        //Jerry: Fixed existing bug in calendar.
+            //If users picks a date in the calendar or enters it in the textbox
+            //and then goes to the prev or next month either by pressing the prev and next month arrow keys in the calendar
+            //or by entering that date in the textbox and then launching the calendar where the previous cell is no longer
+            //an date in that month. The bug is that the previously highlighted cell background remains highlighted even though
+            //there's no date in that cell. The fix is to reset all cell backgrounds to the default background color before
+            //we loop through each date in the month to format it.
+            //TO SEE THIS BUG COMMENT OUT THE NEXT LINE AND SELECT 1/4/06. THEN PRESS THE PREV MONTH ARROW IMAGE.
+
+        //The is the above fix to clear each cells background color
+        document.all("Cell" + j + i).style.backgroundColor = "#D6D3CE";//default cell background color
+
+        if ((startColumn == j || day > 1) && day <= daysInMonth) {
+        document.all("Cell" + j + i).innerText = day;
+        if (day == iDay && retValueFromBox().getMonth() == iMonth) {
+            document.all("Cell" + j + i).style.backgroundColor = "#eeeeee";
+            document.all("Cell" + j + i).style.fontWeight = "bold";
+            //If today then select as box
+            if (day == nowDay && iMonth == nowMonth)
+            {
+            document.all("Cell" + j + i).style.borderColor = "#999999 #FFFFFF #FFFFFF #999999";
+            document.all("Cell" + j + i).style.borderStyle = "solid";
+            document.all("Cell" + j + i).style.borderWidth = "1px 1px 1px 1px";
+            document.all("Cell" + j + i).style.fontWeight = "bold";
+            }
+        } else {
+            document.all("Cell" + j + i).style.backgroundColor = "";
+            document.all("Cell" + j + i).style.fontWeight = "normal";
+
+            //If today then select as box
+            if (day == nowDay && iMonth == nowMonth)
+            {
+            document.all("Cell" + j + i).style.borderColor = "#999999 #FFFFFF #FFFFFF #999999";
+            document.all("Cell" + j + i).style.borderStyle = "solid";
+            document.all("Cell" + j + i).style.borderWidth = "1px 1px 1px 1px";
+            document.all("Cell" + j + i).style.fontWeight = "bold";
+            }
+        }
+
+        day ++;
+        }
+        }
+        }
+
+        document.all("displayDate").innerText = months[iMonth] + " - " + iYear;
+        }
+
+        function get_Value() {
+        var dd = "" + g_date.getDate();
+        var mm = "" + (g_date.getMonth() + 1);
+        if (mm.length == 1) mm = '0' + mm;
+        if (dd.length == 1) dd = '0' + dd;
+
+        return mm + "/" + dd + "/" + g_date.getFullYear();
+        }
+
+        function onCellClick() {
+        var current = window.event.srcElement;
+        if (cellIsValid(current)) {
+             //Jerry: Fixed existing bug in calendar.
+                //when a cell is clicked and does not contain a day we were still closing the calendar
+                //and setting the value of the textbox with an empty string.
+            var currentCellId = current.id
+            if(isNaN(document.getElementById(currentCellId).innerHTML)) {
+                //cell doesn't contain a day
+                //alert("empty cell");
+                return;
+            }
+
+
+        g_date = new Date(highlightedDay.getFullYear(), highlightedDay.getMonth(), current.innerText)
+        hideCalendar();
+        g_control.value = get_Value();
+        g_control.select();
+        g_control.focus();
+        }
+        }
+
+
+        function cellIsValid(el) {
+        if(el.id.substring(0, 4) == "Cell") {
+        iCol = parseInt(el.id.substring(4, 5), 10);
+        iRow = parseInt(el.id.substring(5, 6), 10);
+        if (iRow >= 0 && iRow >= 0) {
+        if (!isNaN(parseInt(el.innerText), 10)) {
+        return true;
+        }
+        }
+        }
+
+        return false;
+        }
+
+        function getDaysInMonth(iMonth, iYear) {
+        if (iMonth == 0 || iMonth == 2 || iMonth == 4 || iMonth == 6 || iMonth == 7 || iMonth == 9 || iMonth == 11) {
+        return 31;
+
+        } else if (iMonth == 1) {
+        if (iYear%4 == 0 && !(iYear%100 == 0) || iYear%400 == 0)
+        return 29;
+        else
+        return 28;
+
+        } else
+        return 30;
+        }
+
+        var maxDay;
+        function nextMonth() {
+        maxDay = g_date.getDate();
+        var imonth = highlightedDay.getMonth() + 1;
+        var iyear = highlightedDay.getFullYear();
+
+        if (imonth == 12) {
+        imonth = 0;
+        iyear = highlightedDay.getFullYear() + 1;
+        }
+
+        var daysInMonth = getDaysInMonth(imonth, iyear);
+        var iday;
+        if (maxDay > daysInMonth) {
+        iday = daysInMonth;
+        } else {
+        iday = maxDay;
+        }
+
+        populate(imonth, iday, iyear);
+        }
+
+        function prevMonth() {
+        maxDay = g_date.getDate();
+        var imonth = highlightedDay.getMonth();
+        var iyear = highlightedDay.getFullYear();
+
+        if (imonth == 0) {
+        imonth = 12;
+        iyear = highlightedDay.getFullYear() - 1;
+        }
+
+        var daysInMonth = getDaysInMonth(imonth-1, iyear);
+        var iday;
+        if (maxDay > daysInMonth) {
+        iday = daysInMonth;
+        } else {
+        iday = maxDay;
+        }
+
+        populate(imonth - 1, iday, iyear);
+        }
+
+        function hideCalendar() {
+        g_frame.style.visibility = "hidden";
+        if (g_control.value) {
+        if (!dateIsValid(g_control.value)) {
+        g_control.select();
+        g_control.focus();
+        }
+        }
+        }
+
+        function stop() {
+        if (!bstop) {
+        bstop = true;
+        window.clearInterval(id);
+        }
+        }
+
+        function prevMonthSpin() {
+        if (g_date.getFullYear() != 0) {
+        prevMonth();
+        nsec = nsec * accel
+        window.clearInterval(id);
+        id = window.setInterval("prevMonthSpin()", nsec);
+        }
+        if (bstop || highlightedDay.getFullYear() == 0) {
+        window.clearInterval(id);
+        }
+        }
+
+        function prevMonthStart() {
+        bstop=false;
+        nsec = bnsec;
+        id = window.setInterval("prevMonthSpin()", nsec);
+        }
+
+        function nextMonthSpin() {
+        nextMonth();
+        nsec = nsec * accel
+        window.clearInterval(id);
+        id = window.setInterval("nextMonthSpin()",nsec);
+        if (bstop || highlightedDay.getFullYear() == 0) {
+        window.clearInterval(id);
+        }
+        }
+
+        function nextMonthStart() {
+        bstop = false;
+        nsec = bnsec;
+        id = window.setInterval("nextMonthSpin()", nsec);
+        }
+
+
+        function prevMonth_click() {
+        prevMonth();
+        stop();
+        }
+
+
+        function nextMonth_click() {
+        nextMonth();
+        stop();
+        }
+
+        function nextMouseDown() {
+        if (event.button == 1) {
+        nextMonthStart();
+        }
+        }
+
+        function prevMouseDown() {
+        if (event.button == 1) {
+        prevMonthStart();
+        }
+        }
+
+        function borderOn(cell) {
+        window.event.cancelBubble = true;
+        cell.style.borderColor = "#FFFFFF #999999 #999999 #FFFFFF";
+        cell.style.borderStyle = "ridge";
+        cell.style.borderWidth = "1px 1px 1px 1px";
+        }
+
+        function borderOff(cell) {
+        cell.style.borderColor = "#D4D0C8";
+        cell.style.borderStyle = "";
+        cell.style.borderWidth = "";
+        }
+
+        function HighlightDay(whichCell, highlight) {
+        if(highlight) {
+        whichCell.style.color = 'blue';
+        HighlightCell();
+        }
+        else {
+
+                whichCell.style.color = 'black';
+                //whichCell.style.borderStyle = 'none';
+                //whichCell.style.fontWeight = "normal";
+
+        }
+        }
+
+        function DepressDay(whichCell) {
+                //Jerry: Fixed existing bug in calendar.
+                    //when the user does mouse down in a non weekend cell that doesn't have a date the cell borders become recessed. We need to to prevent this!!!
+            var whichCellId = whichCell.id
+            if(isNaN(document.getElementById(whichCellId).innerHTML)) {
+                //cell doesn't contain a day
+                return;
+            }
+
+            unHighlightCell();
+            whichCell.style.color = 'black';
+            whichCell.style.borderStyle = 'solid';
+            whichCell.style.fontWeight = "bold";
+            whichCell.style.borderWidth = "1px 1px 1px 1px";
+            whichCell.style.borderColor = "#999999 #FFFFFF #FFFFFF #999999";
+        }
+
+        function dateIsValid(value) {
+        input_month = 0;
+        input_day = 0;
+        input_year = 0;
+        var pairs, sMonth, sDay, sYear;
+        var legalCharExp = /[\/,\.]/g;
+
+        //Jerry: Fixed existing bug in calendar.
+            //a user can type something in that's not a date and not handled by this dateIsValid function.
+            //E.g., without this fix entering 1/0 would break this function and display NaNNaNNaN in the textbox
+            //The smallest valid date contains 6 characters e.g., 1/1/06 so the fix is to test for this length.
+            //The HTML textbox should be set to maxchar=10 so we don't need to validate maxchars in this function but
+            //I'm adding it anyway to be thorough.
+        if(value.length < 6 || value.length > 10)
+        {
+            return false;
+        }
+
+        if ( isNaN( value.replace(/[\/,\.]/g, "")) ) return false;
+
+        if (legalCharExp.test(value)) {
+        pairs = value.split(legalCharExp);
+        if (pairs.length > 3 || pairs < 2) return false;
+
+        if (pairs.length == 3) {
+        sMonth = pairs[0];
+        sDay = pairs[1];
+        if (sMonth.length > 2 || sDay.length > 2) return false;
+        sYear = pairs[2];
+        if (! (sYear.length == 2 || sYear.length == 4) ) return false;
+        } else {
+        switch (pairs[0].length) {
+        case 1:
+        sMonth = pairs[0];
+        if (pairs[1].length == 2 || pairs[1].length == 1) {
+        sDay = pairs[1];
+        sYear = g_date.getFullYear().toString();
+        } else if (pairs[1].length == 4 || pairs[1].length == 6) {
+        sDay = pairs[1].substring(0, 2);
+        sYear = pairs[1].substring(2);
+        } else
+        return false;
+
+        break;
+
+        case 2:
+        sMonth = pairs[0];
+        if (pairs[1].length == 2 || pairs[1].length == 1) {
+        sDay = pairs[1];
+        sYear = g_date.getFullYear().toString();
+        } else if (pairs[1].length == 4 || pairs[1].length == 6) {
+        sDay = pairs[1].substring(0, 2);
+        sYear = pairs[1].substring(2);
+        } else
+        return false;
+        break;
+
+        case 3:
+        if (pairs[1].length != 2 && pairs[1].length != 4) return false;
+        sMonth = pairs[0].substring(0, 2);
+        sDay = pairs[0].substring(2);
+        sYear = pairs[1];
+        break;
+
+        case 4:
+        if (pairs[1].length != 2 && pairs[1].length != 4) return false;
+        sMonth = pairs[0].substring(0, 2);
+        sDay = pairs[0].substring(2);
+        sYear = pairs[1];
+        break;
+
+        default:
+        return false;
+        }
+        }
+
+        } else {
+        if (value.length == 4) {
+        sMonth = value.substring(0, 2);
+        sDay = value.substring(2);
+        sYear = g_date.getFullYear().toString();
+
+        } else if (value.length == 8) {
+        sMonth = value.substring(0, 2);
+        sDay = value.substring(2, 4);
+        sYear = value.substring(4);
+
+        } else
+        return false;
+        }
+
+        input_month = parseInt(sMonth.replace(/^0/, ""), 10);
+        input_day = parseInt(sDay.replace(/^0/, ""), 10);
+        input_year = parseInt(sYear.replace(/^0/, ""), 10);
+
+
+        if (input_year < 100) {
+        if (input_year > cutoffYear) input_year += 1900;
+        else  input_year += 2000;
+        }
+
+        if( input_month > 12 || input_day < 1 ||input_day > getDaysInMonth(input_month-1, input_year) )
+        return false;
+
+        return true;
+        }
+
+        function setToday(todaysDate) {
+        if (todaysDate != null) {
+        today = new Date(todaysDate);
+        g_date = new Date(todaysDate);
+        } else {
+        today = new Date();
+        g_date = new Date();
+        }
+        initValueFromBox();
+        }
+
+        function show(event, todaysDate) {
+        g_image = event.srcElement;
+        g_control = parent.document.all[g_image.sourceIndex-1];
+        if (g_control.type != "text") {
+        alert("No textbox found to the left");
+        return;
+        }
+
+        g_frame = window.frameElement;
+
+        g_frame.style.height = 139;
+        g_frame.style.width = 180;
+
+        var left = event.x - event.offsetX - parseInt(g_frame.style.width, 10) + g_image.offsetWidth - 2;
+        if (left < 0) left = 0;
+
+        g_frame.style.marginLeft = left + 80;
+
+        // var top = event.y - event.offsetY + g_image.clientHeight + parent.document.documentElement.scrollTop;
+
+        var marginYBelow = event.y - event.offsetY + g_image.clientHeight + parent.document.documentElement.scrollTop;
+
+        //Special case scenario
+        if(parent.document.documentElement.scrollTop == 0 && parent.document.body.scrollTop > 0)
+        {
+            marginYBelow+= parent.document.body.scrollTop + 139 + g_image.clientHeight + 4;
+        }
+
+        var marginYAbove = marginYBelow - g_control.offsetHeight - parseInt(g_frame.style.height, 10) + document.body.scrollTop;
+
+
+
+        //alert(parent.document.body.scrollTop);
+
+        var windowHeight = parent.window.document.body.clientHeight;
+        if ((marginYBelow + parseInt(g_frame.style.height, 10)) > windowHeight && marginYAbove >= 0) {
+        g_frame.style.marginTop = marginYAbove;
+        } else {
+        g_frame.style.marginTop = marginYBelow;
+        }
+
+
+        setToday(todaysDate);
+        populate(g_date.getMonth(), g_date.getDate(), g_date.getFullYear());
+        assignHandlers();
+
+        g_frame.style.visibility = '';
+        window.focus();
+        parent.window.event.cancelBubble = true;
+        }
+
+        function setCalendar(event, control, todaysDate) {
+        g_control = control;
+        g_image = parent.document.all[control.sourceIndex+1];
+        g_image.tabIndex = -1;
+        g_control.detachEvent("onkeydown", onKeyDown);
+        g_control.attachEvent("onkeydown", onKeyDown);
+        g_control.detachEvent("onblur", onBlur);
+        g_control.attachEvent("onblur", onBlur);
+        setToday(todaysDate);
+        g_control.select();
+        g_control.focus();
+        }
+
+        function assignHandlers() {
+        parent.document.detachEvent("onclick", hideCalendar);
+        parent.document.attachEvent("onclick", hideCalendar);
+        parent.detachEvent("onresize", this.hideCalendar);
+        parent.attachEvent("onresize", this.hideCalendar);
+        g_control.detachEvent("onkeydown", onKeyDown);
+        g_control.attachEvent("onkeydown", onKeyDown);
+        }
+
+        function onKeyDown(event) {
+        if (event.ctrlKey) {
+        if (event.keyCode == 38) {
+        addSpecifiedNumberOfDays(-1);
+        } else if (event.keyCode == 40) {
+        addSpecifiedNumberOfDays(1);
+        } else {
+        return;
+        }
+        } else {
+        if (event.keyCode == 189) { // '-' pressed. display day before
+        addSpecifiedNumberOfDays(-1);
+        } else if (event.keyCode == 187) { // '=/+' Display next day
+        addSpecifiedNumberOfDays(1);
+        } else if (event.keyCode == 87) { // 'w' Display previous Sunday's date
+        setToPreviousSunday();
+        } else if (event.keyCode == 82) { // 'r' Display last day of current year
+        setToEndOfTheYear();
+        } else if (event.keyCode == 89) { // 'y' Display first day of current this year
+        setToBeginningOfTheYear();
+        } else if (event.keyCode == 219) { // '[' Substract seven from displayed day
+        addSpecifiedNumberOfDays(-7);
+        } else if (event.keyCode == 221) { // ']' Add seven from displayed day
+        addSpecifiedNumberOfDays(7);
+        } else if (event.keyCode == 72) { // 'h' Display last day of this month
+        setToEndOfMonth();
+        } else if (event.keyCode == 75) { // 'k' Display next Saturday
+        setToNextSaturday();
+        } else if (event.keyCode == 186) { // ';' Same day of last month
+        setToSameDayPreviousMonth();
+        } else if (event.keyCode == 222) { // ' Same day of next month
+        setToSameDayNextMonth();
+        } else if (event.keyCode == 77) { // 'm' Display first day of current month
+        setToBeginningOfTheMonth();
+        } else if (event.keyCode == 84) { // "t" Display today's date
+        g_date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        } else {
+        return;
+        }
+        }
+        g_control.value = get_Value();
+        g_control.select();
+        event.returnValue = false;
+        }
+
+        function onCalendarKeyDown() {
+        if (event.keyCode == 13) {
+        g_date = new Date(highlightedDay.getFullYear(), highlightedDay.getMonth(), + highlightedDay.getDate());
+        hideCalendar();
+        g_control.value = get_Value();
+        g_control.select();
+        } else if (event.keyCode == 38) {
+        changeSelection(-7);
+        } else if (event.keyCode == 40) {
+        changeSelection(7);
+        } else if (event.keyCode == 39) {
+        changeSelection(1);
+        } else if (event.keyCode == 37) {
+        changeSelection(-1);
+        } else {
+        event.returnValue = false;
+        event.cancelBubble = true;
+        return;
+        }
+        }
+
+        function  changeSelection(numDays) {
+        unHighlightCell();
+        var month = highlightedDay.getMonth();
+        highlightedDay.setDate(highlightedDay.getDate() + numDays);
+        if (highlightedDay.getMonth() != month) {
+        populate(highlightedDay.getMonth(), highlightedDay.getDate(), highlightedDay.getFullYear());
+        } else {
+        HighlightCell();
+        }
+        }
+
+        function HighlightCell() {
+        var col = highlightedDay.getDay();
+        var firstDayColumn = getStartColumn();
+        var row = Math.floor((highlightedDay.getDate() + firstDayColumn - 1) / 7);
+        //discontinuing use of function.
+        //document.all("Cell" + col + row).style.borderColor = "#999999 #FFFFFF #FFFFFF #999999";
+        //document.all("Cell" + col + row).style.borderStyle = "solid";
+        //document.all("Cell" + col + row).style.borderWidth = "1px 1px 1px 1px";
+        //document.all("Cell" + col + row).style.fontWeight = "bold";
+        }
+
+        function unHighlightCell() {
+        var col = highlightedDay.getDay();
+        var firstDayColumn = getStartColumn();
+        var row = Math.floor((highlightedDay.getDate() + firstDayColumn - 1) / 7);
+        document.all("Cell" + col + row).style.borderStyle = "none";
+        document.all("Cell" + col + row).style.fontWeight = "normal";
+        }
+
+        function getStartColumn() {
+        var numberOfFullWeeks = Math.floor((highlightedDay.getDate() - 1) / 7);
+        var diff = highlightedDay.getDate() - (numberOfFullWeeks * 7) - 1;
+        var startColumn = highlightedDay.getDay() - diff;
+        return (startColumn < 0) ? startColumn + 7 : startColumn;
+        }
+
+        function retValueFromBox()
+        {
+           var x_date;
+           if (g_control.value && dateIsValid(g_control.value)) {
+                x_date = new Date(input_year, input_month - 1, input_day);
+            } else {
+                x_date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+           }
+           return x_date;
+        }
+
+        function initValueFromBox() {
+        if (g_control.value && dateIsValid(g_control.value)) {
+        g_date = new Date(input_year, input_month - 1, input_day);
+        } else {
+        g_date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        }
+        }
+
+        function setToSameDayPreviousMonth() {
+        //initValueFromBox();
+        g_date = now;
+        var imonth = g_date.getMonth();
+        var iyear = g_date.getFullYear();
+        var iday = g_date.getDate();
+
+        if (imonth == 0) {
+        imonth = 12;
+        iyear = g_date.getFullYear() - 1;
+        }
+
+        var daysInMonth = getDaysInMonth(imonth - 1, iyear);
+        if (iday > daysInMonth) {
+        iday = daysInMonth;
+        }
+
+        g_date = new Date(iyear, (imonth - 1), iday);
+        }
+
+        function setToSameDayNextMonth() {
+        //initValueFromBox();
+        g_date = now;
+        var imonth = g_date.getMonth()+1;
+        var iyear = g_date.getFullYear();
+        var iday = g_date.getDate();
+
+        if (imonth == 12) {
+        imonth = 0;
+        iyear = g_date.getFullYear() + 1;
+        }
+
+        var daysInMonth = getDaysInMonth(imonth, iyear);
+        if (iday > daysInMonth) {
+        iday = daysInMonth;
+        }
+
+        g_date = new Date(iyear, imonth, iday);
+        }
+
+        function addSpecifiedNumberOfDays(num) {
+        initValueFromBox();
+
+        var day = g_date.getDate() + num;
+        g_date.setDate(day);
+        }
+
+        function addSpecifiedNumberOfMonths(num) {
+        initValueFromBox();
+
+        var month = g_date.getMonth() + num;
+        g_date.setMonth(month);
+        }
+
+        function setToPreviousSunday() {
+        initValueFromBox();
+        var day = g_date.getDay();
+        if (day == 0) {
+        addSpecifiedNumberOfDays(-7);
+        return;
+        }
+        var sunday = g_date.getDate() - day;
+        g_date.setDate(sunday);
+        }
+
+        function setToNextSaturday() {
+        if (g_date.getDay() == 7) {
+        addSpecifiedNumberOfDays(7);
+        return;
+        }
+        addSpecifiedNumberOfDays(8);
+        var day = g_date.getDay();
+        var saturday = g_date.getDate() - 1 - day;
+        g_date.setDate(saturday);
+        }
+
+        function setToEndOfTheYear() {
+        initValueFromBox();
+
+        if (g_date.getMonth() == 11 && g_date.getDate() == 31) {
+        g_date.setYear(g_date.getFullYear() + 1);
+        return;
+        }
+
+        g_date.setMonth(11);
+        g_date.setDate(31);
+        }
+
+        function setToBeginningOfTheYear() {
+        initValueFromBox();
+
+        if (g_date.getMonth() == 0 && g_date.getDate() == 1) {
+        g_date.setYear(g_date.getFullYear() - 1);
+        return;
+        }
+
+        g_date.setMonth(0);
+        g_date.setDate(1);
+        }
+
+        function setToEndOfMonth() {
+        addSpecifiedNumberOfDays(1);
+        g_date.setDate(1);
+        var month = g_date.getMonth() + 1;
+        g_date.setMonth(month);
+        g_date.setDate(g_date.getDate() - 1);
+        }
+
+        function setToBeginningOfTheMonth() {
+        initValueFromBox();
+
+        if (g_date.getDate() == 1) {
+        g_date.setMonth(g_date.getMonth() - 1);
+        return;
+        }
+        g_date.setDate(1);
+        }
+
+        function onBlur(event) {
+        if (g_control.value != "") {
+        if (dateIsValid(g_control.value)) {
+        g_date.setYear(input_year);
+        g_date.setMonth(input_month - 1);
+        g_date.setDate(input_day);
+        g_control.value = get_Value();
+        } else {
+        var activeElement = parent.document.activeElement;
+        var novalidate = activeElement.getAttribute("novalidate");
+        if (activeElement == g_control || novalidate == "true") {
+        activeElement.detachEvent("onblur", returnFocusToControl);
+        activeElement.attachEvent("onblur", returnFocusToControl);
+        event.returnValue = true;
+        } else if (activeElement != g_image) {
+        g_control.select();
+        top.alert(Warning);
+        g_control.focus();
+        event.returnValue = false;
+        }
+        }
+        }
+        }
+
+        function returnFocusToControl() {
+        if (g_control.value != "") {
+        if (!dateIsValid(g_control.value)) {
+        g_control.select();
+        g_control.focus();
+        }
+        }
+        }
+
+</script>
+
+</head>
+
+<body onclick="onCellClick();" onselectstart="return false;" onContextMenu="return false;"
+      onKeyDown="onCalendarKeyDown();">
+<table class="OuterTable" cellpadding="0" cellspacing="0">
+    <tr>
+        <td valign="top" align="center">
+            <table cellspacing="0" cellpadding="0">
+                <tr height="18">
+                    <td width="22">
+                        <img onMouseDown="prevMouseDown();" onMouseOver="borderOn(this);" onClick="prevMonth_click();"
+                             onMouseOut="stop(); borderOff(this);" height="13" src="images/arrow_left.gif"
+                             width="15">
+                        </td>
+                        <td width="136" id="displayDate" class="MonthYear">
+                        </td>
+                        <td width="22" align="right">
+                            <img onMouseDown="nextMouseDown();" onMouseOver="borderOn(this);"
+                                 onClick="nextMonth_click();" onMouseOut="stop(); borderOff(this);" height="13"
+                                 src="images/arrow_right.gif" width="15">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <table class="cells" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="Days">Su</td>
+                            <td class="Days">Mo</td>
+                            <td class="Days">Tu</td>
+                            <td class="Days">We</td>
+                            <td class="Days">Th</td>
+                            <td class="Days">Fr</td>
+                            <td class="Days">Sa</td>
+                        </tr>
+                        <tr>
+                            <td id='Cell00' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell10' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell20' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell30' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell40' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell50' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell60' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                        </tr>
+                        <tr>
+                            <td id='Cell01' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell11' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell21' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell31' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell41' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell51' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell61' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                        </tr>
+                        <tr>
+                            <td id='Cell02' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell12' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell22' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell32' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell42' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell52' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell62' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                        </tr>
+                        <tr>
+                            <td id='Cell03' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell13' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell23' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell33' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell43' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell53' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell63' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                        </tr>
+                        <tr>
+                            <td id='Cell04' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell14' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell24' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell34' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell44' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell54' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell64' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                        </tr>
+                        <tr>
+                            <td id='Cell05' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell15' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell25' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell35' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell45' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell55' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                            <td id='Cell65' class="Day" onMouseDown="DepressDay(this);"
+                                onMouseOver="HighlightDay(this, true);" onMouseOut="HighlightDay(this, false);"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

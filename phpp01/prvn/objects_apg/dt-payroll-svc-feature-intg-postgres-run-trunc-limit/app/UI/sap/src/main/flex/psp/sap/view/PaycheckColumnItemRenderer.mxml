@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="right" verticalGap="0">
+    <mx:Script><![CDATA[
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.RotatedPaycheck;
+
+        [Bindable]
+        public var paycheckIndex:int;
+
+        [Bindable]
+        public var rotatedPaycheck:RotatedPaycheck;
+
+
+        override public function set data(value:Object):void {
+            super.data = value;
+            if (data is RotatedPaycheck) {
+                rotatedPaycheck = RotatedPaycheck(data);
+            }
+        }
+        ]]></mx:Script>
+
+    <mx:Text paddingLeft="2"
+             paddingRight="2"
+             textAlign="right"
+             text="{SAPCurrencyFormatters.currencyFormatterNoSymbolNoComma.format(rotatedPaycheck.amounts.getItemAt(paycheckIndex))}"/>
+
+</mx:VBox>

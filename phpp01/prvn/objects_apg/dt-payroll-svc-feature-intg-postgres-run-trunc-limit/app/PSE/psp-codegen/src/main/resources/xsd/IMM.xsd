@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:imm="http://www.intuit.com/IMM-BEDL-Schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.intuit.com/IMM-BEDL-Schema" version="2.1.4.0">
+	<xs:annotation>
+		<xs:documentation>Intuit Meta Model Business Entity Definition Language (BEDL) Schema Definition</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="SortOrderType">
+		<xs:annotation>
+			<xs:documentation>SortOrderType defines the 'Ascending' and 'Descending' sort order for object instances in the database.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Ascending"/>
+			<xs:enumeration value="Descending"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="InheritanceMappingType">
+		<xs:annotation>
+			<xs:documentation>InheritanceMappingType defines the supported options for mapping specialization relationship to the database.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="TablePerHierarchy"/>
+			<xs:enumeration value="TablePerSubclass"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DataClassificationType">
+		<xs:annotation>
+			<xs:documentation>DataClassificationType defines the supported access levels that can be associated with properties of data entities and objects.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Unclassified"/>
+			<xs:enumeration value="Restricted"/>
+			<xs:enumeration value="Sensitive"/>
+			<xs:enumeration value="Secret"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CollectionTypeName">
+		<xs:annotation>
+			<xs:documentation>CollectionType defines the supported collection types.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="List"/>
+			<xs:enumeration value="Map"/>
+			<xs:enumeration value="TaggedList"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BasicType">
+		<xs:annotation>
+			<xs:documentation>BasicType defines the supported basic data types in the Intuit Meta Model.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Binary"/>
+			<xs:enumeration value="Boolean"/>
+			<xs:enumeration value="Date"/>
+			<xs:enumeration value="Double"/>
+			<xs:enumeration value="Integer"/>
+			<xs:enumeration value="LargeText"/>
+			<xs:enumeration value="Long"/>
+			<xs:enumeration value="String"/>
+			<xs:enumeration value="UniqueId"/>
+			<!--
+			<xs:enumeration value="Decimal"/>
+			-->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ParameterDirection">
+		<xs:annotation>
+			<xs:documentation>ParameterDirection defines the directional attributes of Method/Atom parameters in the Intuit Meta Model.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="In"/>
+			<xs:enumeration value="InOut"/>
+			<xs:enumeration value="Out"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TypeReference">
+		<xs:sequence>
+			<xs:element name="KeyType" type="imm:TypeReference" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Type" type="xs:string" use="required"/>
+		<xs:attribute name="TypeNamespace" type="xs:string" use="optional"/>
+		<xs:attribute name="Reference" type="xs:string" use="optional"/>
+		<xs:attribute name="CollectionType" type="imm:CollectionTypeName" use="optional"/>
+		<!-- TODO: Limit the type to basic types and other object types. -->
+		<!-- TODO: Can we limit the reference to the list of references declared in the domain model. -->
+	</xs:complexType>
+	<xs:complexType name="MultiplicityType">
+		<xs:sequence>
+			<xs:element name="SortByProperties" type="imm:SortOrderPropertyListType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="LowerBound" type="xs:unsignedByte" use="optional"/>
+		<xs:attribute name="UpperBound" type="xs:string" use="required"/>
+		<xs:attribute name="CollectionContainerType" type="xs:string" use="optional" default="list"/>
+		<!-- TODO: constrain upper bound to a positive number or * for unbounded. -->
+		<!-- TODO: Define the supported collection types -->
+	</xs:complexType>
+	<xs:complexType name="PropertyDefinition">
+		<xs:sequence>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Multiplicity" type="imm:MultiplicityType" minOccurs="0"/>
+			<xs:element name="Type" type="imm:TypeReference"/>
+			<xs:element name="InitialValue" type="xs:string" minOccurs="0"/>
+			<xs:element name="MinimumValue" type="xs:string" minOccurs="0"/>
+			<xs:element name="MaximumValue" type="xs:string" minOccurs="0"/>
+			<xs:element name="RegularExpression" type="xs:string" minOccurs="0"/>
+			<xs:element name="Calculation" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="ColumnName" type="xs:string" use="optional"/>
+		<xs:attribute name="IsIndexed" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="IsPersisted" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="IsReadOnly" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="IsUnique" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="SecurityLevel" type="imm:DataClassificationType" use="optional" default="Unclassified"/>
+		<xs:attribute name="Length" type="xs:integer" use="optional" default="255"/>
+		<xs:attribute name="Precision" type="xs:integer" use="optional"/>
+		<xs:attribute name="Scale" type="xs:integer" use="optional"/>
+		<xs:attribute name="IsCalculated" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="HandcodedAccessorType" type="imm:HandcodedAccessorType" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="PropertiesList">
+		<xs:sequence>
+			<xs:element name="Property" type="imm:PropertyDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SortOrderPropertyListType">
+		<xs:sequence>
+			<xs:element name="PropertyName" type="xs:string" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="SortOrder" type="imm:SortOrderType" use="optional" default="Ascending"/>
+	</xs:complexType>
+	<xs:complexType name="DataEntityType">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Specializes" type="imm:TypeReference" minOccurs="0"/>
+			<xs:element name="Extends" type="imm:TypeReference" minOccurs="0"/>
+			<xs:element name="Properties" type="imm:PropertiesList" minOccurs="0"/>
+			<xs:element name="SortByProperties" type="imm:SortOrderPropertyListType" minOccurs="0"/>
+			<xs:element name="Methods" type="imm:MethodList" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+		<xs:attribute name="TableName" type="xs:string" use="optional"/>
+		<xs:attribute name="IsPublic" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="IsImmutable" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="IsPersisted" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="SeedDataFile" type="xs:string" use="optional"/>
+		<xs:attribute name="AllowSpecialization" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="AllowExtension" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="AllowCustomization" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="AllowDynamicSpecialization" type="xs:boolean" use="optional" default="true"/>
+	</xs:complexType>
+	<xs:complexType name="DataEntityList">
+		<xs:sequence>
+			<xs:element name="DataEntity" type="imm:DataEntityType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DataObjectType">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Specializes" type="imm:TypeReference" minOccurs="0"/>
+			<xs:element name="Properties" type="imm:PropertiesList" minOccurs="0"/>
+			<xs:element name="KeyProperty" type="xs:string" minOccurs="0"/>
+			<xs:element name="SortByProperties" type="imm:SortOrderPropertyListType" minOccurs="0"/>
+			<xs:element name="Methods" type="imm:MethodList" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+		<xs:attribute name="TableName" type="xs:string" use="optional"/>
+		<xs:attribute name="IsPublic" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="IsImmutable" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="IsPersisted" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="SeedDataFile" type="xs:string" use="optional"/>
+		<xs:attribute name="AllowSpecialization" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="IsGlobal" type="xs:boolean" use="optional" default="true"/>
+	</xs:complexType>
+	<xs:complexType name="ServiceInterfaceType">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Methods" type="imm:MethodList" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+		<xs:attribute name="IsWebService" type="xs:boolean" use="required"/>
+		<xs:attribute name="BridgeClassName" type="xs:string" use="required"/>
+		<xs:attribute name="ImplClassName" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ServiceInterfaceList">
+		<xs:sequence>
+			<xs:element name="ServiceInterface" type="imm:ServiceInterfaceType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FunctionalAreaType">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Atoms" type="imm:AtomList" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+    <xs:attribute name="BridgeClassName" type="xs:string" use="optional" />
+    <xs:attribute name="ImplClassName" type="xs:string" />
+  </xs:complexType>
+	<xs:complexType name="FunctionalAreaList">
+		<xs:sequence>
+			<xs:element name="FunctionalArea" type="imm:FunctionalAreaType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DataObjectList">
+		<xs:sequence>
+			<xs:element name="DataObject" type="imm:DataObjectType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DataTypeDefinition">
+		<xs:sequence>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Specializes" type="imm:TypeReference" minOccurs="0"/>
+			<xs:element name="Properties" type="imm:PropertiesList" minOccurs="0"/>
+			<xs:element name="Validator" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+		<xs:attribute name="IsPublic" type="xs:boolean" use="optional" default="true"/>
+		<xs:attribute name="AllowSpecialization" type="xs:boolean" use="optional" default="true"/>
+	</xs:complexType>
+	<xs:complexType name="DataTypeList">
+		<xs:sequence>
+			<xs:element name="DataType" type="imm:DataTypeDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EnumerationFieldType">
+		<xs:sequence>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<!-- Until J2C can support enum ordinals this is dropped
+		<xs:attribute name="Value" type="xs:integer" use="optional" />
+		-->
+	</xs:complexType>
+	<xs:simpleType name="HandcodedAccessorType">
+		<xs:annotation>
+			<xs:documentation>HandcodedAccessorType defines the what accessors a handcoded property needs in the Intuit Meta Model.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None"/>
+			<xs:enumeration value="Read"/>
+			<xs:enumeration value="ReadWrite"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="EnumerationFieldsList">
+		<xs:sequence>
+			<xs:element name="Field" type="imm:EnumerationFieldType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EnumerationType">
+		<xs:sequence>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Fields" type="imm:EnumerationFieldsList"/>
+		</xs:sequence>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+		<xs:attribute name="IsPublic" type="xs:boolean" use="optional" default="true"/>
+	</xs:complexType>
+	<xs:complexType name="EnumerationsList">
+		<xs:sequence>
+			<xs:element name="Enumeration" type="imm:EnumerationType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ModelReference">
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="File" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ModelReferenceList">
+		<xs:sequence>
+			<xs:element name="Reference" type="imm:ModelReference" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="RelationType">
+		<xs:annotation>
+			<xs:documentation>RelationType defines the supported inter-object relation types.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Association"/>
+			<xs:enumeration value="Composition"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RelationDirectionType">
+		<xs:annotation>
+			<xs:documentation>RelationDirectionType defines the supported directions of a relation.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SourceToTarget"/>
+			<xs:enumeration value="TargetToSource"/>
+			<xs:enumeration value="Bidirectional"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="RelationEndType">
+		<xs:annotation>
+			<xs:documentation>RelationEndType models one end of a relation.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Type" type="imm:TypeReference"/>
+			<xs:element name="Multiplicity" type="imm:MultiplicityType" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Role" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="RelationDefinition">
+		<xs:all>
+			<xs:element name="Source" type="imm:RelationEndType"/>
+			<xs:element name="Target" type="imm:RelationEndType"/>
+		</xs:all>
+		<xs:attribute name="Type" type="imm:RelationType" use="required"/>
+		<xs:attribute name="Direction" type="imm:RelationDirectionType" use="required"/>
+		<xs:attribute name="TableName" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="RelationList">
+		<xs:annotation>
+			<xs:documentation>RelationList models a collection of relations.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Relation" type="imm:RelationDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="DomainModel">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+				<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+				<xs:element name="References" type="imm:ModelReferenceList" minOccurs="0"/>
+				<xs:element name="DataTypes" type="imm:DataTypeList" minOccurs="0"/>
+				<xs:element name="DataEntities" type="imm:DataEntityList" minOccurs="0"/>
+				<xs:element name="DataObjects" type="imm:DataObjectList" minOccurs="0"/>
+				<xs:element name="FunctionalAreas" type="imm:FunctionalAreaList" minOccurs="0"/>
+				<xs:element name="EntityInterfaces" type="imm:EntityInterfaceList" minOccurs="0"/>
+				<xs:element name="ServiceInterfaces" type="imm:ServiceInterfaceList" minOccurs="0"/>
+				<xs:element name="Relations" type="imm:RelationList" minOccurs="0"/>
+				<xs:element name="Enumerations" type="imm:EnumerationsList" minOccurs="0"/>
+			</xs:all>
+			<xs:attribute name="Name" type="xs:string" use="required"/>
+			<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+			<xs:attribute name="InheritanceMapping" type="imm:InheritanceMappingType" use="optional" default="TablePerHierarchy"/>
+			<xs:attribute name="Version" type="xs:string" use="optional"/>
+			<xs:attribute name="AssemblyName" type="xs:string" use="optional"/>
+			<xs:attribute name="MetaModelVersion" type="xs:string" use="optional"/>
+			<xs:attribute name="ModelAlias" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="MethodList">
+		<xs:sequence>
+			<xs:element name="Method" type="imm:MethodDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AtomList">
+		<xs:sequence>
+			<xs:element name="Atom" type="imm:AtomDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MethodParameter">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="Type" type="imm:TypeReference"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Direction" type="imm:ParameterDirection" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="ParameterList">
+		<xs:sequence>
+			<xs:element name="Parameter" type="imm:MethodParameter" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MethodDefinition">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="ReturnType" type="imm:TypeReference" minOccurs="0"/>
+			<xs:element name="TransactionRequired" type="xs:boolean" default="false"/>
+			<xs:element name="IsStatic" type="xs:boolean" default="false"/>
+			<xs:element name="Parameters" type="imm:ParameterList" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="AtomDefinition">
+		<xs:all>
+			<xs:element name="Notes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Parameters" type="imm:ParameterList" minOccurs="0"/>
+			<xs:element name="IsValidation" type="xs:boolean" default="false"/>
+		</xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="EntityInterfaceType">
+		<xs:all>
+			<xs:element name="Documentation" type="xs:string" minOccurs="0"/>
+			<xs:element name="InternalNotes" type="xs:string" minOccurs="0"/>
+			<xs:element name="Properties" type="imm:PropertiesList" minOccurs="0"/>
+			<xs:element name="Methods" type="imm:MethodList" minOccurs="0"/>
+      <xs:element name="Specializes" type="imm:TypeReference" minOccurs="0"/>
+    </xs:all>
+		<xs:attribute name="Name" type="xs:string" use="required"/>
+		<xs:attribute name="Namespace" type="xs:string" use="optional"/>
+		<xs:attribute name="ManagerInterfaceName" type="xs:string" use="required"/>
+		<xs:attribute name="BridgeClassName" type="xs:string" use="required"/>
+		<xs:attribute name="ImplClassName" type="xs:string" use="required"/>
+		<xs:attribute name="SupportsCustomFields" type="xs:boolean" use="required"/>
+		<xs:attribute name="SupportsDynamicSpecialization" type="xs:boolean" use="required"/>
+		<xs:attribute name="GenerateManagerInterface" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="EntityInterfaceList">
+		<xs:sequence>
+			<xs:element name="EntityInterface" type="imm:EntityInterfaceType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

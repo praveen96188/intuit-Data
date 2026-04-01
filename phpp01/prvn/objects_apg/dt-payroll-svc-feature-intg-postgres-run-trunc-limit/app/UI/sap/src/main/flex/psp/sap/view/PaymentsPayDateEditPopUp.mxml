@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="430"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Payment;
+        import psp.sap.viewmodel.PaymentsPayDateEditViewModel;
+
+        private var mViewModel:PaymentsPayDateEditViewModel;
+        private var mTempViewModel:PaymentsPayDateEditViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private const TRUNC_TEXT_HEIGHT:int = 20;
+        private const TRUNC_TEXT_WIDTH:int = 210;
+
+        [Bindable]
+        public function get viewModel():PaymentsPayDateEditViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PaymentsPayDateEditViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.newSettlementDateValidator.listener = newSettlementDateInput;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Edit Settlement Date" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+        <mx:HRule width="100%" height="13"/>
+
+        <mx:HBox height="10"/>
+
+        <mx:HBox>
+            <mx:VBox verticalGap="0">
+                <mx:Label text="EIN: " fontWeight="bold"/>
+                <mx:Label text="Legal Name: " fontWeight="bold"/>
+                <mx:Label text="PSID: " fontWeight="bold"/>
+                <mx:Label text="Payment Template: " fontWeight="bold"/>
+                <mx:Label text="Amount: " fontWeight="bold"/>
+                <mx:Label text="Due Date: " fontWeight="bold"/>
+                <mx:Label text="Current Settlement Date: " fontWeight="bold"/>
+                <mx:Label text="New Settlement Date: " fontWeight="bold"/>
+
+            </mx:VBox>
+            <mx:VBox verticalGap="0">
+                <mx:Label text="{Payment(viewModel.payment).ein}"/>
+                <pspui:TruncatedText
+                    id="legalNameText"
+                    text="{Payment(viewModel.payment).companyName}"
+                    height="{TRUNC_TEXT_HEIGHT}"
+                    width="{TRUNC_TEXT_WIDTH}"
+                    includeInLayout="{Payment(viewModel.payment).companyName != null}"
+                    visible="{Payment(viewModel.payment).companyName != null}"/>
+                <mx:Label text="{Payment(viewModel.payment).psId}"/>
+                <mx:Label text="{Payment(viewModel.payment).paymentType}"/>
+                <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(Payment(viewModel.payment).amount)}"/>
+                <mx:Label text="{SAPDateFormatters.dateFormatShort.format(Payment(viewModel.payment).dueDate)}"/>
+                <mx:Label text="{SAPDateFormatters.dateFormatShort.format(Payment(viewModel.payment).settlementDate)}"/>
+                
+                <mx:FormItem id="newSettlementDate" paddingLeft="-10">
+                    <pspui:SAPDateField
+                    id="newSettlementDateInput"
+                    width="100"
+                    editable="true"
+                    tabIndex="1" />
+                </mx:FormItem>
+            </mx:VBox>
+        </mx:HBox>
+            <mx:HBox>
+                <mx:HBox paddingLeft="225" paddingBottom="15" paddingTop="5">
+                        <mx:Button label="Cancel" click="viewModel.cancel()"/>
+                        <mx:Button label="Save" click="viewModel.save()" paddingLeft="10" enabled="{viewModel.canSave}"/>
+                </mx:HBox>                
+            </mx:HBox>
+            <!-- Start Due date bindings -->
+    <mx:Binding source="newSettlementDateInput.text" destination="viewModel.newSettlementDate" />
+    <mx:Binding source="viewModel.newSettlementDate" destination="newSettlementDateInput.text" />
+
+
+</mx:VBox>
+

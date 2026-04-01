@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','page_2_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+
+        [Bindable]
+        public var question1MoveOnEnabled:Boolean = false;
+        [Bindable]
+        public var question2Enabled:Boolean = false;
+
+        public function onCreationComplete():void {
+            validators.addItem(felonEver.validator);
+            validators.addItem(convictionValidator);
+            validators.addItem(convictionYearValidator);
+            validators.addItem(releaseValidator);
+            validators.addItem(releaseYearValidator);
+            validators.addItem(felonFederal.validator);
+        }
+
+
+        public function writeToModel():void {
+            writeYesNoToModel("felonEver");
+            writeYesNoToModel("felonFederal");
+
+            model.employee.felonConvictionYear = convictionYear.text;
+            model.employee.felonConvictionMonth = convictionMonth.text;
+            model.employee.felonConvictionDay = convictionDay.text;
+
+            model.employee.felonReleaseYear = releaseYear.text;
+            model.employee.felonReleaseMonth = releaseMonth.text;
+            model.employee.felonReleaseDay = releaseDay.text;
+
+        }
+
+
+        override public function readFromModel():void {
+            readYesNoFromModel("felonEver");
+            readYesNoFromModel("felonFederal");
+
+            convictionYear.text = model.employee.felonConvictionYear;
+            convictionMonth.text = model.employee.felonConvictionMonth;
+            convictionDay.text = model.employee.felonConvictionDay;
+
+            releaseYear.text = model.employee.felonReleaseYear;
+            releaseMonth.text = model.employee.felonReleaseMonth;
+            releaseDay.text = model.employee.felonReleaseDay;
+
+            question1MoveOnEnabled = model.employee.felonEverSet && ! model.employee.felonEver;
+            question2Enabled = model.employee.felonEverSet && model.employee.felonEver;
+
+            syncValidators();
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+    <mx:DateValidator id="convictionValidator"
+                      monthSource="{convictionMonth}" monthProperty="text"
+                      daySource="{convictionDay}" dayProperty="text"
+                      yearSource="{convictionYear}" yearProperty="text"
+                      required="true" triggerEvent="none"/>
+    <mx:NumberValidator id="convictionYearValidator" source="{convictionYear}" property="text" required="true" triggerEvent="none" minValue="1900" maxValue="2100"
+                        listener="{convictionErrorText}"/>
+
+    <mx:DateValidator id="releaseValidator"
+                      monthSource="{releaseMonth}" monthProperty="text"
+                      daySource="{releaseDay}" dayProperty="text"
+                      yearSource="{releaseYear}" yearProperty="text"
+                      required="true" triggerEvent="none"/>
+    <mx:NumberValidator id="releaseYearValidator" source="{releaseYear}" property="text" required="true" triggerEvent="none" minValue="1900" maxValue="2100"
+                        listener="{releaseErrorText}"/>
+
+
+    <mx:Text selectable="false" styleName="pageH4"
+             text="{resourceManager.getString('interview','felon_subheader')}"/>
+
+
+    <mx:HBox horizontalGap="0" paddingTop="0">
+        <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="1." paddingRight="0"/>
+        <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="375"
+                 text="{resourceManager.getString('interview','felon_ever')}"/>
+    </mx:HBox>
+    <controls:YesNoRadio id="felonEver" paddingLeft="40" yesNoChange="writeToModel()"/>
+    <mx:VBox paddingLeft="40">
+        <mx:Text selectable="false" styleName="pageEmphasis" enabled="{question1MoveOnEnabled}"
+                 htmlText="{resourceManager.getString('interview','felon_move_on')}"/>
+        <mx:VBox  enabled="{question2Enabled}">
+            <mx:HBox horizontalGap="0" paddingTop="0">
+                <mx:Text selectable="false" styleName="pageEmphasis"
+                         text="2." paddingRight="0"/>
+                <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="500"
+                         htmlText="{resourceManager.getString('interview','felon_enter_info')}"/>
+            </mx:HBox>
+            <mx:VBox paddingLeft="40">
+                <mx:Form styleName="noPadding">
+                    <mx:FormItem label="{resourceManager.getString('interview','felon_date_conviction')}"
+                                 labelStyleName="formLabel"
+                                 required="true"
+                                 direction="horizontal"
+                                 horizontalGap="0">
+                        <mx:TextInput id="convictionMonth" width="30" maxChars="2" restrict="0-9" change="writeToModel();"/>
+                        <mx:Text text="/" styleName="formLabel" selectable="false"/>
+                        <mx:TextInput id="convictionDay" width="30" maxChars="2" restrict="0-9" change="writeToModel();"/>
+                        <mx:Text text="/" styleName="formLabel" selectable="false"/>
+                        <mx:TextInput id="convictionYear" width="45" maxChars="4" restrict="0-9" change="writeToModel();"/>
+                        <controls:ErrorText id="convictionErrorText" styleName="errorText" selectable="false"
+                                            paddingLeft="10"
+                                            text="{resourceManager.getString('interview','year_too_small')}"/>
+                    </mx:FormItem>
+                    <mx:FormItem label="{resourceManager.getString('interview','felon_date_release')}"
+                                 labelStyleName="formLabel"
+                                 required="true"
+                                 direction="horizontal"
+                                 horizontalGap="0">
+                        <mx:TextInput id="releaseMonth" width="30" maxChars="2" restrict="0-9" change="writeToModel();"/>
+                        <mx:Text text="/" styleName="formLabel" selectable="false"/>
+                        <mx:TextInput id="releaseDay" width="30" maxChars="2" restrict="0-9" change="writeToModel();"/>
+                        <mx:Text text="/" styleName="formLabel" selectable="false"/>
+                        <mx:TextInput id="releaseYear" width="45" maxChars="4" restrict="0-9" change="writeToModel();"/>
+                        <controls:ErrorText id="releaseErrorText" styleName="errorText" selectable="false"
+                                            paddingLeft="10"
+                                            text="{resourceManager.getString('interview','year_too_small')}"/>
+                    </mx:FormItem>
+                </mx:Form>
+                <mx:HBox horizontalGap="0" paddingTop="0">
+                    <mx:Text selectable="false" styleName="pageEmphasis"
+                             text="3." paddingRight="0"/>
+                    <mx:Text selectable="false" styleName="pageEmphasis" paddingLeft="4" width="500"
+                             htmlText="{resourceManager.getString('interview','felon_federal_or_state')}"/>
+                </mx:HBox>
+                <controls:YesNoRadio id="felonFederal" paddingLeft="40" yesNoChange="writeToModel()"
+                                     yesLabel="{resourceManager.getString('interview','felon_federal')}"
+                                     noLabel="{resourceManager.getString('interview','felon_state')}"/>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+
+</controls:InterviewPage>

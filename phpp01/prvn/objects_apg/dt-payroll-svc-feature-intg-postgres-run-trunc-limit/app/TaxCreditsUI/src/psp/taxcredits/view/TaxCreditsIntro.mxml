@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="psp.taxcredits.view.*"
+         xmlns:controls="psp.taxcredits.view.controls.*">
+    <mx:Style source="psp/taxcredits/view/intro.css"/>
+    <mx:Script>
+		<![CDATA[
+        import psp.taxcredits.model.TaxCreditsEvent;
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+        import psp.taxcredits.view.controls.WindowManager;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        public function whyLimit():void {
+            model.tracker.trackEvent("Navigation", "Click Time Limit", "Intro");
+            //pop-up
+            var window:TimeLimit = new TimeLimit();
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);
+            window.move(window.x, window.y - 75);
+        }
+
+        public function whatWeDoCall():void {
+            model.tracker.trackEvent("Navigation", "Click What We Do", "Call");
+            var window:WhatWeDo = new WhatWeDo();
+            window.text = resourceManager.getString("intro", "what_we_do_call_text");
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);
+            window.move(window.x, window.y - 75);
+        }
+
+        public function whatWeDoYou():void {
+            model.tracker.trackEvent("Navigation", "Click What We Do", "You");
+            var window:WhatWeDo = new WhatWeDo();
+            window.text = resourceManager.getString("intro", "what_we_do_you_text");
+            WindowManager.add(window, DisplayObject(this.parentApplication), true);
+            WindowManager.centerWindow(window);
+            window.move(window.x, window.y - 75);
+        }
+
+
+        private function getStarted():void {
+            model.tracker.trackEvent("Navigation", "Click Get Started Button");
+            if (model.initialized) {
+                model.pageManager.switchPage(TaxCreditsPageEnum.ELIGIBILITY);
+            } else {
+                //they are really fast or something else could be wrong
+                model.addError("Get started and PSP date not returned");
+                //defer until it is done
+                cursorManager.setBusyCursor();
+                model.addEventListener(TaxCreditsEvent.MODEL_INITIALIZED, onModelInitialized);
+            }
+        }
+
+        private function onModelInitialized(e:Event):void {
+            model.removeEventListener(TaxCreditsEvent.MODEL_INITIALIZED, onModelInitialized);
+            cursorManager.removeBusyCursor();
+            model.pageManager.switchPage(TaxCreditsPageEnum.ELIGIBILITY);
+        }
+
+
+		]]>
+    </mx:Script>
+
+
+
+    <mx:Canvas id="canvas">
+        <mx:Text x="29" y="20"
+                 selectable="false" styleName="frontTeaser"
+                 filters="{[new DropShadowFilter(2,45,0xFFFFFF,0.65)]}"
+                 text="{resourceManager.getString('intro','teaser')}"/>
+
+        <mx:Text x="29" y="40"
+                 selectable="false" styleName="frontTagLine"
+                 filters="{[new DropShadowFilter(2,45,0xFFFFFF,0.65)]}"
+                 text="{resourceManager.getString('intro','tag_line')}"/>
+
+        <controls:SupText x="29" y="78" width="615"
+                 selectable="false" styleName="frontDetailText"
+                 htmlText="{resourceManager.getString('intro','front_detail1')}"/>
+
+        <controls:SupText x="29" y="120"
+                 selectable="true" styleName="frontDetailText2"
+                 htmlText="{resourceManager.getString('intro','act_now')}"  link="whyLimit();"/>
+
+
+        <mx:Image x="12" y="155"
+                  source="psp/taxcredits/view/assets/contentbox.png"/>
+
+        <mx:Image x="30" y="177"
+                  source="psp/taxcredits/view/assets/csr.png"/>
+
+        <controls:SupText x="82" y="180"
+                 selectable="false" styleName="frontOptionHeader"
+                 htmlText="{resourceManager.getString('intro','call_title')}"/>
+
+        <controls:SupText x="82" y="206"
+                 selectable="true" styleName="frontDetailText2" link="whatWeDoCall();"
+                 htmlText="{resourceManager.getString('intro','call_text')}"/>
+
+        <controls:SupText x="82" y="236"
+                 selectable="false" styleName="pageEmphasis"
+                 htmlText="{resourceManager.getString('intro','call_number')}"/>
+
+        <mx:Image x="306" y="236"
+                 source="psp/taxcredits/view/assets/optionLine1.gif"/>
+
+        <mx:Text x="298" y="280"
+                 selectable="false" styleName="orText"
+                 text="{resourceManager.getString('intro','or_text')}"/>
+
+        <mx:Image x="306" y="306"
+                 source="psp/taxcredits/view/assets/optionLine1.gif"/>
+
+        <controls:SupText x="348" y="236"
+                 selectable="false" styleName="pageEmphasis"
+                 htmlText="{resourceManager.getString('intro','us_contact')}"/>
+
+
+        <view:ContactMe x="348" y="260" paddingLeft="0" paddingTop="0"/>                    
+
+        <mx:Image x="582" y="177"
+                  source="psp/taxcredits/view/assets/optionLine2.gif"/>
+
+        <mx:Image x="612" y="183"
+                  source="psp/taxcredits/view/assets/notepad.png"/>
+
+        <controls:SupText x="657" y="180" width="202"
+                 selectable="false" styleName="frontOptionHeader"
+                 htmlText="{resourceManager.getString('intro','you_work_title')}"/>
+
+        <controls:SupText x="657" y="236" width="214"
+                 selectable="false" styleName="pageEmphasis"
+                 htmlText="{resourceManager.getString('intro','you_work_text')}"/>
+
+        <controls:SupText x="657" y="290"
+                 selectable="true" styleName="frontDetailText" link="whatWeDoYou();"
+                 htmlText="{resourceManager.getString('intro','you_work_what_we_do')}"/>
+
+        <mx:Button x="657" y="320"  click="getStarted()" styleName="buttonGetStarted" useHandCursor="true" buttonMode="true"/>
+
+        <mx:Text x="40" y="420" selectable="false" styleName="sectionHeading" paddingLeft="0"
+             text="{resourceManager.getString('intro','how_it_works')}"/>
+
+
+        <mx:Image x="40" y="455" source="psp/taxcredits/view/assets/num-1.png"/>
+        <mx:Text x="70" y="458" selectable="false" styleName="frontDetailText"
+                 text="{resourceManager.getString('intro','how_it_works_1')}"/>
+
+        <mx:Image x="40" y="492" source="psp/taxcredits/view/assets/num-2.png"/>
+        <mx:Text x="70" y="495" selectable="false" styleName="frontDetailText"
+                 text="{resourceManager.getString('intro','how_it_works_2')}"/>
+
+        <mx:Image x="40" y="529" source="psp/taxcredits/view/assets/num-3.png"/>
+        <mx:Text x="70" y="524" selectable="false" styleName="frontDetailText" width="500"
+                 text="{resourceManager.getString('intro','how_it_works_3')}"/>
+
+
+        <controls:QASection x="38" y="580" width="860"
+                title="{resourceManager.getString('intro','learn_more_title')}"
+                items="{QAItemFactory.qaItems}"/>
+                    
+    </mx:Canvas>
+    <mx:VBox paddingLeft="20" paddingTop="15">
+        <mx:HBox>
+            <mx:Text selectable="false" styleName="footnote"
+                     text="1."/>
+            <mx:Text selectable="false" styleName="footnote" width="600"
+                     text="{resourceManager.getString('intro','footnote_1', [model.price])}"/>
+        </mx:HBox>
+    </mx:VBox>
+    
+</mx:VBox>

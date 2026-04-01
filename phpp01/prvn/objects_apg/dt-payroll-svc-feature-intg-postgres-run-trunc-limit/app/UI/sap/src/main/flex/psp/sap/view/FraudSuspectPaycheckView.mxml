@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	height="100%"
+	width="100%" 
+	creationComplete="onCreationComplete()" xmlns:controls="psp.sap.view.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.FraudSuspectPaycheckViewModel;
+			
+			private var mViewModel:FraudSuspectPaycheckViewModel;
+			private var mTempViewModel:FraudSuspectPaycheckViewModel;
+			private var mCreationComplete:Boolean = false;			
+								
+			[Bindable]
+			public function get viewModel():FraudSuspectPaycheckViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:FraudSuspectPaycheckViewModel):void {												
+				if (mCreationComplete) {
+					mViewModel = value;															
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+	
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;											
+			}
+			
+			private function formatNumber(item:Object, dgc:DataGridColumn):String {				
+				return currencyFormatter.format(item[dgc.dataField]);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="currencyFormatter" currencySymbol="" useThousandsSeparator="true" decimalSeparatorFrom="." decimalSeparatorTo="." precision="2"/>
+	
+	<controls:SAPDataGrid
+		id="suspectPaycheckGrid"
+		dataProvider="{viewModel.suspectPaychecks}"
+		visible="{viewModel.suspectPaychecks != null ? viewModel.suspectPaychecks.length > 0 : false}"
+		includeInLayout="{viewModel.suspectPaychecks != null ? viewModel.suspectPaychecks.length > 0 : false}"
+		selectable="false"
+		draggableColumns="false"
+		maxRows="5"
+		width="100%">
+		<controls:columns>
+			<mx:DataGridColumn
+				headerText="Employee Name"
+				dataField="employeeName"
+				minWidth="110"/>
+			<mx:DataGridColumn
+				headerText="Amount"
+				dataField="amount"
+				labelFunction="formatNumber"
+				minWidth="80"
+				textAlign="right"/>
+			<mx:DataGridColumn
+				headerText="Trigger"
+				dataField="trigger"
+				minWidth="80"/>
+		</controls:columns>
+	</controls:SAPDataGrid>
+	<mx:VBox
+		id="noSuspectPaychecks"
+		height="100%"
+		width="100%"
+		visible="{viewModel.suspectPaychecks == null || viewModel.suspectPaychecks.length == 0}"
+		includeInLayout="{viewModel.suspectPaychecks == null || viewModel.suspectPaychecks.length == 0}">
+		<mx:Label text="There are no suspect paychecks for this payroll" fontWeight="bold"/>
+	</mx:VBox>
+				
+</mx:VBox>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:flexunit="flexunit.flexui.*" 
+	layout="absolute"
+	pageTitle="SAP Test Runner" 
+	creationComplete="onCreationComplete()">
+	 
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import psp.sap.application.events.SAPEvent;
+			import test.sap.SAPTestSuite;
+	        import flexunit.junit.JUnitTestRunner;
+	        
+	        private var runner: JUnitTestRunner;
+			private var testSuite: SAPTestSuite;
+	
+			// guard to prevent accidental multiple runs due to tests
+			// calling SAP.instance.lookupService.loadData();
+			// they shouldn't... but just in case.
+			private var iteration:int = 0;
+			
+			private function onCreationComplete():void {
+				testSuite = new SAPTestSuite();
+				testSuite.prepareForTests(onPrepareComplete);
+				status.text = "Setting up data for tests...";
+			}
+			
+			private function onPrepareComplete(e:SAPEvent):void {
+				iteration++;
+				if (iteration > 1) {
+					Alert.show("INVESTIGATE NOW: a FlexUnit test is calling SAP.instance.lookupService.loadData() -- this can cause infinite test runs.");
+					return;
+				}
+				
+	            status.text = "Please wait running test suite...";
+	            runner = new JUnitTestRunner();
+	            runner.run( testSuite.createSuite(), onTestComplete );
+			}
+	
+	        private function onTestComplete() : void
+	        {
+	            status.text = "Finished running test suite.";	            
+	        }        			
+		]]>
+	</mx:Script>
+
+	<!-- flexunit provides a very handy default test runner GUI -->
+	<!--<flexunit:TestRunnerBase id="testRunner" width="100%" height="100%" />-->
+	<mx:Label id="status" text="Loading..." />
+</mx:Application>

@@ -1,0 +1,14 @@
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <sql-query name="findPaymentTemplatePaymentMethodWithManualRequirement">
+        <return alias="ptpm" class="com.intuit.sbd.payroll.psp.domain.PaymentTemplatePaymentMethod"/>
+            select ptpm.* from PSP_PMT_TEMPLATE_PAYMENTMETHOD ptpm join PSP_PAYMENT_METHOD_REQUIREMENT pmr on
+                PTPM.PMT_TEMPLATE_PAYMENTMETHOD_SEQ= pmr.pmt_template_pmt_method_fk join PSP_MANUAL_REQUIREMENT
+                mr on MR.MANUAL_REQUIREMENT_SEQ=PMR.PAYMENT_METHOD_REQUIREMENT_SEQ
+                 and payment_template_fk=:paymentTemplateCd
+    </sql-query>
+
+</hibernate-mapping>

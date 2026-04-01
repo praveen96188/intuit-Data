@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findTransactionResponses">
+        <![CDATA[
+			Select transactionResponse
+			from com.intuit.sbd.payroll.psp.domain.TransactionResponse as transactionResponse
+			where transactionResponse.Company =:company
+			    and transactionResponse.TransactionTokenNumber >:transactionTokenNumber
+			order by TransactionTokenNumber Desc
+
+			]]>
+    </query>
+
+    <query name="findTxnResponsesByFinTxn">
+        <![CDATA[
+			Select transactionResponse
+			from com.intuit.sbd.payroll.psp.domain.TransactionResponse as transactionResponse,
+                 com.intuit.sbd.payroll.psp.domain.FinancialTransactionState finTxState
+			where finTxState.FinancialTransaction =:finTx
+			    and finTxState.TransactionResponse.Id = transactionResponse.Id
+			
+        ]]>
+    </query>
+    
+    <query name="findLastTransactionResponseToken">
+        <![CDATA[
+			Select max(transactionResponse.TransactionTokenNumber)
+			from com.intuit.sbd.payroll.psp.domain.TransactionResponse as transactionResponse
+			where transactionResponse.Company =:company
+
+			]]>
+    </query>
+</hibernate-mapping>
+

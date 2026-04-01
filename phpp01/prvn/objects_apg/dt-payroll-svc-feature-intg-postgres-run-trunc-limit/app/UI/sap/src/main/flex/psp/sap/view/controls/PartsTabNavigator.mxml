@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 	
+	width="100%"
+	verticalGap="-1" 	
+	initialize="onInit();"
+	creationComplete="onCreationComplete();" xmlns:controls="psp.sap.view.controls.*" xmlns:view="psp.sap.view.*">
+	
+	<mx:Metadata>
+    	[DefaultProperty("views")]
+    </mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.events.IndexChangedEvent;
+
+            import psp.sap.application.enums.ViewModelActivationStateEnum;
+            import psp.sap.viewmodel.PartsTabNavigatorViewModel;
+			import mx.events.ItemClickEvent;
+			import mx.events.ChildExistenceChangedEvent;
+			import mx.core.Container;
+			import psp.sap.viewmodel.CompositePartViewModel;
+			import psp.sap.application.ViewModelSync;
+			import psp.sap.application.collections.PartViewModelCollection;
+			import psp.sap.viewmodel.AbstractPartViewModel;
+            import psp.sap.viewmodel.events.ViewModelEvent;
+
+            private var mViewModel:PartsTabNavigatorViewModel;
+			private var mTempViewModel:PartsTabNavigatorViewModel;
+			private var mCreationComplete:Boolean = false;
+			
+			private var mViews:Array = [];
+            private var mViewsChanged:Boolean = false;                         
+			
+			[Bindable]
+			public function get viewModel():PartsTabNavigatorViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:PartsTabNavigatorViewModel):void {												
+				if (mCreationComplete) {
+					mViewModel = value;
+					if(mViewModel != null){
+						mViewModel.validSingleCompositePartCheck();
+                        partsTabBar.selectedItem = viewModel.partViewModels.getItemAt(0);
+                        if (viewModel.activationState == ViewModelActivationStateEnum.ACTIVATED) {
+                            viewModel.activateSinglePart(AbstractPartViewModel(viewModel.partViewModels.getItemAt(0)).label);
+                        } else {
+                            viewModel.addEventListener(ViewModelEvent.ACTIVATED, function(e:ViewModelEvent):void {
+                                viewModel.activateSinglePart(AbstractPartViewModel(viewModel.partViewModels.getItemAt(0)).label);
+                                e.currentTarget.removeEventListener(e.type, arguments.callee);
+                            }, false, 0, true);
+                        }
+					}
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+	
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;
+			}
+			
+			public function onTabClicked(e:ItemClickEvent):void {
+				var part:AbstractPartViewModel = (e.item as AbstractPartViewModel);
+				viewModel.activateSinglePart(part.label);
+			}
+			
+			public function tabLabelFunction(item:Object):String {
+				return item.hasOwnProperty("pageLabel") ? item["pageLabel"] : item["label"]; 
+			}
+			
+			  		
+
+        	public function set views( value:Array ):void
+            {               
+                mViews = value;
+                
+                mViewsChanged = true;
+                invalidateProperties();                
+            }
+            
+            public function get views():Array
+            {
+                return mViews;
+            }
+            
+
+            protected function onInit():void {
+            	addViewsToViewStack();
+            }
+                                    
+            private function addViewsToViewStack():void {
+            	if( mViewsChanged )
+	            {
+	                for(var i:int = 0; i<views.length; i++){
+	                	var view:Container = views[i] as Container;
+	                	partViews.addChild(view);
+	                	dispatchEvent(new ChildExistenceChangedEvent(ChildExistenceChangedEvent.CHILD_ADD, false, false, view));
+	                }
+
+	                mViewsChanged = false;
+	            }    
+
+            }
+                        
+            private function onIndexChange(e:IndexChangedEvent):void {
+            	//have they actually been created at this point? who knows, creation is complete anyway
+            	//so hopefully this event is fired after they are actually actually created created
+            	ViewModelSync.associatePageViewModels(partViews.getChildAt(e.newIndex) as UIComponent, viewModel.partViewModels.source[e.newIndex] as AbstractPartViewModel);
+            }
+		]]>
+	</mx:Script>
+	
+	<controls:SAPTabBar
+		id="partsTabBar"
+		dataProvider="{viewModel.partViewModels}"
+		itemClick="onTabClicked(event)"
+		horizontalGap="4"
+		labelFunction="tabLabelFunction"/>		
+	
+	<mx:HBox
+		horizontalGap="0"
+		width="100%"
+		borderColor="#999999"
+		borderSides="left, right"
+		borderStyle="solid"
+		id="tabBorderBox">
+		<mx:VBox
+			width="{partsTabBar.selectedChild.x}" 
+			borderColor="#999999"
+			borderSides="top"
+			borderStyle="solid">
+			<mx:Spacer height="5"/>
+		</mx:VBox>
+		<mx:VBox
+			width="{partsTabBar.selectedChild.width}">
+			<mx:Spacer height="5"/>
+		</mx:VBox>
+		<mx:VBox
+			width="100%" 
+			borderColor="#999999"
+			borderSides="top"
+			borderStyle="solid">
+			<mx:Spacer height="5"/>
+		</mx:VBox>	
+	</mx:HBox>
+			
+	<view:ViewStackControlEx
+		id="partViews"
+		width="100%"
+		resizeToContent="true"
+		borderColor="#999999"
+		borderStyle="solid"
+		borderSides="left, right, bottom"
+		change="onIndexChange(event)"/>				
+		
+	<mx:Binding source="viewModel.activeSinglePartIndex" destination="partsTabBar.selectedIndex"/>		
+	<mx:Binding source="viewModel.activeSinglePartLabel" destination="partViews.selectedChildLabel"/>	
+	
+</mx:VBox>

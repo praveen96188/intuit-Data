@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        height="100%">
+
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.formatters.SAPCurrencyFormatters;
+            import psp.sap.model.DirectDepositLimitRule;
+            import psp.sap.viewmodel.AdministrationSettingsPageViewModel;
+
+            private var mViewModel:AdministrationSettingsPageViewModel;
+            private var mTempViewModel:AdministrationSettingsPageViewModel;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            public function get viewModel():AdministrationSettingsPageViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:AdministrationSettingsPageViewModel):void {
+                if(value != null) {
+                    mViewModel = value;
+                }
+            }
+						
+		]]>
+	</mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox id="dataContainer"
+             styleName="standardTabbedBody"
+             width="80%"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+
+
+        <!--Default Payroll Direct Deposit Limits-->
+        <mx:HBox verticalAlign="top" paddingBottom="5">
+            <mx:Label text="Limit Rule Set: "/>
+            <controls:SAPComboBox dataField="limitRule" dataProvider="{viewModel.directDepositLimitRules}" labelField="description"/>
+        </mx:HBox>
+
+        <mx:HBox styleName="companyInformationBoxStyle" horizontalGap="0" verticalAlign="top">
+            <mx:HBox horizontalGap="0" verticalAlign="top">
+                <mx:Label text="Default Direct Deposit Limits" width="230" />
+            </mx:HBox>
+            <mx:VBox height="100%" verticalGap="5" verticalAlign="middle" width="360" paddingRight="10" styleName="dataBoxStyle">
+                <mx:Label text="Direct Deposit" fontWeight="bold"/>
+                <mx:HBox id="hboxDDLimit" width="100%" styleName="ddLimitBoxStyle" >
+                    <mx:Label text="Per Company " styleName="ddPerLimitTextStyle"/>
+                    <mx:Label text="DD Limit: " />
+                    <mx:Label id="ddLimitPerCompanyLabel" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.ddLimitPerCompany)}" styleName="ddLimitDollarAmountStyle"/>
+                    <mx:Label text="in" />
+                    <mx:Label text="{viewModel.numDaysPerCompany}" styleName="ddLimitDollarAmountStyle"/>
+                    <mx:Label text="days" />
+                </mx:HBox>
+                <mx:HBox  id="ddEmployeeLimitHBox" width="{hboxDDLimit.width}" styleName="ddLimitBoxStyle">
+                    <mx:Label text="Per Employee " styleName="ddPerLimitTextStyle"/>
+                    <mx:Label text="DD Limit: " />
+                    <mx:Label id="ddLimitPerEmployeeLabel" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.ddLimitPerEmployee)}" styleName="ddLimitDollarAmountStyle"/>
+                    <mx:Label text="in" />
+                    <mx:Label text="{viewModel.numDaysPerEmployee}" styleName="ddLimitDollarAmountStyle"/>
+                    <mx:Label text="days" />
+                </mx:HBox>
+                <mx:HBox id="maxNumViolationsHBox" width="{hboxDDLimit.width}" styleName="ddLimitBoxStyle" >
+                    <mx:Label text="Maximum violations before suspend:"/>
+                    <mx:Label id="numViolationsLabel" text="{viewModel.numViolations}" styleName="ddLimitDollarAmountStyle" />
+                </mx:HBox>
+            </mx:VBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+
+        <mx:Spacer height="15" />
+        
+		<!-- auto-limit increase tiers -->
+		<mx:HBox
+                visible="{viewModel.autoLimitIncreaseTiers.length > 0}"
+                includeInLayout="{viewModel.autoLimitIncreaseTiers.length > 0}"
+                styleName="companyInformationBoxStyle"
+                verticalGap="0" horizontalGap="0" paddingTop="5" paddingBottom="5">
+            <mx:HBox horizontalGap="0" verticalAlign="top">
+                <mx:Text text="Direct Deposit Limit{'\n'}Auto Increase Tiers" width="230" />
+            </mx:HBox>					
+			<mx:Grid width="360" styleName="dataBoxStyle">
+				<mx:GridRow>
+					<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Text text="Payrolls{'\n'}Run" textAlign="right"/></mx:GridItem>
+					<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Text  text="Days Since{'\n'}1st Payroll" textAlign="right" /></mx:GridItem>
+					<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Text text="Limit{'\n'}Multiplier" textAlign="right"/></mx:GridItem>
+					<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Text text="Company{'\n'}Max" textAlign="right"/></mx:GridItem>
+					<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Text text="Employee{'\n'}Max" textAlign="right"/></mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="10"/>
+				<mx:Repeater id="tierRepeater" dataProvider="{viewModel.autoLimitIncreaseTiers}">
+					<mx:GridRow>
+						<mx:GridItem><mx:Label	 	name="payrollsRun"		
+													text="{tierRepeater.currentItem.payrollsRun}"
+													width="100%"
+													textAlign="right"/>
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+									<mx:Label 	name="daysSinceFirstPayroll" 
+											  		text="{tierRepeater.currentItem.daysSinceFirstPayroll}"
+											  		width="100%"
+											  		textAlign="right" />
+						</mx:GridItem>
+						<mx:GridItem><mx:Label 	name="increaseMultiplier" 	
+											  		text="{tierRepeater.currentItem.increaseMultiplier}"
+											  		width="100%"
+											  		textAlign="right" />
+						</mx:GridItem>
+						<mx:GridItem><mx:Label	name="companyCap"
+											  		text="{SAPCurrencyFormatters.wholeDollarFormatter.format(tierRepeater.currentItem.companyCap)}"
+											  		width="100%"
+											  		textAlign="right"/>
+						</mx:GridItem>
+						<mx:GridItem><mx:Label	name="employeeCap" 
+											  		text="{SAPCurrencyFormatters.wholeDollarFormatter.format(tierRepeater.currentItem.employeeCap)}"
+											  		width="100%"
+											  		textAlign="right"/>
+						</mx:GridItem>
+					</mx:GridRow> 
+				</mx:Repeater>
+			</mx:Grid>
+		    <mx:HBox width="72" height="100%" styleName="actionBoxStyle" >
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+		</mx:HBox>
+        
+        <mx:Spacer height="15" visible="{viewModel.autoLimitIncreaseTiers.length > 0}"
+                   includeInLayout="{viewModel.autoLimitIncreaseTiers.length > 0}"/>
+        
+        <!-- verify bank account limits -->
+
+        <mx:HBox styleName="companyInformationBoxStyle" horizontalGap="0" verticalAlign="top">
+            <!--hbox for first column -->
+            <mx:HBox horizontalGap="0" verticalAlign="top" >
+                <mx:Label text="Verify Bank Account Limits" width="230" />
+            </mx:HBox>
+            <mx:HBox height="100%" verticalAlign="top"  width="360" paddingRight="10" styleName="dataBoxStyle">
+                <mx:HBox id="allowedAttemptsHBox" width="100%" styleName="ddLimitBoxStyle">
+                    <mx:Label text="Number of Attempts Allowed:" />
+                    <mx:Label id="numAttemptsLabel" text="{viewModel.numAttemptsVerifyLimits}" styleName="ddLimitDollarAmountStyle"/>
+                    <mx:Label text="in" />
+                    <mx:Label id="numDaysLabel" text="{viewModel.numDaysVerifyLimits}" styleName="ddLimitDollarAmountStyle" />
+                    <mx:Label text="days" />
+                </mx:HBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle">
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+
+
+        <mx:Spacer height="15" />
+        <!-- Suspicious Payrolls -->
+
+        <mx:HBox styleName="companyInformationBoxStyle" horizontalGap="0" verticalAlign="top">
+            <!--hbox for first column -->
+            <mx:HBox horizontalGap="0" verticalAlign="top" >
+                <mx:Label text="Suspicious Payrolls" width="230" />
+            </mx:HBox>
+            <mx:HBox height="100%" verticalAlign="middle" width="360" paddingRight="10" styleName="dataBoxStyle">
+
+                <mx:VBox width="100%" verticalGap="0" height="100%">
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle">
+                        <mx:Label id = "lblMinPayrollAmt" text="Minimum Payroll Amount: "/>
+                        <mx:Label id="txtMinPayrollAmt" styleName="ddLimitDollarAmountStyle" width="{txtMaxPayrollAmt.width}" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.minPayrollAmt)}" />
+                    </mx:HBox>
+
+                    <mx:HBox width="100%" styleName="ddLimitBoxStyle">
+                        <mx:Label id="lblMaxPayrollAmt" width="{lblMinPayrollAmt.width}" text="Maximum Payroll Amount:"/>
+                        <mx:Label id="txtMaxPayrollAmt" styleName="ddLimitDollarAmountStyle" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.maxPayrollAmt)}" />
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox width="72" height="100%" styleName="actionBoxStyle">
+                <mx:VBox verticalGap="0" horizontalAlign="left">
+                    <mx:LinkButton label="Edit" click="viewModel.editSettings()" visible="true" styleName="standardLinkButtonStyle"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+
+</mx:VBox>

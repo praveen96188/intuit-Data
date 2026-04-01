@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+    <query name="findCompaniesForInitialLoad">
+        <![CDATA[
+            select comp.SourceCompanyId, comp.id
+            from com.intuit.sbd.payroll.psp.domain.Company as comp
+            where comp.id in (
+                select distinct c.id
+                from com.intuit.sbd.payroll.psp.domain.Company as c,
+                com.intuit.sbd.payroll.psp.domain.Entitlement as e,
+                com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu,
+                com.intuit.sbd.payroll.psp.domain.EntitlementCode as ec,
+                com.intuit.sbd.payroll.psp.domain.CompanyService as cs
+                where c.id = eu.Company.id
+                and e.id = eu.Entitlement.id
+                and e.EntitlementCode.id = ec.id
+                and c.id = cs.Company.id
+                and e.EntitlementState = 'Enabled'
+                and eu.EntitlementUnitStatus in ('Activated', 'PendingActivation', 'PendingReactivation')
+                and c.SourceSystemCd = 'QBDT'
+                and cs.Service.ServiceCd in ('Tax','ViewMyPaycheck')
+                and ((c.PublishStatus is null and '0' = :companyPublishState) or (SUBSTR(c.PublishStatus,:fieldIndex+1, 1) = :companyPublishState))
+                and c.IAMRealmId is not null ) order by comp.SourceCompanyId desc
+        ]]>
+    </query>
+
+    <query name="findActiveCompanies">
+        <![CDATA[
+            select comp.SourceCompanyId, comp.id
+            from com.intuit.sbd.payroll.psp.domain.Company as comp
+            where comp.id in (
+                select distinct c.id
+                from com.intuit.sbd.payroll.psp.domain.Company as c,
+                com.intuit.sbd.payroll.psp.domain.Entitlement as e,
+                com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu,
+                com.intuit.sbd.payroll.psp.domain.EntitlementCode as ec
+                where c.id = eu.Company.id
+                and e.id = eu.Entitlement.id
+                and e.EntitlementCode.id = ec.id
+                and e.EntitlementState = 'Enabled'
+                and eu.EntitlementUnitStatus in ('Activated', 'PendingActivation', 'PendingReactivation')
+                and c.SourceSystemCd = 'QBDT'
+                and ((c.PublishStatus is null and '0' = :companyPublishState) or (SUBSTR(c.PublishStatus,:fieldIndex+1, 1) = :companyPublishState))
+                ) order by comp.SourceCompanyId desc
+        ]]>
+    </query>
+
+    <query name="findActiveCompaniesHavingRealm">
+        <![CDATA[
+            select comp.SourceCompanyId, comp.id
+            from com.intuit.sbd.payroll.psp.domain.Company as comp
+            where comp.id in (
+                select distinct c.id
+                from com.intuit.sbd.payroll.psp.domain.Company as c,
+                com.intuit.sbd.payroll.psp.domain.Entitlement as e,
+                com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu,
+                com.intuit.sbd.payroll.psp.domain.EntitlementCode as ec
+                where c.id = eu.Company.id
+                and e.id = eu.Entitlement.id
+                and e.EntitlementCode.id = ec.id
+                and e.EntitlementState = 'Enabled'
+                and eu.EntitlementUnitStatus in ('Activated', 'PendingActivation', 'PendingReactivation')
+                and c.SourceSystemCd = 'QBDT'
+                and c.IAMRealmId is not null
+                and ((c.PublishStatus is null and '0' = :companyPublishState) or (SUBSTR(c.PublishStatus,:fieldIndex+1, 1) = :companyPublishState))
+                ) order by comp.SourceCompanyId desc
+        ]]>
+    </query>
+
+    <query name="findInActiveCompaniesHavingRealm">
+        <![CDATA[
+            select comp.SourceCompanyId, comp.id
+            from com.intuit.sbd.payroll.psp.domain.Company as comp
+            where comp.id in (
+                select distinct c.id
+                from com.intuit.sbd.payroll.psp.domain.Company as c,
+                com.intuit.sbd.payroll.psp.domain.Entitlement as e,
+                com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu,
+                com.intuit.sbd.payroll.psp.domain.EntitlementCode as ec
+                where c.id = eu.Company.id
+                and e.id = eu.Entitlement.id
+                and e.EntitlementCode.id = ec.id
+                and (e.EntitlementState = 'Disabled'
+                    or eu.EntitlementUnitStatus in ('ActivationHold','DeactivationHold','Deactivated',
+        'PendingDeactivation','ErrorDeactivating','ErrorActivating'))
+                and c.SourceSystemCd = 'QBDT'
+                and c.IAMRealmId is not null
+                and (e.ModifiedDate > add_months( trunc(sysdate), -12*7 ) or eu.ModifiedDate > add_months( trunc(sysdate), -12*7 ) )
+                and ((c.PublishStatus is null and '0' = :companyPublishState) or (SUBSTR(c.PublishStatus,:fieldIndex+1, 1) = :companyPublishState))
+                ) order by comp.SourceCompanyId desc
+        ]]>
+    </query>
+
+    <query name="findInActiveCompaniesHavingRealm_postgres">
+        <![CDATA[
+            select comp.SourceCompanyId, comp.id
+            from com.intuit.sbd.payroll.psp.domain.Company as comp
+            where comp.id in (
+                select distinct c.id
+                from com.intuit.sbd.payroll.psp.domain.Company as c,
+                com.intuit.sbd.payroll.psp.domain.Entitlement as e,
+                com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu,
+                com.intuit.sbd.payroll.psp.domain.EntitlementCode as ec
+                where c.id = eu.Company.id
+                and e.id = eu.Entitlement.id
+                and e.EntitlementCode.id = ec.id
+                and (e.EntitlementState = 'Disabled'
+                    or eu.EntitlementUnitStatus in ('ActivationHold','DeactivationHold','Deactivated',
+        'PendingDeactivation','ErrorDeactivating','ErrorActivating'))
+                and c.SourceSystemCd = 'QBDT'
+                and c.IAMRealmId is not null
+                and (e.ModifiedDate >  date_trunc('day',current_timestamp at time zone 'PST') - interval '84 months'  or eu.ModifiedDate > date_trunc('day',current_timestamp at time zone 'PST') - interval '84 months' )
+                and ((c.PublishStatus is null and '0' = :companyPublishState) or (SUBSTR(c.PublishStatus,:fieldIndex+1, 1) = :companyPublishState))
+                ) order by comp.SourceCompanyId desc
+        ]]>
+    </query>
+</hibernate-mapping>

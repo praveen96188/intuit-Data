@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%"
+        >
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.CompanyQuickBooksHistoryViewModel;
+
+        private var mViewModel:CompanyQuickBooksHistoryViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanyQuickBooksHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyQuickBooksHistoryViewModel):void {
+            mViewModel = value;
+        }
+        ]]>
+    </mx:Script>    
+        
+    
+	<controls:SAPDataGrid
+		id="propertyHistoryGrid"
+        variableRowHeight="true"
+		dataProvider="{viewModel.propertyHistory}" 
+		selectable="false" 
+		width="95%">
+		<controls:columns>
+			<controls:SAPDataGridColumn
+					headerText="Change Date/Time"
+					textAlign="center" 
+					labelFunction="SAPDataGrid.formatDateTimeFormatDateOverTime"
+					wordWrap="true"
+                    headerWordWrap="true"
+					dataField="auditDate"
+                    width="85"/>
+            <controls:SAPDataGridColumn
+                    headerText="Field"
+                    textAlign="center"
+                    wordWrap="true"
+                    dataField="propertyName"/>
+            <controls:SAPDataGridColumn
+					headerText="Changed By"
+					textAlign="center" 
+					color="green"
+					headerStyleName="directDepositHeader"
+					dataField="userId"/>
+            <controls:SAPDataGridColumn
+                    itemRenderer="mx.controls.Text"
+					headerText="From"
+					textAlign="center" 
+					dataField="oldPropertyValue"/>
+            <controls:SAPDataGridColumn
+                    itemRenderer="mx.controls.Text"
+					headerText="To"
+					textAlign="center" 
+					dataField="newPropertyValue"/>
+		</controls:columns>
+	</controls:SAPDataGrid>
+		
+</mx:VBox>

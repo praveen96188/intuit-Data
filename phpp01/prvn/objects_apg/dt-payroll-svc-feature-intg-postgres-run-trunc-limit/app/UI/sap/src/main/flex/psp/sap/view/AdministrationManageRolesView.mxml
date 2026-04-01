@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+
+        import psp.sap.model.UserRole;
+        import psp.sap.viewmodel.AdministrationManageRolesViewModel;
+
+        private var mViewModel:AdministrationManageRolesViewModel;
+
+        [Bindable]
+        public function get viewModel():AdministrationManageRolesViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:AdministrationManageRolesViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+            }
+        }
+
+        [Bindable ("propertyChange")]
+        public function set addRoleItems(value:ArrayCollection):void {
+            rolesContainer.removeAllChildren();
+            if (viewModel.roles != null && viewModel.roles.length > 0) {
+                addRoles();
+            }
+        }
+
+        private function addRoles():void {
+            for each(var role:UserRole in viewModel.roles) {
+                var roleItem:AdministrationManageRolesItem = new AdministrationManageRolesItem();
+                roleItem.role = role;
+                roleItem.operations = viewModel.operations;
+                rolesContainer.addChild(roleItem);
+            }
+        }
+            
+		]]>
+	</mx:Script>
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox
+            width="80%"
+            verticalGap="0"
+            id="dataContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+
+        <mx:HBox>
+            <mx:Button label="Collapse All" width="125" click="viewModel.collapseAll()"/>
+            <mx:Button label="Expand All" width="125" click="viewModel.expandAll()"/>
+        </mx:HBox>
+        <mx:Spacer height="10"/>
+        <mx:VBox
+                verticalGap="0"
+                id="rolesContainer">
+
+            <!-- insert role items here -->
+
+        </mx:VBox>
+
+    </mx:VBox>
+
+
+    <mx:Binding source="viewModel.roles" destination="addRoleItems" />
+</mx:VBox>
+

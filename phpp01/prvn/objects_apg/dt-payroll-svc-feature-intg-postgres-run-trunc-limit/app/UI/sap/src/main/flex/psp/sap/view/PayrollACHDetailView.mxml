@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	height="100%"
+	width="100%"	
+	verticalGap="0"
+	paddingLeft="5"
+	paddingRight="5" 	
+	creationComplete="onCreationComplete();"
+	resize="onResize(event)"	
+	borderColor="black"
+	borderSides="right"
+	borderThickness="2"
+	borderStyle="{viewModel.compare ? 'solid' : 'none'}">
+	<mx:Metadata>
+    	[Event(name="modelDataLoaded", type="psp.sap.viewmodel.events.ViewModelEvent")]
+    </mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.DataGrid;
+        import mx.controls.dataGridClasses.DataGridColumn;
+        import mx.events.ResizeEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.MoneyMovementTransaction;
+        import psp.sap.viewmodel.PayrollACHDetailViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+
+        private static const COL_1:Number = 110;
+        private static const COL_2:Number = 90;
+        private static const COL_3:Number = 80;
+        private static const COL_4:Number = 80;
+
+        private var mViewModel:PayrollACHDetailViewModel;
+        private var mTempViewModel:PayrollACHDetailViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable] public var showCloseLink:Boolean = false;
+        [Bindable] public var showCompareLink:Boolean = false;
+        [Bindable] public var resizeFunction:Function;
+
+        [Bindable]
+        public function get viewModel():PayrollACHDetailViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollACHDetailViewModel):void {
+            if (mCreationComplete) {
+                if (mViewModel != null) {
+                    mViewModel.removeEventListener(ViewModelEvent.MODEL_DATA_LOADED, onModelDataLoaded);
+                }
+
+                mViewModel = value;
+
+                if (mViewModel != null) {
+                    mViewModel.addEventListener(ViewModelEvent.MODEL_DATA_LOADED, onModelDataLoaded, false, 0, true);
+                }
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function onModelDataLoaded(e:ViewModelEvent):void {
+            dispatchEvent(new ViewModelEvent(e.type));
+        }
+
+        public function formatTransactions(item:Object):String {
+            return item.achReason + " - " + dateFormatterMed.format(item.settlementDate);
+        }
+
+        private function formatNumber(item:Object, dgc:DataGridColumn):String {
+            return numberFormatter.format(Number(item[dgc.dataField]));
+        }
+
+        public function feeTotalFunction(dataGrid:DataGrid, col:DataGridColumn):String {
+            if (viewModel != null) {
+                return currencyFormatter.format(viewModel.feeTransactionsTotal);
+            }
+            return "";
+        }
+
+        public function currentLiabilitiesTotalFunction(dataGrid:DataGrid, col:DataGridColumn):String {
+            if (viewModel != null) {
+                return currencyFormatter.format(viewModel.taxTransactionsTotal);
+            }
+            return "";
+        }
+
+        public function taxCreditsTotalFunction(dataGrid:DataGrid, col:DataGridColumn):String {
+            if (viewModel != null) {
+                return currencyFormatter.format(viewModel.taxCreditTransactionsTotal);
+            }
+            return "";
+        }
+
+        public function ddTotalFunction(dataGrid:DataGrid, col:DataGridColumn):String {
+            if (viewModel != null) {
+                return currencyFormatter.format(viewModel.ddTransactionsTotal);
+            }
+            return "";
+        }
+
+        private function formatBankInfo(item:Object, dgc:DataGridColumn):String {
+            return "ACCT#: " + UIUtils.maskBankAccountNumbers(item.employeeBankAccountNumber) +
+                   String('\n') +
+                   "RTN #: " + item.employeeBankRoutingNumber;
+        }
+
+        private function taxLabel(item:Object, dgc:DataGridColumn):String {
+            return item.agencyAbbreviation + " - " + item.taxAbbreviation;
+        }
+
+        private function onResize(e:ResizeEvent):void {
+            // call resize function
+            if (resizeFunction != null) {
+                resizeFunction();
+            }
+        }
+						
+		]]>
+	</mx:Script>
+	
+	<mx:CurrencyFormatter id="currencyFormatter" currencySymbol="" useThousandsSeparator="true" decimalSeparatorFrom="." decimalSeparatorTo="." precision="2"/>
+	<mx:DateFormatter id="dateFormatterMed" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+	<mx:DateFormatter id="dateTimeFormatter" formatString="{SAP.instance.configuration.dateTimeFormatMedium}"/>
+	<mx:NumberFormatter id="numberFormatter" precision="2" useThousandsSeparator="true" />		
+	
+	<mx:HBox 
+		width="100%"
+		verticalAlign="middle">
+		<pspui:ActionLink
+			id="closeLink" 
+        	label="Close"
+        	visible="{!viewModel.compare ? showCloseLink : false}"
+        	includeInLayout="{!viewModel.compare ? showCloseLink : false}"
+        	click="viewModel.showDetail = false"  
+        	tabEnabled="false"
+        	labelPlacement="right"
+        	icon="{SAP.instance.icons.backGreenArrow16}"/>			
+		<controls:ComboBoxEx
+			id="currentTransaction"
+			dataProvider="{viewModel.transactions}"
+			labelFunction="formatTransactions"
+			width="185"
+			fontWeight="normal"
+			rowCount="{viewModel.transactions.length > 10 ? 10 : viewModel.transactions.length}"
+			visible="{viewModel.transactions.length > 1}"
+			includeInLayout="{viewModel.transactions.length > 1}"/>	
+		<pspui:ActionLink
+			id="compareLink" 
+        	label="Compare"        	
+        	visible="{!viewModel.compare ? (viewModel.transactions.length > 1 &amp;&amp; showCompareLink) : false}" 
+        	includeInLayout="{viewModel.compare || viewModel.transactions.length > 1}"       	
+        	click="viewModel.compare = true"  
+        	tabEnabled="false"
+        	labelPlacement="left"
+        	icon="{SAP.instance.icons.fowardGreenArrow16}"/>
+	</mx:HBox>
+	
+	<mx:Spacer height="5"/>		
+		
+	<mx:VBox 
+		verticalGap="0">
+		<mx:Text text="{viewModel.selectedTransaction.achReason}"/>
+		<mx:HBox>
+			<mx:Text text="Check Date:" width="{COL_1}"/>
+			<mx:Text id="checkDateHeader" text="{dateFormatterMed.format(viewModel.selectedTransaction.checkDate)}" width="{COL_2}"/>
+			<!--pspui:ActionLink label="View HPDE Review" width="{COL_1 + COL_2}" textAlign="left" visible="{viewModel.selectedTransaction.HPDE}" includeInLayout="{viewModel.selectedTransaction.HPDE}" click="viewModel.viewHPDEReview()" /-->
+			<mx:Text text="Fees:" width="{COL_3}"/>
+			<mx:Text id="feesHeaderTotal" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.feeTransactionsTotal)}" width="{COL_4}" textAlign="right"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Text text="Settlement Date:" width="{COL_1}"/>
+			<mx:Text id="settlementDateHeader" text="{dateFormatterMed.format(viewModel.selectedTransaction.settlementDate)}" width="{COL_2}"/>
+
+			<mx:Text text="DD:" width="{COL_3}"/>
+			<mx:Text id="ddHeaderTotal" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.ddTransactionsTotal)}" width="{COL_4}" textAlign="right"/>
+			
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Text text="Creation Date:" width="{COL_1}"/>
+			<mx:Text id="creationDateHeader" text="{dateTimeFormatter.format(viewModel.selectedTransaction.creationDate)}" width="{COL_2}"/>
+            <mx:Text text="Taxes:" width="{COL_3}"/>
+            <mx:Text id="taxesHeaderTotal" text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.allTaxTransactionsTotal)}" width="{COL_4}" textAlign="right"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:Spacer height="5"/>
+	
+	<mx:VBox 
+		width="100%"
+		verticalGap="5">					
+		<mx:VBox 
+			id="feesGrid"			
+			styleName="grayDataGridVBox"
+			width="100%"
+			visible="{viewModel.feeTransactions.length > 0 || viewModel.feeTransactionsTotal > 0}"
+			includeInLayout="{viewModel.feeTransactions.length > 0 || viewModel.feeTransactionsTotal > 0}">
+			<mx:Label text="Fees" fontWeight="bold" paddingLeft="5"/>
+			<controls:FooterDataGrid 
+				id="feeTransactions" 
+				dataProvider="{viewModel.feeTransactions}" 				
+				visible="{viewModel.feeTransactions.length > 0}"
+				includeInLayout="{viewModel.feeTransactions.length > 0}"
+	            width="100%"
+	            variableRowHeight="true"
+	            selectable="false"
+	            sortableColumns="false"
+	            draggableColumns="false"
+	            rowCount="{viewModel.feeTransactions.length}">
+				<controls:columns>
+					<controls:FooterDataGridColumn 
+						headerText="Description" 
+						dataField="description">
+						<mx:DataGridColumn 
+							headerText="Total" 
+							dataField="description"/>
+					</controls:FooterDataGridColumn>				
+					<controls:FooterDataGridColumn 
+						headerText="Amount" 
+						dataField="amount"
+						labelFunction="formatNumber"
+						textAlign="right"
+						minWidth="85"
+						resizable="false">
+						<mx:DataGridColumn 
+							labelFunction="feeTotalFunction" 
+							dataField="amount"
+							textAlign="right"/>
+					</controls:FooterDataGridColumn>
+				</controls:columns> 
+			</controls:FooterDataGrid>
+			<mx:HBox 
+				width="100%"
+				styleName="totalBorder"
+				visible="{viewModel.feeTransactions.length == 0}"
+				includeInLayout="{viewModel.feeTransactions.length == 0}">
+				<mx:Label text="Total" paddingLeft="5" fontWeight="bold" width="100%" height="25"/>
+				<mx:Text id="feesTotal" text="{currencyFormatter.format(viewModel.feeTransactionsTotal)}" fontWeight="bold"/>
+			</mx:HBox>		
+		</mx:VBox>
+		
+		<mx:Spacer
+			id="feesSpacer" 
+			visible="{!feesGrid.visible || (feesGrid.visible &amp;&amp; viewModel.feeTransactions.length == 0)}"
+			includeInLayout="{!feesGrid.visible || (feesGrid.visible &amp;&amp; viewModel.feeTransactions.length == 0)}"/>	
+		
+		<mx:VBox 
+			id="taxesGrid"
+			styleName="grayDataGridVBox"
+			width="100%"
+			visible="{viewModel.taxCreditTransactions.length > 0 || viewModel.taxTransactions.length > 0 || viewModel.allTaxTransactionsTotal > 0}"
+	        includeInLayout="{viewModel.taxCreditTransactions.length > 0 || viewModel.taxTransactions.length > 0 || viewModel.allTaxTransactionsTotal > 0}">
+			<mx:Label text="Taxes" fontWeight="bold" paddingLeft="5"/>
+			<controls:FooterDataGrid 
+				id="curentLiabilities" 
+				dataProvider="{viewModel.taxTransactions}"				
+				visible="{viewModel.taxTransactions.length > 0}"
+	            includeInLayout="{viewModel.taxTransactions.length > 0}"
+	            width="100%"
+	            variableRowHeight="true"
+	            selectable="false"
+	            sortableColumns="false"
+	            draggableColumns="false"
+	            rowCount="{viewModel.taxTransactions.length}">
+				<controls:columns>
+					<controls:FooterDataGridColumn 
+						headerText="Current Liabilities" 
+						dataField="agencyAbbreviation"
+						labelFunction="taxLabel">
+						<mx:DataGridColumn 
+							headerText="Total" 
+							dataField="agencyAbbreviation"/>
+					</controls:FooterDataGridColumn>				
+					<controls:FooterDataGridColumn 
+						headerText="Amount" 
+						dataField="amount"
+						labelFunction="formatNumber"
+						textAlign="right"
+						minWidth="85"
+						resizable="false">
+						<mx:DataGridColumn 
+							labelFunction="currentLiabilitiesTotalFunction" 
+							dataField="amount"
+							textAlign="right"/>
+					</controls:FooterDataGridColumn>
+				</controls:columns> 
+			</controls:FooterDataGrid>
+			<controls:FooterDataGrid 
+				id="appliedTaxCredits" 
+				dataProvider="{viewModel.taxCreditTransactions}"				
+				visible="{viewModel.taxCreditTransactions.length > 0}"
+	            includeInLayout="{viewModel.taxCreditTransactions.length > 0}"
+	            width="100%"
+	            variableRowHeight="true"
+	            selectable="false"
+	            sortableColumns="false"
+	            draggableColumns="false"
+	            rowCount="{viewModel.taxCreditTransactions.length}">
+				<controls:columns>
+					<controls:FooterDataGridColumn 
+						headerText="Applied Tax Credit" 
+						dataField="agencyAbbreviation"
+						labelFunction="taxLabel">
+						<mx:DataGridColumn 
+							headerText="Total" 
+							dataField="agencyAbbreviation"/>
+					</controls:FooterDataGridColumn>				
+					<controls:FooterDataGridColumn 
+						headerText="Amount" 
+						dataField="amount"
+						labelFunction="formatNumber"
+						textAlign="right"
+						minWidth="85"
+						resizable="false">
+						<mx:DataGridColumn 
+							labelFunction="taxCreditsTotalFunction" 
+							dataField="amount"
+							textAlign="right"/>
+					</controls:FooterDataGridColumn>
+				</controls:columns> 
+			</controls:FooterDataGrid>
+			<mx:HBox 
+				width="100%"
+				styleName="totalBorder"
+				visible="{viewModel.taxCreditTransactions.length > 0 || viewModel.taxTransactions.length == 0}"
+				includeInLayout="{viewModel.taxCreditTransactions.length > 0 || viewModel.taxTransactions.length == 0}">
+				<mx:Label text="Total" paddingLeft="5" fontWeight="bold" width="100%" height="25"/>
+				<mx:Text id="taxTotal" fontWeight="bold" text="{currencyFormatter.format(viewModel.allTaxTransactionsTotal)}"/>
+			</mx:HBox>		
+		</mx:VBox>
+		
+		<mx:Spacer 
+			id="taxesSpacer"
+			visible="{!taxesGrid.visible || (taxesGrid.visible &amp;&amp; (viewModel.taxCreditTransactions.length == 0 || viewModel.taxTransactions.length == 0))}"
+			includeInLayout="{!taxesGrid.visible || (taxesGrid.visible &amp;&amp; (viewModel.taxCreditTransactions.length == 0 || viewModel.taxTransactions.length == 0))}"/>
+		
+		<mx:VBox 
+			id="ddGrid"
+			styleName="grayDataGridVBox"
+			width="100%"
+			visible="{viewModel.ddTransactions.length > 0 || viewModel.ddTransactionsTotal > 0}"
+	        includeInLayout="{viewModel.ddTransactions.length > 0 || viewModel.ddTransactionsTotal > 0}">
+			<mx:Label text="Direct Deposit" fontWeight="bold" paddingLeft="5"/>
+			<controls:FooterDataGrid 
+				id="ddTransactions" 
+				dataProvider="{viewModel.ddTransactions}"				
+				visible="{viewModel.ddTransactions.length > 0}"
+	            includeInLayout="{viewModel.ddTransactions.length > 0}"
+	            width="100%"
+	            variableRowHeight="true"
+	            selectable="false"
+	            sortableColumns="false"
+	            draggableColumns="false"
+	            rowCount="{viewModel.ddTransactions.length}">
+				<controls:columns>
+					<controls:FooterDataGridColumn 
+						headerText="EE Name" 
+						dataField="employeeName">
+						<mx:DataGridColumn 
+							headerText="Total" 
+							dataField="employeeName"/>
+					</controls:FooterDataGridColumn>				
+					<controls:FooterDataGridColumn 
+						headerText="Bank Account"
+						sortable="false" 
+						labelFunction="formatBankInfo">
+						<mx:DataGridColumn 
+							headerText=""/>
+					</controls:FooterDataGridColumn>					
+					<controls:FooterDataGridColumn 
+						headerText="Amount" 
+						dataField="amount"
+						labelFunction="formatNumber"
+						textAlign="right"
+						minWidth="85"
+						resizable="false">
+						<mx:DataGridColumn 
+							labelFunction="ddTotalFunction" 
+							dataField="amount"
+							textAlign="right"/>
+					</controls:FooterDataGridColumn>
+				</controls:columns> 
+			</controls:FooterDataGrid>
+			<mx:HBox 
+				width="100%"
+				styleName="totalBorder"
+				visible="{viewModel.ddTransactions.length == 0}"
+				includeInLayout="{viewModel.ddTransactions.length == 0}">
+				<mx:Label text="Total" paddingLeft="5" fontWeight="bold" width="100%" height="25"/>
+				<mx:Text id="ddTotal" fontWeight="bold" text="{currencyFormatter.format(viewModel.ddTransactionsTotal)}"/>
+			</mx:HBox>		
+		</mx:VBox>
+		
+		<mx:Spacer 
+			id="ddSpacer"
+			visible="{!ddGrid.visible || (ddGrid.visible &amp;&amp; viewModel.ddTransactions.length == 0)}"
+			includeInLayout="{!ddGrid.visible || (ddGrid.visible &amp;&amp; viewModel.ddTransactions.length == 0)}"/>	
+		
+		<mx:HBox width="100%" styleName="grayDataGridVBox">
+			<mx:Label text="ACH Total"  fontWeight="bold" width="100%"/>
+			<mx:Text id="achTotal" text="{numberFormatter.format(viewModel.selectedTransaction.achAmount)}" fontWeight="bold" textAlign="right"/>
+		</mx:HBox>		
+	
+	</mx:VBox>
+	
+	<mx:Binding source="currentTransaction.selectedItem as MoneyMovementTransaction" destination="viewModel.selectedTransaction"/>
+	<mx:Binding source="viewModel.selectedTransaction" destination="currentTransaction.selectedItem"/>	
+</mx:VBox>

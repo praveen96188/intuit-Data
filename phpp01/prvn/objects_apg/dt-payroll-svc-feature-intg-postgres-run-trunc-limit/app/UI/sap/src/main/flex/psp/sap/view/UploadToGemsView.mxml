@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		xmlns:pspui="psp.sap.view.*">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import psp.sap.formatters.SAPCurrencyFormatter;
+			import mx.formatters.DateFormatter;
+			import psp.sap.viewmodel.UploadToGemsViewModel;
+			import psp.sap.model.OfferingServiceChargeTypeEnum;
+			import psp.sap.viewmodel.PayrollLedgerFeeTransferViewModel;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import psp.sap.model.SettlementTypeEnum;
+			import psp.sap.model.SettlementType;
+			import psp.sap.application.SAP;
+			
+		     
+      	    private var mViewModel:UploadToGemsViewModel;
+
+	        [Bindable]
+	        public function get viewModel():UploadToGemsViewModel {
+	            return mViewModel;
+	        }
+	
+	        public function set viewModel(value:UploadToGemsViewModel):void {
+				if(value != null) {
+					mViewModel = value;
+				}
+	        } 	  	
+	    	       
+	       public function executeConfirmation():void {
+	       		Alert.show(	"Are you sure you want to post to GEMS for the month of " + viewModel.reportingMonth + " ?",
+	        				SAP.instance.applicationTitle, 
+	        				Alert.OK | Alert.CANCEL, 
+	        				this,
+	        				function(e:CloseEvent):void {
+        		 				if(e.detail == Alert.OK) {
+	        						viewModel.save();
+	        					}
+        		 			},
+        		 			null,
+        		 			Alert.OK);
+	       }
+
+			private function formatCurrency(item:Object, dgc:DataGridColumn):String {				
+				return SAPCurrencyFormatter.currencyFormatter.format(item[dgc.dataField]);
+			}
+
+	        			
+		]]>
+	</mx:Script>
+	
+    
+	    		
+					
+
+	<mx:VBox 
+		visible="{viewModel.noUploadReason != null}"
+        includeInLayout="{viewModel.noUploadReason != null}">
+		<mx:Text text="{viewModel.noUploadReason}"/>
+	</mx:VBox>
+                
+	<mx:DataGrid id="balanceDataGrid"
+                width="100%"
+            	dataProvider="{viewModel.monthlyBalances}"
+            	visible="{viewModel.noUploadReason == null}"
+                includeInLayout="{viewModel.noUploadReason == null}"
+                selectable="false"
+                variableRowHeight="false"
+                rowCount="{UIUtils.getRowCountFor(viewModel.monthlyBalances,15)}">
+		<mx:columns>
+			<mx:DataGridColumn 
+        		headerText="Account"
+        		dataField="account"        		        		
+        		textAlign="left"/>
+			<mx:DataGridColumn 
+        		headerText="Company"
+        		dataField="company"        		        		
+        		textAlign="left"/>
+			<mx:DataGridColumn 
+        		headerText="Department"
+        		dataField="department"        		        		
+        		textAlign="left"/>  
+			<mx:DataGridColumn 
+        		headerText="Group Code"
+        		dataField="groupCode"        		        		
+        		textAlign="left"/>
+			<mx:DataGridColumn 
+        		headerText="Inter{'\n'}Company"
+        		dataField="interCompany"        		        		
+        		textAlign="left"
+        		headerWordWrap="true"/>     
+        	<mx:DataGridColumn 
+        		headerText="Reported{'\n'}Balance"
+        		dataField="reportedBalance"
+        		labelFunction="formatCurrency"        		        		
+        		textAlign="left"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:Spacer height="20"/>
+	<mx:VBox styleName="ddGrayMiniBoxStyle" width="300">
+		<mx:VBox  backgroundColor="#f4f4f4" verticalGap="0" horizontalGap="0" horizontalAlign="right">
+			<mx:Label text="Please press the button below to post to GEMS."/>
+			<mx:Spacer height="5"/>
+			<mx:Button label="Post to GEMS" click="executeConfirmation()"/>			
+		</mx:VBox>	
+	</mx:VBox>
+	
+</mx:VBox>

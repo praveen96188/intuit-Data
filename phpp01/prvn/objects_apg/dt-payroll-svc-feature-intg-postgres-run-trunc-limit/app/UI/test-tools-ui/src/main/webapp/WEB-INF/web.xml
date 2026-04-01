@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+           version="2.5">
+
+    <display-name>PSP Test UI Servlet</display-name>
+
+
+    <!--incrementing version to 1.8 for updated tomcat-->
+    <servlet>
+        <servlet-name>jsp</servlet-name>
+        <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+        <init-param>
+            <param-name>compilerSourceVM</param-name>
+            <param-value>1.8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>compilerTargetVM</param-name>
+            <param-value>1.8</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>fork</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>xpoweredBy</param-name>
+            <param-value>false</param-value>
+        </init-param>
+
+        <!-- Use a custom options class to allow the shared tag lib descriptors
+         to be loaded from jars in the tomcat sar conf/tlds directory. The
+         standard options implementation can only find taglibs based on the
+         class loader classpath.
+        -->
+        <!--init-param>
+           <param-name>engineOptionsClass</param-name>
+           <param-value>org.jboss.web.tomcat.service.jasper.JspServletOptions</param-value>
+        </init-param-->
+        <!-- Specify the jars relative to the jbossweb-tomcat6.sar that should
+          be scanned for common tag lib descriptors to include in every war
+          deployment.
+        -->
+        <init-param>
+           <description>JSF standard tlds</description>
+           <param-name>tagLibJar0</param-name>
+           <param-value>jsf-libs/jsf-impl.jar</param-value>
+        </init-param>
+        <init-param>
+           <description>JSTL standard tlds</description>
+           <param-name>tagLibJar1</param-name>
+           <param-value>jstl.jar</param-value>
+        </init-param>
+
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+
+    <!-- Initialization servlet -->
+    <servlet>
+        <servlet-name>InitSpcfServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.web.InitSpcfServlet</servlet-class>
+        <load-on-startup>100</load-on-startup>
+    </servlet>
+
+
+    <jsp-config>
+        <taglib>
+            <taglib-uri>fmt.tld</taglib-uri>
+            <taglib-location>/WEB-INF/tlds/fmt.tld</taglib-location>
+        </taglib>
+
+        <taglib>
+            <taglib-uri>c.tld</taglib-uri>
+            <taglib-location>/WEB-INF/tlds/c.tld</taglib-location>
+        </taglib>
+    </jsp-config>
+
+</web-app>

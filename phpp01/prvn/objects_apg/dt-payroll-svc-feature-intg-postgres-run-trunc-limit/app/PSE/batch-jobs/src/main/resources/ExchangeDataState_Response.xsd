@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 3 sp1 (http://www.altova.com) by April Branson (ASC X12) -->
+<xsd:schema xmlns="http://www.irs.gov/efile" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.06">
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>Date Exchange Schema</Description>
+			<TaxYear>2006</TaxYear>
+			<Version>Production Release</Version>
+			<ReleaseDate>December 04, 2006</ReleaseDate>
+		</xsd:documentation>
+	</xsd:annotation>
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="efileTypes.xsd"/>
+	<xsd:include schemaLocation="ExchangeDataState_Request.xsd"/>
+	<xsd:element name="ResponseExchangeDataState" type="ResponseExchangeDataStateType"/>
+	<xsd:complexType name="ResponseExchangeDataStateType">
+		<xsd:complexContent>
+			<xsd:extension base="ExchangeDataStateType">
+				<xsd:sequence>
+					<xsd:element name="StatusOfRequest" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Status of the request. Contains StatusCode and StatusMessage</xsd:documentation>
+							<xsd:documentation/>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="StatusMessage" type="String50Type" minOccurs="0"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="StateEIN" type="StateEINType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>State EINs</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DepositFrequency" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>Deposit Frequencies</xsd:documentation>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="TypeOfTax" type="StringType">
+									<xsd:annotation>
+										<xsd:documentation>Type of tax for the deposit frequency</xsd:documentation>
+										<xsd:documentation/>
+									</xsd:annotation>
+								</xsd:element>
+								<xsd:element name="DepositFrequency" type="PaymentScheduleAssignedType">
+									<xsd:annotation>
+										<xsd:documentation>AcceleratedMonthly, Annual, Daily, LimitDriven, Monthly, OctalMonthly, QuarterMonthly, Quarterly, SemiAnnual, SemiWeekly, SemiMonthly, TiedToFed, Weekly</xsd:documentation>
+									</xsd:annotation>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+		<!--
+		<xsd:annotation>
+			<xsd:documentation>"State Data exchange"</xsd:documentation>
+		</xsd:annotation>
+-->
+	</xsd:complexType>
+</xsd:schema>

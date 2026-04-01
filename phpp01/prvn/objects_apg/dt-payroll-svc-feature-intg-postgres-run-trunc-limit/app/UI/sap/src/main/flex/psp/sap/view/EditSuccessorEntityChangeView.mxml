@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*"
+         creationComplete="onCreationComplete()">
+    <mx:Script>
+    <![CDATA[
+        import psp.sap.viewmodel.EditSuccessorEntityChangeViewModel;
+
+        [Bindable]
+        public var mViewModel:EditSuccessorEntityChangeViewModel;
+        private var mTempViewModel:EditSuccessorEntityChangeViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EditSuccessorEntityChangeViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EditSuccessorEntityChangeViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                viewModel.effectiveDateValidator.listener = effectiveDateField;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:VBox>
+
+
+        <mx:Label text="Successor Company:" styleName="boldText"/>
+        <mx:RadioButtonGroup id="successorRBG" selectedValue="{viewModel.successor}"/>
+        <mx:RadioButton label="Non-successor" value="{EditSuccessorEntityChangeViewModel.NON_SUCCESSOR}"
+                        group="{successorRBG}"/>
+        <mx:RadioButton label="Successor" value="{EditSuccessorEntityChangeViewModel.SUCCESSOR}"
+                        group="{successorRBG}"/>
+
+        <mx:HBox enabled="{viewModel.successor == EditSuccessorEntityChangeViewModel.SUCCESSOR}">
+            <controls:RequiredLabel text="Old EIN:" width="170" dataField="oldEin" styleName="fieldLabel"/>
+            <controls:SAPTextInput maxChars="10" width="120" dataField="oldEIN"/>
+        </mx:HBox>
+        <mx:HBox enabled="{viewModel.successor == EditSuccessorEntityChangeViewModel.SUCCESSOR}">
+            <mx:HBox>
+                <controls:RequiredLabel styleName="fieldLabel" width="170" text="Effective Date:"   errorCode="lessThanDaysBeforeAllowed"
+                                        dataField="effectiveDate"/>
+                <pspui:SAPDateField id="effectiveDateField" editable="true"/>
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Binding source="viewModel.effectiveDate" destination="effectiveDateField.text"/>
+    <mx:Binding source="effectiveDateField.text" destination="viewModel.effectiveDate"/>
+    <mx:Binding source="viewModel.successor" destination="successorRBG.selectedValue"/>
+    <mx:Binding source="String(successorRBG.selectedValue)" destination="viewModel.successor"/>
+</mx:VBox>

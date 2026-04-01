@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         creationComplete="onCreationComplete();">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.utils.StringUtil;
+
+        import psp.sap.application.enums.OperationsEnum;
+
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.viewmodel.CompanyPINViewModel;
+
+        import mx.managers.PopUpManager;
+
+        private const COLUMN_1_WIDTH:int = 150;
+
+        private var mViewModel:CompanyPINViewModel;
+        private var mTempViewModel:CompanyPINViewModel;
+        private var mCreationComplete:Boolean = false;
+
+
+        [Bindable]
+        public function get viewModel():CompanyPINViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyPINViewModel):void {
+            if (mViewModel != null) {
+                removeEventListeners();
+            }
+
+            if (mCreationComplete) {
+                mViewModel = value;
+
+                if (mViewModel != null) {
+                    addEventListeners();
+                }
+
+            }
+            else {
+                mTempViewModel = value;
+            }
+
+
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+
+        public function addEventListeners():void {
+            if (viewModel != null) {
+                viewModel.addEventListener("PinGenerated", onPinGenerated, false, 0, true);
+            }
+        }
+
+        public function removeEventListeners():void {
+            if (viewModel != null) {
+                viewModel.removeEventListener("PinGenerated", onPinGenerated);
+            }
+        }
+
+        private function onPinGenerated(e:Event):void {
+            Alert.show("A new pin has been generated: \n" + viewModel.pin,
+                    "Pin Generated",
+                    Alert.OK,
+                    this);
+        }
+
+
+        private var popup:CaseIdSave;
+
+        // method to open the PopUp Window on creationComplete
+        private function openPopUpWindow():void {
+            // open the PopUp Window as a modal popup window
+            // and store it in a variable for later use
+            popup = PopUpManager.createPopUp(this, CaseIdSave, true) as CaseIdSave;
+            popup.heading.label = "Are you sure you want to generate a new PIN? If yes please provide caseId";
+            popup.addEventListener("close", removeMe);
+            popup.cancel.addEventListener("click", removeMe);
+            popup.save.addEventListener("click", submitData);
+            PopUpManager.centerPopUp(popup);
+
+        }
+
+        private function removeMe(event:Event):void {
+            PopUpManager.removePopUp(popup);
+        }
+
+        private function submitData(event:Event):void {
+            if (popup.caseIdInput.text == null || StringUtil.trim(popup.caseIdInput.text) == "") {
+                popup.caseIdMandatoryItem.visible = true;
+            } else {
+                viewModel.caseId = popup.caseIdInput.text;
+                PopUpManager.removePopUp(popup);
+                viewModel.generateRandomPin();
+            }
+        }
+
+
+        private function confirmGenerateNewPin():void {
+            openPopUpWindow();
+            /*var msgString:String = "Are you sure you want to generate a new PIN?";
+             Alert.show(	msgString,
+             "PIN Confirmation",
+             Alert.OK | Alert.CANCEL,
+             null,
+             function(e:CloseEvent):void {
+             if(e.detail == Alert.OK)
+             {
+             viewModel.generateRandomPin();
+             }
+             },
+             null,
+             Alert.OK);*/
+        }
+
+        private function confirmUnlockOnce():void {
+            var msgString:String = "Are you sure you want to unlock this PIN?";
+            Alert.show(msgString,
+                    "Unlock Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.unlockOnce();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:HBox width="100%">
+        <mx:Label id="pinCreatedLabel" text="Pin Created:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+        <mx:Label
+                id="pinCretedValueLabel"
+                text="{viewModel.pinInfo.pinCreated ? 'Yes' : 'No'}"/>
+        <mx:Label
+                id="lockedLabel"
+                text="Locked"
+                color="#FF0000"
+                visible="{viewModel.pinInfo.pinLocked}"
+                includeInLayout="{viewModel.pinInfo.pinLocked}"/>
+
+        <mx:VBox width="100%" horizontalAlign="right">
+            <mx:LinkButton id="generateNewButton" label="Generate New"
+                           styleName="standardLinkButtonStyle"
+                           enabled="{viewModel.canPerformOperation(OperationsEnum.GENERATE_PIN)}"
+                           click="{confirmGenerateNewPin()}"/>
+            <mx:LinkButton label="Unlock Once"
+                           visible="{viewModel.pinInfo.pinLocked}"
+                           includeInLayout="{viewModel.pinInfo.pinLocked}"
+                           styleName="standardLinkButtonStyle"
+                           enabled="{viewModel.canPerformOperation(OperationsEnum.GENERATE_PIN)}"
+                           click="{confirmUnlockOnce()}"/>
+        </mx:VBox>
+    </mx:HBox>
+
+
+</mx:VBox>

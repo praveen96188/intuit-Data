@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 rel. 3 sp1 (http://www.altova.com) by PRESTON BARNETT (CERIDIAN) -->
+<xsd:schema xmlns="http://www.irs.gov/efile" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>Transmission Header for FSET, used wrap multiple returns together</Description>
+			<TaxYear>2008</TaxYear>
+			<Version>Draft Release</Version>
+			<ReleaseDate>December 5, 2008</ReleaseDate>
+		</xsd:documentation>
+	</xsd:annotation>
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="TransmissionHeader.xsd"/>
+	<xsd:include schemaLocation="ExchangeDataState_Request.xsd"/>
+	<xsd:include schemaLocation="ExchangeDataState_Response.xsd"/>
+	<xsd:element name="Transmission">
+		<xsd:annotation>
+			<xsd:documentation>Integrated Transmission schema for inclusion in SOAP body</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="TransmissionHeader"/>
+				<xsd:element name="DataExchangeState">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="SubmissionID" type="String20Type"/>
+							<xsd:choice>
+								<xsd:element ref="RequestExchangeDataState" maxOccurs="unbounded"/>
+								<xsd:element ref="ResponseExchangeDataState" maxOccurs="unbounded"/>
+							</xsd:choice>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="stateSchemaVersion" type="String50Type"/>
+			<!-- Version of the state schema set used for the filing-->
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

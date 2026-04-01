@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*" creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+
+        import mx.events.PropertyChangeEvent;
+
+        import mx.validators.Validator;
+
+        import psp.sap.model.ManualLedgerTaxLine;
+        import psp.sap.viewmodel.ManualLedgerViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+
+        [Bindable]
+        public var viewModel:ManualLedgerViewModel;
+
+        private function confirmSave():void {
+            viewModel.updateWarningMessage();
+            var msgString:String = viewModel.warningMessage;
+            Alert.show(	msgString,
+                    "Manual ledger entry confirmation",
+                    Alert.YES | Alert.NO,
+                    null,
+                      function(e:CloseEvent):void {
+                          if(e.detail == Alert.YES)
+                          {
+                              viewModel.save();
+                          }
+                      },
+                    null,
+                    Alert.YES);
+        }
+
+        private function onCreationComplete():void {
+            if (viewModel != null) {
+                viewModel.checkDateValidator.listener = checkDate;
+                viewModel.memoRequiredValidator.listener = memoTextArea;
+                viewModel.yearValidator.listener = checkYear;
+                viewModel.datePaidValidator.listener = datePaid;
+                viewModel.actionSelectionRequiredValidator.listener = actionRequiredLabel;
+                addTotalValidators();
+                viewModel.addEventListener(ViewModelEvent.BACKING_PROPERTIES_INITIALIZED, function(e:ViewModelEvent):void {
+                    addTotalValidators();
+                }, false, 0, true);
+            } else {
+                this.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, function(e:PropertyChangeEvent):void{
+                    if (e.property=="viewModel") {
+                        onCreationComplete();
+                        this.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, arguments.callee);
+                    }
+                }, false, 0, false)
+            }
+        }
+
+        private function addTotalValidators():void {
+            if (viewModel.summaryLine != null) {
+                viewModel.qtdTaxTotalValidator.listener = qtdLiabilityTotal;
+                viewModel.ytdTaxTotalValidator.listener = ytdLiabilityTotal;
+            }
+        }
+        ]]>
+    </mx:Script>
+    <mx:HBox paddingLeft="3" paddingTop="3">
+        <mx:Label text="Type of Manual Keying:"/>
+        <controls:SAPComboBox dataProvider="{viewModel.entryTypes}" dataField="entryType"
+                              enabled="{viewModel.entryType == ''}"/>
+    </mx:HBox>
+    <mx:VBox paddingLeft="6" visible="{viewModel.entryType != '' &amp;&amp; viewModel.paymentTemplates.length > 0}" includeInLayout="{viewModel.entryType != '' &amp;&amp; viewModel.paymentTemplates.length > 0}">
+        <mx:HBox verticalAlign="middle">
+            <mx:Label text="Payment Type:"/>
+            <controls:SAPComboBox dataProvider="{viewModel.paymentTemplates}"
+                                  dataField="selectedPaymentTemplate"
+                                  labelField="paymentTemplateName"
+                                  width="160"/>
+            <mx:HBox verticalAlign="middle" visible="{!viewModel.layout3}"
+                     includeInLayout="{!viewModel.layout3}">
+                <mx:Label text="Tax Type:" paddingLeft="10"/>
+                <controls:SAPComboBox dataProvider="{viewModel.laws}" dataField="selectedLaw" labelField="name"
+                                      width="160"/>
+            </mx:HBox>
+        </mx:HBox>
+        <mx:HBox verticalAlign="middle">
+            <mx:Label text="Check Date:"/>
+            <pspui:SAPDateField id="checkDate" editable="true" visible="{!viewModel.layout3}" includeInLayout="{!viewModel.layout3}"/>
+            <mx:HBox verticalAlign="middle" visible="{viewModel.showYearQuarter}" includeInLayout="{viewModel.showYearQuarter}">
+                <mx:Label text="Year:" paddingLeft="4"/>
+                <mx:Label text="{viewModel.selectedYear}" visible="{!viewModel.layout3}" includeInLayout="{!viewModel.layout3}"/>
+                <controls:SAPTextInput id="checkYear" dataField="selectedYear" restrict="0-9" maxChars="4" width="60" visible="{viewModel.layout3}" includeInLayout="{viewModel.layout3}"/>
+                <mx:Label text="Quarter:" paddingLeft="4" visible="{!viewModel.layout3}" includeInLayout="{!viewModel.layout3}"/>
+                <controls:RequiredLabel dataField="selectedQuarter" text="Quarter:" paddingLeft="4" visible="{viewModel.layout3}" includeInLayout="{viewModel.layout3}"/>
+                <mx:Label text="{viewModel.selectedQuarter}" visible="{!viewModel.layout3}" includeInLayout="{!viewModel.layout3}"/>
+                <controls:SAPComboBox id="checkQuarter" dataProvider="{viewModel.quarters}" dataField="selectedQuarter" width="60" visible="{viewModel.layout3}" includeInLayout="{viewModel.layout3}"/>
+            </mx:HBox>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:HRule width="500"/>
+
+    <mx:HBox paddingLeft="30" paddingTop="30" visible="{viewModel.isDataLoading &amp;&amp; viewModel.canLoadTransactions}" includeInLayout="{viewModel.isDataLoading &amp;&amp; viewModel.canLoadTransactions}">
+        <mx:Image source="{SAPIcons.spinner}"/>
+    </mx:HBox>
+
+    <mx:VBox visible="{viewModel.taxLines != null}" includeInLayout="{viewModel.taxLines != null}" paddingLeft="10" paddingTop="10">
+        <mx:HBox verticalAlign="middle" visible="{viewModel.layout3}" includeInLayout="{viewModel.layout3}">
+            <mx:Label text="Date Paid:"/>
+            <pspui:SAPDateField id="datePaid" editable="true"/>
+        </mx:HBox>
+
+        <mx:Grid>
+            <mx:GridRow>
+                <mx:GridItem>
+                    <mx:Label text="Tax Type" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem>
+                    <mx:Label text="{viewModel.layout3 ? 'Amount' : '&#916;Liability'}" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                    <mx:Label text="&#916;Wages" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                    <mx:Label text="QTD Liability" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                    <mx:Label text="QTD Wages" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                    <mx:Label text="YTD Liability" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                    <mx:Label text="YTD Wages" fontWeight="bold"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout2}" includeInLayout="{viewModel.layout2}" width="{viewModel.layout2 ? NaN : 0}">
+                    <mx:Label text="Current Tax Balance" fontWeight="bold"/>
+                </mx:GridItem>
+            </mx:GridRow>
+            <mx:Repeater dataProvider="{viewModel.taxLines}" id="lawRepeater">
+                <mx:GridRow>
+                    <mx:GridItem>
+                        <mx:Label text="{ManualLedgerTaxLine(lawRepeater.currentItem).law.name}" fontWeight="bold"/>
+                    </mx:GridItem>
+                    <mx:GridItem>
+                        <mx:TextInput width="90"
+                                      restrict="-0-9."
+                                      text="{ManualLedgerTaxLine(lawRepeater.currentItem).amountText}"
+                                      change="ManualLedgerTaxLine(TextInput(event.currentTarget).getRepeaterItem()).amountText = (TextInput(event.currentTarget).text)"
+                                      creationComplete="Validator(viewModel.taxValidators.getItemAt(TextInput(event.currentTarget).repeaterIndex)).listener = TextInput(event.currentTarget)"
+                                      enabled="{ManualLedgerTaxLine(lawRepeater.currentItem).companyLawExists}"/>
+                    </mx:GridItem>
+                    <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                        <mx:TextInput width="90"
+                                      restrict="-0-9."
+                                      text="{ManualLedgerTaxLine(lawRepeater.currentItem).wageAmountText}"
+                                      change="ManualLedgerTaxLine(TextInput(event.currentTarget).getRepeaterItem()).wageAmountText = (TextInput(event.currentTarget).text)"
+                                      creationComplete="Validator(viewModel.wageValidators.getItemAt(TextInput(event.currentTarget).repeaterIndex)).listener = TextInput(event.currentTarget)"
+                                      enabled="{ManualLedgerTaxLine(lawRepeater.currentItem).companyLawExists}"/>
+                    </mx:GridItem>
+                    <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                        <pspui:ErrorLabel text="{ManualLedgerTaxLine(lawRepeater.currentItem).adjustedQTDYTD.qtdLiability}"
+                                          creationComplete="Validator(viewModel.qtdTaxValidators.getItemAt(UIComponent(event.currentTarget).repeaterIndex)).listener = UIComponent(event.currentTarget)"/>
+                    </mx:GridItem>
+                    <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                        <pspui:ErrorLabel text="{ManualLedgerTaxLine(lawRepeater.currentItem).adjustedQTDYTD.qtdWages}"
+                                          creationComplete="Validator(viewModel.qtdWageValidators.getItemAt(UIComponent(event.currentTarget).repeaterIndex)).listener = UIComponent(event.currentTarget)"/>
+                    </mx:GridItem>
+                    <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                        <pspui:ErrorLabel text="{ManualLedgerTaxLine(lawRepeater.currentItem).adjustedQTDYTD.ytdLiability}"
+                                          creationComplete="Validator(viewModel.ytdTaxValidators.getItemAt(UIComponent(event.currentTarget).repeaterIndex)).listener = UIComponent(event.currentTarget)"/>
+                    </mx:GridItem>
+                    <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}">
+                        <pspui:ErrorLabel text="{ManualLedgerTaxLine(lawRepeater.currentItem).adjustedQTDYTD.ytdWages}"
+                                          creationComplete="Validator(viewModel.ytdWageValidators.getItemAt(UIComponent(event.currentTarget).repeaterIndex)).listener = UIComponent(event.currentTarget)"/>
+                    </mx:GridItem>
+                    <mx:GridItem visible="{viewModel.layout2}" includeInLayout="{viewModel.layout2}" width="{viewModel.layout2 ? NaN : 0}">
+                        <mx:Label text="{ManualLedgerTaxLine(lawRepeater.currentItem).adjustedQTDYTD.taxBalance}"
+                                  color="{ManualLedgerTaxLine(lawRepeater.currentItem).adjustedQTDYTD.taxBalance != 0 ? 0xFF6600 : 0x000000}"/>
+                    </mx:GridItem>
+                </mx:GridRow>
+            </mx:Repeater>
+            <mx:GridRow visible="{viewModel.summaryLine != null}" includeInLayout="{viewModel.summaryLine != null}">
+                <mx:GridItem/>
+                <mx:GridItem borderStyle="solid" borderSides="top" borderColor="black" borderThickness="2">
+                    <pspui:ErrorLabel id="totalTax" text="{viewModel.summaryLine.amount}"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}"/>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}" borderStyle="solid" borderSides="top" borderColor="black" borderThickness="2">
+                    <pspui:ErrorLabel id="qtdLiabilityTotal" text="{viewModel.summaryLine.adjustedQTDYTD.qtdLiability}"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}"/>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}" borderStyle="solid" borderSides="top" borderColor="black" borderThickness="2">
+                    <pspui:ErrorLabel id="ytdLiabilityTotal" text="{viewModel.summaryLine.adjustedQTDYTD.ytdLiability}"/>
+                </mx:GridItem>
+                <mx:GridItem visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" width="{viewModel.layout1 ? NaN : 0}"/>
+                <mx:GridItem visible="{viewModel.layout2}" includeInLayout="{viewModel.layout2}" width="{viewModel.layout2 ? NaN : 0}" borderStyle="solid" borderSides="top" borderColor="black" borderThickness="2">
+                    <mx:Label text="{viewModel.summaryLine.adjustedQTDYTD.taxBalance}"
+                              color="{viewModel.summaryLine.adjustedQTDYTD.taxBalance != 0 ? 0xFF6600 : 0x000000}"/>
+                </mx:GridItem>
+            </mx:GridRow>
+        </mx:Grid>
+        <mx:HBox>
+            <controls:RequiredLabel dataField="memo" text="Memo:"/>
+            <mx:TextArea id="memoTextArea" width="200"/>
+        </mx:HBox>
+        <mx:VBox  visible="{!viewModel.layout2 &amp;&amp; viewModel.netBalance != 0}" includeInLayout="{!viewModel.layout2 &amp;&amp; viewModel.netBalance != 0}">
+            <controls:RadioButtonGroupEx id="recordingOptionGroup"/>
+            <pspui:RequiredLabel id="actionRequiredLabel" text="Recording options:"
+                                 validator="{viewModel.actionSelectionRequiredValidator}"/>
+            <mx:VBox paddingLeft="110">
+                <mx:RadioButton value="0" group="{recordingOptionGroup}" label="{viewModel.netBalance > 0 ? 'Create as normal payroll' : 'Create as normal void'}" visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}" />
+                <mx:RadioButton value="1" group="{recordingOptionGroup}" label="{viewModel.netBalance > 0 ? 'Record liability only' : 'Record liability reduction only'}" visible="{viewModel.layout1}" includeInLayout="{viewModel.layout1}"/>
+                <mx:RadioButton value="2" group="{recordingOptionGroup}" label="Record {viewModel.netBalance > 0 ? '' : 'negative '}payment only - affects filings only"  visible="{viewModel.layout3}" includeInLayout="{viewModel.layout3}"/>
+                <mx:RadioButton value="3" group="{recordingOptionGroup}" label="{viewModel.netBalance > 0 ? 'Record payment and overpayment - affects filings and payments from PSP to agency; allows TORs' : 'Record negative payment and reduce overpayment - affects filings; reduces present overpayment applications'}"
+                                visible="{viewModel.layout3}" includeInLayout="{viewModel.layout3}"/>
+            </mx:VBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:VBox paddingLeft="5" visible="{SAP.canPerformOperation(OperationsEnum.SAP_LIMIT_OVERRIDE)}">
+        <controls:SAPCheckBox label="Allow Ledger limit outside of boundaries" dataField="allowLimitOutsideOfBoundaries"/>
+    </mx:VBox>
+
+    <mx:HBox horizontalAlign="right" width="500">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+    <mx:Binding source="viewModel.checkDate" destination="checkDate.text"/>
+    <mx:Binding source="checkDate.text" destination="viewModel.checkDate"/>
+
+    <mx:Binding source="viewModel.datePaid" destination="datePaid.text"/>
+    <mx:Binding source="datePaid.text" destination="viewModel.datePaid"/>
+
+    <mx:Binding source="viewModel.memo" destination="memoTextArea.text"/>
+    <mx:Binding source="memoTextArea.text" destination="viewModel.memo"/>
+
+    <mx:Binding source="viewModel.selectedRecordingOption" destination="recordingOptionGroup.selectedValue"/>
+    <mx:Binding source="String(recordingOptionGroup.selectedValue)" destination="viewModel.selectedRecordingOption"/>
+
+</mx:VBox>
+

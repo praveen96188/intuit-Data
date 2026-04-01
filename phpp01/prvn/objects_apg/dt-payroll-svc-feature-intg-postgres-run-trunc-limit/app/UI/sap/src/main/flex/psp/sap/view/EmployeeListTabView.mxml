@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:view="psp.sap.view.*"
+         creationComplete="onCreationComplete();"
+         width="100%">
+
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.events.SAPEvent;
+        import psp.sap.model.EmployeeInfo;
+        import psp.sap.view.controls.SAPDataGrid;
+        import psp.sap.viewmodel.EmployeeListTabViewModel;
+
+        private var mViewModel:EmployeeListTabViewModel;
+        private var mTempViewModel:EmployeeListTabViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private const NON_401K_CUSTOMER_MESSAGE:String = "No employee details were found for this company. This company may have employees setup but details may not have been transmitted. Bank information for DD employees may be present and accessible on the" + "<a href='event:bank'>" + " Banks " + "</a>" + "screen." ;
+
+
+        [Bindable]
+        public function get viewModel():EmployeeListTabViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeListTabViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getYN(item:Object, dgc:DataGridColumn):String {
+            return ((item as EmployeeInfo).status.toLowerCase() == 'active' ? "Y" : "N");
+        }
+
+        public function getESTYN(item:Object, dgc:DataGridColumn):String {
+            return ((item as EmployeeInfo).enforceSubjectTo ? "Y" : "N");
+        }
+
+        public function openEmployee(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var employeeInfo:EmployeeInfo = link.data as EmployeeInfo;
+            dispatchEvent(new SAPEvent("OpenEmployee", employeeInfo));
+        }
+
+        public function doSearch():void {
+            mainSearchBox.collapse();
+            viewModel.searchEmployees();
+        }
+
+        public function onKeyDown(e:KeyboardEvent):void {
+            if (e.keyCode == Keyboard.ENTER)
+                doSearch();
+        }
+
+         private function onBankLink():void {
+             viewModel.goToEmployeeBankScreen();
+        }
+
+        ]]>
+        </mx:Script>
+
+    <mx:VBox id="dataContainer"
+             styleName="standardTabbedBody"
+             width="80%"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+
+
+        <mx:VBox visible="{!viewModel.cloudEmployeesFound &amp;&amp; !viewModel.isDataLoading}" includeInLayout="{!viewModel.cloudEmployeesFound &amp;&amp; !viewModel.isDataLoading}" verticalGap="0" paddingTop="10" paddingBottom="10" id="noResultsPanel"
+                 styleName="backgroundGrey" borderStyle="none">
+             <controls:SupText selectable="true" width="520"
+                      htmlText="{NON_401K_CUSTOMER_MESSAGE}" link="onBankLink();"/>
+        </mx:VBox>
+        <!-- Employee search / Filter Box-->
+        <mx:VBox visible="{viewModel.cloudEmployeesFound}" includeInLayout="{viewModel.cloudEmployeesFound}">
+            <controls:FilterBox id="mainSearchBox" styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="750"
+                                openOnStartup="true" tabIndex="1" keyDown="onKeyDown(event)"
+                                filterStringFunction="{viewModel.getFilterString}">
+
+                <mx:HBox verticalGap="18">
+
+                    <mx:HBox verticalGap="18" horizontalAlign="right">
+                        <mx:Label text="Work State:" fontWeight="bold" />
+                        <controls:SAPComboBox dataField="selectedWorkState" dataProvider="{viewModel.workStateList}" paddingLeft="0" width="80"/>
+                    </mx:HBox>
+                    <mx:HBox>
+                        <mx:Label text="Live State:" fontWeight="bold"/>
+                        <controls:SAPComboBox dataField="selectedLiveState" dataProvider="{viewModel.liveStateList}" paddingLeft="0" width="80"/>
+                    </mx:HBox>
+                    <mx:VBox verticalGap="18">
+                        <mx:HBox>
+                            <mx:Label text="SSN:" fontWeight="bold" width="46"/>
+                            <controls:SAPTextInput dataField="ssn" paddingLeft="0" width="80"/>
+                            <mx:Label text="ID:" fontWeight="bold"/>
+                            <controls:SAPTextInput dataField="employeeId" paddingLeft="0" width="80"/>
+                        </mx:HBox>
+                        <mx:HBox>
+                            <mx:Label text="Name:" fontWeight="bold" />
+                            <controls:SAPTextInput dataField="name" paddingLeft="0" width="200"/>
+                        </mx:HBox>
+                    </mx:VBox>
+
+                    <mx:VBox verticalGap="18" horizontalAlign="right" verticalAlign="bottom" >
+                        <mx:HBox horizontalGap="40">
+                            <mx:Button
+                                    id="searchButton"
+                                    label="Search"
+                                    tabIndex="1"
+                                    enabled="true"
+                                    click="doSearch()" />
+                        </mx:HBox>
+                    </mx:VBox>
+                </mx:HBox>
+            </controls:FilterBox>
+            <!--No Result-->
+            <mx:VBox visible="{!viewModel.searchResultFound &amp;&amp; !viewModel.isDataLoading}" includeInLayout="{!viewModel.searchResultFound &amp;&amp; !viewModel.isDataLoading}" verticalGap="0" width="70%" height="30"
+                     verticalAlign="middle" horizontalAlign="center" backgroundColor="#b7b7b7" borderStyle="none" color="#000000" fontWeight="normal" dropShadowEnabled="false" paddingTop="10">
+                <mx:Text id="noDataFoundText" text="No employees that match the search criteria were found."/>
+            </mx:VBox>
+            <!--Search Result-->
+            <view:PagingDataGrid dataProvider="{viewModel.employeesSearchResult}"
+                                 visible="{viewModel.searchResultFound &amp;&amp; !viewModel.isDataLoading}"
+                                 textAlign="center"
+                                 backgroundColor="#ffffff" width="100%"
+                                 rowCount="15"
+                                 isDataLoading="{viewModel.isDataLoading}"
+                                 loadDataFunction="{viewModel.pageDataGridLoadDataFunction}">
+                <view:columns>
+                    <mx:DataGridColumn
+                            headerText="ID"
+                            dataField="employeeId"
+                            width="70"
+                            headerWordWrap="true"/>
+                    <mx:DataGridColumn
+                            headerText="Employee Name"
+                            dataField="fullName"
+                            width="250">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox width="100%"
+                                         horizontalAlign="left"
+                                         verticalGap="0"
+                                         paddingTop="0"
+                                         paddingBottom="0"
+                                         verticalScrollPolicy="off"
+                                         horizontalScrollPolicy="off">
+                                    <view:ActionLink
+                                            paddingTop="0"
+                                            paddingBottom="0"
+                                            label="{EmployeeInfo(data).fullName}"
+                                            actionClick="outerDocument.openEmployee"
+                                            data="{data}"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.model.EmployeeInfo;
+                                        ]]></mx:Script>
+                                </mx:VBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                    <mx:DataGridColumn
+                            headerText="SSN"
+                            dataField="socialSecurityNumber"
+                            width="84"/>
+                    <mx:DataGridColumn
+                            headerText="Live{String('\n')}State"
+                            dataField="stateLive"
+                            width="42"/>
+                    <mx:DataGridColumn
+                            headerText="Work{String('\n')}State"
+                            dataField="stateWork"
+                            width="42"/>
+                    <mx:DataGridColumn
+                            headerText="Hire Date"
+                            dataField="hireDate"
+                            labelFunction="SAPDataGrid.formatDateShort"
+                            width="76"/>
+                    <mx:DataGridColumn
+                            headerText="Term Date"
+                            dataField="termDate"
+                            labelFunction="SAPDataGrid.formatDateShort"
+                            minWidth="79"/>
+                    <mx:DataGridColumn
+                            headerText="Active"
+                            dataField="status"
+                            labelFunction="getYN"
+                            sortable="false"
+                            width="55"/>
+                    <mx:DataGridColumn
+                            headerText="First{String('\n')}Pay Date"
+                            dataField="firstPayDate"
+                            sortable="false"
+                            labelFunction="SAPDataGrid.formatDateShort"
+                            minWidth="76"/>
+                    <mx:DataGridColumn
+                            headerText="Last{String('\n')}Pay Date"
+                            dataField="lastPayDate"
+                            sortable="false"
+                            labelFunction="SAPDataGrid.formatDateShort"
+                            width="76"/>
+                    <mx:DataGridColumn
+                            headerText="Enforce{String('\n')}Standard Taxation"
+                            dataField="enforceSubjectTo"
+                            labelFunction="getESTYN"
+                            sortable="false"
+                            width="144"/>
+                </view:columns>
+            </view:PagingDataGrid>
+        </mx:VBox>
+    </mx:VBox>
+</mx:VBox>

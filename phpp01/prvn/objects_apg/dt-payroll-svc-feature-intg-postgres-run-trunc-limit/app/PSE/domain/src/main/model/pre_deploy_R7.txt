@@ -1,0 +1,36 @@
+CREATE TABLE TEMP_SOURCE_PAYROLL_PARAMETER
+(
+  SOURCE_PAYROLL_PARAMETER_SEQ  VARCHAR2(255 CHAR) NOT NULL,
+  VERSION                       NUMBER(19)      NOT NULL,
+  CREATOR_ID                    VARCHAR2(30 CHAR),
+  CREATED_DATE                  TIMESTAMP(6)    NOT NULL,
+  MODIFIER_ID                   VARCHAR2(30 CHAR),
+  MODIFIED_DATE                 TIMESTAMP(6)    NOT NULL,
+  REALM_ID                      NUMBER(19)      DEFAULT -1                    NOT NULL,
+  DESCRIPTION                   VARCHAR2(160 CHAR),
+  NAME                          VARCHAR2(80 CHAR),
+  PARAMETER_CD                  VARCHAR2(255 CHAR),
+  PARAMETER_VALUE               VARCHAR2(100 CHAR),
+  EFFECTIVE_DATE                TIMESTAMP(6),
+  EXPIRATION_DATE               TIMESTAMP(6),
+  SOURCE_SYSTEM_CD              VARCHAR2(255 CHAR)
+);
+
+insert into TEMP_SOURCE_PAYROLL_PARAMETER
+(select * from PSPADM.psp_SOURCE_PAYROLL_PARAMETER);
+
+delete PSP_GEMS_MONTHLY_BALANCE 
+	where to_date_balance = 0 and 
+		gems_ledger_posting_rule_fk in (select gems_ledger_posting_rule_seq from PSP_GEMS_LEDGER_POSTING_RULE where 
+										ledger_account_fk in ('AgencyReturnLiability', 'COGSService', 'COGSServiceThirdPartySupport', 'AgencyTaxCash'));
+
+delete from PSP_GEMS_LEDGER_POSTING_RULE 
+	where ledger_account_fk in ('AgencyReturnLiability', 'COGSService', 'COGSServiceThirdPartySupport', 'AgencyTaxCash');
+
+delete from psp_posting_rule 
+	where ledger_account_fk in ('AgencyReturnLiability', 'COGSService', 'COGSServiceThirdPartySupport', 'AgencyTaxCash');
+
+delete from psp_ledger_account 
+	where ledger_account_cd in ('AgencyReturnLiability', 'COGSService', 'COGSServiceThirdPartySupport', 'AgencyTaxCash', 'AgencyReturnCash', 'TaxReceivable', 'InterestIncome');
+
+commit;

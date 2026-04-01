@@ -1,0 +1,12 @@
+FROM docker.intuit.com/oicp/standard/external/maven:3.5.3-jdk-8
+
+LABEL \
+        author="noreply@intuit.com" \
+        email="noreply@intuit.com" \
+        version="1.0.0" \
+        description="overwatch test in a docker"
+
+ENV SHELL=/bin/bash
+
+ADD . /test/overwatch-test/
+RUN ["/bin/bash", "-c", "cd /test/overwatch-test &&  mvn clean test -s ../../settings.xml"]

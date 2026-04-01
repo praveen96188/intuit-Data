@@ -1,0 +1,6 @@
+--
+-- This script will be executed AFTER the automatically generated
+-- C:\Users\sgupta25\GitCodeBase\Payroll-Services\PSE\domain\src\main\model\DBUpgrade_002.018.002.001.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

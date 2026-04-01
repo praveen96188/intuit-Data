@@ -1,0 +1,1 @@
+PROMPT finishedDBUpgradeFrom_1.9.9.35_To_1.9.9.36.sql

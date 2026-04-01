@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	borderStyle="solid"
+	borderColor="#9B9EA0"
+	backgroundColor="#CED5E5"
+	dropShadowEnabled="true"
+	cornerRadius="5" 
+	verticalGap="0">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.model.Company;
+			import mx.events.ListEvent;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var openList:ArrayCollection;
+			
+			[Bindable]
+			public var closedList:ArrayCollection;
+			
+			private function handelClick(e:ListEvent):void {
+				// unselect item
+				List(e.currentTarget).selectedIndex = -1;
+				dispatchEvent(e);
+			}
+			
+		]]>
+	</mx:Script>	
+	<mx:List 
+		id="closed"
+		textIndent="5"
+		borderStyle="none" textAlign="left"
+		width="100%"
+		alternatingItemColors="[#E3E7F0]"
+		rollOverColor="#A5B1CF"
+		selectionColor="#A5B1CF"
+		rowCount="{closedList.length > 8 ? 8 : closedList.length == 0 ? 1 : closedList.length}"
+		itemClick="handelClick(event)"/>	
+		
+	<mx:Binding source="closedList" destination="closed.dataProvider"/>
+	
+</mx:VBox>

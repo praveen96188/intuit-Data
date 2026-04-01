@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.viewmodel.EmployeeCompliancePopUpViewModel;
+        private static const labelWidth:int = 150;
+
+        private var mViewModel:EmployeeCompliancePopUpViewModel;
+
+        [Bindable]
+        public function get viewModel():EmployeeCompliancePopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeCompliancePopUpViewModel):void {
+            mViewModel = value;
+            viewModel.nameValidator.listener = nameCombo;
+            viewModel.stateValidator.listener = stateCombo;
+            viewModel.wagePlanValueValidator.listener = wagePlanTextInput;
+            viewModel.domainValidator.listener = domainCombo;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="{viewModel.saveMethod == 'Add' ? 'Add Compliance Data': 'Edit Compliance Data'}"
+              styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3" paddingTop="5"/>
+    <mx:HRule width="100%" height="13"/>
+
+    <mx:HBox paddingTop="10">
+        <mx:VBox >
+            <mx:HBox>
+                 <pspui:RequiredLabel text="State" validator="{viewModel.stateValidator}" paddingLeft="0" fontWeight="bold" width="{labelWidth}"/>
+                <controls:SAPComboBox id="stateCombo" dataField="selectedState" dataProvider="{viewModel.stateList}"/>
+            </mx:HBox>
+            <mx:HBox>
+                <pspui:RequiredLabel text="Domain" validator="{viewModel.domainValidator}" paddingLeft="0" fontWeight="bold" width="{labelWidth}"/>
+                <controls:SAPComboBox id="domainCombo" dataField="selectedDomain" enabled="{viewModel.enableDomainCombo}" dataProvider="{viewModel.domainList}"/>
+            </mx:HBox>
+            <mx:HBox>
+                  <pspui:RequiredLabel text="Name" validator="{viewModel.nameValidator}" paddingLeft="0" fontWeight="bold" width="{labelWidth}"/>
+                <controls:SAPComboBox id="nameCombo" dataField="selectedName" enabled="{viewModel.enableNameValueCombo}" dataProvider="{viewModel.nameValueList}"/>
+            </mx:HBox>
+            <mx:HBox>
+                <pspui:RequiredLabel text="Wage Plan Value: " validator="{viewModel.wagePlanValueValidator}" paddingLeft="0" fontWeight="bold" width="{labelWidth}"/>
+                <controls:SAPTextInput id="wagePlanTextInput" dataField="wagePlanValue" width ="50"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Description: " fontWeight="bold" width="{labelWidth}"/>
+                <controls:SAPTextInput dataField="description" width ="140"/>
+            </mx:HBox>
+            <mx:HBox>
+                <mx:Label text="Rules Version: " fontWeight="bold" width="{labelWidth}"/>
+                <controls:SAPTextInput dataField="rulesVersion" width ="50"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:HBox>
+
+    <mx:HBox>
+        <mx:HBox paddingLeft="225" paddingBottom="15" paddingTop="5">
+            <mx:Button label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button label="Save" click="viewModel.save()" paddingLeft="10" enabled="{viewModel.canSave}"/>
+        </mx:HBox>
+    </mx:HBox>
+
+</mx:VBox>

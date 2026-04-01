@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.dataGridClasses.DataGridColumn;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.EnrollmentsPageEnum;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.RAFEnrollmentDetail;
+        import psp.sap.viewmodel.RAFPendingEnrollmentsViewModel;
+
+        private var mViewModel:RAFPendingEnrollmentsViewModel;
+        private var mTempViewModel:RAFPendingEnrollmentsViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private static const dateFieldWidth:int = 100;
+        private static const dateFieldLabelsWidth:int = 40;
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        [Bindable]
+        public function get viewModel():RAFPendingEnrollmentsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:RAFPendingEnrollmentsViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+            if (mViewModel != null) {
+                mViewModel.creationDateStartValidator.listener = creationDateStart;
+                mViewModel.creationDateEndValidator.listener = creationDateEnd;
+                mViewModel.creationDateStartAndEndValidator.startDateListener = creationDateStart;
+                mViewModel.creationDateStartAndEndValidator.endDateListener = creationDateEnd;
+
+                mViewModel.lastUpdateStartValidator.listener = lastUpdateStart;
+                mViewModel.lastUpdateEndValidator.listener = lastUpdateEnd;
+                mViewModel.lastUpdateStartAndEndValidator.startDateListener = lastUpdateStart;
+                mViewModel.lastUpdateStartAndEndValidator.endDateListener = lastUpdateEnd;
+            }
+        }
+
+        public function goToTarget(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var rafEnrollmentDetail:RAFEnrollmentDetail = link.data as RAFEnrollmentDetail;
+            viewModel.goToCompanyInfo(rafEnrollmentDetail);
+        }
+
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+
+        private function formatYes_No(item:Object, dgc:DataGridColumn):String {
+            return (item[dgc.dataField]) ? 'Yes' : 'No';
+        }
+
+        public function doMove(data:RAFEnrollmentDetail):void {
+            viewModel.doMove(data);
+        }
+
+        public function showHistory(event:ActionLinkEvent):void {
+            viewModel.viewRAFHistory(event.data as RAFEnrollmentDetail);
+        }
+
+        public function doSearch():void {
+            viewModel.searchButtonClicked = true;
+            viewModel.enrollmentsSearchResults.startIndex = 0;            
+            viewModel.refresh();
+            mainFilterBox.collapse();
+        }
+
+        private function refreshGrid():void {
+            viewModel.refresh();
+        }
+
+        private function exportEnrollments(event:ActionLinkEvent):void {
+            viewModel.exportEnrollments("PendingEnrollment");
+        }
+]]>
+</mx:Script>
+    <mx:Spacer height="0"/>
+    <controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="630" id="mainFilterBox" defaultButton="{searchButton}"
+                        filterStringFunction="{viewModel.getFilterLabelString}"
+                        openOnStartup="true" 
+                        paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+        <mx:VBox horizontalAlign="right">
+            <mx:HBox>
+                <mx:VBox>
+                    <mx:Label text="Creation Date: " textAlign="right" fontWeight="bold"/>
+                    <mx:Spacer height="25"/>
+                    <mx:Label text="PSID/EIN(s): " textAlign="right" fontWeight="bold"/>
+                </mx:VBox>
+                <mx:VBox>
+                    <mx:HBox horizontalGap="2"
+                             verticalAlign="middle">
+                        <mx:Label text="Start" textAlign="right" fontWeight="bold" width="{dateFieldLabelsWidth}"/>
+                        <pspui:SAPDateField id="creationDateStart" editable="true" width="{dateFieldWidth}"/>
+                    </mx:HBox>
+                    <mx:HBox
+                            horizontalGap="2"
+                            verticalAlign="middle">
+                        <mx:Label text="End" textAlign="right" fontWeight="bold" width="{dateFieldLabelsWidth}"/>
+                        <pspui:SAPDateField id="creationDateEnd" editable="true" width="{dateFieldWidth}"/>
+                    </mx:HBox>
+                    <mx:HBox>
+                        <mx:Spacer width="33"/>
+                        <mx:TextArea id="companyIds" width="85" height="41" verticalScrollPolicy="auto" horizontalScrollPolicy="auto"/>
+                    </mx:HBox>
+                </mx:VBox>
+                <mx:Label text="Last Update Date: " textAlign="right" fontWeight="bold"/>
+                <mx:VBox>
+                    <mx:HBox
+                            horizontalGap="2"
+                            verticalAlign="middle">
+                        <mx:Label text="Start" textAlign="right" fontWeight="bold" width="{dateFieldLabelsWidth}"/>
+                        <pspui:SAPDateField id="lastUpdateStart" editable="true" width="{dateFieldWidth}"/>
+                    </mx:HBox>
+                    <mx:HBox
+                            horizontalGap="2"
+                            verticalAlign="middle">
+                        <mx:Label text="End" textAlign="right" fontWeight="bold" width="{dateFieldLabelsWidth}"/>
+                        <pspui:SAPDateField id="lastUpdateEnd" editable="true" width="{dateFieldWidth}"/>
+                    </mx:HBox>
+                    <mx:HBox>
+                        <mx:Spacer width="155"/>
+                        <mx:Button label="Search" enabled="{viewModel.canSave}" id="searchButton"
+                                   click="doSearch();"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+    </controls:FilterBox>
+    <controls:DataLoadFade target="{searchResults}" isLoading="{viewModel.isDataLoading}"/>
+    <mx:VBox width="100%" id="searchResults" paddingTop="0" height="100%"
+             styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding"
+            visible="{viewModel.searchButtonClicked}"
+            includeInLayout="{viewModel.searchButtonClicked}">
+        <pspui:PagingDataGrid id="searchResultsData"
+                                          width="100%" height="100%"
+                                          paddingRight="0"
+                                          horizontalAlign="right"
+                                          verticalGap="0"                                          
+                                          dataProvider="{viewModel.enrollmentsSearchResults}"
+                                          loadDataFunction="{refreshGrid}"
+                                          rowCount="{viewModel.enrollmentsSearchResults.pageSize}"
+                                          sortableColumns="false">
+            <pspui:columns>
+                <controls:SAPDataGridColumn
+                        width="120"
+                        headerText="Move to Pending Enrollment Tape"
+                        headerRenderer="mx.controls.Label"
+                        draggable="false"
+                        resizable="false"
+                        sortable="false"
+                        headerWordWrap="true">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="center"
+                                    verticalGap="0"
+                                    horizontalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:HBox horizontalGap="0" verticalAlign="middle">
+                                    <mx:Button id="moveAction" label="Move"
+                                               skin="psp.sap.view.AdministrationButtonSkin"
+                                               click="{outerDocument.doMove(data as RAFEnrollmentDetail)}"
+                                               enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_RAF_ENROLLMENT)}"
+                                               height="19"
+                                               width="60"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.application.enums.OperationsEnum;
+                                        import psp.sap.model.RAFEnrollmentDetail;
+                                        ]]></mx:Script>
+                                    <pspui:ActionLink id="showHistoryAction" actionClick="{outerDocument.showHistory}"
+                                                      label="H"
+                                                      toolTip="View History" textAlign="center"
+                                                      paddingBottom="1"
+                                                      paddingTop="1"
+                                                      data="{data}"/>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        width="200"
+                        resizable="false"
+                        draggable="false"
+                        dataField="companyName" headerText="Company Name">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    width="100%"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.RAFEnrollmentDetail;
+                                    ]]></mx:Script>
+                                <pspui:ActionLink
+                                        label="{RAFEnrollmentDetail(data).companyName}"
+                                        paddingBottom="1"
+                                        paddingTop="1"
+                                        actionClick="{outerDocument.goToTarget}"
+                                        data="{data}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+
+                <controls:SAPDataGridColumn
+                        headerText="PSID"
+                        width="110"
+                        draggable="false"
+                        resizable="false"
+                        dataField="companyId"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="EIN"
+                        width="110"
+                        draggable="false"
+                        resizable="false"
+                        dataField="ein"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Payrolls"
+                        width="110"
+                        draggable="false"
+                        resizable="false"
+                        dataField="companyHasPayrolls"
+                        labelFunction="formatYes_No"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Creation Date"
+                        width="150"
+                        draggable="false"
+                        resizable="false"
+                        dataField="creationDate"
+                        labelFunction="formatDate"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Last Update"
+                        width="150"
+                        draggable="false"
+                        resizable="false"
+                        dataField="modifiedDate"
+                        labelFunction="formatDate"/>
+            </pspui:columns>
+        </pspui:PagingDataGrid>
+    </mx:VBox>
+    <mx:HBox width="100%" horizontalAlign="right"
+            visible="{viewModel.enrollmentsSearchResults.totalRecords>0}"
+            includeInLayout="{viewModel.enrollmentsSearchResults.totalRecords>0}">
+        <pspui:ActionLink label="Export Enrollments" actionClick="exportEnrollments" icon="{SAP.instance.icons.exportIcon}"/>
+    </mx:HBox>
+    <mx:Binding source="companyIds.text" destination="viewModel.companyIds"/>
+    <mx:Binding source="viewModel.companyIds" destination="companyIds.text"/>
+
+    <mx:Binding source="creationDateStart.text" destination="viewModel.creationDateStart"/>
+    <mx:Binding source="viewModel.creationDateStart" destination="creationDateStart.text"/>
+
+    <mx:Binding source="creationDateEnd.text" destination="viewModel.creationDateEnd"/>
+    <mx:Binding source="viewModel.creationDateEnd" destination="creationDateEnd.text"/>
+
+    <mx:Binding source="lastUpdateStart.text" destination="viewModel.lastUpdateStart"/>
+    <mx:Binding source="viewModel.lastUpdateStart" destination="lastUpdateStart.text"/>
+
+    <mx:Binding source="lastUpdateEnd.text" destination="viewModel.lastUpdateEnd"/>
+    <mx:Binding source="viewModel.lastUpdateEnd" destination="lastUpdateEnd.text"/>
+
+    <controls:PopUpPart id="rafHistoryModal" label="{EnrollmentsPageEnum.RAF_HISTORY+'_pup'}" showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:RAFHistoryPopUpView id="rafHistoryView" label="{EnrollmentsPageEnum.RAF_HISTORY}"/>
+    </controls:PopUpPart>
+</mx:VBox>

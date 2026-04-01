@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+           version="2.5">
+
+    <servlet>
+        <servlet-name>InitSpcfServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.web.InitSpcfServlet</servlet-class>
+        <load-on-startup>100</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>com.intuit.ems.psp.adapters.dataadapter.service;com.intuit.ems.psp.adapters.dataadapter.filter;com.intuit.ems.psp.adapters.dataadapter.mapper;org.codehaus.jackson.jaxrs;com.wordnik.swagger.jaxrs.json;com.wordnik.swagger.jersey.listing</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>
+                com.intuit.ems.dataservice.v1.filter.PayrollDataServiceLoggingFilter;
+                com.intuit.ems.dataservice.v1.filter.AcceptsHeaderFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
+            <param-value>com.intuit.ems.psp.adapters.dataadapter.filter.RestResourceAuthenticationFilterFactory</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.intuit.ems.dataservice.v1.filter.PayrollDataServiceLoggingFilter;
+                com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>
+
+        <init-param>
+
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>JerseyJaxrsConfig</servlet-name>
+        <servlet-class>com.wordnik.swagger.jersey.config.JerseyJaxrsConfig</servlet-class>
+        <init-param>
+            <param-name>api.version</param-name>
+            <param-value>1.0.0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>swagger.api.basepath</param-name>
+            <param-value>/rest/*}</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Log Enhancing Filter start-->
+    <filter>
+        <filter-name>LogEnhancingFilter</filter-name>
+        <filter-class>com.intuit.sbg.psp.filter.LogEnhancingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LogEnhancingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- end Log Enhancing Filter -->
+    
+    <session-config>
+        <session-timeout>2</session-timeout>
+    </session-config>
+</web-app>

@@ -1,0 +1,9 @@
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_1.sql > pspadm_vacuum_pitparlt_1.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_2.sql > pspadm_vacuum_pitparlt_2.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_3.sql > pspadm_vacuum_pitparlt_3.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_4.sql > pspadm_vacuum_pitparlt_4.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_5.sql > pspadm_vacuum_pitparlt_5.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_nonpart_1.sql > pspadm_vacuum_nonpart_pitparlt_1.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_nonpart_2.sql > pspadm_vacuum_nonpart_pitparlt_2.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_nonpart_3.sql > pspadm_vacuum_nonpart_pitparlt_3.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_vacuum_nonpart_4.sql > pspadm_vacuum_nonpart_pitparlt_4.log &

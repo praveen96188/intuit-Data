@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Anita Connors (Sate of Wisconsin) -->
+<!-- edited with XMLSpy v2011 rel. 3 sp1 (http://www.altova.com) by April Branson (ASC X12) -->
+<xsd:schema xmlns="http://www.irs.gov/efile" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.06">
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="efileTypes.xsd"/>
+	<xsd:include schemaLocation="ReturnHeader.xsd"/>
+	<xsd:include schemaLocation="FSETeFileTypes.xsd"/>
+	<xsd:element name="ReturnHeaderState" type="FSETReturnHeaderStateType"/>
+	<xsd:complexType name="FSETReturnHeaderStateType">
+		<xsd:complexContent>
+			<xsd:extension base="ReturnHeaderType">
+				<xsd:sequence>
+					<xsd:element name="Filer">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="TIN" type="TINType"/>
+								<xsd:element name="StateEIN" type="String20Type"/>
+								<xsd:element name="Name" type="BusinessNameType"/>
+								<xsd:element name="InCareOfName" type="InCareOfNameType" minOccurs="0"/>
+								<xsd:choice>
+									<xsd:element name="NameControl" type="BusinessNameControlType"/>
+									<xsd:element name="CheckDigit" type="CheckDigitType" minOccurs="0"/>
+								</xsd:choice>
+								<xsd:choice>
+									<xsd:element name="USAddress" type="USAddressType"/>
+									<xsd:element name="ForeignAddress" type="ForeignAddressType"/>
+								</xsd:choice>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="DueDate" type="DateType" minOccurs="0"/>
+					<xsd:element name="Form" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>ID of tax form for this filing type.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="FilingAction">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="Action">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:enumeration value="Original"/>
+											<xsd:enumeration value="Amended"/>
+											<xsd:enumeration value="Supplemental"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="Reason" type="String255Type" minOccurs="0"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="FinalReturnElect" minOccurs="0">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="DateFinalWagesPaid" type="DateType" minOccurs="0"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="ThirdPartyAuthorization" minOccurs="0">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="AuthorizeThirdPartyElect" type="CheckboxType"/>
+								<xsd:element name="DesigneeName" type="PersonNameType"/>
+								<xsd:element name="DesigneePhone" type="PhoneNumberType"/>
+								<xsd:element name="DPIN" type="PINType" minOccurs="0"/>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+					<!-- Filer -->
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

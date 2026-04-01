@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%" 
+	height="100%"
+	creationComplete="onCreationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.validators.Validator;
+
+        import psp.sap.model.AutoLimitIncreaseTier;
+        import psp.sap.viewmodel.AdministrationSettingsEditPageViewModel;
+
+        private var mViewModel:AdministrationSettingsEditPageViewModel;
+
+        private var mTempViewModel:AdministrationSettingsEditPageViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():AdministrationSettingsEditPageViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:AdministrationSettingsEditPageViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+        }
+
+        private function setupValidator(event:Event):void {
+            var txtInput:TextInput = event.currentTarget as TextInput;
+            var tier:AutoLimitIncreaseTier = txtInput.getRepeaterItem() as AutoLimitIncreaseTier;
+            if (tier) {
+                var validator:Validator = viewModel.getValidator(tier, txtInput.name);
+                validator.listener = txtInput;
+            }
+        }
+
+        private function onTierInputTextChanged(event:Event):void {
+            var txt:TextInput = event.currentTarget as TextInput;
+            var tier:AutoLimitIncreaseTier = txt.getRepeaterItem() as AutoLimitIncreaseTier;
+            tier[txt.name] = txt.text;
+        }
+
+        private function confirmSave():void
+        {
+            var msgString:String = "Are you sure you want to edit the default payroll direct deposit limits?";
+            Alert.show(msgString,
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    confirmVerifyHandler,
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK)
+            {
+                viewModel.save();
+            }
+        }
+		]]>
+	</mx:Script>				
+	
+	<controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+		
+		<mx:HBox verticalAlign="top" paddingBottom="5" paddingTop="5" paddingLeft="3">	
+				<mx:Label text="Limit Rule: "/>
+				<mx:Label id="LimitRuleValueLabel" fontWeight="bold" text="{viewModel.limitRule.description}"/>
+		</mx:HBox>
+			
+		<mx:VBox
+				id="dataContainer" 
+				width="80%" 
+				styleName="standardTabbedBody"  
+				verticalGap="15"
+				visible="{!viewModel.isDataLoading}"
+				includeInLayout="{!viewModel.isDataLoading}">	
+			<mx:HBox width="100%" styleName="companyInformationBoxStyle" verticalGap="0" horizontalGap="0">
+				<mx:VBox height="100%" verticalAlign="middle" horizontalAlign="right" verticalGap="0" paddingRight="5" width="50%" borderStyle="solid" borderColor="black" borderSides="right">
+					<mx:Label text="Direct Deposit" fontWeight="bold"/>
+                    <mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text="Per Company" fontWeight="bold"/>
+						<controls:RequiredLabel
+								id="DDLimitPerCompanyLabel" 
+								text="Direct Deposit Limit"
+								dataField="defaultDDCompanyLimit"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text="$"/>
+						<controls:SAPTextInput dataField="backingDTO.defaultDDCompanyLimit" isCurrency="true" textAlign="right"  width="100"/>
+					</mx:HBox>
+                    <mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text="Per Employee" fontWeight="bold"/>
+						<controls:RequiredLabel
+								id="DDLimitPerEmployeeLabel"
+								text="Direct Deposit Limit"
+								dataField="defaultDDEmployeeLimit"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text="$"/>
+						<controls:SAPTextInput dataField="backingDTO.defaultDDEmployeeLimit" isCurrency="true" textAlign="right"  width="100"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox verticalAlign="middle" horizontalAlign="left" paddingLeft="5" width="50%" height="100%" verticalGap="0">
+                    <mx:Label text=""/>
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:RequiredLabel
+								id="NumDaysPerCompanyLabel" 
+								text="Limit Cannot Be Exceeded In"
+								dataField="DDCompanyLimitDuration"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:SAPTextInput dataField="backingDTO.DDCompanyLimitDuration" textAlign="right"  width="50"/>
+						<mx:Label text="(calendar days)"/>
+					</mx:HBox>
+                    <mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:RequiredLabel
+								id="NumDaysPerEmployeeLabel"
+								text="Limit Cannot Be Exceeded In"
+								dataField="DDEmployeeLimitDuration"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:SAPTextInput dataField="backingDTO.DDEmployeeLimitDuration" textAlign="right"  width="50"/>
+						<mx:Label text="(calendar days)"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+			
+			<!-- auto-limit increase tiers -->
+			<mx:HBox visible="{viewModel.backingDTO.autoLimitIncreaseTiers.length > 0}"
+                     includeInLayout="{viewModel.backingDTO.autoLimitIncreaseTiers.length > 0}"
+                     width="100%" styleName="companyInformationBoxStyle"
+						verticalGap="0" horizontalGap="0" paddingTop="5" paddingBottom="5" 
+						horizontalAlign="center">
+				<mx:Grid>
+					<mx:GridRow>
+						<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Label text="Tier" textAlign="right"/></mx:GridItem>
+						<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Label text="Payrolls Run" textAlign="right"/></mx:GridItem>
+						<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Label text="Days Since 1st Payroll" textAlign="right" /></mx:GridItem>
+						<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Label text="Limit Multiplier" textAlign="right"/></mx:GridItem>
+						<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Label text="Company Max" textAlign="right"/></mx:GridItem>
+						<mx:GridItem rowSpan="2" verticalAlign="bottom" horizontalAlign="right"><mx:Label text="Employee Max" textAlign="right"/></mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow height="10"/>
+					<mx:Repeater id="tierRepeater" dataProvider="{viewModel.backingDTO.autoLimitIncreaseTiers}">
+						<mx:GridRow>
+							<mx:GridItem><mx:Label text="{tierRepeater.currentItem.level}" textAlign="center"/></mx:GridItem>
+							<mx:GridItem><mx:TextInput 	name="payrollsRun"
+														width="85" 			
+														text="{tierRepeater.currentItem.payrollsRun}"
+														change="onTierInputTextChanged(event)"
+														restrict="^,"
+														textAlign="right"
+														creationComplete="setupValidator(event)"/>
+							</mx:GridItem>
+							<mx:GridItem horizontalAlign="right">
+										<mx:TextInput 	name="daysSinceFirstPayroll" 
+												  		width="105"
+												  		text="{tierRepeater.currentItem.daysSinceFirstPayroll}"
+												  		change="onTierInputTextChanged(event)" 
+												  		restrict="^,"
+												  		textAlign="right"
+												  		creationComplete="setupValidator(event)"/>
+							</mx:GridItem>
+							<mx:GridItem><mx:TextInput 	name="increaseMultiplier" 	
+												  		width="85"
+												  		text="{tierRepeater.currentItem.increaseMultiplier}"
+												  		change="onTierInputTextChanged(event)"
+												  		restrict="^,"
+												  		textAlign="right" 
+												  		creationComplete="setupValidator(event)"/>
+							</mx:GridItem>
+							<mx:GridItem><mx:TextInput	name="companyCap"
+												  		width="85"
+												  		text="{tierRepeater.currentItem.companyCap}"
+												  		change="onTierInputTextChanged(event)"
+												  		restrict="^,"
+												  		textAlign="right"
+												  		creationComplete="setupValidator(event)"/>
+							</mx:GridItem>
+							<mx:GridItem><mx:TextInput	name="employeeCap" 
+												  		width="85"
+												  		text="{tierRepeater.currentItem.employeeCap}"
+												  		change="onTierInputTextChanged(event)" 
+												  		restrict="^,"
+												  		textAlign="right"
+												  		creationComplete="setupValidator(event)"/>
+							</mx:GridItem>
+						</mx:GridRow> 
+					</mx:Repeater>
+				</mx:Grid>
+			</mx:HBox>
+	
+			<mx:HBox width="100%" styleName="companyInformationBoxStyle" verticalGap="0" horizontalGap="0">
+				<mx:VBox verticalAlign="middle" horizontalAlign="right" paddingRight="5" width="50%" borderStyle="solid" borderColor="black" borderSides="right" height="80">
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text=""/>
+						<mx:Label text=""/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text=""/>
+						<mx:Label text=""/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox verticalAlign="middle" horizontalAlign="left" paddingLeft="5" width="50%">
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:RequiredLabel
+								id="NumViolationsLabel" 
+								text="Maximum violations before suspension"
+								dataField="consecutiveLimitViolationLimit"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:SAPTextInput dataField="backingDTO.consecutiveLimitViolationLimit" textAlign="right"  width="50"/>
+						<mx:Label text="(# of limit violations)"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>			
+		
+			<mx:HBox width="100%" styleName="companyInformationBoxStyle" verticalGap="0" horizontalGap="0">
+				<mx:VBox verticalAlign="middle" horizontalAlign="right" paddingRight="5" width="50%" borderStyle="solid" borderColor="black" borderSides="right">
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<controls:RequiredLabel
+								id="NumAttemptsVerifyLimitsLabel" 
+								text="Verify Bank Account Retry Limit"
+								dataField="companyBankAccountVerificationAttemptLimit"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text="max attempts =   "/>
+						<controls:SAPTextInput dataField="backingDTO.companyBankAccountVerificationAttemptLimit" textAlign="right"  width="50"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox verticalAlign="middle" horizontalAlign="left" paddingLeft="5" width="50%">
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:RequiredLabel
+								id="NumDaysVerifyLimitsLabel" 
+								text="Account must be verified in"
+								dataField="companyBankAccountDurationLimitForVerification"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:SAPTextInput dataField="backingDTO.companyBankAccountDurationLimitForVerification" textAlign="right"  width="50"/>
+						<mx:Label text="(calendar days)"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>			
+		
+			<mx:HBox width="100%" styleName="companyInformationBoxStyle" verticalGap="0" horizontalGap="0">
+				<mx:VBox verticalAlign="middle" verticalGap="0" horizontalAlign="right" paddingRight="5" width="50%" borderStyle="solid" borderColor="black" borderSides="right">
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<controls:RequiredLabel
+								id="MinPayrollAmtLabel" 
+								text="Minimum Payroll Amount"
+								dataField="minimumNonSuspectPayrollAmount"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="right" styleName="padderBox">
+						<mx:Label text="$"/>
+						<controls:SAPTextInput dataField="backingDTO.minimumNonSuspectPayrollAmount" isCurrency="true" textAlign="right"  width="100"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox verticalAlign="middle" verticalGap="0" horizontalAlign="left" paddingLeft="5" width="50%">
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<controls:RequiredLabel
+								id="MaxPayrollAmtLabel" 
+								text="Maximum Payroll Amount"
+								dataField="maxDDCompanyLimitDefault"/>
+					</mx:HBox>
+					<mx:HBox horizontalGap="0" horizontalAlign="left" styleName="padderBox">
+						<mx:Label text="$"/>
+						<controls:SAPTextInput dataField="backingDTO.maxDDCompanyLimitDefault" isCurrency="true" textAlign="right"  width="100"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+			
+			<mx:VBox width="100%" horizontalAlign="center">	
+		       	<mx:HBox horizontalAlign="center">
+					<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()" />
+					<mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+				</mx:HBox>
+			</mx:VBox> 		
+		
+		</mx:VBox> 
+
+</mx:VBox>

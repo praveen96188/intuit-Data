@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" 
+	styleName="grayDataGridVBox" xmlns:controls="psp.sap.view.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.formatters.SAPDateFormatters;
+			import mx.utils.ObjectUtil;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import psp.sap.model.PropertyAudit;
+			import psp.sap.viewmodel.BanksCompanyAccountHistoryViewModel;
+			import psp.sap.model.CompanyBankAccountHistory;
+
+			[Bindable]
+			public var viewModel:BanksCompanyAccountHistoryViewModel;
+			
+			[Bindable]
+			public var companyBankAccountHistory:CompanyBankAccountHistory;
+			
+			private static const FIRST_COLUMN_WIDTH:int = 120;
+			private static const SECOND_COLUMN_WIDTH:int = 120;
+			
+			private function formatDate(item:Object, dgc:DataGridColumn):String {						    	
+		    	return SAPDateFormatters.dateTimeFormatDateOverTime.format(item.auditDate);
+		  	}
+		  	
+		  	private function getAccountStatusLabel(item:Object, dgc:DataGridColumn):String {		  		
+		  		return viewModel.getAccountStatusLabel(item[dgc.dataField]);
+		  	}
+		  		
+			private function dateCompare(a:Object, b:Object):int {
+				return ObjectUtil.compare(a.auditDate, b.auditDate);
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0">		
+		<mx:VBox verticalGap="0">
+			<mx:HBox>
+				<mx:Label 
+					width="{FIRST_COLUMN_WIDTH}"
+					text="Status:" 
+					color="black" 
+					fontWeight="bold" 
+					styleName="grayDataGridSubText"/>
+				<mx:Text
+					id="statusText"
+                    width="{SECOND_COLUMN_WIDTH}"
+					text="{companyBankAccountHistory.bankAccountStatus}" 
+					color="{companyBankAccountHistory.isActive ? UIUtils.COLOR_GREEN : UIUtils.COLOR_RED}"
+					fontWeight="bold"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label
+					width="{FIRST_COLUMN_WIDTH}" 
+					text="Bank Name:" 
+					color="black" 
+					fontWeight="bold" 
+					styleName="grayDataGridSubText"/>
+				<mx:Text
+					id="bankNameText"
+                    width="{SECOND_COLUMN_WIDTH}"
+					text="{companyBankAccountHistory.bankName}" 
+					color="black" 
+					styleName="grayDataGridSubText"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label
+					width="{FIRST_COLUMN_WIDTH}" 
+					text="QB Bank Name:" 
+					color="black" 
+					fontWeight="bold" 
+					styleName="grayDataGridSubText"/>
+				<mx:Text
+					id="qbBankNameText"
+                    width="{SECOND_COLUMN_WIDTH}"
+					text="{companyBankAccountHistory.sourceBankAccountName}" 
+					color="black" 
+					styleName="grayDataGridSubText"/>
+			</mx:HBox>			
+		</mx:VBox>
+		<mx:VBox verticalGap="0">
+			<mx:HBox>
+				<mx:Label
+					width="{FIRST_COLUMN_WIDTH}" 
+					text="Account Number:" 
+					color="black" 
+					fontWeight="bold" 
+					styleName="grayDataGridSubText"/>
+				<mx:Text
+					id="accountNumberText"
+                    width="{SECOND_COLUMN_WIDTH}"
+					text="{companyBankAccountHistory.accountNumber}" 
+					color="black" 
+					styleName="grayDataGridSubText"/>
+			</mx:HBox>					
+			<mx:HBox>
+				<mx:Label
+					width="{FIRST_COLUMN_WIDTH}" 
+					text="Routing Number:" 
+					color="black" 
+					fontWeight="bold" 
+					styleName="grayDataGridSubText"/>
+				<mx:Text
+					id="routingNumberText"
+                    width="{SECOND_COLUMN_WIDTH}"
+					text="{companyBankAccountHistory.routingNumber}" 
+					color="black" 
+					styleName="grayDataGridSubText"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label
+					width="{FIRST_COLUMN_WIDTH}"
+					text="Account Type:" 
+					color="black" 
+					fontWeight="bold" 
+					styleName="grayDataGridSubText"/>
+				<mx:Text
+					id="accountTypeText"
+                    width="{SECOND_COLUMN_WIDTH}"
+					text="{companyBankAccountHistory.accountType}" 
+					color="black" 
+					styleName="grayDataGridSubText"/>
+			</mx:HBox>
+		</mx:VBox>					
+	</mx:HBox>
+	
+	<controls:SAPDataGrid
+        id="propertyAuditData"
+		dataProvider="{companyBankAccountHistory.propertyAudit}"
+		maxRows="5"		
+		selectable="false" 
+		width="100%" 
+		backgroundColor="#ffffff">					
+		<controls:columns>
+			<mx:DataGridColumn 
+					headerText="Change Date{String('\n')}Time"
+					textAlign="center"
+					dataField="auditDateTime"								 
+					labelFunction="formatDate"
+					headerWordWrap="true"/>
+			<mx:DataGridColumn 
+					headerText="Property Changed"
+					textAlign="center" 
+					dataField="propertyLabel">
+			</mx:DataGridColumn>																
+			<mx:DataGridColumn 
+					headerText="Changed By"
+					textAlign="center" 
+					headerStyleName="directDepositHeader"							
+					color="green"
+					dataField="userId">
+			</mx:DataGridColumn>
+			<mx:DataGridColumn 
+					headerText="From"
+					textAlign="center" 
+					dataField="oldPropertyValue"
+					labelFunction="{getAccountStatusLabel}">
+			</mx:DataGridColumn>
+			<mx:DataGridColumn 
+					headerText="To"
+					textAlign="center" 
+					dataField="newPropertyValue"
+					labelFunction="{getAccountStatusLabel}">
+			</mx:DataGridColumn>
+		</controls:columns>
+	</controls:SAPDataGrid>			
+</mx:VBox>

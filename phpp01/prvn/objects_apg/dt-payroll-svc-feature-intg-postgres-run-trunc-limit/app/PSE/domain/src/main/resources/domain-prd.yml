@@ -1,0 +1,37 @@
+db-telemetry:
+  thread-sleep: 5000
+  enable-aspect: C3POAspect,OracleAspect,PostgresAspect
+  flush:
+    interval: 300000
+  stack-trace:
+    enabled: true
+    filter: com.intuit.sbd.payroll.psp
+    depth: -1
+    flush:
+      interval: 120000
+kafka:
+  producer:
+    topicRegionMapping:
+      allTopics:
+        region: UW2
+      #Add topic and Region mapping for env to publish from PSP, PAPI and Pubsub
+      #override the property in this tag
+#      sbseg-dtpayroll-entity-internal:
+#        region: UW2
+#      sbseg-dtpayroll-employee-restricted:
+#        region: UW2
+#      sbseg-dtpayroll-company-restricted:
+#        region: UW2
+#      sbseg-dtpayroll-contractor-restricted:
+#        region: UW2
+#      sbseg-dtpayroll-payslip-restricted:
+#        region: UW2
+    uw2:
+      enabled: true
+    ue2:
+      enabled: true
+  consumer:
+    uw2:
+      enabled: true
+    ue2:
+      enabled: true

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <globalConfiguration>
+  <parameter name="sendMultiRefs" value="true"/>
+  <parameter name="disablePrettyXML" value="true"/>
+  <parameter name="adminPassword" value="admin"/>
+  <parameter name="attachments.Directory" value="./attachments"/>
+  <parameter name="dotNetSoapEncFix" value="true"/>
+  <parameter name="enableNamespacePrefixOptimization" value="true"/>
+  <parameter name="sendXMLDeclaration" value="true"/>
+  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <parameter name="sendXsiTypes" value="true"/>
+  <requestFlow>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="session"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="request"/>
+    <parameter name="extension" value=".jwr"/>
+   </handler>
+  </requestFlow>
+ </globalConfiguration>
+ <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <service name="AdminService" provider="java:MSG">
+  <parameter name="allowedMethods" value="AdminService"/>
+  <parameter name="enableRemoteAdmin" value="false"/>
+  <parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <namespace>http://xml.apache.org/axis/wsdd/</namespace>
+ </service>
+ <service name="Version" provider="java:RPC">
+  <parameter name="allowedMethods" value="getVersion"/>
+  <parameter name="className" value="org.apache.axis.Version"/>
+ </service>
+   <service name="Company" provider="java:RPC">
+     <wsdlFile>/Company.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.Company"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service> 
+   <service name="CompanyBankAccount" provider="java:RPC">
+     <wsdlFile>/CompanyBankAccount.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.CompanyBankAccount"/>
+     <parameter name="allowedMethods" value="query queryStatusHistory verify"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service> 
+   <service name="DDCompany" provider="java:RPC">
+     <wsdlFile>/DDCompany.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.DDCompany"/>
+     <parameter name="allowedMethods" value="cancel getInfo query strikeAdd strikeCancel updateDDStatus updateFundingModel updateLimits"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>  
+   <service name="DDTransaction" provider="java:RPC">
+     <wsdlFile>/DDTransaction.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.DDTransaction"/>
+     <parameter name="allowedMethods" value="badDebtRecover badDebtWriteOff cancel ddRefund eeReturnRefund eeReturnTransfer erFeeAdd erReturnRefund escalationAdd feeRedebitAdd feeTransfer intuit5DayReturnTransfer redebitAdd repaymentRecord reverse voidTx txHistoryQuery"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>   
+   <service name="EEFinancialTx" provider="java:RPC">
+     <wsdlFile>/EEFinancialTx.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.EEFinancialTx"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>       
+   <service name="Employee" provider="java:RPC">
+     <wsdlFile>/Employee.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.Employee"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>
+   <service name="EmployeeBankAccount" provider="java:RPC">
+     <wsdlFile>/EmployeeBankAccount.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.EmployeeBankAccount"/>
+     <parameter name="allowedMethods" value="historyQuery"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>  
+   <service name="ERFinancialTx" provider="java:RPC">
+     <wsdlFile>/ERFinancialTx.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.ERFinancialTx"/>
+     <parameter name="allowedMethods" value="query cancel refund"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>       
+   <service name="FieldHistory" provider="java:RPC">
+     <wsdlFile>/FieldHistory.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.FieldHistory"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>       
+   <service name="PayrollRun" provider="java:RPC">
+     <wsdlFile>/PayrollRun.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.PayrollRun"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>       
+   <service name="CompanyEvent" provider="java:RPC">
+     <wsdlFile>/CompanyEvent.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.CompanyEvent"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>       
+   <service name="BankReturn" provider="java:RPC">
+     <wsdlFile>/BankReturn.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.BankReturn"/>
+     <parameter name="allowedMethods" value="query update"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>       
+   <service name="CompanyNote" provider="java:RPC">
+     <wsdlFile>/CompanyNote.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.CompanyNote"/>
+     <parameter name="allowedMethods" value="query add"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service>         
+   <service name="SourceSystemParam" provider="java:RPC">
+     <wsdlFile>/SourceSystemParam.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.SourceSystemParam"/>
+     <parameter name="allowedMethods" value="query update"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service> 
+   <service name="LedgerAccount" provider="java:RPC">
+     <wsdlFile>/LedgerAccount.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.LedgerAccount"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service> 
+   <service name="LedgerEntry" provider="java:RPC">
+     <wsdlFile>/LedgerEntry.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.LedgerEntry"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+   </service> 
+   <service name="BookXferFinancialTx" provider="java:RPC">
+     <wsdlFile>/BookXferFinancialTx.wsdl</wsdlFile>
+     <parameter name="className" value="com.intuit.sbd.payroll.psp.webservices.BookXferFinancialTx"/>
+     <parameter name="allowedMethods" value="query"/>
+     <requestFlow><handler type="WSFAuditHandler"/></requestFlow>
+  </service>
+ <transport name="http">
+  <requestFlow>
+   <handler type="URLMapper"/>
+   <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+   <handler name="WSFAuditHandler" type="java:com.intuit.sbd.payroll.psp.webservices.WSFAuditHandler"/>
+  </requestFlow>
+  <parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </transport>
+ <transport name="local">
+  <responseFlow>
+   <handler type="LocalResponder"/>
+  </responseFlow>
+ </transport>
+</deployment>

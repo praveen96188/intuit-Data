@@ -1,0 +1,305 @@
+<?xml version="1.0"?>
+<mx:VBox
+        xmlns:pspui="psp.sap.view.*"
+        xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete();">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Paystub;
+        import psp.sap.viewmodel.VMPEmployeeViewModel;
+
+        private var mViewModel:VMPEmployeeViewModel;
+        private var mTempViewModel:VMPEmployeeViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private static const labelWidth:int = 115;
+        private static const dateFieldWidth:int = 100;
+        private static const dateFieldLabelsWidth:int = 44;
+
+        [Bindable]
+        public function get viewModel():VMPEmployeeViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:VMPEmployeeViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.fromDateValidator.listener = fromDate;
+                mViewModel.toDateValidator.listener = toDate;
+                mViewModel.fromToDateRangeValidator.startDateListener = fromDate;
+                mViewModel.fromToDateRangeValidator.endDateListener = toDate;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function removeConsumerId(link:ActionLinkEvent):void {
+            var msgString:String = "Are you sure you want to remove Consumer Id?";
+            Alert.show(msgString,
+                    "Remove Consumer Id",
+                    Alert.YES | Alert.NO,
+                    null,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.YES) {
+                            viewModel.removeConsumerId();
+                        }
+                    },
+                    null,
+                    Alert.YES);
+        }
+
+        public function doSearch():void {
+            viewModel.searchButtonClicked = true;
+            viewModel.refresh();
+        }
+
+        public function paystubSelected(data:Paystub):void {
+            viewModel.selectedPaystub = data;
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox styleName="standardTabbedBody" width="100%" verticalGap="0" paddingBottom="0">
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="User ID:"/>
+            <mx:Text id="userIdText" text="{viewModel.employeeInfo.userId}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Consumer ID:"/>
+            <mx:Text id="consumerIdText" text="{viewModel.employeeInfo.consumerId}"/>
+            <pspui:ActionLink paddingTop="0"
+                              paddingBottom="0"
+                              label="Remove"
+                              visible="{viewModel.canRemoveConsumerId()}"
+                              includeInLayout="{viewModel.canRemoveConsumerId()}"
+                              actionClick="removeConsumerId"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label styleName="fieldLabel" width="{labelWidth}" text="Email Address:"/>
+            <mx:Text id="effectiveDateText" text="{viewModel.employeeInfo.emailAddress}"/>
+        </mx:HBox>
+        <mx:Spacer height="10"/>
+        <mx:Label styleName="fieldLabel" text="Search for uploaded paystubs:"/>
+
+        <mx:HBox>
+            <mx:Label text="From:" styleName="fieldLabel" width="{dateFieldLabelsWidth}"/>
+            <pspui:SAPDateField id="fromDate" editable="true" width="{dateFieldWidth}"/>
+
+            <mx:Label text="To:" styleName="fieldLabel" textAlign="right" width="{dateFieldLabelsWidth}"/>
+            <pspui:SAPDateField id="toDate" editable="true" width="{dateFieldWidth}"/>
+
+            <mx:Spacer width="15"/>
+            <mx:Button label="Search" enabled="{viewModel.canSave}" id="searchButton" click="doSearch();"/>
+        </mx:HBox>
+
+        <mx:Spacer height="25"/>
+        <mx:HBox>
+            <mx:Label
+                    visible="{viewModel.searchButtonClicked &amp;&amp; !viewModel.isDataLoading &amp;&amp; (viewModel.paystubs == null || viewModel.paystubs.length == 0)}"
+                    includeInLayout="{viewModel.searchButtonClicked &amp;&amp; !viewModel.isDataLoading &amp;&amp; (viewModel.paystubs == null || viewModel.paystubs.length == 0)}"
+                    width="100%"
+                    textAlign="center"
+                    fontWeight="bold"
+                    text="No Paystubs found to display."/>
+            <controls:SAPDataGrid
+                    dataProvider="{viewModel.paystubs}"
+                    visible="{viewModel.paystubs != null ? viewModel.paystubs.length > 0 : false}"
+                    includeInLayout="{viewModel.paystubs != null ? viewModel.paystubs.length > 0 : false}"
+                    headerHeight="0" rowCount="{viewModel.paystubs.length}">
+                <controls:columns>
+                    <controls:SAPDataGridColumn
+                            headerText=""
+                            width="100"
+                            resizable="false">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <pspui:ActionLink click="outerDocument.paystubSelected(Paystub(data))"
+                                                  label="{SAPDateFormatters.dateFormatShort.format(Paystub(data).paycheckDate)}"
+                                                  textAlign="center"
+                                                  paddingBottom="1"
+                                                  paddingTop="1">
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.formatters.SAPDateFormatters;
+                                        import psp.sap.model.Paystub;
+                                        ]]></mx:Script>
+                                </pspui:ActionLink>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                </controls:columns>
+            </controls:SAPDataGrid>
+
+            <mx:VBox width="600" verticalGap="10"
+                     visible="{!viewModel.isDataLoading &amp;&amp; viewModel.selectedPaystub != null &amp;&amp; viewModel.selectedPaystubDetails != null}"
+                     includeInLayout="{!viewModel.isDataLoading &amp;&amp; viewModel.selectedPaystub != null &amp;&amp; viewModel.selectedPaystubDetails != null}"
+                     resizeEffect="resizeEffect"
+                     tabChildren="false">
+            <mx:VBox styleName="grayDataGridVBoxLightBorders" paddingLeft="5" borderThickness="1" borderColor="#AFB49F">
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0">
+                        <mx:Label text="{viewModel.employeeInfo.fullNameForward}" styleName="fieldLabel" width="395"/>
+                        <mx:Label text="SSN:" styleName="fieldLabel"/>
+                        <mx:Label text="{viewModel.employeeInfo.socialSecurityNumber}"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0"
+                             includeInLayout="{viewModel.selectedPaystubDetails.addressLine1 != null}"
+                             visible="{viewModel.selectedPaystubDetails.addressLine1 != null}">
+                        <mx:Label text="{viewModel.selectedPaystubDetails.addressLine1}" width="395"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0"
+                             includeInLayout="{viewModel.selectedPaystubDetails.addressLine2 != null}"
+                             visible="{viewModel.selectedPaystubDetails.addressLine2 != null}">
+                        <mx:Label text="{viewModel.selectedPaystubDetails.addressLine2}" width="395"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0"
+                             includeInLayout="{viewModel.selectedPaystubDetails.addressLine3 != null}"
+                             visible="{viewModel.selectedPaystubDetails.addressLine3 != null}">
+                        <mx:Label text="{viewModel.selectedPaystubDetails.addressLine3}" width="395"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0"
+                             includeInLayout="{viewModel.selectedPaystubDetails.addressLine4 != null}"
+                             visible="{viewModel.selectedPaystubDetails.addressLine4 != null}">
+                        <mx:Label text="{viewModel.selectedPaystubDetails.addressLine4}" width="395"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0"
+                             includeInLayout="{viewModel.selectedPaystubDetails.addressLine5 != null}"
+                             visible="{viewModel.selectedPaystubDetails.addressLine5 != null}">
+                        <mx:Label text="{viewModel.selectedPaystubDetails.addressLine5}" width="395"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0">
+                        <mx:Spacer width="395"/>
+                        <mx:Label text="Check:" styleName="fieldLabel"/>
+                        <mx:Label text="{viewModel.selectedPaystubDetails.checkNumber}"/>
+                    </mx:HBox>
+                <mx:HBox  textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}">
+                    <mx:Label text="Filing Status(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedFilingStatus}"/>
+                </mx:HBox>
+                <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}">
+                    <mx:Label text="Two Jobs Only(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedMultipleJobs == 'TRUE' ? 'YES' : 'NO' }"/>
+                </mx:HBox>
+                <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}">
+                    <mx:Label text="Claim Dependents(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedClaimDependent}"/>
+                </mx:HBox>
+                <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}">
+                    <mx:Label text="Other Income(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedOtherIncome}"/>
+                </mx:HBox>
+                <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" >
+                    <mx:Label text="Deductions(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedDeductions}"/>
+                </mx:HBox>
+                <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref == '2020ANDLATER'}">
+                    <mx:Label text="Extra Withhold(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedExtra}"/>
+                </mx:HBox>
+                <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" visible = "{viewModel.selectedPaystubDetails.fedW4EmpPref != '2020ANDLATER'}" includeInLayout="{viewModel.selectedPaystubDetails.fedW4EmpPref != '2020ANDLATER'}">
+                    <mx:Label text="Status/Allow/Extra(Fed):" styleName="fieldLabel"/>
+                    <mx:Label
+                            text="{viewModel.selectedPaystubDetails.fedFilingStatus}/{viewModel.selectedPaystubDetails.fedAllowances}/{viewModel.selectedPaystubDetails.fedExtra}"/>
+                </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0">
+                        <mx:Label text="Status/Allow/Extra(State):" styleName="fieldLabel"/>
+                        <mx:Label
+                                text="{viewModel.selectedPaystubDetails.stateFilingStatus}/{viewModel.selectedPaystubDetails.stateAllowances}/{viewModel.selectedPaystubDetails.stateExtra}"
+                                width="395"/>
+                    </mx:HBox>
+                    <mx:HBox textAlign="left" verticalAlign="middle" verticalGap="0" paddingTop="5">
+                        <mx:Label text="Pay Period:" styleName="fieldLabel" width="80"/>
+                        <mx:Label
+                                text="{SAPDateFormatters.dateFormatShort.format(viewModel.selectedPaystubDetails.payBeginDate)}-{SAPDateFormatters.dateFormatShort.format(viewModel.selectedPaystubDetails.payEndDate)}"
+                                width="307"/>
+                        <mx:Label text="Pay Date:" styleName="fieldLabel"/>
+                        <mx:Label
+                                text="{SAPDateFormatters.dateFormatShort.format(viewModel.selectedPaystubDetails.paycheckDate)}"/>
+                    </mx:HBox>
+                </mx:VBox>
+
+                <controls:SAPDataGrid dataProvider="{viewModel.selectedPaystubDetails.paidTimeOffs}"
+                                      visible="{viewModel.selectedPaystubDetails.paidTimeOffs.length > 0}"
+                                      includeInLayout="{viewModel.selectedPaystubDetails.paidTimeOffs.length > 0}"
+                                      rowCount="{viewModel.selectedPaystubDetails.paidTimeOffs.length}"
+                                      maxRows="{viewModel.selectedPaystubDetails.paidTimeOffs.length}"
+                                      width="590"
+                                      selectable="false"
+                                      fixWidths="true" resizableColumns="false">
+                    <controls:columns>
+                        <mx:DataGridColumn headerText="Paid Time Off"
+                                           dataField="name"
+                                           sortable="false"
+                                           width="400"/>
+                        <mx:DataGridColumn headerText="Used"
+                                           dataField="ytdUsed"
+                                           sortable="false"
+                                           width="100"
+                                           textAlign="right"/>
+                        <mx:DataGridColumn headerText="Available"
+                                           dataField="available"
+                                           sortable="false"
+                                           width="100"
+                                           textAlign="right"/>
+                    </controls:columns>
+                </controls:SAPDataGrid>
+
+                <pspui:PstubPayItemDataGrid includeRate="false" firstHeader="Non-Taxable Company Items"
+                                            payItems="{viewModel.selectedPaystubDetails.nonTaxCompanyItems}"/>
+
+                <pspui:PstubPayItemDataGrid includeRate="false" firstHeader="Taxable Company Items"
+                                            payItems="{viewModel.selectedPaystubDetails.taxCompanyItems}"/>
+
+                <pspui:PstubPayItemDataGrid includeRate="true" firstHeader="Taxable Earnings"
+                                            payItems="{viewModel.selectedPaystubDetails.taxableEarnings}"/>
+
+                <pspui:PstubPayItemDataGrid includeRate="false" firstHeader="Taxes &amp; Deductions"
+                                            payItems="{viewModel.selectedPaystubDetails.taxes}"/>
+
+                <pspui:PstubPayItemDataGrid includeRate="false" firstHeader="Pre-Tax Deductions"
+                                            payItems="{viewModel.selectedPaystubDetails.preTaxDeductions}"/>
+
+                <pspui:PstubPayItemDataGrid includeRate="false" firstHeader="After-Tax Adjustments"
+                                            payItems="{viewModel.selectedPaystubDetails.taxAdjustments}"/>
+
+                <mx:VBox verticalGap="0" width="590" styleName="grayDataGridVBoxLightBorders" borderThickness="1" borderColor="#AFB49F">
+                    <mx:HBox horizontalGap="0">
+                        <mx:Label text="Net Pay" fontWeight="bold" textAlign="left" width="390" paddingLeft="5"/>
+                        <mx:Text
+                                text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedPaystubDetails.netCurrentAmount)}"
+                                textAlign="right" fontWeight="bold" width="100"/>
+                        <mx:Text
+                                text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.selectedPaystubDetails.netYtdAmount)}"
+                                textAlign="right" fontWeight="bold" width="100"/>
+                    </mx:HBox>
+
+                    </mx:VBox>
+            </mx:VBox>
+        </mx:HBox>
+    </mx:VBox>
+
+    <mx:Binding source="fromDate.text" destination="viewModel.fromDate"/>
+    <mx:Binding source="viewModel.fromDate" destination="fromDate.text"/>
+
+    <mx:Binding source="toDate.text" destination="viewModel.toDate"/>
+    <mx:Binding source="viewModel.toDate" destination="toDate.text"/>
+
+</mx:VBox>

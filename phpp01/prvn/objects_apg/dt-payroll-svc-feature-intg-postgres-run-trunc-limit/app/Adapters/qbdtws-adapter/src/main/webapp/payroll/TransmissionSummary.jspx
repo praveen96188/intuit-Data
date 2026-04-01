@@ -1,0 +1,238 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns="http://www.w3.org/1999/xhtml"
+          version="2.0">
+
+    <jsp:directive.page contentType="text/html"/>
+
+    <html>
+    <head>
+        <title>QBDT Payroll Services Transmission Response</title>
+        <style type="text/css">
+            BODY {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            TABLE {
+                margin-bottom:30px;
+            }
+
+            TD {
+                text-align: left;
+                padding-right: 20px;
+                vertical-align: text-top;
+            }
+
+            .companyInfo {
+                border: 1px solid;
+                color: #9F6000;
+                background-color: #FEEFB3;
+                padding: 5px;
+            }
+
+            .companyInfo TD {
+                color: #9F6000;
+            }
+
+            .tableHeader TD {
+                padding-right: 20px;
+                text-align: left;
+                vertical-align: text-top;
+                border-bottom: 1px solid #00529B;
+                border-spacing:0px;
+            }
+
+            .heading {
+                margin-bottom: 15px;
+                font-size: 20px;
+            }
+
+            .indentTable {
+                width: 100%;
+                padding-left: 10px;
+            }
+
+            .indentTable TD {
+                color: #00529B;
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            .statusMessage {
+                width: 350px;
+                border: 1px solid;
+                margin-left: 10px;
+                margin-bottom: 30px;
+                padding: 15px 10px 15px 50px;
+                background-repeat: no-repeat;
+                background-position: 10px center;
+                color: #4F8A10;
+                background-color: #DFF2BF;
+                background-image:url('./images/success.png');
+            }
+
+            .even TD {
+                background-color: #BDE5F8;
+            }
+
+            .printDiv {
+                padding-bottom: 10px;
+            }
+
+            @media print {
+                .printDiv {
+                    display: none;
+                }
+
+                .heading {
+                    font-size: 15px;
+                }
+
+                .companyInfo {
+                    border: none;
+                    padding: 0px;
+                }
+
+                .companyInfo TD {
+                    color: black;
+                }
+
+                .tableHeader TD {
+                    border-bottom: 1px solid black;
+                }
+
+                .indentTable TD {
+                    color: black;
+                }
+
+                .statusMessage {
+                    color: black;
+                    padding: 0px;
+                    border: none;
+                }
+
+                .even TD {
+                    border-bottom: 1px solid gray;
+                }
+                .odd TD {
+                    border-bottom: 1px solid gray;
+                }
+
+            }
+        </style>
+    </head>
+    <body>
+    <div align="center" style="width: 100%">
+        <div align="left" style="width: 90%">
+            <div align="left" class="printDiv">
+                <img src="./images/print.png" alt="print"/>
+                <a href="javascript:window.print()" style="padding-left:10px">Print</a>
+            </div>
+
+            <div class="companyInfo">
+                <table>
+                    <tr>
+                        <td style="font-weight: bold">Company:</td>
+                        <td>${transmissionSummary.companyName}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold">Transmission Date:</td>
+                        <td>${transmissionSummary.receivedDate}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <c:if test="${transmissionSummary.transmissionMessageCount > 0}">
+                <div class="heading">Transmission Send Summary</div>
+                <div class="indentTable">
+                    <table cellspacing="0" width="100%">
+                        <tr class="tableHeader">
+                            <td>Status</td>
+                            <td>Message</td>
+                        </tr>
+                        <c:forEach items="${transmissionSummary.transmissionMessages}" var="message" varStatus="messageStatus">
+                            <tr class="${messageStatus.index % 2 == 0 ? 'even' : 'odd'}">
+                                <td nowrap="nowrap">${message.status}</td>
+                                <td>${message.message}</td>
+                            </tr>
+                        </c:forEach>
+                    </table>
+                </div>
+            </c:if>
+                        
+            <div class="heading">Paycheck Send Summary</div>
+            <c:choose>
+                <c:when test="${transmissionSummary.paycheckMessageCount > 0}">
+                    <div class="indentTable">
+                        <table cellspacing="0" width="100%">
+                            <tr class="tableHeader">
+                                <td nowrap="nowrap">Check Date</td>
+                                <td nowrap="nowrap" style="text-align:right">Net Amt</td>
+                                <td>Employee</td>
+                                <td>Status</td>
+                                <td>Message</td>
+                            </tr>
+                            <c:forEach items="${transmissionSummary.paycheckMessages}" var="message" varStatus="messageStatus">
+                                <tr class="${messageStatus.index % 2 == 0 ? 'even' : 'odd'}">
+                                    <td nowrap="nowrap">${message.checkDate}</td>
+                                    <td nowrap="nowrap" style="text-align:right;">${message.netAmount}</td>
+                                    <td nowrap="nowrap">${message.employeeName}</td>
+                                    <td nowrap="nowrap">${message.status}</td>
+                                    <td>${message.message}</td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="statusMessage">All paychecks successfully received.</div>
+                </c:otherwise>
+            </c:choose>
+
+
+            <div class="heading">Employee Send Summary</div>
+            <c:choose>
+                <c:when test="${transmissionSummary.employeeMessageCount > 0}">
+                    <div class="indentTable">
+                        <table cellspacing="0" width="100%">
+                            <tr class="tableHeader">
+                                <td>Employee</td>
+                                <td>Status</td>
+                                <td>Messages</td>
+                                <td>Paychecks Affected</td>
+                            </tr>
+                            <c:forEach items="${transmissionSummary.employeeMessages}" var="message" varStatus="messageStatus">
+                                <tr class="${messageStatus.index % 2 == 0 ? 'even' : 'odd'}">
+                                    <td>${message.employeeName}</td>
+                                    <td>${message.status}</td>
+                                    <td>
+                                        <c:forEach items="${message.messages}" var="validationMessage">
+                                            ${validationMessage}<br/>
+                                        </c:forEach>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${message.relatedPaycheckMessageCount > 0}">
+                                                <c:forEach items="${message.relatedPaycheckMessages}" var="paycheckMessage">
+                                                    ${paycheckMessage}<br/>
+                                                </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <br/>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="statusMessage">All employees successfully received.</div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+    </body>
+    </html>
+</jsp:root>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domainsecondary" default-cascade="merge" auto-import="false" default-access="com.intuit.sbd.payroll.psp.hibernate.PSPMixedAccessor">
+	<class name="com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kEmployeeDeduction" entity-name="com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kEmployeeDeduction" table="PSP_HCM401K_EMPLOYEE_DEDUCTION">
+		<id name="Id" column="HCM401K_EMPLOYEE_DEDUCTION_SEQ" type="com.intuit.sbd.payroll.psp.hibernate.SpcfUniqueIdUserType" access="property">
+			<generator class="assigned"/>
+		</id>
+
+		<!-- Hcm401kEmployeeDeduction Version Property -->
+		<version name="Version" type="long" column="VERSION" unsaved-value="negative" />
+
+		<!-- Hcm401kEmployeeDeduction Admin Properties -->
+		<property name="CreatorId" type="string" column="CREATOR_ID" not-null="false" />
+		<property name="CreatedDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType" column="CREATED_DATE" not-null="true" />
+		<property name="ModifierId" type="string" column="MODIFIER_ID" not-null="false" />
+		<property name="ModifiedDate" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType" column="MODIFIED_DATE" not-null="true"/>
+		<property name="TempId" type="string" column="HCM401K_EMPLOYEE_DEDUCTION_SEQ" update="false" insert="false" access="property"/>
+        <property name="RealmId" type="long" column="REALM_ID" not-null="true" insert="true" update="false" access="property"/>
+
+		<!-- Hcm401kEmployeeDeduction Declared Properties -->
+		<property name="EmployeeId" type="string" column="EMPLOYEE_ID"/>
+
+		<property name="Amount" type="double" column="AMOUNT"/>
+
+		<property name="Hcm401kAmountType" column="HCM401K_AMOUNT_TYPE" >
+			<type name="com.intuit.sbd.payroll.psp.hibernate.SpcfStringEnumUserType">
+				<param name="enumClassname">com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kAmountType</param>
+			</type>
+		</property>
+
+		<property name="MaxAmount" type="double" column="MAX_AMOUNT"/>
+
+		<property name="Hcm401kDeductionContributor" column="HCM401K_DEDUCTION_CONTRIBUTOR" >
+			<type name="com.intuit.sbd.payroll.psp.hibernate.SpcfStringEnumUserType">
+				<param name="enumClassname">com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kDeductionContributor</param>
+			</type>
+		</property>
+
+		<property name="Active" type="org.hibernate.type.NumericBooleanType" column="ACTIVE"/>
+        <many-to-one name="Hcm401kCompanyPolicy" class="com.intuit.sbd.payroll.psp.domainsecondary.Hcm401kCompanyPolicy" column="HCM401K_COMPANY_POLICY_FK"  not-null="true"  />
+	</class>
+</hibernate-mapping>

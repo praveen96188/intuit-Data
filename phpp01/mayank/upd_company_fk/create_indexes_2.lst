@@ -1,0 +1,273 @@
+22:42:29 SQL> --  disable online index rebuild cleanup job
+22:42:29 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+24-FEB-23 03.00.41.801851 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+22:42:29 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+22:42:29 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+24-FEB-23 03.00.41.801851 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+22:42:29 SQL> 
+22:42:29 SQL> Prompt Index PSP_PSTUB_EMPLOYEE_INFO_FK3;
+Index PSP_PSTUB_EMPLOYEE_INFO_FK3
+22:42:29 SQL> CREATE INDEX PSPADM.PSP_PSTUB_EMPLOYEE_INFO_FK3 ON PSPADM.PSP_PSTUB_EMPLOYEE_INFO (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:02:18.54
+22:44:48 SQL> alter index PSPADM.PSP_PSTUB_EMPLOYEE_INFO_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:44:48 SQL> 
+22:44:48 SQL> Prompt Index PSP_PAYCHECK_USAGE_HIST_FK3;
+Index PSP_PAYCHECK_USAGE_HIST_FK3
+22:44:48 SQL> CREATE INDEX PSPADM.PSP_PAYCHECK_USAGE_HIST_FK3 ON PSPADM.PSP_PAYCHECK_USAGE_HIST (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.59
+22:44:48 SQL> alter index PSPADM.PSP_PAYCHECK_USAGE_HIST_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:44:48 SQL> 
+22:44:48 SQL> Prompt Index PSP_EFTPS_PAYMENT_DETAIL_FK5;
+Index PSP_EFTPS_PAYMENT_DETAIL_FK5
+22:44:48 SQL> CREATE INDEX PSPADM.PSP_EFTPS_PAYMENT_DETAIL_FK5 ON PSPADM.PSP_EFTPS_PAYMENT_DETAIL (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:12.77
+22:45:01 SQL> alter index PSPADM.PSP_EFTPS_PAYMENT_DETAIL_FK5 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:45:01 SQL> 
+22:45:01 SQL> Prompt Index PSP_EDI_PAYMENT_DETAIL_FK4;
+Index PSP_EDI_PAYMENT_DETAIL_FK4
+22:45:01 SQL> CREATE INDEX PSPADM.PSP_EDI_PAYMENT_DETAIL_FK4 ON PSPADM.PSP_EDI_PAYMENT_DETAIL (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.17
+22:45:01 SQL> alter index PSPADM.PSP_EDI_PAYMENT_DETAIL_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:45:01 SQL> 
+22:45:01 SQL> Prompt Index PSP_PAYSTUB_FK4;
+Index PSP_PAYSTUB_FK4
+22:45:01 SQL> CREATE INDEX PSPADM.PSP_PAYSTUB_FK4 ON PSPADM.PSP_PAYSTUB (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:06:00.32
+22:51:02 SQL> alter index PSPADM.PSP_PAYSTUB_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:51:02 SQL> 
+22:51:02 SQL> Prompt Index PSP_FSET_FILING_DETAIL_FK4;
+Index PSP_FSET_FILING_DETAIL_FK4
+22:51:02 SQL> CREATE INDEX PSPADM.PSP_FSET_FILING_DETAIL_FK4 ON PSPADM.PSP_FSET_FILING_DETAIL (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.38
+22:51:02 SQL> alter index PSPADM.PSP_FSET_FILING_DETAIL_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:51:02 SQL> 
+22:51:02 SQL> Prompt Index PSP_EVENT_AS400_SYNC_FK2;
+Index PSP_EVENT_AS400_SYNC_FK2
+22:51:02 SQL> CREATE INDEX PSPADM.PSP_EVENT_AS400_SYNC_FK2 ON PSPADM.PSP_EVENT_AS400_SYNC (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:01.29
+22:51:03 SQL> alter index PSPADM.PSP_EVENT_AS400_SYNC_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:51:03 SQL> 
+22:51:03 SQL> Prompt Index PSP_THIRD_PARTY401K_PAYCHE_FK2;
+Index PSP_THIRD_PARTY401K_PAYCHE_FK2
+22:51:03 SQL> CREATE INDEX PSPADM.PSP_THIRD_PARTY401K_PAYCHE_FK2 ON PSPADM.PSP_TP401K_PAYCHECK (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.39
+22:51:04 SQL> alter index PSPADM.PSP_THIRD_PARTY401K_PAYCHE_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:51:04 SQL> 
+22:51:04 SQL> Prompt Index PSP_THIRD_PARTY401K_BATCH__FK3;
+Index PSP_THIRD_PARTY401K_BATCH__FK3
+22:51:04 SQL> CREATE INDEX PSPADM.PSP_THIRD_PARTY401K_BATCH__FK3 ON PSPADM.PSP_TP401K_BATCH_PAYCHECK (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.35
+22:51:04 SQL> alter index PSPADM.PSP_THIRD_PARTY401K_BATCH__FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:51:04 SQL> 
+22:51:04 SQL> Prompt Index PSP_TAX_PAYMENT_ON_HOLD_RE_FK2;
+Index PSP_TAX_PAYMENT_ON_HOLD_RE_FK2
+22:51:04 SQL> CREATE INDEX PSPADM.PSP_TAX_PAYMENT_ON_HOLD_RE_FK2 ON PSPADM.PSP_TAX_PAYMENT_ON_HOLD_REASON (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.94
+22:51:05 SQL> alter index PSPADM.PSP_TAX_PAYMENT_ON_HOLD_RE_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:51:05 SQL> 
+22:51:05 SQL> Prompt Index PSP_PAYMENT_BATCH_ASSOC_FK3;
+Index PSP_PAYMENT_BATCH_ASSOC_FK3
+22:51:05 SQL> CREATE INDEX PSPADM.PSP_PAYMENT_BATCH_ASSOC_FK3 ON PSPADM.PSP_PAYMENT_BATCH_ASSOC (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:01.18
+22:51:06 SQL> alter index PSPADM.PSP_PAYMENT_BATCH_ASSOC_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:51:06 SQL> 
+22:51:06 SQL> Prompt Index PSP_WORKERS_COMP_PAYCHECK_FK2;
+Index PSP_WORKERS_COMP_PAYCHECK_FK2
+22:51:06 SQL> CREATE INDEX PSPADM.PSP_WORKERS_COMP_PAYCHECK_FK2 ON PSPADM.PSP_WC_PAYCHECK (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:06.62
+22:51:13 SQL> alter index PSPADM.PSP_WORKERS_COMP_PAYCHECK_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:51:13 SQL> 
+22:51:13 SQL> Prompt Index PSP_VOIDED_CHECK_FK4;
+Index PSP_VOIDED_CHECK_FK4
+22:51:13 SQL> CREATE INDEX PSPADM.PSP_VOIDED_CHECK_FK4 ON PSPADM.PSP_VOIDED_CHECK (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.13
+22:51:13 SQL> alter index PSPADM.PSP_VOIDED_CHECK_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:51:13 SQL> 
+22:51:13 SQL> Prompt Index PSP_TRANSACTION_OFFLOAD_BA_FK3;
+Index PSP_TRANSACTION_OFFLOAD_BA_FK3
+22:51:13 SQL> CREATE INDEX PSPADM.PSP_TRANSACTION_OFFLOAD_BA_FK3 ON PSPADM.PSP_TRANSACTION_OFFLOAD_BATCH (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:00:00.26
+22:51:13 SQL> alter index PSPADM.PSP_TRANSACTION_OFFLOAD_BA_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:51:13 SQL> 
+22:51:13 SQL> --  enable online index rebuild cleanup job
+22:51:13 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+24-FEB-23 03.00.41.801851 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+22:51:13 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+22:51:13 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+24-FEB-23 03.00.41.669033 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+22:51:13 SQL> 
+22:51:13 SQL> spool off

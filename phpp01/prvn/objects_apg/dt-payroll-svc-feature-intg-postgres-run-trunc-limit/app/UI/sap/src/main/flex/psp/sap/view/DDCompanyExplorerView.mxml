@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:view="psp.sap.view.*"
+	width="100%" height="100%"
+	paddingLeft="0" paddingTop="0" paddingRight="0" paddingBottom="0" xmlns:containers="flexlib.containers.*"
+	creationComplete="onCreationComplete();" xmlns:controls="psp.sap.view.controls.*">
+
+	<mx:Script>
+		<![CDATA[
+        import mx.events.CollectionEvent;
+        import mx.events.CollectionEventKind;
+
+        import psp.sap.viewmodel.CompanyExplorerViewModel;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+
+        protected var mViewModel:CompanyExplorerViewModel;
+        protected var mInspectorViewClass:Class;
+
+        private var mCreationCompleted:Boolean = false;
+
+        private function onCreationComplete():void {
+            mCreationCompleted = true;
+        }
+
+        [Bindable]
+        public virtual function get viewModel():CompanyExplorerViewModel {
+            return mViewModel;
+        }
+
+        public virtual function set viewModel(value:CompanyExplorerViewModel):void {
+            mViewModel = value;
+            mViewModel.inspectors.addEventListener(CollectionEvent.COLLECTION_CHANGE, onInpsectorCollectionChanged, false, 0, true);
+            syncToViewModel();
+        }
+
+        private function syncToViewModel():void {
+            addInspectorViews(mViewModel.inspectors.source);
+        }
+
+        public function onInpsectorCollectionChanged(e:CollectionEvent):void {
+            if (!mCreationCompleted)
+                return;
+
+            if (e.kind == CollectionEventKind.ADD) {
+                addInspectorViews(e.items);
+            }
+            else if (e.kind == CollectionEventKind.REMOVE) {
+                for each (var inspectorViewModel:CompanyInspectorViewModel in e.items) {
+                    for each (var inspectorView:DDCompanyInspectorView in companyViewStack.getChildren()) {
+                        if (inspectorView.viewModel == inspectorViewModel) {
+                            companyViewStack.removeChild(inspectorView);
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (e.kind == CollectionEventKind.RESET) {
+                companyViewStack.removeAllChildren();
+            }
+        }
+
+        private function addInspectorViews(companyInspectorViewModels:Array):void {
+            for each (var inspectorViewModel:CompanyInspectorViewModel in companyInspectorViewModels) {
+                var inspectorView:DDCompanyInspectorView = new DDCompanyInspectorView();
+                inspectorView.viewModel = inspectorViewModel;
+                companyViewStack.addChild(inspectorView);
+            }
+        }
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label id="noOpenCompaniesLabel" text="No open companies." visible="{viewModel.inspectors.length == 0}" includeInLayout="{viewModel.inspectors.length == 0}"/>
+	
+	<mx:ViewStack id="companyViewStack" width="100%" height="100%"/>
+						
+	<mx:Binding source="viewModel.activeInspectorIndex" destination="companyViewStack.selectedIndex"/>
+
+</mx:VBox>

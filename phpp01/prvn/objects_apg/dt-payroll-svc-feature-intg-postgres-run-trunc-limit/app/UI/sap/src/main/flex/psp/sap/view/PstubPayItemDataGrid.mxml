@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="600" resizeEffect="resizeEffect" tabChildren="false"
+         visible="{payItems.length > 0}"
+         includeInLayout="{payItems.length > 0}">
+
+    <mx:Script><![CDATA[
+        import mx.collections.ArrayCollection;
+
+        [Bindable]
+        public var payItems:ArrayCollection;
+        [Bindable]
+        public var includeRate:Boolean;
+        [Bindable]
+        public var firstHeader:String;
+        ]]></mx:Script>
+
+    <controls:SAPDataGrid dataProvider="{payItems}"
+                          visible="{includeRate}"
+                          includeInLayout="{includeRate}"
+                          rowCount="{payItems.length}"
+                          maxRows="{payItems.length}"
+                          width="590"
+                          selectable="false"
+                          fixWidths="true"
+                          resizableColumns="false">
+        <controls:columns>
+            <mx:DataGridColumn headerText="{firstHeader}"
+                               dataField="name"
+                               sortable="false"
+                               width="250"/>
+            <mx:DataGridColumn headerText="Rate"
+                               visible="{includeRate}"
+                               width="75"
+                               dataField="rate"
+                               sortable="false"
+                               textAlign="right"/>
+            <mx:DataGridColumn headerText="Hrs/Qty"
+                               visible="{includeRate}"
+                               width="75"
+                               dataField="quantity"
+                               sortable="false"
+                               textAlign="right"/>
+            <mx:DataGridColumn headerText="Current"
+                               dataField="currentAmount"
+                               labelFunction="SAPDataGrid.formatCurrency"
+                               sortable="false"
+                               width="100"
+                               textAlign="right"/>
+            <mx:DataGridColumn headerText="YTD"
+                               dataField="ytdAmount"
+                               labelFunction="SAPDataGrid.formatCurrency"
+                               sortable="false"
+                               width="100"
+                               textAlign="right"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+
+    <controls:SAPDataGrid dataProvider="{payItems}"
+                          visible="{!includeRate}"
+                          includeInLayout="{!includeRate}"
+                          rowCount="{payItems.length}"
+                          maxRows="{payItems.length}"
+                          width="590"
+                          selectable="false"
+                          fixWidths="true"
+                          resizableColumns="false">
+        <controls:columns>
+            <mx:DataGridColumn headerText="{firstHeader}"
+                               dataField="name"
+                               sortable="false"
+                               width="400"/>
+            <mx:DataGridColumn headerText="Current"
+                               dataField="currentAmount"
+                               labelFunction="SAPDataGrid.formatCurrency"
+                               sortable="false"
+                               width="100"
+                               textAlign="right"/>
+            <mx:DataGridColumn headerText="YTD"
+                               dataField="ytdAmount"
+                               labelFunction="SAPDataGrid.formatCurrency"
+                               sortable="false"
+                               width="100"
+                               textAlign="right"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+
+</mx:VBox>

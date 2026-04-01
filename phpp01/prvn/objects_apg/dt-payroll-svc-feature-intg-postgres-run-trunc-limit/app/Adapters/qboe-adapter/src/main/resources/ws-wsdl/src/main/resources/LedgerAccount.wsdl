@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="LedgerAccount"
+	targetNamespace="urn:intuit.osp.pse.dd.wsapi.xsd.LedgerAccount"
+	xmlns:impl="urn:intuit.osp.pse.dd.wsapi.xsd.LedgerAccount"
+	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:apachesoap="http://xml.apache.org/xml-soap"	
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsf="http://base.wsf.common.osp.intuit">
+
+	<wsdl:types>
+		<schema targetNamespace="http://base.wsf.common.osp.intuit"	xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://xml.apache.org/xml-soap" />
+			<import	namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+			<complexType name="WSException">
+				<sequence />
+			</complexType>
+		</schema>
+	</wsdl:types>
+	
+	<wsdl:message name="queryRequest">
+		<wsdl:part name="queryRequest" type="apachesoap:Element" />
+	</wsdl:message>
+
+	<wsdl:message name="queryResponse">
+		<wsdl:part name="queryResponse" type="apachesoap:Element" />
+	</wsdl:message>
+
+	<wsdl:message name="WSException">
+		<wsdl:part name="fault" type="wsf:WSException" />
+	</wsdl:message>
+	
+	<wsdl:portType name="LedgerAccount">
+		<wsdl:operation name="query" parameterOrder="queryRequest">
+			<wsdl:input message="impl:queryRequest" name="queryRequest"/>
+			<wsdl:output message="impl:queryResponse" name="queryResponse"/>
+			<wsdl:fault message="impl:WSException" name="WSException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	
+	<wsdl:binding name="LedgerAccountSOAP" type="impl:LedgerAccount">
+		<wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="query">
+			<wsdlsoap:operation	soapAction="" />
+			<wsdl:input>
+				<wsdlsoap:body namespace="urn:intuit.osp.pse.dd.wsapi.xsd.ledgeraccountquery.LedgerAccountQuery" use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<wsdlsoap:body namespace="urn:intuit.osp.pse.dd.wsapi.xsd.ledgeraccountqueryrs.LedgerAccountQueryRs" use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="WSException">
+				<wsdlsoap:fault name="WSException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:service name="LedgerAccount">
+		<wsdl:port binding="impl:LedgerAccountSOAP"	name="LedgerAccount">
+			<wsdlsoap:address location="${wsdlsoap.address.location.root}/services/LedgerAccount" />
+		</wsdl:port>
+	</wsdl:service>
+	
+</wsdl:definitions>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns="*"
+         xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:view="psp.sap.view.*">
+    <mx:Script>
+    <![CDATA[
+        import psp.sap.model.CompanyLaw;
+        import psp.sap.viewmodel.CompanyLawsViewModel;
+
+        [Bindable]
+        public var viewModel:CompanyLawsViewModel;
+
+        public function getISEMPYN(item:Object, dgc:SAPDataGridColumn):String {
+            return ((item as CompanyLaw).iisemp ? "Y" : "N");
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:VBox
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}"
+            width="100%"
+            height="100%">
+        <controls:SAPDataGrid
+                width="100%"
+                variableRowHeight="true"
+                selectable="false"
+                draggableColumns="false"
+                visible="{viewModel.companyLaws.length > 0}"
+                includeInLayout="{viewModel.companyLaws.length > 0}"
+                dataProvider="{viewModel.companyLaws}"
+                autoResizeToFitContent="true">
+            <controls:columns>
+                <controls:SAPDataGridColumn sortable="true"
+                                   headerText="Tax {String('\n')}Item ID"
+                                   minWidth="40"
+                                   width="40"
+                                   dataField="sourceId">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox
+                                    minWidth="40"
+                                    horizontalAlign="left"
+                                    verticalGap="0"
+                                    verticalScrollPolicy="off"
+                                    horizontalScrollPolicy="off">
+                                <mx:HBox horizontalGap="0" width="100%" paddingRight="5">
+                                    <mx:Text text="{CompanyLaw(data).sourceId}"
+                                             textAlign="center"/>
+                                    <mx:Image source="{SAP.instance.icons.redAsterisk}" toolTip= "Latest Company Law is Item Id: {CompanyLaw(data).latestId}"
+                                              visible="{CompanyLaw(data).latestId != null}"
+                                              includeInLayout="{CompanyLaw(data).latestId != null}"/>
+                                    <mx:Script><![CDATA[
+                                        import psp.sap.application.SAP;
+                                        import psp.sap.model.CompanyLaw;
+                                        ]]></mx:Script>
+                                </mx:HBox>
+                            </mx:VBox>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Description"
+                        dataField="description"
+                        minWidth="40"/>
+                <controls:SAPDataGridColumn
+                        headerText="Law"
+                        dataField="lawType"
+                        width="55"
+                        minWidth="55"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Tax Form Line"
+                        dataField="taxFormLine"
+                        minWidth="60"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="ISEMP"
+                        dataField="iisemp"
+                        labelFunction="getISEMPYN"
+                        width="40"/>
+
+                <controls:SAPDataGridColumn
+                        headerText="Agency ID"
+                        dataField="agencyId"
+                        minWidth="60"/>
+                <controls:SAPDataGridColumn
+                        headerText="Pending {String('\n')}Push"
+                        dataField="pendingPush"
+                        minWidth="40"
+                        width="40"/>
+                <controls:SAPDataGridColumn
+                        headerText="Delete {String('\n')}Status Flag"
+                        dataField="deleteStatus"
+                        width="50"
+                        minWidth="50"/>
+                <controls:SAPDataGridColumn
+                        headerText="Status"
+                        dataField="status"
+                        width="40"
+                        minWidth="40"/>
+                <controls:SAPDataGridColumn
+                        headerText="COA Liability"
+                        dataField="coaLiability"
+                        minWidth="45">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:Label text="{CompanyLaw(data).coaLiability}">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.CompanyLaw;
+                                    ]]></mx:Script>
+                            </mx:Label>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="COA Expense"
+                        dataField="coaExpense"
+                        minWidth="45">
+                    <controls:itemRenderer>
+                        <mx:Component>
+                            <mx:Label text="{CompanyLaw(data).coaExpense}">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.CompanyLaw;
+                                    ]]></mx:Script>
+                            </mx:Label>
+                        </mx:Component>
+                    </controls:itemRenderer>
+                </controls:SAPDataGridColumn>
+                <controls:SAPDataGridColumn
+                        headerText="Token"
+                        dataField="token"
+                        width="35"
+                        minWidth="20"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+        <mx:Text
+                text="No Company Laws were found for this company."
+                width="100%"
+                textAlign="center"
+                visible="{viewModel.companyLaws.length == 0}"
+                includeInLayout="{viewModel.companyLaws.length == 0}"
+                fontWeight="bold"/>
+    </mx:VBox>
+
+</mx:VBox>

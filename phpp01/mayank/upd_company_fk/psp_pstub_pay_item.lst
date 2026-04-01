@@ -1,0 +1,315 @@
+23:28:03 SQL> 
+23:28:03 SQL> DECLARE
+23:28:03   2  	  RECORD_COUNT	     INTEGER   := 2794030097;
+23:28:03   3  	  MAX_RECORDS	     INTEGER   := 10000000;
+23:28:03   4  	  PROCESSED_RECORDS  INTEGER   := 0;
+23:28:03   5  	  ERROR_RECORDS      INTEGER   := 0;
+23:28:03   6  	  MAX_FETCH_RECORDS  INTEGER   := 50000;
+23:28:03   7  	  BATCH_COUNT	     INTEGER   := 0;
+23:28:03   8  	  START_DATE	     DATE := TO_DATE('2022-11-21', 'yyyy-mm-dd');
+23:28:03   9  	  END_DATE	     DATE := TO_DATE('2022-11-22', 'yyyy-mm-dd');
+23:28:03  10  	  PARTITION_START_DATE DATE := END_DATE - 1;
+23:28:03  11  BEGIN
+23:28:03  12  
+23:28:03  13  	  DBMS_OUTPUT.PUT_LINE('Found ' || RECORD_COUNT || ' Records');
+23:28:03  14  
+23:28:03  15  	  WHILE (RECORD_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS)
+23:28:03  16  
+23:28:03  17  	      LOOP
+23:28:03  18  		  DBMS_OUTPUT.PUT_LINE('OUTER LOOP');
+23:28:03  19  		  BATCH_COUNT := 1; --TO ENTER THE LOOP AT LEAST ONCE FOR A DAY.
+23:28:03  20  
+23:28:03  21  		  WHILE (BATCH_COUNT > 0 AND PROCESSED_RECORDS < MAX_RECORDS)
+23:28:03  22  
+23:28:03  23  		      LOOP
+23:28:03  24  			  BEGIN
+23:28:03  25  			      DBMS_OUTPUT.PUT_LINE('INNER LOOP');
+23:28:03  26  
+23:28:03  27  			      MERGE INTO PSPADM.PSP_PSTUB_PAY_ITEM ppio
+23:28:03  28  			      using (SELECT ppi.PSTUB_PAY_ITEM_SEQ, p.COMPANY_FK
+23:28:03  29  				     FROM PSPADM.PSP_PSTUB_PAY_ITEM ppi,
+23:28:03  30  					  PSPADM.PSP_PAYSTUB ps,
+23:28:03  31  					  PSPADM.PSP_PAYCHECK p
+23:28:03  32  				     WHERE p.created_date BETWEEN START_DATE and START_DATE + 1
+23:28:03  33  				       and ps.PAYCHECK_FK = p.PAYCHECK_SEQ
+23:28:03  34  				       and ppi.PAYSTUB_FK = ps.PAYSTUB_SEQ
+23:28:03  35  				       and ppi.COMPANY_FK is null
+23:28:03  36  				       and ROWNUM <= MAX_FETCH_RECORDS) ppii
+23:28:03  37  			      ON (ppio.PSTUB_PAY_ITEM_SEQ = ppii.PSTUB_PAY_ITEM_SEQ)
+23:28:03  38  			      when matched then
+23:28:03  39  				  update set ppio.COMPANY_FK = ppii.COMPANY_FK;
+23:28:03  40  
+23:28:03  41  			      BATCH_COUNT := SQL%ROWCOUNT;
+23:28:03  42  			      COMMIT;
+23:28:03  43  
+23:28:03  44  			      PROCESSED_RECORDS := PROCESSED_RECORDS + BATCH_COUNT;
+23:28:03  45  
+23:28:03  46  			      DBMS_OUTPUT.PUT_LINE('Processed ' || PROCESSED_RECORDS || ' records successfully');
+23:28:03  47  
+23:28:03  48  			      if BATCH_COUNT < MAX_FETCH_RECORDS then
+23:28:03  49  				  exit;
+23:28:03  50  			      end if;
+23:28:03  51  
+23:28:03  52  			  EXCEPTION
+23:28:03  53  			      WHEN OTHERS THEN
+23:28:03  54  				  ERROR_RECORDS := ERROR_RECORDS + BATCH_COUNT;
+23:28:03  55  				  DBMS_OUTPUT.PUT_LINE('Failed ' || ERROR_RECORDS || ' records');
+23:28:03  56  			  END;
+23:28:03  57  		      END LOOP;
+23:28:03  58  		  exit;
+23:28:03  59  		  END_DATE := END_DATE - 1;
+23:28:03  60  		  PARTITION_START_DATE := END_DATE - 1;
+23:28:03  61  		  DBMS_OUTPUT.PUT_LINE('PARTITION-START-DATE : ' || TO_DATE(PARTITION_START_DATE, 'yyyy-mm-dd') || ' END-DATE : ' || TO_DATE(END_DATE, 'yyyy-mm-dd'));
+23:28:03  62  	      END LOOP;
+23:28:03  63  EXCEPTION
+23:28:03  64  	  WHEN OTHERS THEN DBMS_OUTPUT.PUT_LINE('Error in Procedure');
+23:28:03  65  END;
+23:28:03  66  /
+Found 2794030097 Records                                                        
+OUTER LOOP                                                                      
+INNER LOOP                                                                      
+Processed 50000 records successfully                                            
+INNER LOOP                                                                      
+Processed 100000 records successfully                                           
+INNER LOOP                                                                      
+Processed 150000 records successfully                                           
+INNER LOOP                                                                      
+Processed 200000 records successfully                                           
+INNER LOOP                                                                      
+Processed 250000 records successfully                                           
+INNER LOOP                                                                      
+Processed 300000 records successfully                                           
+INNER LOOP                                                                      
+Processed 350000 records successfully                                           
+INNER LOOP                                                                      
+Processed 400000 records successfully                                           
+INNER LOOP                                                                      
+Processed 450000 records successfully                                           
+INNER LOOP                                                                      
+Processed 500000 records successfully                                           
+INNER LOOP                                                                      
+Processed 550000 records successfully                                           
+INNER LOOP                                                                      
+Processed 600000 records successfully                                           
+INNER LOOP                                                                      
+Processed 650000 records successfully                                           
+INNER LOOP                                                                      
+Processed 700000 records successfully                                           
+INNER LOOP                                                                      
+Processed 750000 records successfully                                           
+INNER LOOP                                                                      
+Processed 800000 records successfully                                           
+INNER LOOP                                                                      
+Processed 850000 records successfully                                           
+INNER LOOP                                                                      
+Processed 900000 records successfully                                           
+INNER LOOP                                                                      
+Processed 950000 records successfully                                           
+INNER LOOP                                                                      
+Processed 1000000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1050000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1100000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1150000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1200000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1250000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1300000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1350000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1400000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1450000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1500000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1550000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1600000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1650000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1700000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1750000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1800000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1850000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1900000 records successfully                                          
+INNER LOOP                                                                      
+Processed 1950000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2000000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2050000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2100000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2150000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2200000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2250000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2300000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2350000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2400000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2450000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2500000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2550000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2600000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2650000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2700000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2750000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2800000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2850000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2900000 records successfully                                          
+INNER LOOP                                                                      
+Processed 2950000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3000000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3050000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3100000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3150000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3200000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3250000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3300000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3350000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3400000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3450000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3500000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3550000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3600000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3650000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3700000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3750000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3800000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3850000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3900000 records successfully                                          
+INNER LOOP                                                                      
+Processed 3950000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4000000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4050000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4100000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4150000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4200000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4250000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4300000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4350000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4400000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4450000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4500000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4550000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4600000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4650000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4700000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4750000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4800000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4850000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4900000 records successfully                                          
+INNER LOOP                                                                      
+Processed 4950000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5000000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5050000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5100000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5150000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5200000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5250000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5300000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5350000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5400000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5450000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5500000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5550000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5600000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5650000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5700000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5750000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5800000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5850000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5900000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5950000 records successfully                                          
+INNER LOOP                                                                      
+Processed 5966358 records successfully                                          
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:32:16.67
+00:00:20 SQL> 
+00:00:20 SQL> spool off

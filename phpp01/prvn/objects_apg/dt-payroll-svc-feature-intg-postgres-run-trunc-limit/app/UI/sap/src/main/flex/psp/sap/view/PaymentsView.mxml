@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	width="100%"
+	verticalGap="0"
+	creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[
+            import psp.sap.application.enums.PaymentsPageEnum;
+            import psp.sap.viewmodel.PaymentsViewModel;
+
+			private var mViewModel:PaymentsViewModel;
+			private var mTempViewModel:PaymentsViewModel;
+			private var mCreationComplete:Boolean = false;
+
+			[Bindable]
+			public function get viewModel():PaymentsViewModel {
+				return mViewModel;
+			}
+
+			public function set viewModel(value:PaymentsViewModel):void {
+				if (mCreationComplete) {
+					mViewModel = value;
+				}
+				else {
+					mTempViewModel = value;
+				}
+			}
+
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;
+			}
+
+		]]>
+	</mx:Script>
+
+	<controls:PartsTabNavigator label="{PaymentsPageEnum.TAX_PAYMENTS + '_ptn'}">
+		<pspui:PaymentsPendingListView label="{PaymentsPageEnum.PENDING}"/>
+        <pspui:PaymentsExecutedListView label="{PaymentsPageEnum.EXECUTED_PAYMENTS}"/>
+		<pspui:PaymentsExceptionListView label="{PaymentsPageEnum.EXCEPTIONS}"/>
+	</controls:PartsTabNavigator>
+
+</mx:VBox>

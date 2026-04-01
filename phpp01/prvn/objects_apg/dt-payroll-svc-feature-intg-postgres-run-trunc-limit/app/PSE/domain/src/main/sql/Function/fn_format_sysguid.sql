@@ -1,0 +1,11 @@
+CREATE OR REPLACE FUNCTION FN_FORMAT_SYSGUID(pSysGuid IN RAW) RETURN VARCHAR2 
+DETERMINISTIC
+AS
+fmtGuid VARCHAR2(200);
+BEGIN
+   SELECT SUBSTR(pSysGuid, 1, 8) || '-' || SUBSTR(pSysGuid, 9, 4) || '-' || SUBSTR(pSysGuid, 13, 4) || '-' || SUBSTR(pSysGuid, 17, 4) || '-' || SUBSTR(pSysGuid, 21)
+   INTO fmtGuid FROM DUAL;   
+   SELECT LOWER(fmtGuid) INTO fmtGuid FROM DUAL;
+   RETURN fmtGuid;
+END FN_FORMAT_SYSGUID;
+/

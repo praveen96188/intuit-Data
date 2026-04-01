@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:ns="http://offering.xsd.wsapi.dd.pse.osp.intuit" 
+	xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" 
+	targetNamespace="http://offering.xsd.wsapi.dd.pse.osp.intuit"
+	elementFormDefault="qualified">
+	<xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Data Transfer Object Offering</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="Offering">
+		<xs:sequence>
+			<xs:element name="OfferingID" type="dd:IDType" nillable="true"/>
+			<xs:element name="SKU" nillable="false">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="50"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Name" nillable="false">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Description" minOccurs="0" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="1000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="IsApproved" type="xs:boolean" nillable="true"/>
+			<xs:element name="Services" nillable="false">
+				<xs:simpleType>
+					<xs:list itemType="xs:string"/>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

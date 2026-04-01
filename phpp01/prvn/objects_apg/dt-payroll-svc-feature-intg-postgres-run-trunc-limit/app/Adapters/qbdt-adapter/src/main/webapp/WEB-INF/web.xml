@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app metadata-complete="true"
+         version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>PSP QBDT Servlet</display-name>
+    
+    <!-- Signal Sciences Filter -->
+    <filter>
+       <filter-name>sigSciFilter</filter-name>
+       <filter-class>com.signalsciences.servlet.filter.SigSciFilter</filter-class>
+       <init-param>
+          <param-name>rpcTimeout</param-name>
+          <param-value>100</param-value>
+       </init-param> 
+       <init-param>
+          <param-name>rpcServerURI</param-name>
+          <param-value>unix:/var/run/sigsci.sock</param-value>
+       </init-param>
+   </filter>
+   <filter-mapping>
+       <filter-name>sigSciFilter</filter-name>
+       <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   <!-- end Signal Sciences Filter -->
+
+    <!-- Log Enhancing Filter start-->
+    <filter>
+       <filter-name>LogEnhancingFilter</filter-name>
+       <filter-class>com.intuit.sbg.psp.filter.LogEnhancingFilter</filter-class>
+   </filter>
+   <filter-mapping>
+       <filter-name>LogEnhancingFilter</filter-name>
+       <url-pattern>/*</url-pattern>
+   </filter-mapping>
+    <!-- end Log Enhancing Filter -->
+
+
+    <!-- Initialization servlet -->
+    <servlet>
+        <servlet-name>QBDTPegServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.adapters.qbdt.QBDTPegServlet</servlet-class>
+        <load-on-startup>100</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>InitSpcfServlet</servlet-name>
+        <servlet-class>com.intuit.sbd.payroll.psp.web.InitSpcfServlet</servlet-class>
+        <load-on-startup>100</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>QBDTPegServlet</servlet-name>
+        <url-pattern>/QBDTPegServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>QBDTPegServlet</servlet-name>
+        <url-pattern>/payrollwebexchange.dll</url-pattern>
+    </servlet-mapping>
+
+    <env-entry>
+        <description>The EventLogger's application name</description>
+        <env-entry-name>eventlogger.appname</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>DDUI</env-entry-value>
+    </env-entry>
+
+    <!-- this should allow most users to login 1x per day -->
+    <session-config>
+        <session-timeout>480</session-timeout>
+    </session-config>
+
+</web-app>

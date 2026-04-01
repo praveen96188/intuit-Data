@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.core.Application;
+        import mx.events.CloseEvent;
+        import mx.events.MenuEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.model.ActionEvent;
+        import psp.sap.model.ActionEventCode;
+        import psp.sap.model.PayrollTransaction;
+        import psp.sap.viewmodel.ERPayableRefundsViewModel;
+
+        [Bindable]
+        public var viewModel:ERPayableRefundsViewModel;
+
+        private static function formatTxnType(item:Object, dgc:DataGridColumn):String {
+            return SAP.instance.lookupService.transactionTypes.getItemByKey(item[dgc.dataField]).name
+        }
+
+        public function actionEventButtonHandler(event:MenuEvent):void {
+            var action:ActionEvent = ActionEvent(event.item);
+            var transaction:PayrollTransaction = PayrollActionPopUpMenuButton(event.currentTarget).transaction;
+
+            if (action.code == ActionEventCode.ER_PAYABLE_CANCEL) {
+                Alert.show("Are you sure you want to cancel this transaction?",
+                        "Cancel Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        SAPApp(Application.application),
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.cancelTransaction(transaction.id);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else if (action.code == ActionEventCode.FINANCIAL_TRANSACTION_VOID_TX) {
+                Alert.show("Are you sure you want to void this transaction?",
+                        "Void Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        SAPApp(Application.application),
+                        function (evt_obj:CloseEvent):void {
+                            if (evt_obj.detail == Alert.OK) {
+                                viewModel.voidTransaction(transaction.id);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            } else {
+                viewModel.performPayrollTransactionAction(action, transaction);
+            }
+        }
+
+        public function confirmRefund():void {
+            Alert.show("Are you sure you want to create a refund?",
+                    "Refund Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function (e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.createRefund();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        ]]>
+    </mx:Script>
+
+    <mx:VBox verticalGap="15" visible="{viewModel.canCreateRefund}" includeInLayout="{viewModel.canCreateRefund}">
+        <mx:Canvas>
+            <mx:VBox y="11" width="450" borderColor="black" borderStyle="solid" cornerRadius="5">
+                <mx:HBox width="100%" paddingTop="15" paddingBottom="5" paddingLeft="5" paddingRight="10" verticalAlign="middle">
+
+                    <pspui:RequiredLabel text="Amount:" validator="{viewModel.amountValidator}"
+                                         fontWeight="bold" width="105" horizontalAlign="right"/>
+                    <controls:SAPTextInput width="80" dataField="amount" restrict="0-9."/>
+                    <mx:Label text="Settlement Type:" fontWeight="bold"/>
+                    <mx:HBox horizontalGap="0" horizontalAlign="left">
+                        <controls:SAPComboBox dataField="settlementType" width="100"
+                                              dataProvider="{viewModel.settlementTypes}"
+                                              visible="{viewModel.canSelectNonStandardSettlementTypes}"
+                                              includeInLayout="{viewModel.canSelectNonStandardSettlementTypes}"/>
+                        <mx:Label fontWeight="bold" textAlign="center" width="100"
+                                  text="{viewModel.settlementType}"
+                                  visible="{!(viewModel.canSelectNonStandardSettlementTypes)}"
+                                  includeInLayout="{!(viewModel.canSelectNonStandardSettlementTypes)}"/>
+                    </mx:HBox>
+                </mx:HBox>
+                <mx:HBox width="100%" paddingTop="5" paddingBottom="5" paddingLeft="10" paddingRight="25"
+                         horizontalAlign="right">
+                    <mx:Button label="Create" click="confirmRefund();" enabled="{viewModel.canSave}"/>
+                </mx:HBox>
+            </mx:VBox>
+            <mx:Label opaqueBackground="#FFFFFF" x="11" text="Create Refund" fontWeight="bold"/>
+        </mx:Canvas>
+    </mx:VBox>
+
+    <mx:VBox
+            styleName="grayDataGridVBox"
+            verticalScrollPolicy="off"
+            horizontalScrollPolicy="off"
+            width="100%">
+
+        <controls:SAPDataGrid
+                width="100%"
+                visible="{viewModel.transactions.length != 0}"
+                includeInLayout="{viewModel.transactions.length != 0}"
+                dataProvider="{viewModel.transactions}"
+                selectable="false"
+                maxRows="20">
+            <controls:columns>
+                <mx:DataGridColumn
+                        headerWordWrap="true"
+                        headerText="Txn Date"
+                        dataField="txnDate"
+                        labelFunction="SAPDataGrid.formatDateMedium"
+                        itemRenderer="mx.controls.Text"
+                        textAlign="left"/>
+                <mx:DataGridColumn
+                        headerText="Amount"
+                        dataField="amount"
+                        labelFunction="SAPDataGrid.formatCurrency"
+                        itemRenderer="mx.controls.Text"
+                        fontWeight="bold"
+                        textAlign="right"/>
+                <mx:DataGridColumn
+                        headerText="Txn Type"
+                        dataField="txnType"
+                        labelFunction="formatTxnType"
+                        itemRenderer="mx.controls.Text"
+                        textAlign="left"/>
+                <mx:DataGridColumn
+                        headerText="Status"
+                        dataField="status"
+                        itemRenderer="mx.controls.Text"
+                        textAlign="center"/>
+                <mx:DataGridColumn
+                        headerText="Rtn Cd"
+                        dataField="returnCd"
+                        itemRenderer="mx.controls.Text"
+                        textAlign="center"/>
+                <mx:DataGridColumn
+                        headerText="Actions"
+                        sortable="false"
+                        textAlign="left"
+                        width="180"
+                        dataField="actionCollection">
+                    <mx:itemRenderer>
+                        <mx:Component>
+                            <mx:VBox paddingLeft="5" paddingRight="3">
+                                <mx:Script><![CDATA[
+                                    import psp.sap.model.PayrollTransaction;
+                                    ]]></mx:Script>
+                                <pspui:PayrollActionPopUpMenuButton
+                                        id="erTxnsActionButton"
+                                        automationName="erTxnsActionButton"
+                                        fontWeight="normal"
+                                        dataProvider="{data.actionCollection}"
+                                        labelField="description"
+                                        width="100%"
+                                        paddingLeft="5"
+                                        textAlign="left"
+                                        itemClick="outerDocument.actionEventButtonHandler(event)"
+                                        transaction="{data as PayrollTransaction}"/>
+                            </mx:VBox>
+                        </mx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+                <mx:DataGridColumn
+                        headerWordWrap="true"
+                        headerText="Settlement{String('\n')}Type"
+                        dataField="settlementType"
+                        itemRenderer="mx.controls.Text"
+                        textAlign="center"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+        <mx:Text
+                visible="{viewModel.transactions.length == 0}"
+                includeInLayout="{viewModel.transactions.length == 0}"
+                text="No refunds found."
+                fontWeight="bold"
+                textAlign="center"
+                width="100%"/>
+    </mx:VBox>
+</mx:VBox>

@@ -1,0 +1,6 @@
+--
+-- This script will be executed BEFORE the automatically generated
+-- C:\dev\PSP\dev\PSE\Domain\src\main\model\DBUpgrade_002.001.001.010.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

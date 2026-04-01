@@ -1,0 +1,88 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--                                                                      --
+-- Please review the script before using it to make sure it won't       --
+-- cause any unacceptable data loss.                                    --
+--                                                                      --
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL
+-- PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL
+
+Prompt drop Index PSP_COMPANY_FK_OFFERING;
+DROP INDEX PSP_COMPANY_FK1;
+
+Prompt drop TABLE PSP_OFFERING_SVC_ASSOC;
+ALTER TABLE PSP_OFFERING_SVC_ASSOC
+ DROP PRIMARY KEY CASCADE;
+DROP TABLE PSP_OFFERING_SVC_ASSOC CASCADE CONSTRAINTS;
+
+Prompt Column OFFERING_CODE;
+ALTER TABLE PSP_OFFERING
+ ADD (OFFERING_CODE  VARCHAR2(255 CHAR));
+
+Prompt Column SERVICE_CODE;
+ALTER TABLE PSP_OFFERING
+ ADD (SERVICE_CODE  VARCHAR2(255 CHAR));
+
+Prompt Column OFFERING_FK;
+-- Column to be dropped is part of a multi-column constraint.
+-- Oracle requires that the constraint be dropped first.
+-- There may be another statement later in the script that tries to drop
+-- the constraint again.  Errors produced by it can be ignored.
+ALTER TABLE PSP_COMPANY DROP CONSTRAINT PSP_COMPANY_FK1;
+ALTER TABLE PSP_COMPANY DROP COLUMN OFFERING_FK;
+
+Prompt Table PSP_COMPANY_OFFERING;
+--
+-- PSP_COMPANY_OFFERING  (Table)
+--
+CREATE TABLE PSP_COMPANY_OFFERING
+(
+  COMPANY_OFFERING_SEQ  VARCHAR2(255 CHAR),
+  VERSION               NUMBER(19),
+  CREATOR_ID            VARCHAR2(30 CHAR),
+  CREATED_DATE          TIMESTAMP(6),
+  MODIFIER_ID           VARCHAR2(30 CHAR),
+  MODIFIED_DATE         TIMESTAMP(6),
+  REALM_ID              NUMBER(19)              DEFAULT -1,
+  OFFERING_FK           VARCHAR2(255 CHAR),
+  COMPANY_FK            VARCHAR2(255 CHAR)
+)
+LOGGING
+NOCOMPRESS
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+Prompt Index PSP_COMPANY_OFFERING_FK2;
+--
+-- PSP_COMPANY_OFFERING_FK2  (Index)
+--
+CREATE INDEX PSP_COMPANY_OFFERING_FK2 ON PSP_COMPANY_OFFERING
+(COMPANY_FK, REALM_ID)
+LOGGING
+NOPARALLEL;
+
+Prompt Index PSP_COMPANY_OFFERING_FK1;
+--
+-- PSP_COMPANY_OFFERING_FK1  (Index)
+--
+CREATE INDEX PSP_COMPANY_OFFERING_FK1 ON PSP_COMPANY_OFFERING
+(OFFERING_FK, REALM_ID)
+LOGGING
+NOPARALLEL;
+
+ALTER TABLE PSP_COMPANY_OFFERING
+ ADD PRIMARY KEY
+ (COMPANY_OFFERING_SEQ, REALM_ID);
+
+ALTER TABLE PSP_COMPANY_OFFERING
+ ADD CONSTRAINT PSP_COMPANY_OFFERING_FK1
+ FOREIGN KEY (OFFERING_FK, REALM_ID)
+ REFERENCES PSP_OFFERING (OFFERING_SEQ,REALM_ID);
+
+ALTER TABLE PSP_COMPANY_OFFERING
+ ADD CONSTRAINT PSP_COMPANY_OFFERING_FK2
+ FOREIGN KEY (COMPANY_FK, REALM_ID)
+ REFERENCES PSP_COMPANY (COMPANY_SEQ,REALM_ID);
+
+PROMPT finishedDBUpgrade_002.000.000.058.sql

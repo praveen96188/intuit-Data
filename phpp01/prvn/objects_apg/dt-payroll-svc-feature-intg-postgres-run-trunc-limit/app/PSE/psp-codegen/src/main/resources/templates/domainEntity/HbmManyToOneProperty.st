@@ -1,0 +1,1 @@
+<many-to-one name="$it.PropertyName$" class="com.intuit.sbd.payroll.psp.domain.$it.propertyType$" column="$it.FirstPspColumnName$" $if(it.isNotNullable)$ not-null="$it.isNotNullable$" $endif$ />

@@ -1,0 +1,160 @@
+package com.intuit.sbd.payroll.psp.util.launchdarkly;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+public abstract class FeatureFlags {
+
+    static {
+        IXPFeatureFlags.getInstance();
+    }
+
+    public enum Key {
+        TEST_BOOLEAN_UNIT,
+        TEST_INT_UNIT,
+        TEST_DOUBLE_UNIT,
+        TEST_STRING_UNIT,
+        TEST_JSON_UNIT,
+        IS_OOP_FIX_ENABLED,
+        TXE_ENABLED_TEMPLATES,
+        ET_TXE_ENABLED_TEMPLATES,
+        OINP_ENABLED_SUBJECTS_LIST,
+        OINP_ENABLED_SUBJECTS_WITH_ATTACHMENTS,
+        OINP_ENABLED_TEMPLATES,
+        OINP_TEMPLATE_DETAILS_OVERRIDE,
+        ENABLE_2108_LOGS,
+        IS_BRM_SYMPHONY_JOB_ENABLED,
+        PSP_QUERY_CONSOLE_IN_IKS,
+        IS_BRM_IDPS_ENCRPYTION_ENABLED,
+        IS_MTL_EMAIL_DIY_ENABLED,
+        IS_MTL_EMAIL_ASSISTED_ENABLED,
+        IS_MTL_EMAIL_VENDOR_ENABLED,
+        ENABLE_REALM_VALIDATION,
+        ENABLE_REALM_VALIDATION_TRON_COMPANIES,
+        ENABLE_PAYROLL_RUN_LEVEL_FUNDING_MODEL,
+        REALMID_GUID_SYNC_FLAG,
+        PSP_ENABLE_NEXT_DAY_FOR_NTTF_CUSTOMERS,
+        REMOVE_ONHOLD_NEW_FLOW,
+        SMS_SAP_VALIDATION_ENABLED,
+        SMS_QBDT_VALIDATION_ENABLED,
+        SMS_PAYMENTS_ACCOUNT_VALIDATION_ENABLED,
+        ENABLE_NEW_NHCRS1_REPORT,
+        ENABLE_WALLET_CREATION,
+        ENABLE_WALLET_CREATION_EXISTING_BA,
+        ENABLE_WALLET_CLONE,
+        ENABLE_SOX_PROCESSOR_ENDPOINT_PROD,
+        NGP_WALLET_READ_CASH,
+        NGP_WALLET,
+        ENABLE_PARTITION_SST,
+        ENABLE_GUIDELINE_ONLY_ASSISTED,
+        ENABLE_PAYEE_WALLET_CREATION,
+        ENABLE_PAYEE_WALLET_CREATION_EXISTING_BA,
+        ENABLE_PARTITIONED_SST_UPDATE,
+        IS_BILLPAYMENT_SERVICE_ENABLED,
+        LOG_SST_UPDATE_SQL,
+        USE_WEB_SERVICE_CLIENT,
+        ENABLE_ADD_USER_TO_COMPANY_REALM,
+        PSP_WC_SFTP_ENABLE,
+        PSP_WC_API_ENABLE,
+        OVERWRITE_COMPANY_REALM_UPDATE,
+        WC_APINTEGO_PRD_ACTIVE,
+        WC_APINTEGO_PPD_ACTIVE,
+        WC_ALL_CUSTOMER,
+        WC_SPLITLIMIT_CUSTOMER,
+        ENABLE_LAZY_LOAD_SST_FILTER,
+        SKIP_AMS_QUEUED_MESSAGES,
+        SMS_COMPANY_REALM_UPDATE,
+        ENABLE_SFTP_PRINTING,
+        IS_OMS_ENABLED_FOR_PMO,
+        ENABLE_MULTI_TENANCY,
+        C3P0_HARD_RESET_ELIGIBLE_CODES,
+
+        ENABLE_HIBERNATE_COMPANY_FILTER,
+        ENABLE_HIBERNATE_DATE_FILTER,
+        ENABLE_HIBERNATE_LICENSE_NUMBER_FILTER,
+        PSP_WC_SFTP_SPLITLIMIT_ENABLE,
+        PSP_WCCS_STOP_SUPPORT,
+        PSP_WC_SUBSCRIPTION_CANCELLED,
+        PSP_WC_CANCSUBS_SPLITLIMIT,
+        WORKFORCE_PAYSTUB_FIX,
+        READ_ONLY_DB_WORKFLOWS,
+        PSP_SMS_ADDRESS_FIX_ENABLE,
+        ENABLE_DISPSPUSERAUTH_HANDLER,
+        WC_INSURPAY_PPD_ACTIVE,
+        WC_INSURPAY_PRD_ACTIVE,
+        IS_DS2_STG_BATCH_JOB_ENABLED,
+        IS_MANUAL_LEDGER_LIMIT_ENABLED,
+        SALESTAX_GATEWAY_IMPL,
+        IS_EMPLOYER_FEE_LIMIT_ENABLED,
+        FINANCIAL_TRANSACTION_LIMIT,
+        ENABLE_FINANCIAL_TRANSACTION_LIMIT,
+        IS_PAYROLL_REFUND_REBILL_ENABLED,
+        EXCLUDED_ROUTING_NUMBERS,
+        IS_PENALTY_AND_INTEREST_REFUNDS_LIMIT_ENABLED,
+        IS_COURTESY_REFUNDS_LIMIT_ENABLED,
+        IS_UPDATE_PAYMENTS_AMOUNT_LIMIT_ENABLED,
+        ENABLE_QUERY_COMMENT,
+        IS_IDENTITY2_ENABLED_FOR_ERS,
+        L2SM_INPUT_DECRYPTION_ENABLED,
+        FILTER_ENABLED_REQUEST_TYPES,
+        FILTER_ENABLED_REQUEST_OPERATIONS,
+        FILTER_DISABLED_REQUEST_OPERATIONS,
+        IS_FILTER_VALIDATOR_ENABLED,
+        IS_IDENTITY2_ENABLED_FOR_BATCHJOB_HOOK,
+        IS_IDENTITY2_ENABLED_FOR_AIA,
+        IS_IDENTITY2_ENABLED_FOR_AMOWS,
+        IS_IDENTITY2_ENABLED_FOR_REQUEST_FILTER,
+        IS_IDENTITY2_ENABLED_FOR_WC_COMP,
+        JPA_PROCEDURE_LIST,
+        PSP_SYNC_COMPLETE_INFO,
+        IS_IDENTITY2_ENABLED_FOR_WORKFORCE_INVITE,
+        IS_IDLM_ENABLED,
+        IS_IDLM_ENABLED_FOR_INVITATIONS,
+        IS_IDLM_ENABLED_FOR_FETCHING_USER_DETAILS,
+        ENABLE_STACK_BASED_CONTEXT_MANAGER,
+        ENABLE_TENANT_ID_ANNOTATION,
+        GRANT2_ENABLED,
+        EMS_PUBLISH_ALL,
+        ENABLE_VMP_MULTI_COMPANY_FILTER,
+        IS_ID2_ENABLED_FOR_WALLETSERVICE,
+        ENABLE_GUIDELINE_PROD_FIX,
+        ENABLE_BATCHING_ASPECT,
+        IS_ID2_ENABLED,
+        ENABLE_CRITERIA_EAGER_LOAD,
+        IS_ID2_ENABLED_FOR_JSS,
+        IS_PENDING_PAYMENT_REFUND_ENABLED,
+        PLSQL_NAMED_QUERY,
+        PARALLEL_ENV_JSS_SCHEDULED_JOB_LIST,
+        IS_ID2_ENABLED_FOR_EFE,
+        MULTIPLE_COMPANY_CONTEXT_ALLOWED_OPERATIONS,
+        ENABLE_EAGER_LOAD_QUERIES,
+        ENABLE_CRITERIA_EAGER_LOAD_NESTED_COLLECTION,
+        ENABLE_EAGER_LOAD_QUERIES_METHODS,
+        ENABLE_EAGER_LOAD_BUILD_FROM_ALIAS_MAP_FIX
+    }
+
+    public static FeatureFlags get() {
+            return IXPFeatureFlags.getInstance();
+    }
+
+    public abstract boolean booleanValue(Key featureKey, boolean defaultValue);
+
+    public abstract boolean booleanValue(Key featureKey, boolean defaultValue, String entityIdString);
+
+    public abstract int intValue(Key featureKey, int defaultValue);
+
+    public abstract int intValue(Key featureKey, int defaultValue, String entityIdString);
+
+    public abstract double doubleValue(Key featureKey, double defaultValue);
+
+    public abstract double doubleValue(Key featureKey, double defaultValue, String entityIdString);
+
+    public abstract String stringValue(Key featureKey, String defaultValue);
+
+    public abstract String stringValue(Key featureKey, String defaultValue, String entityIdString);
+
+    public abstract JsonNode jsonValue(Key featureKey, JsonNode defaultValue);
+
+    public abstract JsonNode jsonValue(Key featureKey, JsonNode defaultValue, String entityIdString);
+
+    public abstract boolean isReady();
+}

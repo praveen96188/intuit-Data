@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurations>
+    <!--
+    <entry key="hibernate.connection.pool_size">100</entry>
+-->
+
+    <!-- configuration pool via c3p0 -->
+    <entry key="hibernate.c3p0.acquire_increment">1</entry>
+    <entry key="hibernate.c3p0.idle_test_period">180</entry>
+    <entry key="hibernate.c3p0.min_size">5</entry>
+    <entry key="hibernate.c3p0.max_size">50</entry>
+    <entry key="hibernate.c3p0.max_statements">0</entry>
+    <entry key="hibernate.c3p0.timeout">3600</entry>
+    <entry key="hibernate.c3p0.preferredTestQuery">SELECT 1 FROM DUAL</entry>
+
+    <!-- JTA Transaction Manager Configuration
+    <entry key ="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</entry>
+    <entry key ="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</entry>
+    -->
+
+    <!--set this to thread when using sessions scoped to a 'thread', and 'jta' for sessions scoped to a JTA transaction -->
+    <entry key="hibernate.current_session_context_class">thread</entry>
+
+    <!-- enable read-only 2nd level cache -->
+    <entry key="hibernate.cache.use_second_level_cache">true</entry>
+    <entry key="hibernate.cache.region.factory_class">jcache</entry>
+    <entry key="hibernate.javax.cache.provider">org.ehcache.jsr107.EhcacheCachingProvider</entry>
+    <entry key="hibernate.javax.cache.missing_cache_strategy">create</entry>
+
+    <!-- write the sql statements to log -->
+    <entry key="hibernate.show_sql">false</entry>
+    <entry key="hibernate.format_sql">true</entry>
+    <entry key="hibernate.use_sql_comments">true</entry>
+    <entry key="hibernate.query.startup_check">false</entry>
+
+    <entry key="hibernate.bytecode.use_reflection_optimizer">true</entry>
+    <entry key="hibernate.jdbc.use_get_generated_keys">false</entry>
+    <entry key="hibernate.generate_statistics">false</entry>
+
+
+    <!-- enable batching on data objects (to disable comment out all 5 lines below) -->
+    <entry key="hibernate.jdbc.batch_size">100</entry>
+    <entry key="hibernate.order_inserts">true</entry>
+    <entry key="hibernate.order_updates">true</entry>
+    <!-- Commenting custom batching, JIRA:PSP-24181 <entry key="hibernate.jdbc.batch.builder">com.intuit.sbd.payroll.psp.hibernate.batcher.OracleBatchBuilder</entry> -->
+    <!-- disable batching on most objects (to enable, set below to true) -->
+    <entry key="hibernate.jdbc.batch_versioned_data">false</entry>
+
+    <!-- set transaction isolation level, 0 = none, 1 = read-uncommitted, 2 = read-committed, 4 = repeatable-read, 8 = serializable -->
+    <entry key="hibernate.connection.isolation">2</entry>
+
+    <!-- enable autoflush/autoclose on sessions (fix for SF001865 ORA-12519 Exception from Oracle) -->
+    <entry key="hibernate.transaction.flush_before_completion">true</entry>
+    <entry key="hibernate.transaction.auto_close_session">true</entry>
+
+	<!-- Force Hibernate to ignore the old Hibernate Validator jar in JBoss -->
+	<entry key="hibernate.validator.apply_to_ddl">false</entry>
+	<entry key="hibernate.validator.autoregister_listeners">false</entry>
+    <entry key="hibernate.query.startup_check">false</entry>
+
+    <entry key="hibernate.metadata_builder_contributor">com.intuit.sbd.payroll.psp.hibernate.SqlFunctionsMetadataBuilderContributor</entry>
+
+</configurations>

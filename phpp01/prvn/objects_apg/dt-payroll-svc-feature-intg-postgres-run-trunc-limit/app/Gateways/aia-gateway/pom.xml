@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intuit.sbg.psp</groupId>
+        <artifactId>Gateways</artifactId>
+        <version>2.2.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>aia-gateway</artifactId>
+    <name>aia-gateway</name>
+
+    <dependencies>
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.intuit.sbg.psp</groupId>
+            <artifactId>batch-jobs</artifactId>
+            <classifier>classes</classifier>
+            <exclusions>
+                <exclusion>
+                    <artifactId>istack-commons-runtime</artifactId>
+                    <groupId>com.sun.istack</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- End of Module dependency -->
+        <dependency>
+            <groupId>com.intuit.platform.services.common</groupId>
+            <artifactId>platform-common-schema-ebpi-billing</artifactId>
+        </dependency>
+
+        <!-- Junit Dependencies -->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.resources.dir}</directory>
+                <includes>
+                    <include>*.*</include>
+                </includes>
+                <excludes>
+                    <exclude>*.yml</exclude>
+                </excludes>
+                <targetPath>resources</targetPath>
+            </resource>
+            <resource>
+                <directory>${project.resources.dir}</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.resources.dir}</directory>
+                <includes>
+                    <include>META-INF/**</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!-- Generating the java files from Old wsdl -->
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+
+                    <packageName>com.intuit.sbd.payroll.psp.gateways.aia</packageName>
+                    <wsdlDirectory>${project.resources.dir}</wsdlDirectory>
+                    <wsdlFiles>
+                        <wsdlfile>QueryBillingTransactionsIntuitEBS.wsdl</wsdlfile>
+                    </wsdlFiles>
+                    <sourceDestDir>${project.target.generated.sources}</sourceDestDir>
+                    <extension>true</extension>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun.xml.ws</groupId>
+                        <artifactId>jaxws-tools</artifactId>
+                        <version>2.2.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

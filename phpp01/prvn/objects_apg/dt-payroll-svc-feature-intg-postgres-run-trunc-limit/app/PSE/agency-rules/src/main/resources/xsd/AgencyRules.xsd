@@ -1,0 +1,1599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Jim Spencer (Intuit) -->
+<!-- edited with XMLSpy v2007 rel. 3 sp1 (http://www.altova.com) by Zachery Moneypenny (INTUIT) -->
+<!-- edited with XMLSpy v2006 rel. 3 sp1 (http://www.altova.com) by Bhavna Bajaj (INTUIT) -->
+<!-- edited with XMLSpy v2007 rel. 3 sp1 (http://www.altova.com) by Raja Ramanathan (INTUIT) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+    <xs:annotation>
+        <xs:documentation>
+            <Description>Agency Rules Schema</Description>
+            <Version>1.0</Version>
+            <ReleaseDate>Oct 2, 2006</ReleaseDate>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType name="productNames">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(QuickBooks|IOP|QBOE|OSP)(,QuickBooks|,IOP|,QBOE|,OSP)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:attributeGroup name="MultiProductSupport">
+        <xs:annotation>
+            <xs:documentation>This attribute is being introduced to be defensive about what data we allow clients to retrieve from the agency rules XML data store. By default, an element with no excludedProducts attribute is intended to be consumed by all platforms and products. If present, however, a comma-separated list of products in the attribute implies that those products should ignore the element entirely.</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="excludedProducts" type="productNames" use="optional"/>
+    </xs:attributeGroup>
+    <xs:element name="AgencyRules">
+        <xs:annotation>
+            <xs:documentation>Root Element of the Agency File and Pay Compliance Rules</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="VersionNumber" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>for example, "1.0"</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="FileName" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Used by the QBOE build system to generate Java classes with appropriate names.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="EffectiveDates" type="EffectiveDatesType" nillable="true" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Describes the date range that the agency rules content is valid for.  Use either Quarter + Year OR CustomFrom + CustomTo</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="EFERules" type="EFERulesType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>The Rules regarding submission through our service provider.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="Jurisdiction" type="JurisdictionType" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>Jurisdictions contain Agencies</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="EnrollmentGroup" type="EnrollmentGroupType" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>One enrollment may be used by multiple payments and forms.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="HolidayGroup" type="HolidayGroupType" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>Holiday Group is a logical grouping of holidays that contains holidays that can be re-used between Form and Payment templates for example.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="selection" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="byjurisdiction"/>
+                            <xs:element name="byagency"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="FrequencyGroup" type="FrequencyGroupType" minOccurs="0" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>FrequencyGroup is a set of reusable FrequencySets that can be referenced from payment templates by the FrequencyGroupID.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="JurisdictionType">
+        <xs:annotation>
+            <xs:documentation>A Jurisdiction is a container for multiple Agencies.  It may be a State or a Locality, whatever makes sense in the context.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="JurisdictionID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>"US" for federal, state postal id for states.  pick a unique string for local taxes.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>Customer facing description for this juristiction</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="31"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="StateID">
+                <xs:annotation>
+                    <xs:documentation>Same as JurisdictionID for state and federal taxes.  For local taxes put the relevant state postal code.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="2"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Agency" type="AgencyType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Each Jurisdiction can have multiple Agencies within it.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="AgencyType">
+        <xs:sequence>
+            <xs:element name="AgencyID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for this agency. </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AgencyAbbrev" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Tax Rep facing short descriptive text for the agency name. General format - acronym for the agency. This field is used in: PSP UI </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>Vendor Payable Name, eg: DC Treasurer</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="41"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Name" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The name of the  agency, eg: DC Office of Tax and Revenue</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentTemplate" type="PaymentTemplateType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FormTemplate" type="FormTemplateType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="FormGroup" type="FormGroupType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>For each form group, the user will select one form template which corresponds to the form that they must file.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="MultiProductSupport"/>
+    </xs:complexType>
+    <xs:complexType name="PaymentTemplateType">
+        <xs:annotation>
+            <xs:documentation>Payment Templates are groupings of payroll items and the supporting information for due dates, submission rules, holidays, etc...</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="PaymentTemplateID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for this payment template.  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentTemplateAbbrev" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Tax Rep facing short descriptive text for payment description. General format - one or two words, or an acronym for the payment. This field is used in: PSP UI </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsFrequencyOverrideAllowed" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates if agencies allow more frequent deposits than agency specified deposit frequencies</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>Customer facing name for this payment template.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="50"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="UIDescription">
+                <xs:annotation>
+                    <xs:documentation>Customer facing description for this payment template.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="180"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="DefaultPaymentFrequency" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used by the Client application to indicate the preferred payment frequency the agency uses.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentFrequency" type="PaymentFrequencyType" maxOccurs="unbounded"/>
+            <xs:element name="DefaultSubmitMethod" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used by the Client application to indicate the preferred method to submit payments.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SubmitMethod" type="SubmitMethodType" maxOccurs="unbounded"/>
+            <xs:element name="Law" type="LawType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>This is the "payroll item group" information.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RollDueDateOnHoliday" type="RollType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates which way to roll when a due date falls on a holiday.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RollDueDateOnWeekend" type="RollType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates which way to roll when a due date falls on a weekend.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="HolidayGroupID" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Reference to a Holiday Group ID which defines the holidays applicable to this Template.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SharesFrequenciesWith" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>many share frequencies with the 941 payment, if so put the 941 payment template id here.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UsesFrequencyOf" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates that this payment template uses the same deposit frequencies as the payment template id indicated by this tag.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="WageRounding" type="RoundingType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>whether and how to round the wages before calculating the payment amount.  default is no rounding.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentAmountRounding" type="RoundingType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>whether and how to round the payment amount.  default is no rounding.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentAmountRoundingPeriod" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Default is Annual, since Annual is more accurate, whereas rounding by quarter can cause rounding errors to accumulate over time.  However Quarterly is more common.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Quarterly"/>
+                        <xs:enumeration value="Annual"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="ReconciliationFrequency" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>how often are payments reconciled?  current choices are quarterly and annual, default is quarterly. </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Quarterly"/>
+                        <xs:enumeration value="Annual"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="PaymentMaySpanReconciliationPeriods" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>can previous underpayments which were reconciled on a previous form be combined onto the current payment?  default is false.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MustSubmitWithForm" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If a form filing is required at the same time as the payment, put the form template id here.  Omit this element if no form filing is required along with payment.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SupportedFrequencies" type="FrequencyGroupType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The frequencies available for this payment template (including the agency-supported frequencies) IN ORDER from most-frequent to least-frequent.  If no Frequency elements are defined, the supplied FrequencySetID will be taken to refer to an existing FrequencySet in the FrequencySetLibrary.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AgencyFormat" type="AgencyFormatType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Describes format restrictions/guidelines on agency-assigned IDs</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="MultiProductSupport"/>
+    </xs:complexType>
+    <xs:complexType name="FormTemplateType">
+        <xs:sequence>
+            <xs:element name="FormTemplateID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for this form template.  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>Customer facing name for this Filing template.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="50"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="UIDescription">
+                <xs:annotation>
+                    <xs:documentation>Customer facing description for this Filing template.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="180"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="IsRequired" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>Indicates if the Filer is required to submit this form.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="FormID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Links this template to Form Information in a FormType.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="FormFrequency" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="FormFrequencyID">
+                            <xs:annotation>
+                                <xs:documentation>id should be unique to this filing template, not necessarily globally unique.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="MONTHLY"/>
+                                    <xs:enumeration value="QUARTERLY"/>
+                                    <xs:enumeration value="ANNUAL"/>
+                                    <xs:enumeration value="OTHER"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="UIString">
+                            <xs:annotation>
+                                <xs:documentation>short text blurb for the user, e.g. "Monthly"</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="31"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="UIDescription">
+                            <xs:annotation>
+                                <xs:documentation>long description for the user, e.g. "Payments for each month are due on the 10th of the following month."</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="180"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="MnemonicFilingPeriod" type="MnemonicPeriodType" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>For a given frequency, there will be a set of periods and their due dates. E.g., For Monthly frequency, there would be 12 periods. Each period has start period, end period and its due date. This class uses mnemonics for the start period, end period and due on. E.g., JAN-1 to JAN-31 is due on FEB-15. E.g., EOM, JAN-31, WED </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="AddHolidayAllowanceToDueDate" type="xs:boolean" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Whether grace period is allowed by the agency for holidays between the PeriodEndDate and the calculated DueDate. For Example, For SemiWeekly customers, period from Monday to Wednesday is due on following Friday, if Thursday is a holiday, Does the Due Date shift to Monday? This accounts only the Federal/Bank holidays. It does NOT account Saturdays and Sundays.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="SubmitMethod" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SubmitMethodType" type="SubmitMethodIDType">
+                            <xs:annotation>
+                                <xs:documentation>Client responsibility to know which of these apply to their application.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="UIString" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="31"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="EnrollmentGroupID" type="IDType" minOccurs="0"/>
+                        <xs:element name="SendByOffset" type="xs:integer" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Number of days to bump the agency due date in order to get the agency send by date.  If missing, default to 0 (agency send by date is same as agency due date).  For example, EFTPS should be "-1", meaning that the agency send by date is the day before the agency due date.  Note that this is independent of the padding required by EFE.  This field is for an actual agency requirement, on the agency servers.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="ReleaseStatus" type="ReleaseStatusType">
+                            <xs:annotation>
+                                <xs:documentation>The release status of the submit method as defined by Intuit Product Management.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attributeGroup ref="MultiProductSupport"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DefaultSubmitMethod" type="xs:string" minOccurs="0"/>
+            <xs:element name="Law" type="LawType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>The Law Ids associated with this Template.  Not required since some forms are optional.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EPayersMustFile" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>most payment coupons are not required if the user is epaying.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AssociatedPaymentTemplateID" type="IDType" minOccurs="0"/>
+            <xs:element name="SameFrequencyAsPayment" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit.  if present and true, use the frequency chosen by the user for the associated payment template id.  Typical use:  a payment coupon form should go on the same schedule as the payment.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="FormGoodForYear" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>omit if not relevant.  some forms are only valid for a particular year.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RollDueDateOnHoliday" type="RollType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>if omitted, don't roll</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RollDueDateOnWeekend" type="RollType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>not in OSP schema, may not be needed.  if omitted, don't roll.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="HolidayGroupID" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Reference to a Holiday Group ID which defines the holidays applicable to this Template.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MustSubmitWithPayment" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If the form must be filed in conjunction with a payment, put the Payment Template ID here.  If no payment is required, then this element can be omitted.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="MultiProductSupport"/>
+    </xs:complexType>
+    <xs:complexType name="HolidayType">
+        <xs:annotation>
+            <xs:documentation>Holiday consists of a Date and a Name for the Date.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Date" type="xs:date">
+                <xs:annotation>
+                    <xs:documentation>The actual date of the holiday.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>The User-facing description of the holiday, such as Samuel Adams Day.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="31"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LoginType">
+        <xs:annotation>
+            <xs:documentation>This type is used to drive the dynamic login screen for each agency.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="TitleLabel" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Not used.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LoginText">
+                <xs:annotation>
+                    <xs:documentation>Instructions as to how the user is to log in to submit payments or filings.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="EnrollText" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If the agency has enrollment instructions or reminders they can be specified here.  They will display under the Login instructions.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="InputField" type="TextInputType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>examples could be User, PIN1, PIN2, Name, Email, Phone.  UI will display fields in the order listed in the XML.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FooterType">
+        <xs:sequence>
+            <xs:element name="AuthorizeText">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="HeaderType">
+        <xs:sequence>
+            <xs:element name="TitleLabel" type="xs:string" minOccurs="0"/>
+            <xs:element name="AgencyLabel" type="xs:string" minOccurs="0"/>
+            <xs:element name="PeriodLabel" type="xs:string" minOccurs="0"/>
+            <xs:element name="AmountLabel" type="xs:string" minOccurs="0"/>
+            <xs:element name="SettlementDateLabel" type="xs:string" minOccurs="0"/>
+            <xs:element name="ReasonLabel" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="TextInputType">
+        <xs:sequence>
+            <xs:element name="FieldID">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="PIN"/>
+                        <xs:enumeration value="CONFIRMPIN"/>
+                        <xs:enumeration value="EMAIL"/>
+                        <xs:enumeration value="NAME"/>
+                        <xs:enumeration value="USERID"/>
+                        <xs:enumeration value="PHONE"/>
+                        <xs:enumeration value="ESN"/>
+                        <xs:enumeration value="UBI"/>
+                        <xs:enumeration value="FIRSTNAME"/>
+                        <xs:enumeration value="LASTNAME"/>
+                        <xs:enumeration value="JOBTITLE"/>
+                        <xs:enumeration value="SIGNATURENAME"/>
+                        <xs:enumeration value="SIGNATUREDATE"/>
+                        <xs:enumeration value="PASSWORD"/>
+                        <xs:enumeration value="CONFIRMPASSWORD"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="FieldType" type="FieldType" default="text" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The type of input field.  Use 'text' for freeform text input, 'enumeration' for a selection from a lit, and 'boolean' for a yes or no answer.
+
+                        Default is 'text'.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PossibleFieldValues" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A list of all the values this input field could possibly take.  This is used only when the field is FieldType = 'enumeration'.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Value" type="xs:string" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>A string value that this field can take. </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Label">
+                <xs:annotation>
+                    <xs:documentation>This is the text name that shows next to the text box.  Please limit to 35 characters because of space limitations.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="MinLength" type="xs:integer">
+                <xs:annotation>
+                    <xs:documentation>Text input minimum character length</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Length" type="xs:integer">
+                <xs:annotation>
+                    <xs:documentation>Text input maximum character length</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObscure" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Optional, but required for PIN/Password – text input is masked with ****s
+
+                        Default is false
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NumericOnly" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>if true then alpha characters are not allowed.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsRequired" type="xs:boolean"/>
+            <xs:element name="AllowZero" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>if true then allow the field to have all zero values.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RegexText" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Regular expression used during the validation of the field. Consider using CDATA to escape regex characters that are NOT xml friendly.
+                        For instance:  <![CDATA[Your regex text goes here]]>. See http://www.w3schools.com/xmL/xml_cdata.asp for more information on CDATA.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RegexErrorUIString" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The text to be displayed when validation fails.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="HolidayGroupType">
+        <xs:annotation>
+            <xs:documentation>A Holiday Group is a re-usable set of holidays that can be associated with a Payment or Filing template.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="HolidayGroupID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for this Group.  Will be used for referential purposes.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Holiday" type="HolidayType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>A sequence of Holidays for this Group.  If extending another Group, avoid duplication of effort...</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ExtendsHolidayGroupID" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A HolidayGroup can extend other HolidayGroups.  For example a Group intended for MA could extend the Group intended for the IRS, but add Samuel Adams Day.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LawType">
+        <xs:sequence>
+            <xs:element name="LawID" type="xs:long">
+                <xs:annotation>
+                    <xs:documentation>The law id, as defined in the QB source file law.h.  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LawAbbrev" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Tax Rep facing short descriptive text for tax type name. General format - one or two words, or acronym for the tax type. This field is used in: PSP UI</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Description">
+                <xs:annotation>
+                    <xs:documentation>Intended for internal readability and ease of debugging. NOT intended for end users to view.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="128"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="TaxableWagebase" type="xs:integer" nillable="false" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used for employee quarterly wage calculations.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="MnemonicPeriodType">
+        <xs:annotation>
+            <xs:documentation>For a given frequency, there will be a set of periods and their due dates. E.g., For Monthly frequency, there would be 12 periods. Each period has start period, end period and its due date. This class uses mnemonics for the start period, end period and due on. E.g., JAN-1 to JAN-31 is due on FEB-15. E.g., EOM, JAN-31, WED </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="PeriodStart" type="MnemonicPeriodStartEndType">
+                <xs:annotation>
+                    <xs:documentation>Mnemonic for Period Start Date, eg. JAN-1.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PeriodEnd" type="MnemonicPeriodStartEndType">
+                <xs:annotation>
+                    <xs:documentation>Mnemonic for Period End Date, eg. JAN-EOM.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DueOn" type="MnemonicDueOnType">
+                <xs:annotation>
+                    <xs:documentation>Mnemonic for Due Date, eg. E-3BD and FEB-15.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>human readable description for this particular period, e.g. "Jan" or "Q1".  You can use a .net custom date format string within braces (see http://msdn2.microsoft.com/en-us/library/8kb3ddd4.aspx).  For example, "Jan {yyyy}" will be expanded by the rules component to "Jan 2006" if the rules component calculates a period end date in 2006.  If omitted, period start and end dates are formatted as "3/1-3/15/06".</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="10"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PaymentFrequencyType">
+        <xs:annotation>
+            <xs:documentation>Payment Frequency contains rules specific to a particular frequency </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="PaymentFrequencyID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>id should be unique to this payment template, not necessarily globally unique.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>short text blurb for the user, e.g. "Monthly"</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="31"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="UIDescription">
+                <xs:annotation>
+                    <xs:documentation>long description for the user, e.g. "Payments for each month are due on the 10th of the following month."</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="180"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="DisallowSubmitMethod" type="IDType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>EPay doesn't work with certain frequencies.  In particular frequencies that are EPaid show additional UI description text, defined in the EPay rules section.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MnemonicDepositPeriod" type="MnemonicPeriodType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>One or more deposit periods that apply to this Frequency.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EmergencyDateOverride" type="MnemonicPeriodType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Hard-wired dates, to be used in case there is a problem with the rules based approach.  If this element exists, then the mnemonic is ignored.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ZeroPaymentRequired" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Not Used Yet</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ZeroPaymentMethod" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Omit unless zero payment is required.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AccrualFrequency" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This field is used for accumulation period. This field tells how to accumulate liabilities. E.g., for yearly deposit frequency, this field can contain monthly to signify that we have to accumulate liabilities on monthly based. If it is omitted, it is assumed accumulate frequency is same as deposit frequency. If the accrualFrequency is specified, make sure there would be a payment frequency rule for it.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AddHolidayAllowanceToDueDate" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates whether grace period is allowed by the agency for holidays between the PeriodEndDate and the calculated DueDate. For Example, For SemiWeekly customers, period from Monday to Wednesday is due on following Friday, if Thursday is a holiday, Does the Due Date shift to Monday? This accounts only the Federal/Bank holidays. It does NOT account Saturdays and Sundays.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DisallowYearCrossing" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates that payment periods cannot cross year boundaries.  This can occur with Semi-weekly periods.  This should trigger period and due date adjustments.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DisallowQuarterCrossing" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates that the payment periods cannot cross quarter boundaries.  this can occur with Semi-weekly periods.  This should trigger period and due date adjustments.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DisallowMonthCrossing" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates that the payment periods cannot cross month boundaries.  this can occur with Semi-weekly periods.  This should trigger period and due date adjustments.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SplitPeriodCrossingPaymentsDueTogether" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Indicates whether, if a period is split in two because it crosses a date boundary, if the due date should be recalculated for the two new periods (FALSE) or if the original due date should be used for both new periods (TRUE).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UpperLimit" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Not Used Yet</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Amount" type="xs:double"/>
+                        <xs:element name="RollOverFrequency" type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation>If the limit reaches, this frequency is used. This field can have a proper normal deposit frequency or it can have like NBD for next business day. </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="PermanentPaymentFrequency" type="IDType">
+                            <xs:annotation>
+                                <xs:documentation>This field signifies the new deposit frequency for the company if the limit reaches.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SubmitMethodType">
+        <xs:annotation>
+            <xs:documentation>Submit Method defines the rules for submission of payments.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="SubmitMethodType" type="SubmitMethodIDType">
+                <xs:annotation>
+                    <xs:documentation>Client responsibility to know which of these apply to their application.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="31"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="EnrollmentGroupID" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The Enrollment Group contains the rules regarding agency enrollment and credential requirements.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentsRequireBankAccountInfo" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>defaults to false.  false means no bank account info (e.g. account number, routing number) needs to be sent with each epayment transaction (ie., the agency collected the bank account info at enrollment time).  true if bank account info needs to be sent with each epayment.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DefaultPaymentReasonCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If a set of Payment Reasons is available, the client will display this one as the default.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentReason" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>NOTE: we would like to find a way to keep this out of the UI.  if so, we may need additional rules here.  known to apply for 94x Epayments.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="PaymentReasonCode" type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation>Code that the agency expects for this payment reason, such as "05".  </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>ok to omit if not obsolete</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="UIString">
+                            <xs:annotation>
+                                <xs:documentation>Displayed to the User to describe the reason code.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="31"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="PayItemAllowed" type="xs:boolean"/>
+                        <xs:element name="PenaltyAllowed" type="xs:boolean"/>
+                        <xs:element name="InterestAllowed" type="xs:boolean"/>
+                        <xs:element name="OtherExpenseAllowed" type="xs:boolean"/>
+                        <xs:element name="PaymentReasonOnlyForThisForm" type="IDType" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>some payment reasons only apply to specific forms.  if so, put the form id here.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="SendByOffset" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Number of days to bump the agency due date in order to get the agency send by date.  If missing, default to 0 (agency send by date is same as agency due date).  For example, EFTPS should be "-1", meaning that the agency send by date is the day before the agency due date.  Note that this is independent of the padding required by EFE.  This field is for an actual agency requirement, on the agency servers.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AllowNegativeLineItems" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>for example in QB when printing there are no restrictions, but EPayments may be more strict.  So for PRINT, set to true.  For EPAY, set to false.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="NegativeOKForTaxID" type="xs:integer" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>list here the exception cases, if AllowNegativeLineItems is false.  for example on the 94x payment, it is ok for AEIC to be negative, but not ok for other line items to be negative.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Settlement" type="SettlementType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>optional.  if tag omitted, then this submit method does not require a settlement date.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RequiredFieldGroupID" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If applicable, a reference to a RequiredFieldGroupID which contains a list of required fields.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReleaseStatus" type="ReleaseStatusType">
+                <xs:annotation>
+                    <xs:documentation>The release status of the submit method, defined by Intuit Product Management.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CanIncludePenalties" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If true, penalties owed can be included in a regular payment. If false, they must be paid separately.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SupportsSettlementDate" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If true, settlement dates are supported for this submit method. If false, agency decides when to retrieve funds (commonly same day).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="HowIsDueDateDefined" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>some agencies define lateness according to when the payment/filing was postmarked, others define lateness by when it is received at the agency.  As of Spring 2008, only QBOE is using this and only for PRINT payments.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="POSTMARK"/>
+                        <xs:enumeration value="RECEIVED"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="CanIncludeInterest" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If true, interest owed can be included in a regular payment.  If false, it must be paid separately.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="MultiProductSupport"/>
+    </xs:complexType>
+    <xs:complexType name="EnrollmentGroupType">
+        <xs:sequence>
+            <xs:element name="ToDoAnnotationNotes" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This is a bogus element, I use this element as a place to hang comments on things that need to be considered later.  Current list: reenrollment rules, enrollment ack method, and enrollment cancellation rules.  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EnrollmentGroupID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for the Enrollment Group.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>short "name" for this enrollment</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="31"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="UIDescription">
+                <xs:annotation>
+                    <xs:documentation>long text description for this enrollment</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="128"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="EnrollmentRequired" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>Indicates that the agency requires users to go through an enrollment process.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EnrollmentCredentialData" type="CredentialDataType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This is the agency credential requirements for Enrolling</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="SubmissionCredentialData" type="CredentialDataType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>This is the agency credential requirements for submitting</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EnrollViaWebsite" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>Indicates if Enrollment occurs  at the Agency Website or within QB (if false).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="WebSiteEnrollmentURL" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>URL for the Agency website.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="128"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="WebSiteInstructionsFileName" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The name of the html file which has the intstructions for this web enrollment.  This file will be displayed to guide the user through the enrollment process.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="31"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="EnrollmentMethod" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Required if EFE Enrollment is Required.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="EFEEnrollmentMethod">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="FormSetID" type="IDType">
+                                        <xs:annotation>
+                                            <xs:documentation>Used by EFE to load the right TPS Converter.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="EnrollmentInstructions">
+                                        <xs:annotation>
+                                            <xs:documentation>Instructions on how to enroll and what to do after enrollment.</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:pattern value="\p{IsBasicLatin}*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="EnrollmentSchemaID" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>The Enrollment schema used for this agency, eg: IRS94xEnrollment</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="AckMethod" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>Indicates how the user will retrieve the status of their enrollment</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:enumeration value="MAIL"/>
+                                                <xs:enumeration value="WEBSITE"/>
+                                                <xs:enumeration value="EMAIL"/>
+                                                <xs:enumeration value="CLIENTSOFTWARE"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CredentialDataType">
+        <xs:sequence>
+            <xs:element name="Window-Title" type="xs:string" minOccurs="0"/>
+            <xs:element name="Header" type="HeaderType" minOccurs="0"/>
+            <xs:element name="Login" type="LoginType"/>
+            <xs:element name="Footer" type="FooterType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="EFERulesType">
+        <xs:annotation>
+            <xs:documentation>EFE Rules encapsulate the submission rules for filings and payments with respect to the E-Filing Engine, our current provider.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="DueDatePadding" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>If present, this type will indicate the submission offset and deadline information for a particular type of submission method.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="SubmitMethodType" type="SubmitMethodIDType"/>
+                        <xs:element name="DaysOffsetFromAgencyDueDate" type="xs:integer">
+                            <xs:annotation>
+                                <xs:documentation>Number of whole days that submissions must be received before the Agency due date.  Enter "-1" for the day before the due date</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="TimeDue" type="xs:time">
+                            <xs:annotation>
+                                <xs:documentation>The cutoff time for Submissions.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="TimeZone">
+                            <xs:annotation>
+                                <xs:documentation>The time zone that applies to the cutoff time.  Enter "PT" for PST/PDT.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="PT"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="PaymentFrequencyUIDescription">
+                            <xs:annotation>
+                                <xs:documentation>This string will be appended to frequency descriptions if EFE-EPAY is active.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="90"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FormType">
+        <xs:sequence>
+            <xs:element name="FormID" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Unique Identifier for the Form as defined by TaxDev (eg: ALA1)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="FormSetID" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The form Set ID as defined in the form content provided by Tax Development (e.g. FSDYF).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="FormName">
+                <xs:annotation>
+                    <xs:documentation>UI Description of the Form</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="50"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="FormCategory">
+                <xs:annotation>
+                    <xs:documentation>see enumeration--for backward compatibility with Denali config files.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Generic"/>
+                        <xs:enumeration value="Wages - Incl. or is Coupon"/>
+                        <xs:enumeration value="Wages - Separate Coupon"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="DataBreakoutPeriod">
+                <xs:annotation>
+                    <xs:documentation>see enumeration.  for example the 941B requires daily breakdowns even though it is a quarterly form.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Daily"/>
+                        <xs:enumeration value="Monthly"/>
+                        <xs:enumeration value="Quarterly"/>
+                        <xs:enumeration value="Annually"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="RequiresSSN" type="xs:boolean"/>
+            <xs:element name="PrePrinted" type="xs:boolean"/>
+            <xs:element name="EnhancedQBOnly" type="xs:boolean"/>
+            <xs:element name="IsW2" type="xs:boolean"/>
+            <xs:element name="Is1099" type="xs:boolean"/>
+            <xs:element name="SubscriberOnly" type="xs:boolean"/>
+            <xs:element name="RequiresEmployeeInfo" type="xs:boolean"/>
+            <xs:element name="RequiresTipsIncome" type="xs:boolean"/>
+            <xs:element name="RequiresHoursWorked" type="xs:boolean"/>
+            <xs:element name="RequiresEmployeeMonthsWorked" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SettlementType">
+        <xs:annotation>
+            <xs:documentation>Contains the rules affecting banking settlement dates.  Agencies typically have a range of dates they will accept payments within.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>"Enter a date between {0} and {1}.  It cannot fall on a weekend day or holiday." The two tokens will be replaced at runtime with dates that may be affected by submission offsets.  QB will use this as an error message if the user puts in an invalid settlement date. </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="128"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="MinOffset" type="xs:duration">
+                <xs:annotation>
+                    <xs:documentation>the minimum allowed lead time offset, in calendar days.  start with a "P", then the # of days or months, followed by "D" for days or "M" for months.  for example, "P1D" for 1 day, "P6M" for 6 months.  only days and months are currently supported, not the complete xs:duration spec. </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MaxOffset" type="xs:duration">
+                <xs:annotation>
+                    <xs:documentation>the maximum allowed lead time offset, in calendar days.  start with a "P", then the # of days or months, followed by "D" for days or "M" for months.  for example, "P1D" for 1 day, "P6M" for 6 months.  only days and months are currently supported, not the complete xs:duration spec.  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ThisMonth" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>default is false, if omitted.  if true then the settlement date must be in the current month.  Value "ifFirstMonthOfQuarter" is used in particular for WA UI payment.  This rule may conflict with other rules such as the EFE lag time, so it is possible that the rules will not be able to come up with a valid settlement date.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="true"/>
+                        <xs:enumeration value="false"/>
+                        <xs:enumeration value="ifFirstMonthOfQuarter"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="ThisQuarterOrFirstMonthOfNextQuarter" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>default is false, if omitted.  if true then the settlement date must be either in the current quarter or in the first month of the next quarter.   In particular this is set to true for the WA UI payment.  This rule may conflict with other rules such as the EFE lag time, so it is possible that the rules will not be able to come up with a valid settlement date.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="FieldType">
+        <xs:annotation>
+            <xs:documentation> The type of UI field to be used in credential forms.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="text"/>
+            <xs:enumeration value="enumeration"/>
+            <xs:enumeration value="boolean"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="IDType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="31"/>
+            <xs:pattern value="[$_\-A-Z][$_\-A-Z0-9]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ReleaseStatusType">
+        <xs:annotation>
+            <xs:documentation> Used to denote the release level according to Intuit Product Management.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Alpha"/>
+            <xs:enumeration value="Beta"/>
+            <xs:enumeration value="Production"/>
+            <xs:enumeration value="Obsolete"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="RollType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="forward"/>
+            <xs:enumeration value="backward"/>
+            <xs:enumeration value="none"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SubmitMethodIDType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PRINT"/>
+            <xs:enumeration value="EFE-EPAY"/>
+            <xs:enumeration value="EFE-EFILE"/>
+            <xs:enumeration value="OSP-ACH"/>
+            <xs:enumeration value="OSP-WIRE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="MnemonicDueOnType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(((JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-([0-3][0-9]|[0-9]|EOM))|(MON|TUE|WED|THU|FRI|SAT|SUN)|([0-3][0-9]|[0-9]|EOM(\+([0-9][0-9]|[0-9]))?)|(E-([0-9][0-9]|[0-9])(BD|ND)))(\+[0-9][0-9]|[0-9]BD|ND)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="MnemonicPeriodStartEndType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(((JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-([0-3][0-9]|[0-9]|EOM))|(PAYDATE|MON|TUE|WED|THU|FRI|SAT|SUN)|([0-3][0-9]|[0-9]|EOM)|(E-([0-9][0-9]|[0-9])(BD|ND)))"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="FormGroupType">
+        <xs:sequence>
+            <xs:element name="FormGroupID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for this form group.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>ok to omit if not obsolete</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UIString">
+                <xs:annotation>
+                    <xs:documentation>Short customer facing name for this form group.  Used by QBOE/IOP UI.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="50"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="UIDescription" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Long customer facing description for this form group.  Not currently used.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="180"/>
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="AssociatedPaymentTemplateID" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If the choice is a function of payment template settings, put the payment template id here.  For example, in many cases a payment frequency determines which set of forms apply to that company.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Choice" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>In some cases filing one form excludes the filing of another form.  For example, filing a 941 is incompatible with filing a 944.  Each choice enumerates a valid set of compatible forms.  In many cases (such as 941/944), the valid set of forms is simply a single form.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ChoiceID" type="IDType">
+                            <xs:annotation>
+                                <xs:documentation>Unique identifier for this choice.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="UIString">
+                            <xs:annotation>
+                                <xs:documentation>Short customer facing name for this form group choice.  Currently just a debugging aid not used by UI.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="50"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="UIDescription" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Long customer facing description for this form group choice.  Used by QBOE/IOP UI.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="180"/>
+                                    <xs:pattern value="\p{IsBasicLatin}*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="IsObsolete" type="xs:boolean" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>ok to omit if not obsolete</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="FormTemplateID" type="IDType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Enumerate the rules ids of the form templates that form this choice group of compatible forms.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="RequiredForPaymentFrequency" type="IDType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>If the choice is a function of the payment frequency (for the payment template identified in "AssociatedPaymentTemplateID"), put the frequencies ids which correspond to this choice here.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DefaultChoice" type="IDType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If it makes sense to recommend a default choice to the user, put the default choice here.  For example, it might make sense to make the 941 the default for a 941/944 form group.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RequiredFieldType">
+        <xs:sequence>
+            <xs:element name="RequiredFieldID" type="IDType"/>
+            <xs:element name="UIDescription">
+                <xs:annotation>
+                    <xs:documentation>UI description of the field that will be displayed to the end user if there is a validation problem.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="UIHelp">
+                <xs:annotation>
+                    <xs:documentation>Help message displayed to the user to help them resolve the missing field error.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="\p{IsBasicLatin}*"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="EFPXMLField">
+                <xs:annotation>
+                    <xs:documentation>The EFPXML field that this field refers to.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MinLength" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If applicable, a minimum length for the field.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MaxLength" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If applicable, a maximum length for the field.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReqExPattern" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>If applicable, a Regular expression pattern that should be enforced.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="FrequencyType">
+        <xs:annotation>
+            <xs:documentation>Defines a pair of a FrequencyID and an index into a list of ordered frequencies (from most-often to least-often).</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FrequencyID" type="IDType" nillable="false">
+                <xs:annotation>
+                    <xs:documentation>The ID of the frequency.  This value should match an ID value that can be found in an agency payment template | payment frequency.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Ordinal" type="xs:positiveInteger">
+                <xs:annotation>
+                    <xs:documentation>The index in an ordered list of the frequencies.  The order should proceed from the most-frequenct (low) to the least-frequent (high).  The value should be 1-based .</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="MultiProductSupport"/>
+    </xs:complexType>
+    <xs:complexType name="FrequencyGroupType">
+        <xs:annotation>
+            <xs:documentation>Describes one or more frequencies with their ordinality in a list from most- to least-frequent.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FrequencyGroupID" type="IDType" nillable="false" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The id of this FrequencyGroup if it is being defined as a reusable set, so that it can referred to from elsewhere if need be.  If a set is being defined inline for an agency, there is no need to include an ID.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Frequency" type="FrequencyType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>An ORDERED list (from most-frequent to least-frequent) of frequencies to be used to calculate the more frequent frequencies for a particular agency.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RequiredFieldGroupType">
+        <xs:sequence>
+            <xs:element name="RequiredFieldGroupID" type="IDType">
+                <xs:annotation>
+                    <xs:documentation>Required Field Groups can be re-used between templates.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RequiredField" type="RequiredFieldType" maxOccurs="unbounded"/>
+            <xs:element name="ExtendsRequiredFieldGroup" type="IDType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="RoundingType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NoRounding"/>
+            <xs:enumeration value="NearestDollar"/>
+            <xs:enumeration value="DropPennies"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="AgencyFormatType">
+        <xs:annotation>
+            <xs:documentation>Defines a series of formatting descriptions for agency-assigned IDs</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Format" type="xs:string" nillable="false">
+                <xs:annotation>
+                    <xs:documentation>Description of the structure of a single agency-assigned ID format (ex: 999-9999-9)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="EffectiveDatesType">
+        <xs:annotation>
+            <xs:documentation>Describes the date range that the agency rules content is valid for.  Use either Quarter + Year OR CustomFrom + CustomTo</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Quarter" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The calendar quarter that this agency rules content is valid for. Valid values are 1, 2, 3, 4.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:enumeration value="1"/>
+                        <xs:enumeration value="2"/>
+                        <xs:enumeration value="3"/>
+                        <xs:enumeration value="4"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Year" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The calendar year that this agency rules content is valid for. Any 4 digit year is valid.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:int">
+                        <xs:pattern value="[0-9][0-9][0-9][0-9]"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="CustomFrom" type="xs:date" nillable="true" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A custom date that this agency rules content is valiid starting on</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CustomTo" type="xs:date" nillable="true" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>A custom date that this agency rules content is valid through</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

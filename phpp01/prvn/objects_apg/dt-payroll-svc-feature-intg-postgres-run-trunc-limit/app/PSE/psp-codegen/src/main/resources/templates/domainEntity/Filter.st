@@ -1,0 +1,1 @@
+<filter name="$it.filterName$" condition=" $it.condition$ "/>

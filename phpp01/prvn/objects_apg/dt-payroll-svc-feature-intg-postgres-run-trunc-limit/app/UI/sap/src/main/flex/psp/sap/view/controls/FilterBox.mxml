@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete();" direction="vertical">
+	
+	<!--
+    * Set "children" to be the default property so we can easily set it from mxml
+    -->
+    <mx:Metadata>
+        [DefaultProperty("children")]
+        [Event(name="transitionEffectEnd", type="mx.events.EffectEvent")]
+    </mx:Metadata>
+    
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.application.SAP;
+			import mx.events.EffectEvent;
+			import mx.core.UIComponent;
+			
+    
+            private var _children:Array = [];
+            private var _childrenChanged:Boolean = false;
+                        
+            
+            /**
+             * Set the 'content' of this component, and then call invalidateProperties
+             *
+             * Note that if only one child is defined in mxml, then that child itself is passed in
+             * If more than one child is defined, then an Array is passed in
+             */
+            public function set children( value:Array ):void
+            {
+                _children = value;
+                
+                _childrenChanged = true;
+                invalidateProperties();
+            }
+            
+            public function get children():Array
+            {
+                return _children;
+            }
+            
+            
+            /**
+             * During the commit properties phase is the best time to
+             * add the children to their intended target
+             */
+            protected override function commitProperties():void
+            {
+                super.commitProperties();
+                
+                if( _childrenChanged )
+                {
+                    for each( var child:DisplayObject in _children )
+                    {
+                        searchBoxForm.addChild( child );                        
+                    }
+                    _childrenChanged = false;
+                }    
+            }
+            
+			private var mFilterStringFunction:Function;
+			
+			public function get filterStringFunction():Function{
+				return mFilterStringFunction;
+			}
+			
+			[Bindable]
+			public function set filterStringFunction(value:Function):void{
+				mFilterStringFunction = value;
+			}
+			
+			private function showFilterString():void{
+				 if (filterStringFunction != null) {
+				 	filterStringLabel.text = this.filterStringFunction.call()
+				 } else {
+				 	filterStringLabel.text = "";
+				 }
+				 
+				 if (filterStringLabel.text == "") {
+					filterLabel.text = "No search filters are enabled";				 	
+				 } else {
+				 	filterLabel.text = "Results filtered by:";
+				 }
+			}
+			
+			private function onCreationComplete():void {
+				if (! mOpenOnStartup) {
+					callLater(collapse);					
+				} else {
+					callLater(expand);
+				}				
+			}
+			
+			public function collapse():void {
+				currentState='searchCollapsed';
+			}
+			
+			public function expand():void {
+				currentState='searchExpanded';
+			}
+			
+			public function toggle():void{
+				currentState=(currentState=='searchExpanded'? 'searchCollapsed' : 'searchExpanded');
+			}
+			
+			private var mSearchBoxHeight:int;
+			
+			[Bindable]
+			public function get searchBoxHeight():int {
+				return mSearchBoxHeight;
+			}
+			
+			public function set searchBoxHeight(value:int):void	{
+				mSearchBoxHeight = value;
+			}
+			
+			
+			private function transitionEffectEnd():void{
+				var ev:EffectEvent = new EffectEvent("transitionEffectEnd");
+				dispatchEvent(ev);
+			}
+			
+			private var mOpenOnStartup:Boolean=false;			
+			
+			[Bindable]
+			public function get openOnStartup():Boolean {
+				return mOpenOnStartup;	
+			}
+
+			public function set openOnStartup(value:Boolean):void{
+				mOpenOnStartup = value;
+			} 
+			
+			
+			
+		]]>
+	</mx:Script>
+
+	
+	<mx:HBox width="100%" height="25" click="toggle();" paddingLeft="3" verticalAlign="middle">
+		<mx:Label text="Filter results by:" fontWeight="bold"  id="filterLabel"/>					
+		<mx:HBox width="100%" horizontalAlign="right" id="collapseExpandButtonBox" paddingRight="5"/>
+	</mx:HBox>
+	<mx:Box width="{this.width-2}"
+		    verticalAlign="top"
+		    horizontalGap="0"
+		    styleName="grayMiniBoxWithMinimalPadding" 
+		    id="searchBoxForm" 
+		    paddingLeft="0"  
+		    direction="horizontal"
+		    verticalScrollPolicy="off"
+		    />
+
+	
+	<mx:states>
+		<mx:State name="searchExpanded">					
+			<mx:AddChild relativeTo="{collapseExpandButtonBox}" position="lastChild">
+				<mx:LinkButton id="collapseSearchButton" width="20" icon="{SAP.instance.icons.upArrowWithBar}" toolTip="Collapse Search" tabEnabled="false"/>
+			</mx:AddChild>																				
+		</mx:State>
+		<mx:State name="searchCollapsed" enterState="showFilterString();">
+			<mx:AddChild relativeTo="{collapseExpandButtonBox}" position="lastChild">
+				<mx:LinkButton id="expandSearchButton" width="20" icon="{SAP.instance.icons.downArrowWithBar}" toolTip="Expand Search" tabEnabled="false"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{filterLabel}" position="after">				
+				<mx:Label id="filterStringLabel" truncateToFit="true" maxWidth="{this.width-filterLabel.width-50}"/>
+			</mx:AddChild>
+			<mx:SetProperty target="{filterLabel}" name="text" value="Results filtered by:"/>			
+																	
+		</mx:State>
+	</mx:states>
+	
+	<mx:transitions>
+		<mx:Transition fromState="searchCollapsed" toState="searchExpanded">                      
+			<mx:Sequence target="{searchBoxForm}">
+				<mx:SetPropertyAction name="visible" value="true"/>
+				<mx:SetPropertyAction name="includeInLayout" value="true"/>					
+				<mx:Resize duration="200" widthBy="0" heightFrom="0" heightTo="{this.searchBoxHeight}" effectEnd="transitionEffectEnd();" />
+			</mx:Sequence>			   
+		</mx:Transition>
+		<mx:Transition fromState="searchExpanded" toState="searchCollapsed">
+			<mx:Sequence target="{searchBoxForm}">                      
+				<mx:SetPropertyAction target="{this}" name="searchBoxHeight" value="{searchBoxForm.height}"/>
+				<mx:Resize duration="200" widthBy="0" heightFrom="{searchBoxForm.height}" heightTo="0" effectEnd="transitionEffectEnd();" />
+				<mx:SetPropertyAction name="visible" value="false"/>
+				<mx:SetPropertyAction name="includeInLayout" value="false"/>	
+			</mx:Sequence>   
+		</mx:Transition>
+		<mx:Transition fromState="" toState="searchCollapsed"> <!-- Don't need to have an effect on load -->
+			<mx:Sequence target="{searchBoxForm}">
+				<mx:SetPropertyAction target="{this}" name="searchBoxHeight" value="{searchBoxForm.height}"/>                      
+				<mx:SetPropertyAction name="visible" value="false"/>
+				<mx:SetPropertyAction name="includeInLayout" value="false"/>	
+			</mx:Sequence>   
+		</mx:Transition>
+		<mx:Transition fromState="" toState="searchExpanded"> <!-- Or else not everything shows up.  Go figure. -->
+			<mx:Sequence target="{searchBoxForm}">
+				<mx:SetPropertyAction name="visible" value="true"/>
+				<mx:SetPropertyAction name="includeInLayout" value="true"/>	
+			</mx:Sequence>   
+		</mx:Transition>		
+	</mx:transitions>
+	
+</mx:Box>
+

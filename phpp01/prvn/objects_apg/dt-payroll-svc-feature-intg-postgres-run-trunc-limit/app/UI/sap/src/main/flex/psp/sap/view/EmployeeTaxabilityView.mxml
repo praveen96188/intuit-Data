@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         width="100%"
+         height="100%"
+         horizontalGap="50"
+        >
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.model.EmployeeTaxabilityInfo;
+        import psp.sap.viewmodel.EmployeeTaxabilityViewModel;
+
+        private static const labelWidth:int = 125;
+
+        private var mViewModel:EmployeeTaxabilityViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():EmployeeTaxabilityViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeTaxabilityViewModel):void {
+            mViewModel = value;
+        }
+
+
+        public function getallowances(item:Object, dgc:DataGridColumn):String{
+            return ((item as EmployeeTaxabilityInfo).fedW4EmployeePref != "2020ANDLATER" ? item.allowances : "NA");
+        }
+
+        public function getClaimDependents(item:Object, dgc:DataGridColumn):String{
+            return ((item as EmployeeTaxabilityInfo).fedW4EmployeePref == "2020ANDLATER" ? item.claimDependents : "NA");
+        }
+
+        public function getOtherIncome(item:Object, dgc:DataGridColumn):String{
+            return ((item as EmployeeTaxabilityInfo).fedW4EmployeePref == "2020ANDLATER" ? item.otherIncome: "NA");
+        }
+
+        public function getDeductions(item:Object, dgc:DataGridColumn):String{
+            return ((item as EmployeeTaxabilityInfo).fedW4EmployeePref == "2020ANDLATER" ? item.deductions : "NA");
+        }
+
+        public function getSubjectToYN(item:Object, dgc:DataGridColumn):String {
+            return ((item as EmployeeTaxabilityInfo).subjectTo ? "Y" : "N");
+        }
+
+        public function getmultipleJobsToYN(item:Object, dgc:DataGridColumn):String {
+            if ((item as EmployeeTaxabilityInfo).fedW4EmployeePref != "2020ANDLATER")
+            {
+                return ("NA");
+            }
+            return ((item as EmployeeTaxabilityInfo).multipleJobs ? "Y" : "N");
+        }
+
+        public function getTaxTypeTip(item:EmployeeTaxabilityInfo):String {
+                return item.taxType;
+            }
+
+        ]]>
+	</mx:Script>
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:VBox id="dataContainer"
+             styleName="standardTabbedBody"
+             width="80%"
+             visible="{!viewModel.isDataLoading}"
+             includeInLayout="{!viewModel.isDataLoading}">
+
+        <!--No Data-->
+        <mx:VBox width="100%"
+                 visible="{!viewModel.hasTaxabilityInfo}"
+                 includeInLayout="{!viewModel.hasTaxabilityInfo}"
+                 styleName="grayDataGridVBox">
+            <mx:Text text="No Employee Taxability data found." width="100%" textAlign="center" fontWeight="bold"/>
+        </mx:VBox>
+
+        <mx:VBox visible="{viewModel.hasTaxabilityInfo}"
+                 includeInLayout="{viewModel.hasTaxabilityInfo}">
+
+            <mx:HBox>
+                <mx:Label text="Enforce standard taxation:" fontWeight="bold"/>
+                <mx:Text text="{viewModel.employeeInfo.enforceSubjectTo ? 'Yes' : 'No'}"/>
+            </mx:HBox>
+
+            <controls:SAPDataGrid id="employeeTaxabilityGrid"
+                                  dataProvider="{viewModel.taxabilityInfoList}"
+                                  height="100%"
+                                  width="100%"
+                                  rowHeight="30"
+                                  textAlign="center"
+                                  verticalAlign="middle"
+                                  maxRows="20"
+                                  selectable="false">
+                <controls:columns>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Jurisdiction"
+                                       width="100"
+                                       dataField="jurisdiction"
+                                       headerWordWrap="true"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Tax"
+                                       minWidth="160"
+                                       dataTipFunction="getTaxTypeTip"
+                                       showDataTips="true"
+                                       dataField="taxType"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Allowances"
+                                       width="105"
+                                       dataField="allowances"
+                                       labelFunction="getallowances"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Claim{String('\n')}Dependents"
+                                       width="105"
+                                       dataField="claimDependents"
+                                       labelFunction="getClaimDependents"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Other{String('\n')}Income"
+                                       width="105"
+                                       dataField="otherIncome"
+                                       labelFunction="getOtherIncome"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Deductions"
+                                       width="105"
+                                       dataField="deductions"
+                                       labelFunction="getDeductions"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Extra{String('\n')}Withholding"
+                                       width="95"
+                                       dataField="extraWithHolding"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Subject{String('\n')}To"
+                                       width="120"
+                                       dataField="subjectTo"
+                                       labelFunction="getSubjectToYN"/>
+                    <mx:DataGridColumn sortable="true"
+                                       headerText="Two{String('\n')}Jobs Only"
+                                       width="105"
+                                       dataField="multipleJobs"
+                                       labelFunction="getmultipleJobsToYN"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+        </mx:VBox>
+    </mx:VBox>
+</mx:VBox>

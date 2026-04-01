@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+
+<!--
+  Created by: smodgil
+  Description: To Create Duplication PItem View
+  Date:02/08/2019
+ -->
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" close="onClose()" showCloseButton="true">
+    <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+             xmlns:control="http://www.adobe.com/2006/mxml"
+             width="100%" verticalGap="0" creationComplete="onCreationComplete();">
+        <mx:Script><![CDATA[
+            import mx.controls.Alert;
+            import mx.events.CloseEvent;
+            import mx.managers.PopUpManager;
+            import psp.sap.viewmodel.RTBViewModel;
+            import psp.sap.viewmodel.DupPIViewModel;
+            import psp.sap.viewmodel.events.ViewModelEvent;
+            import psp.sap.viewmodel.events.ViewModelFaultEvent;
+            import psp.sap.view.DupPIView;
+            private var mTPItemViewModel:DupPIViewModel;
+            protected static var mRTBJobAutomationPopup:DupPIView;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            private var mViewModel:DupPIViewModel = new DupPIViewModel();
+
+            [Bindable]
+            public function get viewModel():DupPIViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:DupPIViewModel):void {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                } else {
+                    mViewModel = value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mViewModel;
+            }
+
+            //If viewModel is closed (currently, if window is closed)
+            private function onClose():void {
+                PopUpManager.removePopUp(this);
+            }
+
+
+            public function confirmSave():void {
+                if(companyName.text=="CompanyName: Company doesn't exist" || oldPitemName.text=="PItemName: PItem doesn't exist" || newPitemName.text == "PItemName: PItem doesn't exist"){
+                    Alert.show("Unable to proceed as data entered is invalid");
+                }else{
+                    if (oldPitemID.length > 0 && newPitemID.length > 0
+                            && psId.length > 0) {
+                        var msgString:String = "Do you want to proceed with Duplicate PItem fix?";
+                        Alert.show(msgString,
+                                "Save Confirmation",
+                                Alert.OK | Alert.CANCEL,
+                                this,
+                                confirmVerifyHandler,
+                                null,
+                                Alert.OK);
+                    } else {
+                        Alert.show("All fields are mandatory", "DupEE Error Message", null, this);
+                    }
+                }
+            }
+            private function confirmVerifyHandler(event:CloseEvent):void {
+                if (event.detail == Alert.OK) {
+                    viewModel.canSave = true;
+                    viewModel.save();
+                }
+            }
+            ]]></mx:Script>
+
+        <mx:HBox width="100%" height="100%" styleName="expanderBar" >
+
+            <mx:VBox id="jobActionDiv" width="35%" styleName="expanderBar" >
+
+
+                <mx:Label text="Run Duplicate PItem Job" paddingLeft="120" styleName="subheading" textAlign="center"/>
+
+                <mx:Form paddingTop="0">
+
+                    <mx:HBox verticalAlign="middle" paddingLeft="20">
+                        <controls:RequiredLabel text="PSID:" width="150" horizontalAlign="right"/>
+                        <controls:SAPTextInput id="psId" toolTip="Enter company id"  width="200" focusOut="viewModel.fetchCompanyName()" change="viewModel.clearCompanyName()"  tabIndex="1"  restrict="[A-Za-z0-9]"></controls:SAPTextInput>
+
+                    </mx:HBox>
+
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Label id="companyName" text="{viewModel.companyName}" paddingLeft="175"></mx:Label>
+                    </mx:HBox>
+
+                    <mx:HBox verticalAlign="middle" paddingLeft="20">
+                        <controls:RequiredLabel text="Old Item:" width="150"  horizontalAlign="right"/>
+                        <controls:SAPTextInput id="oldPitemID" width="200" enabled="{viewModel.canEditPitem}"  toolTip="Enter PItem id to deactivate" focusOut="viewModel.fetchOldPitemName()" change="viewModel.clearOldPitemName()" tabIndex="2"  restrict="[A-Za-z0-9]"></controls:SAPTextInput>
+                    </mx:HBox>
+
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Label id="oldPitemName" text="{viewModel.oldPitemName}"  paddingLeft="175"></mx:Label>
+                    </mx:HBox>
+
+                    <mx:HBox verticalAlign="middle" paddingLeft="20">
+                        <controls:RequiredLabel text="New Item:"  width="150" horizontalAlign="right"/>
+                        <controls:SAPTextInput id="newPitemID" width="200" enabled="{viewModel.canEditPitem}"  toolTip="Enter PItem id to activate" focusOut="viewModel.fetchNewPitemName()" tabIndex="3"  change="viewModel.clearNewPitemName()" restrict="[A-Za-z0-9]"></controls:SAPTextInput>
+                    </mx:HBox>
+
+                    <mx:HBox verticalAlign="middle">
+                        <mx:Label id="newPitemName" text="{viewModel.newPitemName}" enabled="{viewModel.canEditPitem}" paddingLeft="175" ></mx:Label>
+                    </mx:HBox>
+
+                    <mx:HBox verticalAlign="middle" paddingLeft="200" paddingTop="10">
+                        <mx:Button label="Submit" click="confirmSave()" textAlign="center" width="150"/>
+                    </mx:HBox>
+
+                </mx:Form>
+
+            </mx:VBox>
+
+        </mx:HBox>
+
+    </mx:VBox>
+
+    <mx:Binding source="oldPitemID.text" destination="mViewModel.oldPitemID"/>
+    <mx:Binding source="mViewModel.oldPitemID" destination="oldPitemID.text"/>
+
+    <mx:Binding source="newPitemID.text" destination="mViewModel.newPitemID"/>
+    <mx:Binding source="mViewModel.newPitemID" destination="newPitemID.text"/>
+
+    <mx:Binding source="psId.text" destination="mViewModel.psId"/>
+    <mx:Binding source="mViewModel.psId" destination="psId.text"/>
+
+    <mx:Binding source="oldPitemName.text" destination="mViewModel.oldPitemName"/>
+    <mx:Binding source="mViewModel.oldPitemName" destination="oldPitemName.text"/>
+
+    <mx:Binding source="newPitemName.text" destination="mViewModel.newPitemName"/>
+    <mx:Binding source="mViewModel.newPitemName" destination="newPitemName.text"/>
+
+    <mx:Binding source="companyName.text" destination="mViewModel.companyName"/>
+    <mx:Binding source="mViewModel.companyName" destination="companyName.text"/>
+
+</mx:TitleWindow>

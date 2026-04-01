@@ -1,0 +1,370 @@
+@Library(value = 'msaas-shared-lib', changelog = false)
+
+def dockerRegistryCredsId = 'ibp-artifactory-creds'
+def dockerRegistryName = 'docker.intuit.com'
+def dockerUrl = 'docker.intuit.com'
+def mavenImage = 'maven:3.5.3-jdk-8'
+def dockerImage = 'dev/build/ibp/jnlp-slave-with-docker:latest'
+def OracleimagePath = 'payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc/psp-oracle21c-db-image'
+def imageCorrettoPathMavenSql = 'payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc/pspmavensql_psql'
+def PostgresimagePath = 'payroll/dtpayroll/dt-payroll-svc/service/dt-payroll-svc/psp-postgres-db-image'
+def dockerFilePath = './docker'
+def failureEmail = 'Venkateshwara_Dammur@intuit.com'
+def groupId = 'com.intuit.sbg.psp'
+def mvnString='-B -Dspring.profiles.active=test -Denvironment=test -Dlog4j.configurationFile=file://\$(pwd)/jenkins/spcf-logger-conf.xml -Duser.timezone=America/Los_Angeles -Dlogback.configurationFile=file://\$(pwd)/jenkins/logback.xml -s ./jenkins/settings.xml'
+
+podYaml="""
+apiVersion: v1
+kind: Pod
+metadata:
+    name: psp-maven-sql
+labels:
+name: "psp-maven-sql"
+spec:
+    containers:
+    - name: mavencorrettopspsqlplus
+      image: ${dockerUrl}/${imageCorrettoPathMavenSql}:0.0.3
+      env:
+        - name: HOSTNAME_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+      command:
+      - cat
+      tty: true
+    - name: dbbuild
+      image: ${dockerRegistryName}/${OracleimagePath}:0.0.2
+    - name: dbbuildpostgres
+      image: ${dockerRegistryName}/${PostgresimagePath}:feature-postgres-build-image-limit-191
+    - name: cdtools
+      image: docker.intuit.com/dev/deploy/cd/argocd-utils:stable
+      tty: true
+      command: [ "cat" ]
+      alwaysPullImage: true
+"""
+
+node {
+  // setup the global static configuration for Code Cov
+  config = setupMsaasPipeline('msaas-config.yaml')
+  config.put("enableBuildQualityMetrics",true)
+}
+
+pipeline {
+    agent {
+        kubernetes {
+            label "psp-build-pod-${UUID.randomUUID().toString()}"
+            defaultContainer "mavencorrettopspsqlplus"
+            yaml podYaml
+        }
+    }
+    environment {
+        TZ="America/Los_Angeles"
+        NEXUS_RELEASE_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_SNAPSHOT_REPO_CREDENTIALS = credentials("ibp-nexus-creds")
+        NEXUS_RELEASE_REPO_USERNAME = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_USR}"
+        NEXUS_RELEASE_REPO_PASSWORD = "${env.NEXUS_RELEASE_REPO_CREDENTIALS_PSW}"
+        NEXUS_SNAPSHOT_REPO_USERNAME = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_USR}"
+        NEXUS_SNAPSHOT_REPO_PASSWORD = "${env.NEXUS_SNAPSHOT_REPO_CREDENTIALS_PSW}"
+    }
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master', description: 'Specify the branch name to be built.')
+        choice(name: 'MONOLITH', choices: ['oracle', 'postgres'], description: 'Select primary database to connect to')
+        choice(name: 'AUDIT', choices: ['postgres'], description: 'Select secondary database to connect to')
+
+    }
+
+    options {
+        //buildDiscarder(logRotator(numToKeepStr: '5'))
+        timestamps()
+    }
+
+    stages {
+        stage ('Build'){
+            parallel {
+                stage('Build 1') {
+                    agent {
+                        kubernetes {
+                            label "psp-build1-pod-${UUID.randomUUID().toString()}"
+                            defaultContainer "mavencorrettopspsqlplus"
+                            yaml podYaml
+                        }
+                    }
+                    steps {
+                        container('mavencorrettopspsqlplus') {
+                            script {
+                                sh 'echo Hostname Build 1 is ${HOSTNAME_NAME}'
+                                execute(1, groupId, mvnString, params.MONOLITH, params.AUDIT)
+                            }
+                        }
+                        stash includes: '**/target/surefire-reports/**/*', name: 'sfReportsBuild1'
+                        stash includes: '**/target/test-results/**/*', name: 'testResultsBuild1'
+                        stash includes: '**/target/test-classes/**/*', name: 'testClassesBuild1'
+                        stash includes: '**/target/classes/**/*', name: 'targetClassesBuild1'
+                    }
+                }
+                stage('Build 2') {
+                    agent {
+                        kubernetes {
+                            label "psp-build2-pod-${UUID.randomUUID().toString()}"
+                            defaultContainer "mavencorrettopspsqlplus"
+                            yaml podYaml
+                        }
+                    }
+                    steps {
+                        container('mavencorrettopspsqlplus') {
+                            script {
+                                sh 'echo Hostname Build 2 is ${HOSTNAME_NAME}'
+                                execute(2, groupId, mvnString, params.MONOLITH, params.AUDIT)
+                            }
+                        }
+                        stash includes: '**/target/surefire-reports/**/*', name: 'sfReportsBuild2'
+                        stash includes: '**/target/test-results/**/*', name: 'testResultsBuild2'
+                        stash includes: '**/target/test-classes/**/*', name: 'testClassesBuild2'
+                        stash includes: '**/target/classes/**/*', name: 'targetClassesBuild2'
+                    }
+
+                }
+                stage('Build 3') {
+                    agent {
+                        kubernetes {
+                            label "psp-build3-pod-${UUID.randomUUID().toString()}"
+                            defaultContainer "mavencorrettopspsqlplus"
+                            yaml podYaml
+                        }
+                    }
+                    steps {
+                        container('mavencorrettopspsqlplus') {
+                            script {
+                                sh 'echo Hostname Build 3 is ${HOSTNAME_NAME}'
+                                execute(3, groupId, mvnString, params.MONOLITH, params.AUDIT)
+                            }
+                        }
+                        stash includes: '**/target/surefire-reports/**/*', name: 'sfReportsBuild3'
+                        stash includes: '**/target/test-results/**/*', name: 'testResultsBuild3'
+                        stash includes: '**/target/test-classes/**/*', name: 'testClassesBuild3'
+                        stash includes: '**/target/classes/**/*', name: 'targetClassesBuild3'
+                    }
+                }
+                stage('Build 4') {
+                    agent {
+                        kubernetes {
+                            label "psp-build4-pod-${UUID.randomUUID().toString()}"
+                            defaultContainer "mavencorrettopspsqlplus"
+                            yaml podYaml
+                        }
+                    }
+                    steps {
+                        container('mavencorrettopspsqlplus') {
+                            script {
+                                sh 'echo Hostname Build 4 is ${HOSTNAME_NAME}'
+                                execute(4, groupId, mvnString, params.MONOLITH, params.AUDIT)
+                            }
+                        }
+                        stash includes: '**/target/surefire-reports/**/*', name: 'sfReportsBuild4'
+                        stash includes: '**/target/test-results/**/*', name: 'testResultsBuild4'
+                        stash includes: '**/target/test-classes/**/*', name: 'testClassesBuild4'
+                        stash includes: '**/target/classes/**/*', name: 'targetClassesBuild4'
+                    }
+                }
+                stage('Build 5') {
+                                    agent {
+                                        kubernetes {
+                                            label "psp-build5-pod-${UUID.randomUUID().toString()}"
+                                            defaultContainer "mavencorrettopspsqlplus"
+                                            yaml podYaml
+                                        }
+                                    }
+                                    steps {
+                                        container('mavencorrettopspsqlplus') {
+                                            script {
+                                                sh 'echo Hostname Build 5 is ${HOSTNAME_NAME}'
+                                                execute(5, groupId, mvnString, params.MONOLITH, params.AUDIT)
+                                            }
+                                        }
+                                        stash includes: '**/target/surefire-reports/**/*', name: 'sfReportsBuild5'
+                                        stash includes: '**/target/test-results/**/*', name: 'testResultsBuild5'
+                                        stash includes: '**/target/test-classes/**/*', name: 'testClassesBuild5'
+                                        stash includes: '**/target/classes/**/*', name: 'targetClassesBuild5'
+                                    }
+                                }
+                /*stage('Missed modules') {
+                    agent {
+                        kubernetes {
+                            label "psp-build1-pod-${UUID.randomUUID().toString()}"
+                            defaultContainer "mavencorrettopspsqlplus"
+                            yaml podYaml
+                        }
+                    }
+                    steps {
+                        container('mavencorrettopspsqlplus') {
+                            script {
+                                build(mvnString, params.MONOLITH, params.AUDIT)
+                                def intgConfig = load "./app/jenkins/IntgConfig.groovy"
+                                def arr = intgConfig.getAllTest()
+                                def suite = arr.collect { "!${groupId}:$it" }.join(',')
+
+                                runSuite(suite, mvnString, params.MONOLITH, params.AUDIT)
+                            }
+                        }
+                        nexusPolicyEvaluation iqApplication: '1730525749114265769', iqStage: 'build'
+                        echo "Reading Surefire Reports"
+                        junit '*-*-/target/surefire-reports/-*.xml'
+
+                    }
+                }*/
+
+            }
+        }
+
+
+
+        stage('Publish') {
+            post {
+                always {
+                    sendBuildMetrics(config)
+                }
+            }
+            parallel {
+                stage('Report Coverage & Unit Test Results') {
+                    steps {
+                        unstash 'sfReportsBuild1'
+                        unstash 'sfReportsBuild2'
+                        unstash 'sfReportsBuild3'
+                        unstash 'sfReportsBuild4'
+                        unstash 'sfReportsBuild5'
+                        unstash 'testResultsBuild1'
+                        unstash 'testResultsBuild2'
+                        unstash 'testResultsBuild3'
+                        unstash 'testResultsBuild4'
+                        unstash 'testResultsBuild5'
+                        unstash 'testClassesBuild1'
+                        unstash 'testClassesBuild2'
+                        unstash 'testClassesBuild3'
+                        unstash 'testClassesBuild4'
+                        unstash 'testClassesBuild5'
+                        unstash 'targetClassesBuild1'
+                        unstash 'targetClassesBuild2'
+                        unstash 'targetClassesBuild3'
+                        unstash 'targetClassesBuild4'
+                        unstash 'targetClassesBuild5'
+
+                        junit '**/target/surefire-reports/*.xml'
+                        jacoco()
+                        codeCov(config)
+
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            jacoco exclusionPattern: "**/*Test*", inclusionPattern: "**/*.class,**/*.java"
+
+            script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                            buildNumber: env.BUILD_NUMBER,
+                            buildStatus: 'Success',
+                            buildUrl: env.BUILD_URL,
+                            buildUser: env.BUILD_USER,
+                            buildUserId: env.BUILD_USER_ID,
+                            branch: params.BRANCH,
+                            buildDuration: currentBuild.durationString,
+                            statusColor: '#009933'
+                    )
+                }
+            }
+        }
+        failure {
+            echo "Build Pipeline Failure"
+
+            mail to: "${failureEmail}",
+                    subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                    body: "Something is wrong in ${env.BUILD_URL}"
+
+            script {
+                wrap([$class: 'BuildUser']) {
+                    sendSlackNotification(jobName: env.JOB_NAME,
+                            buildNumber: env.BUILD_NUMBER,
+                            buildStatus: 'Failed',
+                            buildUrl: env.BUILD_URL,
+                            buildUser: env.BUILD_USER,
+                            buildUserId: env.BUILD_USER_ID,
+                            branch: params.BRANCH,
+                            buildDuration: currentBuild.durationString,
+                            statusColor: '#b50911'
+                    )
+                }
+            }
+        }
+    }
+}
+
+def sendSlackNotification(Map parameters) {
+    def attachments = [
+            [
+                    "fallback": "Failed - Job '${parameters.jobName} [${parameters.buildNumber}]' (${parameters.buildUrl})",
+                    "author_name": "Built by ${parameters.buildUser} [${parameters.buildUserId}]",
+                    "author_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+                    "title": "${parameters.buildStatus} - ${parameters.jobName} #${parameters.buildNumber}",
+                    "title_link": "${parameters.buildUrl}",
+                    "fields": [
+                            [
+                                    "title": "Branch",
+                                    "value": "${parameters.branch}",
+                                    "short": true
+                            ],
+                            [
+                                    "title": "Build Duration",
+                                    "value": "${parameters.buildDuration}",
+                                    "short": true
+                            ],
+                            [
+                                    "title": "Full Build?",
+                                    "value": "${parameters.fullBuild}",
+                                    "short": true
+                            ]
+                    ],
+                    "color": "${parameters.statusColor}"
+            ]
+    ]
+    slackSend (attachments: attachments)
+}
+
+def execute(Integer suiteId,String groupId, String mvnString, String monolithDb, String auditDb){
+    build(mvnString, monolithDb, auditDb)
+    def intgConfig = load "./app/jenkins/IntgConfig.groovy"
+    def arr = intgConfig.getSuite(suiteId)
+    for(i in arr){
+        runSuite("${groupId}:${i}", mvnString, monolithDb, auditDb)
+    }
+}
+
+
+def build(String mvnString, String monolithDb, String auditDb){
+    sh """
+        chmod 775 ./app/jenkins/check_db_connection.sh
+        ./app/jenkins/check_db_connection.sh
+    """
+    sh """
+        echo "PSP build"
+        cd app;
+        curl https://artifact.intuit.com/artifactory/maven-proxy-cache/org/aspectj/aspectjweaver/1.8.13/aspectjweaver-1.8.13.jar -o aspectjweaver.jar
+        mvn ${mvnString} clean install -Ddatabase.monolith=${monolithDb} -Ddatabase.audit=${auditDb} -DskipTests -T 2C
+    """
+}
+
+
+def runSuite(String suite, String mvnString, String monolithDb, String auditDb){
+
+    sh """
+        echo "Running test suite ${suite}"
+        cd app;
+        curl https://artifact.intuit.com/artifactory/maven-proxy-cache/org/aspectj/aspectjweaver/1.8.13/aspectjweaver-1.8.13.jar -o aspectjweaver.jar
+        mvn ${mvnString} -Ddatabase.monolith=${monolithDb} -Ddatabase.audit=${auditDb} test -pl '${suite}'
+
+    """
+}

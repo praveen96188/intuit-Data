@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         creationComplete="onCreationComplete();">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperatorPageEnum;
+        import psp.sap.model.LedgerOperationJob;
+        import psp.sap.viewmodel.OperatorLedgerViewModel;
+
+        private var mViewModel:OperatorLedgerViewModel;
+        private var mTempViewModel:OperatorLedgerViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private static const fileType:FileFilter = new FileFilter("CSV (Comma delimited) (*.csv)", "*.csv");
+        private var fileRef:FileReference;
+
+        [Bindable]
+        public function get viewModel():OperatorLedgerViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:OperatorLedgerViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+            fileRef = new FileReference();
+            fileRef.addEventListener(Event.SELECT, onFileSelect, false, 0, false);
+            fileRef.addEventListener(IOErrorEvent.IO_ERROR, onFormUploadFailure, false, 0, true);
+            fileRef.addEventListener(Event.COMPLETE, onFormUploadComplete, false, 0, true);
+        }
+
+        public function loadFile():void {
+            fileRef.browse([fileType]);
+        }
+
+        public function onFileSelect(e:Event):void {
+            viewModel.currentFileUploaded = false;
+            viewModel.fileName = fileRef.name;
+        }
+
+        public function upload():void {
+            SAP.instance.showProgress("Uploading job");
+            fileRef.upload(new URLRequest("UploadLedgerOperationsJob?token="+SAP.instance.session.user.authorizationToken+
+                "&description="+viewModel.description));
+        }
+
+        public function onFormUploadFailure(e:IOErrorEvent):void {
+            SAP.instance.hideProgress();
+            viewModel.saveFaulted = true;
+            viewModel.saveMsg = "Error uploading file: " + e.text;
+        }
+
+        public function onFormUploadComplete(e:Event):void {
+            SAP.instance.hideProgress();
+            viewModel.currentFileUploaded = true;
+            viewModel.saveFaulted = false;
+            viewModel.saveMsg = viewModel.fileName + " uploaded.";
+            viewModel.refresh(false);
+        }
+
+
+        ]]>
+    </mx:Script>
+
+    <mx:Label text="Create New Job" styleName="subheading"/>
+
+
+    <mx:Label text="Create a TOR job" styleName="h3" paddingTop="6"/>
+    <mx:Form paddingTop="0">
+        <mx:FormItem label="Agency">
+            <controls:SAPComboBox dataField="torViewModel.selectedAgency" dataProvider="{viewModel.torViewModel.agencyList}" labelField="agencyAbbrev"/>
+        </mx:FormItem>
+        <mx:FormItem label="Payment Type">
+            <controls:SAPComboBox
+                    dataField="torViewModel.selectedPaymentTemplate"
+                    dataProvider="{viewModel.torViewModel.paymentTemplates}"
+                    labelField="paymentTemplateName"
+                    enabled="{viewModel.torViewModel.paymentTemplates != null ? viewModel.torViewModel.paymentTemplates.length > 0 : false}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Year">
+            <controls:SAPTextInput restrict="0-9"
+                                   maxChars="4"
+                                   dataField="torViewModel.selectedYear"
+                                   validator="{viewModel.torViewModel.yearValidator}"/>
+        </mx:FormItem>
+        <mx:FormItem label="Quarter">
+            <controls:SAPComboBox
+                    dataField="torViewModel.selectedQuarter"
+                    dataProvider="{viewModel.torViewModel.quarterList}"/>
+        </mx:FormItem>
+        <mx:Button enabled="{viewModel.torViewModel.canSave}" label="Create TOR Job" click="viewModel.torViewModel.save()"/>
+    </mx:Form>
+
+    <mx:Label text="Upload a file" styleName="h3"/>
+    <mx:HBox verticalAlign="middle" paddingLeft="20">
+        <controls:RequiredLabel text="File Name:" dataField="fileData" width="100" horizontalAlign="right"/>
+        <mx:TextInput text="{viewModel.fileName}" minWidth="200" click="loadFile()"/>
+        <mx:Button label="Browse" click="loadFile()"/>
+    </mx:HBox>
+    <mx:HBox verticalAlign="middle" paddingLeft="20">
+        <controls:RequiredLabel text="Description:" width="100" horizontalAlign="right"/>
+        <controls:SAPTextInput dataField="description" minWidth="200"/>
+    </mx:HBox>
+    <mx:HBox paddingLeft="20" paddingBottom="20">
+        <mx:Button label="Upload" enabled="{viewModel.canSave}" click="upload();"/>
+    </mx:HBox>
+
+    <controls:PartsTabNavigator label="{OperatorPageEnum.LEDGER_CURRENT_JOBS + '_ptn'}">
+        <pspui:OperatorJobsListView label="{OperatorPageEnum.LEDGER_CURRENT_JOBS}"/>
+        <pspui:OperatorJobsListView label="{OperatorPageEnum.LEDGER_COMPLETED_JOBS}"/>
+    </controls:PartsTabNavigator>
+
+
+
+</mx:VBox>

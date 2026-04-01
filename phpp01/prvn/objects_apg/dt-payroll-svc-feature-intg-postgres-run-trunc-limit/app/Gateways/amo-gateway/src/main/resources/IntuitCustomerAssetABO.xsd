@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Sree Dasari (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name:integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAssetABCSImpl\IntuitCustomerAssetABO.xsd
+
+Domain: Asset
+Source of Truth, Perforce Location: 
+wcgbosp4.bos.intuit.com_1666\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAssetABCSImpl
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====      Intuit ABO Customer Account ABO Schema Module                                      ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns:cab="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" xmlns:ent="http://www.intuit.com/iep/entitlement/EntitlementService/xsd" xmlns:bp="http://www.intuit.com/iep/BillingProfile/BillingProfileABO/V1" xmlns="http://www.intuit.com/iep/CustomerAsset/IntuitCustomerAssetABO/V1" xmlns:cc="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" targetNamespace="http://www.intuit.com/iep/CustomerAsset/IntuitCustomerAssetABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00">
+	<xsd:import namespace="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1" schemaLocation="CommonComponents.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" schemaLocation="CustomerAccountBase.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/entitlement/EntitlementService/xsd" schemaLocation="EntitlementServiceBase.xsd"/>
+	<xsd:import namespace="http://www.intuit.com/iep/BillingProfile/BillingProfileABO/V1" schemaLocation="IntuitBillingProfileABO.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ==============       Intuit Customer Asset ABO      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:simpleType name="AssetStatusType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Active"/>
+			<xsd:enumeration value="Suspended"/>
+			<xsd:enumeration value="Cancelled"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ItemType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Monthly"/>
+			<xsd:enumeration value="Annual"/>
+			<xsd:enumeration value="Quarterly"/>
+			<xsd:enumeration value="One-time"/>
+			<xsd:enumeration value="Usage"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="AssetType">
+		<xsd:sequence>
+			<xsd:element name="ServiceAccountNumber" type="cab:AccountNumberType">
+				<xsd:annotation>
+					<xsd:documentation>in 10.1, this should be identical to the primary customer account</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AssetContactId" type="cab:ContactIdType" minOccurs="0"/>
+			<xsd:element name="BillingProfileId" type="cc:BillingProfileIdType" minOccurs="0"/>
+			<xsd:element name="Item" type="cc:ItemIdType"/>
+			<xsd:element name="ItemType" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="ItemType"/>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="TransactionAttributes" type="cc:TransactionAttributeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Status" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="AssetStatusType"/>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="NextChargeDate" type="xsd:date" nillable="true" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date by which the subscription will be charged.  This date is guarateed to be accurate only in the SubscriptionChargeDateNotice event.  SubscriptionChargeDateNotice is published when the subscription is first created, and for subsequent updates of the charge date.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SubscriptionEndDate" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The date by which the subscription will end, there will be no charge beyond this date.  This date is *not* set for recurring subscriptions that will be billed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EntitlementOfferingGroup" type="ent:OfferingGroupType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Offering Group</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Entitlement" type="EntitlementType" minOccurs="0"/>
+			<xsd:element name="EntitlementTransfer" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Transfer entitlement from the source to the target license number</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Source" type="EntitlementDescriptorType">
+							<xsd:annotation>
+								<xsd:documentation>Source Entitlement</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Target" type="EntitlementDescriptorType">
+							<xsd:annotation>
+								<xsd:documentation>Target Entitlement</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="OrderInfo" type="OrderInfoType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The order resulted in the creation of this Asset</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Registration" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="RegistrationStatus" type="ent:RegistrationStatusType" minOccurs="0"/>
+						<xsd:element name="RegistrationDate" type="xsd:dateTime" minOccurs="0"/>
+						<xsd:element name="ApplicationData" type="ent:ApplicationDataType" minOccurs="0"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="IntuitCustomerAssetABO" type="IntuitCustomerAssetABOType">
+		<xsd:annotation>
+			<xsd:documentation>Represent Customer Account, Billing Profile(s) and Asset(s).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="IntuitCustomerAssetABOType">
+		<xsd:annotation>
+			<xsd:documentation>Intuit Customer Asset ABO</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="CustomerAssetType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAssetType">
+		<xsd:sequence>
+			<xsd:element name="CustomerAccount" type="cab:CustomerAccountType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>In 10.1, there should be only ONE...  This does NOT include all contacts on the account. It includes only contacts associated to this particular Asset</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BillingProfile" type="bp:BillingProfileType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Asset" type="AssetType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAssetListType">
+		<xsd:sequence>
+			<xsd:element name="CustomerAccount" type="cab:CustomerAccountType">
+				<xsd:annotation>
+					<xsd:documentation>This does NOT include all contacts on the account. It includes only contacts associated the Assets</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BillingProfile" type="bp:BillingProfileType" minOccurs="0"/>
+			<xsd:element name="Asset" type="AssetType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAssetHeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Customer Asset Header</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocumentId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The unique Identifier assigned to this business transaction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DocumentDateTime" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which this service request is created or recorded</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAssetRequestType">
+		<xsd:choice>
+			<xsd:element name="CustomerAccountNumber" type="cab:AccountNumberType"/>
+			<xsd:element name="isWalletEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>		
+			<xsd:element name="isDurable" type="xsd:string" minOccurs="0" maxOccurs="1"/>	
+			<xsd:element name="isReusable" type="xsd:string" minOccurs="0" maxOccurs="1"/>				
+			<xsd:element name="Asset">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="LicenseId" type="cc:LicenseIdType"/>
+						<xsd:element name="EntitlementId" type="cc:EntitlementIdType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="CustomerAssetResponseType">
+		<xsd:annotation>
+			<xsd:documentation>A data typa to represent a response to GetCustomerAsset</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Result"/>
+			<xsd:element name="CustomerAsset" type="IntuitCustomerAssetABOType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="AssetChangeReasonType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ApplicationDataChange"/>
+			<xsd:enumeration value="EntitlementUnitActivation"/>
+			<xsd:enumeration value="EntitlementUnitDeactivation"/>
+			<xsd:enumeration value="EntitlementUnitReactivation"/>
+			<xsd:enumeration value="EntitlementRegistration"/>
+			<xsd:enumeration value="EntitlementReRegistration"/>
+			<xsd:enumeration value="EntitlementEnablement"/>
+			<xsd:enumeration value="EntitlementDisablement"/>
+			<xsd:enumeration value="EntitlementCreation"/>
+			<xsd:enumeration value="EntitlementTransfer"/>
+			<xsd:enumeration value="EntitlementUpdate"/>
+			<xsd:enumeration value="BillingProfileChange"/>
+			<xsd:enumeration value="ChargebackNotice"/>
+			<xsd:enumeration value="CreditCardExpiringNotice"/>
+			<xsd:enumeration value="PaymentFailureNotice"/>
+			<xsd:enumeration value="PaymentSuccessNotice"/>
+			<xsd:enumeration value="PastDueNetTermsNotice"/>
+			<xsd:enumeration value="PreBillingNotice"/>
+			<xsd:enumeration value="SubscriptionEndingNotice"/>
+			<xsd:enumeration value="SubscriptionChargeDateNotice"/>
+			<xsd:enumeration value="SubscriptionEndedNonPayment"/>
+			<xsd:enumeration value="TrialEndingOptInNotice"/>
+			<xsd:enumeration value="TrialEndingOptOutNotice"/>
+			<xsd:enumeration value="InvoiceNotice"/>
+			<xsd:enumeration value="RealTimeProvisioning"/>
+			<xsd:enumeration value="AssetCreation"/>
+		</xsd:restriction>
+		<!-- RMA Return and BillingFailure are de-commisioned, and thus not enriched by AMO -->
+	</xsd:simpleType>
+	<!-- ====================================================================== -->
+	<!-- ==============       Other  Data Types                           ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:complexType name="EntitlementType">
+		<xsd:sequence>
+			<xsd:element name="LicenseId" type="cc:LicenseIdType" minOccurs="0"/>
+			<xsd:element name="EntitlementId" type="cc:EntitlementIdType" minOccurs="0"/>
+			<xsd:element name="EntitlementState" type="ent:StateType" minOccurs="0"/>
+			<xsd:element name="EntitlementStartDate" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Also knowns as ServiceStartDate. Only available for subcription based offerings.   </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EntitlementEndDate" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>is not available for subscription based offerings (10.1 design)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="GoodThroughDate" type="xsd:date" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>is not available for subscription based offerings (10.1 design)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LastUpdateDate" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Last Update Date for the entitlement</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EntitlementUnit" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Represents zero or more Entitlement Units.  This notde is published only for the Activation and Deactivation event</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="IdentifiedResourceValue" type="xsd:string" minOccurs="0">
+							<xsd:annotation>
+								<xsd:documentation>The Identified Resource Value for the Entitlement Unit</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="UnitState" type="ent:EntitlementUnitStateType">
+							<xsd:annotation>
+								<xsd:documentation>Current state of the Entitlement Unit</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="LastUpdateDate" type="xsd:dateTime">
+							<xsd:annotation>
+								<xsd:documentation>The date/time this Entitlement Unit was last updated</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OrderInfoType">
+		<xsd:sequence>
+			<xsd:element name="OrderNumber" type="cc:OrderNumberType"/>
+			<xsd:element name="ParentItemNumber" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Parent Item Number for bundle Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrderSource" type="xsd:string"/>
+			<xsd:element name="LineItem" type="OrderLineType"/>
+			<xsd:element name="OrderDate" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="ParentLineNumber" type="xsd:nonNegativeInteger" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Parent Line Number for bundle item. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OrderLineType">
+		<xsd:annotation>
+			<xsd:documentation>OrderLine Line</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="LineNumber" type="xsd:nonNegativeInteger">
+				<xsd:annotation>
+					<xsd:documentation>A unique Serial Number assigned to the line by the source system.  Each line must have a unique value on a given transaction document.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OrderQuantity" type="xsd:nonNegativeInteger">
+				<xsd:annotation>
+					<xsd:documentation>The Ordered Quantity for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Status" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="ActionCode" type="cc:ActionTypeType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The Action to be performed on the Line Item.  Specifically, it indicates whether the line item is added, changed, cancelled or refunded. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ActionReason" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="EndDate" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ==============       Basic Elements                                      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="Error" type="cc:ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Represents error information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Header" type="cc:HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the header information that can be supplied to DigiComms</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Result" type="cc:ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="TransactionInfoType">
+		<xsd:annotation>
+			<xsd:documentation>Transaction Info</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionDatetime" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Datetime</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SalesOrganization" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Sales Organization requesting the service</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="EntitlementDescriptorType">
+		<xsd:annotation>
+			<xsd:documentation>Entitlement Descriptor Info</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="LicenseId" type="ent:LicenseIdType">
+				<xsd:annotation>
+					<xsd:documentation>License Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EntitlementId" type="ent:EntitlementIdType">
+				<xsd:annotation>
+					<xsd:documentation>EOC</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

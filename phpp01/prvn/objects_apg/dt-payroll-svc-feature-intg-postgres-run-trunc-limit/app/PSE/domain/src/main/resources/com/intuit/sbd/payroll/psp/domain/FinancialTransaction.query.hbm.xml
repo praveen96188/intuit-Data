@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findFinTxnByTxnTypeAndTxnState">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			    inner join finTxn.Company as comp
+			where comp.SourceSystemCd=:sourceSystemCd
+			    and comp.SourceCompanyId =:sourceCompanyId
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd =:txnState
+			]]>
+    </query>
+
+<query name="findFinTxnByTxnTypeAndTxnStateAndDt">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			    inner join finTxn.Company as comp
+			where comp.SourceSystemCd=:sourceSystemCd
+			    and comp.SourceCompanyId =:sourceCompanyId
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd =:txnState
+			    and finTxn.SettlementDate between :fromDate and :toDate
+			]]>
+    </query>
+    <query name="findFinTxnByCompanyBankAcctExclTxnTypeState">
+        <![CDATA[
+			Select finTxn
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			    inner join finTxn.Company as comp
+			where comp.SourceSystemCd=:sourceSystemCd
+			    and comp.SourceCompanyId =:sourceCompanyId
+			    and finTxn.TransactionType.TransactionTypeCd !=:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd =:txnState
+                and (finTxn.CreditBankAccount =:bankAccount or finTxn.DebitBankAccount =:bankAccount)
+			]]>
+    </query>
+
+    <query name="findFinTxnByCompanyBankAcctDateTxnType">
+        <![CDATA[
+	        Select finTxn
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			    inner join finTxn.Company as comp
+	       	where comp.SourceSystemCd=:sourceSystemCd
+			    and comp.SourceCompanyId =:sourceCompanyId
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+                and finTxn.DebitBankAccount =:bankAccount
+                and finTxn.SettlementDate >=:fromDate
+             order by finTxn.SettlementDate desc
+			]]>
+    </query>
+
+<query name="SumAmountGroupByPayCheckDate">
+        <![CDATA[
+			Select payrollRun.PaycheckSettlementDate, sum(finTxn.FinancialTransactionAmount)
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+	        inner join finTxn.PaycheckSplit as payCheckSplit
+	        inner join payCheckSplit.Paycheck as payCheck
+	        inner join payCheck.PayrollRun as payrollRun
+			where payrollRun.Company.Id =:companyId
+			    and payrollRun.PaycheckSettlementDate >=:fromDate
+			    and payrollRun.PaycheckSettlementDate <=:toDate
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			    and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and payCheckSplit.Paycheck.Company = payCheckSplit.Company
+			group by payrollRun.PaycheckSettlementDate
+			]]>
+    </query>
+
+<query name="SumBPAmountGroupByPayCheckDate">
+        <![CDATA[
+			Select payrollRun.PaycheckSettlementDate, sum(finTxn.FinancialTransactionAmount)
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+	        inner join finTxn.BillPaymentSplit as billPaymentSplit
+	        inner join billPaymentSplit.BillPayment as billPayment
+	        inner join billPayment.PayrollRun as payrollRun
+			where payrollRun.Company.Id =:companyId
+			    and payrollRun.PaycheckSettlementDate >=:fromDate
+			    and payrollRun.PaycheckSettlementDate <=:toDate
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			group by payrollRun.PaycheckSettlementDate
+			]]>
+    </query>
+
+    <query name="SumAmountGroupByPayCheckDateAndEmployee">
+        <![CDATA[
+			Select payCheck.DDEmployee.Id, payrollRun.PaycheckSettlementDate, sum(finTxn.FinancialTransactionAmount)
+                from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+                inner join finTxn.PaycheckSplit as payCheckSplit
+                inner join payCheckSplit.Paycheck as payCheck
+                inner join payCheck.PayrollRun as payrollRun
+                        where payrollRun.Company.Id =:companyId
+                            and payrollRun.PaycheckSettlementDate >=:fromDate
+                            and payrollRun.PaycheckSettlementDate <=:toDate
+                            and finTxn.TransactionType.TransactionTypeCd =:txnType
+                            and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+                            and finTxn.PaycheckSplit.Company = finTxn.Company
+                            and payCheckSplit.Paycheck.Company = payCheckSplit.Company
+                        group by payCheck.DDEmployee.Id,  payrollRun.PaycheckSettlementDate
+			]]>
+    </query>
+
+    <query name="SumAmountGroupByBillPaymentCheckDateAndPayee">
+        <![CDATA[
+			Select billPayment.Payee.Id, payrollRun.PaycheckSettlementDate, sum(finTxn.FinancialTransactionAmount)
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+	        inner join finTxn.BillPaymentSplit as billPaymentSplit
+	        inner join billPaymentSplit.BillPayment as billPayment
+	        inner join billPayment.PayrollRun as payrollRun
+			where payrollRun.Company.Id =:companyId
+			    and payrollRun.PaycheckSettlementDate >=:fromDate
+			    and payrollRun.PaycheckSettlementDate <=:toDate
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			group by billPayment.Payee.Id,  payrollRun.PaycheckSettlementDate
+			]]>
+    </query>
+
+    <query name="SumAmountGroupByPayCheckDateAndBankAccountENC">
+        <![CDATA[
+			Select finTxn.CreditBankAccount.RoutingNumber, finTxn.CreditBankAccount.AccountNumberEnc,
+			       payrollRun.PaycheckSettlementDate, sum(finTxn.FinancialTransactionAmount)
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+	             inner join finTxn.PayrollRun as payrollRun
+			where payrollRun.Company.Id=:companyId
+			    and finTxn.CreditBankAccountType =:creditBankAccountType
+			    and payrollRun.PaycheckSettlementDate >=:fromDate
+			    and payrollRun.PaycheckSettlementDate <=:toDate
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			group by finTxn.CreditBankAccount.RoutingNumber, finTxn.CreditBankAccount.AccountNumberEnc, payrollRun.PaycheckSettlementDate
+			]]>
+    </query>
+
+    <query name="findEmpFinTxnByTxnTypeCode">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.Company=:company
+			    and (finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId or :sourcePayrollRunId is null)
+			    and (finTxn.TransactionType.TransactionTypeCd= :txnTypeCd)
+			    and (finTxn.SettlementDate>=:fromDate or coalesce(:fromDate, null) is null)
+			    and (finTxn.SettlementDate<=:toDate or coalesce(:toDate, null) is null)
+			    and (finTxn.PaycheckSplit.Paycheck.DDEmployee= :employee or :employee is null)
+			    and ((finTxn.CreditBankAccount=:employeeBnkAct or finTxn.DebitBankAccount=:employeeBnkAct)
+			          or :employeeBnkAct is null)
+			    and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and finTxn.PaycheckSplit.Paycheck.Company = finTxn.PaycheckSplit.Company
+			order by finTxn.SettlementDate,TempId desc
+			]]>
+    </query>
+
+    <query name="findEmpFinTxn">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.Company=:company
+			    and (finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId or :sourcePayrollRunId is null)
+			    and finTxn.TransactionType.TransactionCategory = :transactionCategory
+			    and (finTxn.SettlementDate>=:fromDate or coalesce(:fromDate, null) is null)
+			    and (finTxn.SettlementDate<=:toDate or coalesce(:toDate, null) is null)
+			    and (finTxn.PaycheckSplit.Paycheck.DDEmployee= :employee or :employee is null)
+			    and ((finTxn.CreditBankAccount=:employeeBnkAct or finTxn.DebitBankAccount=:employeeBnkAct)
+			          or :employeeBnkAct is null)
+			    and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and finTxn.PaycheckSplit.Paycheck.Company = finTxn.PaycheckSplit.Company
+			order by finTxn.SettlementDate,TempId desc
+			]]>
+    </query>
+
+    <query name="findFinTxn">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.Company=:company
+			    and (finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId or :sourcePayrollRunId is null)
+			    and (finTxn.TransactionType.TransactionTypeCd= :txnTypeCd or :txnTypeCd is null)
+			    and (finTxn.SettlementDate>=:fromDate or coalesce(:fromDate, null) is null)
+			    and (finTxn.SettlementDate<=:toDate or coalesce(:toDate, null) is null)
+			    and (finTxn.CurrentTransactionState.TransactionStateCd = :txnStateCd or :txnStateCd is null)
+			    and (finTxn.PaycheckSplit.Paycheck.DDEmployee= :employee or :employee is null)
+			    and ((finTxn.CreditBankAccount=:employeeBnkAct or finTxn.DebitBankAccount=:employeeBnkAct)
+			          or :employeeBnkAct is null)
+			    and finTxn.PaycheckSplit.Company = finTxn.Company
+			    and finTxn.PaycheckSplit.Paycheck.Company = finTxn.PaycheckSplit.Company
+			order by finTxn.SettlementDate,TempId desc
+			]]>
+    </query>
+
+    <query name="findFinTxnByCategory">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.Company=:company
+			    and (finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId or :sourcePayrollRunId is null)
+			    and finTxn.TransactionType.TransactionCategory = :transactionCategory
+			    and (finTxn.SettlementDate>=:fromDate or coalesce(:fromDate, null) is null)
+			    and (finTxn.SettlementDate<=:toDate or coalesce(:toDate, null) is null)
+			order by finTxn.SettlementDate,TempId desc
+			]]>
+    </query>
+
+    <query name="findFeeFinTxnExcludingAssociation">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.Company=:company
+			    and finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId
+			    and finTxn.TransactionType.AssociationType != :excludeTransactionAssociation
+			    and finTxn.TransactionType.FeeInd = :feeIndicator
+			]]>
+    </query>
+
+    <query name="findFinTxnByCompanyBankAccount">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.Company=:company
+			    and (finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId or :sourcePayrollRunId is null)
+			    and (finTxn.TransactionType.TransactionTypeCd= :txnTypeCd or :txnTypeCd is null)
+			    and (finTxn.SettlementDate>=:fromDate or coalesce(:fromDate, null) is null)
+			    and (finTxn.SettlementDate<=:toDate or coalesce(:toDate, null) is null)
+			       and (finTxn.CurrentTransactionState.TransactionStateCd = :txnStateCd or :txnStateCd is null)
+			    and ((finTxn.CreditBankAccount=:employeeBnkAct or finTxn.DebitBankAccount=:employeeBnkAct)
+			          or :employeeBnkAct is null)
+			    and ((finTxn.CreditBankAccount=:companyBnkAct or finTxn.DebitBankAccount=:companyBnkAct)
+			          or :companyBnkAct is null)
+			order by finTxn.SettlementDate,TempId desc
+			]]>
+    </query>
+
+<query name="findFraudCheckFinancialTxns">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			     inner join finTxn.PayrollRun as payrollRun
+			where payrollRun.Company=:company
+			    and payrollRun.PaycheckDate=:depositDate
+			    and finTxn.CreditBankAccountType=:bankAccountType
+			    and finTxn.TransactionType.TransactionTypeCd=:txType
+			    and finTxn.PaycheckSplit is not null
+			    and finTxn.CurrentTransactionState.TransactionStateCd!=:txState
+			order by finTxn.SettlementDate
+			]]>
+    </query>
+
+    <query name="findFinancialTransactionsByPayrollRunAndLedgerAccountCd">
+        <![CDATA[
+		    Select distinct finTxn
+		    from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun,
+		         com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+		         com.intuit.sbd.payroll.psp.domain.FinancialTransactionState as finTxnState,
+		         com.intuit.sbd.payroll.psp.domain.PostingRule as postingRule
+		    where payrollRun.Company = :company
+		        and (payrollRun.SourcePayRunId = :sourcePayrollRunId or :sourcePayrollRunId is null)
+		        and finTxn.PayrollRun.Id = payrollRun.Id
+		        and finTxnState.FinancialTransaction.Id = finTxn.Id
+		        and finTxnState.TransactionStateEffectiveDate >= FN_DATE_ADD(finTxn.CreatedDate, -2 , 'day')
+		        and finTxn.TransactionType.TransactionTypeCd=postingRule.TransactionType.TransactionTypeCd
+		        and finTxnState.TransactionState.TransactionStateCd=postingRule.TransactionState.TransactionStateCd
+		        and (postingRule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode or :ledgerAccountCode is null)
+		        order by finTxn.SettlementDate
+        ]]>
+    </query>
+
+    <query name="findFinancialTransactionsByLedgerAccountCd">
+        <![CDATA[
+		    Select distinct finTxn
+		    from com.intuit.sbd.payroll.psp.domain.PayrollRun as payrollRun,
+		         com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+		         com.intuit.sbd.payroll.psp.domain.FinancialTransactionState as finTxnState,
+		         com.intuit.sbd.payroll.psp.domain.PostingRule as postingRule
+		    where finTxn.Company = :company
+		        and finTxnState.FinancialTransaction.Id = finTxn.Id
+		        and finTxnState.TransactionStateEffectiveDate >= FN_DATE_ADD(finTxn.CreatedDate, -2 , 'day')
+		        and finTxn.TransactionType.TransactionTypeCd=postingRule.TransactionType.TransactionTypeCd
+		        and finTxnState.TransactionState.TransactionStateCd=postingRule.TransactionState.TransactionStateCd
+		        and (postingRule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode or :ledgerAccountCode is null)
+		        order by finTxn.SettlementDate
+        ]]>
+    </query>
+
+    <query name="findFinTxnsWithCreditDebitIndicatorByPayrollRun">
+        <![CDATA[
+		    Select finTxn, postingRule.CreditDebitInd, finTxnState
+		    from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+		         com.intuit.sbd.payroll.psp.domain.FinancialTransactionState as finTxnState,
+		         com.intuit.sbd.payroll.psp.domain.PostingRule as postingRule
+		    where finTxn.Company = :company
+		        and finTxnState.FinancialTransaction.Id = finTxn.Id
+		        and finTxnState.TransactionStateEffectiveDate >= FN_DATE_ADD(finTxn.CreatedDate, -2 , 'day')
+		        and finTxn.PayrollRun.SourcePayRunId=:sourcePayrollRunId
+		        and finTxn.TransactionType.TransactionTypeCd=postingRule.TransactionType.TransactionTypeCd
+		        and finTxnState.TransactionState.TransactionStateCd=postingRule.TransactionState.TransactionStateCd
+		        and postingRule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode
+		        order by finTxn.SettlementDate
+        ]]>
+    </query>
+
+    <query name="findFinTxnsWithCreditDebitIndicator">
+        <![CDATA[
+		    Select finTxn, postingRule.CreditDebitInd, finTxnState
+		    from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+		         com.intuit.sbd.payroll.psp.domain.FinancialTransactionState as finTxnState,
+		         com.intuit.sbd.payroll.psp.domain.PostingRule as postingRule
+		    where finTxn.Company = :company
+		        and finTxnState.FinancialTransaction.Id = finTxn.Id
+		        and finTxnState.TransactionStateEffectiveDate >= FN_DATE_ADD(finTxn.CreatedDate, -2 , 'day')
+		        and finTxn.TransactionType.TransactionTypeCd=postingRule.TransactionType.TransactionTypeCd
+		        and finTxnState.TransactionState.TransactionStateCd=postingRule.TransactionState.TransactionStateCd
+		        and postingRule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode
+		        order by finTxn.SettlementDate
+        ]]>
+    </query>
+
+    <query name="findOffloadedFinTxnBySourceSystemAndDateRange">
+        <![CDATA[
+	        Select finTxn.Id, comp.Id
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			    inner join finTxn.Company as comp
+	       	where comp.SourceSystemCd=:sourceSystemCd
+			    and finTxn.CurrentTransactionState=:txnState
+			    and finTxn.SettlementTypeCd=:settlementType
+			    and finTxn.SettlementDate between :lowerDateBound and :upperDateBound
+             order by comp.Id, finTxn.SettlementDate desc
+			]]>
+    </query>
+
+    <query name="getPendingFinancialTransactionsBeforeCutoff">
+        <![CDATA[
+			Select finTxn
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+	             com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTx
+			where finTxn.Company=:company
+			    and finTxn.TransactionType.TransactionTypeCd !=:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd =:txnState
+			    and finTxn.MoneyMovementTransaction.Id=mmTx.Id
+			    and mmTx.InitiationDate >= :processingDate
+                and (finTxn.CreditBankAccountType =:bankAccountOwnerType or
+                                                                    finTxn.DebitBankAccountType =:bankAccountOwnerType)
+			]]>
+    </query>
+
+    <query name="findOffloadedFinTxnBySourceSystemAfterCutoff">
+        <![CDATA[
+			Select finTxn
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn,
+	             com.intuit.sbd.payroll.psp.domain.MoneyMovementTransaction as mmTx
+			where finTxn.Company=:company
+			    and finTxn.TransactionType.TransactionTypeCd !=:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd =:txnState
+			    and finTxn.MoneyMovementTransaction.Id=mmTx.Id
+			    and mmTx.InitiationDate > :processingDate
+                and (finTxn.CreditBankAccountType =:bankAccountOwnerType or
+                                                                    finTxn.DebitBankAccountType =:bankAccountOwnerType)
+			]]>
+    </query>
+
+    <query name="findFinTxnForPayrollRunTxnAssocType">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.PayrollRun=:payrollRun
+			    and finTxn.TransactionType.AssociationType=:transactionAssociationType
+			    and finTxn.CurrentTransactionState=:transactionState
+			order by finTxn.SettlementDate
+			]]>
+    </query>
+
+    <query name="findFinTxnNotReissuedForPayroll">
+        <![CDATA[
+		Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction finTxn
+			where finTxn.PayrollRun=:payrollRun
+			and finTxn.Company=:company
+			and finTxn.TransactionType.TransactionTypeCd in (:transactionTypeList)
+			and finTxn.CurrentTransactionState.TransactionStateCd in (:transactionStateList)
+			and not exists ( from com.intuit.sbd.payroll.psp.domain.FinancialTransaction reissuedTxn
+			                where reissuedTxn = finTxn.OriginalTransaction
+			                and reissuedTxn.PayrollRun=:payrollRun
+			                and reissuedTxn.Company=:company)
+			]]>
+    </query>
+
+    <query name="findFinTxnForPayrollByTypeAndExclTxnState">
+        <![CDATA[
+			Select finTxn
+			from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			where finTxn.PayrollRun=:payrollRun
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+			    and finTxn.CurrentTransactionState.TransactionStateCd !=:txnState
+			]]>
+    </query>
+
+<query name="findFeeTxnsForOffloadBatch">
+        <![CDATA[
+			Select FT1.Id, FT1.Company.Id
+			From com.intuit.sbd.payroll.psp.domain.FinancialTransaction as FT1
+		    WHERE FT1.MoneyMovementTransaction.OffloadBatch = :pOffloadBatch
+			   AND FT1.CurrentTransactionState = 'Executed'
+			   AND FT1.TransactionType.FeeInd = 1
+			   AND EXISTS (SELECT OSC2.SKU FROM com.intuit.sbd.payroll.psp.domain.OfferingServiceCharge OSC2 WHERE OSC2.SKU = FT1.Sku AND OSC2.SkuType = 'NonPayroll')
+			   AND FT1.MoneyMovementTransaction.Company = FT1.Company
+			   ORDER BY FT1.Company
+			]]>
+    </query>
+ <query name="findBillPaymentFinTxnsForOffloadBatch">  <![CDATA[
+			Select FT1.Id, FT1.PayrollRun.Id, FT1.Company.Id
+			From com.intuit.sbd.payroll.psp.domain.FinancialTransaction as FT1
+		    WHERE FT1.MoneyMovementTransaction.OffloadBatch = :pOffloadBatch
+			   AND FT1.CurrentTransactionState = 'Executed'
+			   AND FT1.PayrollRun.PayrollRunType = 'BillPayment'
+			   AND FT1.TransactionType.TransactionTypeCd = 'EmployeeDdCredit'
+			   AND FT1.MoneyMovementTransaction.Company = FT1.Company
+			   ORDER BY FT1.Company
+			]]>
+    </query>
+ <query name="findFinTxnByCompanyBankAcctDateTxnTypeState">
+        <![CDATA[
+	        Select finTxn
+	        from com.intuit.sbd.payroll.psp.domain.FinancialTransaction as finTxn
+			    inner join finTxn.Company as comp
+	       	where comp.SourceSystemCd=:sourceSystemCd
+			    and comp.SourceCompanyId =:sourceCompanyId
+			    and finTxn.TransactionType.TransactionTypeCd =:txnType
+                and finTxn.DebitBankAccount =:bankAccount
+                and finTxn.SettlementDate <=:processingDate
+                and finTxn.CurrentTransactionState.TransactionStateCd =:txnState
+             order by finTxn.SettlementDate desc
+			]]>
+    </query>
+    <query name="findFinTransForQtrlyPaymentsATFDataExtract">
+        <![CDATA[
+            Select distinct ft, comp.SourceCompanyId,ft.PayrollRun.PaycheckDate
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as ft
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and ft.Company=comp
+			  and ft.TransactionType.TransactionCategory = :transactionCatergoryCd
+			  and ( ft.MoneyMovementTransaction.ManualPaymentStatus = :manualPaymentStatusCd1
+			      or ft.MoneyMovementTransaction.ManualPaymentStatus = :manualPaymentStatusCd2
+			      or ft.MoneyMovementTransaction.TaxPaymentStatus = :taxPaymentStatusCd )
+			  and ft.PayrollRun.PaycheckDate >= :payChkFromDt and ft.PayrollRun.PaycheckDate < :payChkToDt
+			  and ft.MoneyMovementTransaction.Company = ft.Company
+			  order by comp.SourceCompanyId, ft.Law.LawId, ft.PayrollRun.PaycheckDate
+			]]>
+    </query>
+    <query name="findFinTransForCompQtrlyPaymentsATFDataExtract">
+        <![CDATA[
+            Select distinct ft , ft.PayrollRun.PaycheckDate
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.FinancialTransaction as ft
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and ft.Company=comp
+			  and comp.Id =:companyId
+			  and ft.TransactionType.TransactionCategory = :transactionCatergoryCd
+			  and ( ft.MoneyMovementTransaction.ManualPaymentStatus = :manualPaymentStatusCd1
+			      or ft.MoneyMovementTransaction.ManualPaymentStatus = :manualPaymentStatusCd2
+			      or ft.MoneyMovementTransaction.TaxPaymentStatus = :taxPaymentStatusCd )
+			  and ft.PayrollRun.PaycheckDate >= :payChkFromDt and ft.PayrollRun.PaycheckDate < :payChkToDt
+			  and ft.MoneyMovementTransaction.Company = ft.Company
+			  order by ft.Law,  ft.PayrollRun.PaycheckDate
+			]]>
+    </query>
+    
+</hibernate-mapping>
+

@@ -1,0 +1,166 @@
+00:36:58 SQL> set echo on feedback on timing on
+00:36:58 SQL> 
+00:36:58 SQL> --disable online index rebuild cleanup job
+00:36:58 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+26-MAY-22 04.00.41.118981 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+00:36:58 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+00:36:58 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+26-MAY-22 04.00.41.118981 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+00:36:58 SQL> 
+00:36:58 SQL> exec dbms_streams.set_tag (hextoraw(3));
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+00:36:58 SQL> 
+00:36:58 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK1 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:18:41.91
+00:55:40 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK1 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+00:55:40 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK3 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:20:41.47
+01:16:22 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+01:16:22 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK4 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:28:46.62
+01:45:08 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK4 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+01:45:08 SQL> alter index PSPADM.PSP_QBDT_PYLN_MD_IDX1 rebuild tablespace PSP_IDX02 online parallel 4;
+alter index PSPADM.PSP_QBDT_PYLN_MD_IDX1 rebuild tablespace PSP_IDX02 online parallel 4
+*
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+Elapsed: 00:00:00.00
+01:45:08 SQL> alter index PSPADM.PSP_QBDT_PYLN_MD_IDX1 noparallel;
+alter index PSPADM.PSP_QBDT_PYLN_MD_IDX1 noparallel
+*
+ERROR at line 1:
+ORA-01418: specified index does not exist 
+
+
+Elapsed: 00:00:00.00
+01:45:08 SQL> alter index PSPADM.SYS_C0020601 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:29:28.16
+02:14:36 SQL> alter index PSPADM.SYS_C0020601 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:14:36 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK2 rebuild tablespace PSP_IDX02 online parallel 4;
+
+Index altered.
+
+Elapsed: 00:24:54.74
+02:39:31 SQL> alter index PSPADM.PSP_QBDT_PAYLINE_INFO_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+02:39:31 SQL> 
+02:39:31 SQL> --enable online index rebuild cleanup job
+02:39:31 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+FALSE DISABLED                                                                  
+26-MAY-22 04.00.41.118981 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+02:39:31 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+02:39:31 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+JOB_NAME                                                                        
+--------------------------------------------------------------------------------
+ENABL STATE                                                                     
+----- ---------------                                                           
+NEXT_RUN_DATE                                                                   
+---------------------------------------------------------------------------     
+SYS                                                                             
+CLEANUP_ONLINE_IND_BUILD                                                        
+TRUE  SCHEDULED                                                                 
+26-MAY-22 06.00.41.667658 AM -04:00                                             
+                                                                                
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+02:39:31 SQL> 
+02:39:31 SQL> spool off

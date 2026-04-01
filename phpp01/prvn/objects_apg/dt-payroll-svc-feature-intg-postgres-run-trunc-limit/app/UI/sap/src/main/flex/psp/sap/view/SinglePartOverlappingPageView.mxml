@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:pspui="psp.sap.view.*"
+           xmlns:controls="psp.sap.view.controls.*"
+           width="100%"
+           height="100%"
+           styleName="companyInspector"
+           initialize="onInit();"
+           show="onShow()"
+           creationComplete="onCreationComplete();"
+           verticalLineScrollSize="20">
+
+    <!--
+    * Set "children" to be the default property so we can easily set it from mxml
+    -->
+    <mx:Metadata>
+        [DefaultProperty("children")]
+    </mx:Metadata>
+
+
+    <mx:Script>
+		<![CDATA[
+        import mx.core.Container;
+        import mx.events.ChildExistenceChangedEvent;
+
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.application.enums.ViewModelActivationStateEnum;
+        import psp.sap.viewmodel.SinglePartPageViewModel;
+
+        private var mChildren:Array = [];
+        private var mChildrenChanged:Boolean = false;
+
+        public function set children(value:Array):void
+        {
+            mChildren = value;
+
+            mChildrenChanged = true;
+            invalidateProperties();
+        }
+
+        public function get children():Array
+        {
+            return mChildren;
+        }
+
+
+        protected function onInit():void {
+            //addChildrenToContentBox();
+        }
+
+        private function addChildrenToContentBox():void {
+            if (mChildrenChanged)
+            {
+                //ignore any extra children (also a good parenting tip!)
+                var child:Container = children[0];
+                child.label = baseLabel;
+
+                content.addChild(child);
+                dispatchEvent(new ChildExistenceChangedEvent(ChildExistenceChangedEvent.CHILD_ADD, false, false, child));
+
+
+                mChildrenChanged = false;
+                ViewModelSync.associatePageViewModels(this, viewModel);
+            }
+
+        }
+
+
+        private var mViewModel:SinglePartPageViewModel;
+
+        [Bindable]
+        public function get viewModel():SinglePartPageViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:SinglePartPageViewModel):void {
+            mViewModel = value;
+            if (mViewModel != null && this.initialized) {
+                addChildrenToContentBox();
+            }
+        }
+
+
+        private function onCreationComplete():void {
+            if (mChildrenChanged && mViewModel != null) {
+                addChildrenToContentBox();
+            }
+        }
+
+
+        private function onShow():void {
+            try {
+                focusManager.setFocus(focusManager.getNextFocusManagerComponent());
+                focusManager.showFocus();
+            } catch (e:Error) {
+                // ignore, there is a bug in the focus manager that throws null ptr
+            }
+        }
+
+        private var mBaseLabel:String;
+
+        [Bindable]
+        public function get baseLabel():String {
+            return mBaseLabel;
+        }
+
+        public function set baseLabel(value:String):void {
+            mBaseLabel = value;
+            label = mBaseLabel + "_page";
+        }
+
+
+
+
+		]]>
+	</mx:Script>
+
+    <pspui:PageVBox horizontalScrollPolicy="off" verticalScrollPolicy="off" id="pageVBox" height="100%" width="97%">
+        <mx:Canvas verticalScrollPolicy="off" width="100%">
+            <mx:VBox id="content" visible="{viewModel.activationState == ViewModelActivationStateEnum.ACTIVATED}" width="98%" height="100%"/>
+            <mx:Label text="{viewModel.pageLabel != null ? viewModel.pageLabel : label}" styleName="heading" id="headerLabel" visible="{headerLabel.text != ''}" includeInLayout="{headerLabel.text != ''}" paddingLeft="1"/>
+        </mx:Canvas>
+    </pspui:PageVBox>
+
+</mx:Canvas>

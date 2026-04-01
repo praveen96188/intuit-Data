@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:intuit="intuit.sbd.flex.framework.view.*"
+        xmlns:view="psp.sap.view.*"
+        xmlns:pspui="psp.sap.view.*"
+        width="100%" height="100%"
+        paddingTop="0" paddingLeft="0" paddingBottom="0" paddingRight="0"
+        creationComplete="onCreationComplete();"
+        verticalGap="0"
+        verticalScrollPolicy="off">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.containers.ViewStack;
+        import mx.core.Container;
+        import mx.events.FlexEvent;
+        import mx.events.ItemClickEvent;
+        import mx.logging.ILogger;
+
+        import psp.sap.application.ClientLoggingTarget;
+        import psp.sap.application.SAP;
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.application.enums.PartsEnum;
+        import psp.sap.model.SettlementTypeEnum;
+        import psp.sap.viewmodel.AbstractPartViewModel;
+        import psp.sap.viewmodel.CompanyInspectorTopicViewModel;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+
+        private var logger:ILogger = ClientLoggingTarget.getLogger(this);
+
+        private var mCreationComplete:Boolean = false;
+
+        protected var mTempViewModel:CompanyInspectorViewModel;
+
+        /**
+         * The ViewModel this view is visually represents.
+         */
+        protected var mViewModel:CompanyInspectorViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanyInspectorViewModel {
+            return mViewModel;
+        }
+
+        /**
+         * When the ViewModel is set, synchronize UI view with viewmodel state.
+         * Add listeners so that UI view can track viewmodel state.
+         */
+        public function set viewModel(value:CompanyInspectorViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                this.label = mViewModel.label;
+            }
+            else
+                mTempViewModel = value;
+
+            if (mViewModel != null && mCreationComplete) {
+                syncToViewModel();
+                showAddNoteState();
+            }
+        }
+
+        protected function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+        }
+
+        private function syncToViewModel():void {
+            for each (var part:AbstractPartViewModel in viewModel.getAllPages()) {
+                var pageView:Container = companyInspectorPagesControl.getChildByLabel(part.label);
+                if (pageView != null) {
+                    pageView["viewModel"] = part;
+                    ViewModelSync.associatePageViewModels(pageView, part);
+                }
+            }
+
+            ViewModelSync.associatePageViewModels(this, viewModel.partHost);
+            viewModel.partHost.activate();
+
+        }
+
+
+        private function onTopicClicked(e:ItemClickEvent):void {
+            viewModel.activeTopic = CompanyInspectorTopicViewModel(e.item);
+        }
+
+
+        private function showAddNoteState():void {
+            currentState = "addNoteCollapsed";
+        }
+
+
+        public function set selectedChild(value:Container):void {
+            var part:AbstractPartViewModel = mViewModel.findPart(value.label);
+
+            if (value.initialized) {
+                //value["viewModel"] = page;
+                ViewModelSync.associatePageViewModels(value, part);
+            } else {
+                value.addEventListener(FlexEvent.CREATION_COMPLETE, function (e:FlexEvent):void {
+                    ViewModelSync.associatePageViewModels(value, part);
+                }, false, 0, false);
+            }
+
+        }
+        ]]>
+    </mx:Script>
+
+    <mx:transitions>
+        <mx:Transition fromState="addNoteExpanded" toState="addNoteCollapsed">
+            <mx:Sequence>
+                <mx:SetPropertyAction target="{viewModel}" name="noteScreenHeight" value="{noteBar.height}"/>
+                <mx:Resize target="{noteBar}" duration="200" heightTo="0" widthFrom="{contentArea.width}"
+                           widthTo="{contentArea.width}"/>
+                <mx:SetPropertyAction target="{noteBar}" name="includeInLayout" value="false"/>
+                <mx:SetPropertyAction target="{noteBar}" name="visible" value="false"/>
+            </mx:Sequence>
+        </mx:Transition>
+        <mx:Transition fromState="addNoteCollapsed" toState="addNoteExpanded">
+            <mx:Sequence>
+                <mx:SetPropertyAction target="{noteBar}" name="includeInLayout" value="true"/>
+                <mx:SetPropertyAction target="{noteBar}" name="visible" value="true"/>
+                <mx:Resize target="{noteBar}" duration="200" heightFrom="0" heightTo="{viewModel.noteScreenHeight}"
+                           widthFrom="{contentArea.width}" widthTo="{contentArea.width}"/>
+            </mx:Sequence>
+        </mx:Transition>
+    </mx:transitions>
+
+    <mx:states>
+        <mx:State name="addNoteCollapsed">
+            <mx:AddChild relativeTo="{notesFakeTab}" position="lastChild">
+                <mx:LinkButton id="openNote" width="20" paddingTop="0" icon="{SAP.instance.icons.upArrowWithBar}"
+                               toolTip="Add Note" tabEnabled="false"/>
+            </mx:AddChild>
+        </mx:State>
+        <mx:State name="addNoteExpanded">
+            <mx:AddChild relativeTo="{notesFakeTab}" position="lastChild">
+                <mx:LinkButton id="closeNote" width="20" paddingTop="0" icon="{SAP.instance.icons.downArrowWithBar}"
+                               toolTip="Close Note" tabEnabled="false"/>
+            </mx:AddChild>
+        </mx:State>
+
+    </mx:states>
+
+    <pspui:CompanyBannerView id="companyBanner" tabEnabled="false" tabChildren="false"
+                             label="{PartsEnum.COMPANY_BANNER}"/>
+
+    <mx:HBox horizontalGap="0" height="100%" width="100%" backgroundColor="#F4F4F4">
+
+        <mx:VBox verticalGap="0">
+            <mx:Spacer height="10"/>
+            <mx:HBox horizontalGap="0" height="100%">
+                <pspui:InspectorLinkBarExt
+                        minWidth="100"
+                        id="topicNavigationMenu"
+                        trackSelectionState="true" separatorWidth="0"
+                        height="100%" itemClick="onTopicClicked(event)"
+                        direction="vertical"
+                        linkButtonStyleName="leftNavigation" paddingRight="0"
+                        paddingLeft="10" paddingTop="10" width="115" buttonMinWidth="115" buttonPercentWidth="100"
+                        visible="{viewModel.company != null}"/>
+                <mx:VBox verticalGap="0" height="100%" id="topicMenuBox">
+                    <pspui:GradientBox
+                            width="5"
+                            verticalAlign="middle"
+                            gradientDirection="horizontal"
+                            colors="[#F4F4F4, #000000]"
+                            direction="horizontal"
+                            height="{ViewStack(companyInspectorPagesControl).height > (topicNavigationMenu.selectedChild.y - topicMenuBox.y) ? (topicNavigationMenu.selectedChild.y - topicMenuBox.y) : ViewStack(companyInspectorPagesControl).height}"
+                            cornerRadius="3"/>
+                    <mx:VBox
+                            width="5"
+                            height="{topicNavigationMenu.selectedChild.height}"
+                            backgroundColor="#FFFFFF"
+                            borderStyle="solid"
+                            borderColor="#EEEEEE"
+                            borderSides="top, bottom"
+                            borderThickness="1"/>
+                    <pspui:GradientBox
+                            width="5"
+                            verticalAlign="middle"
+                            gradientDirection="horizontal"
+                            colors="[#F4F4F4, #000000]"
+                            cornerRadius="3"
+                            direction="horizontal"
+                            height="{ViewStack(companyInspectorPagesControl).height - (topicNavigationMenu.selectedChild.y + topicNavigationMenu.selectedChild.height + 15) > 0 ? ViewStack(companyInspectorPagesControl).height - (topicNavigationMenu.selectedChild.y + topicNavigationMenu.selectedChild.height + 15) : 0}"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:Canvas id="inspectorCanvas" height="100%" width="100%">
+
+            <pspui:GradientVDividedBox
+                    gradientDirection="horizontal"
+                    colors="[#F4F4F4, #CED5E5]"
+                    direction="horizontal"
+                    id="contentArea"
+                    height="100%"
+                    width="100%"
+                    liveDragging="false"
+                    styleName="dividedVBox">
+
+                <pspui:ViewStackControlEx
+                        id="companyInspectorPagesControl"
+                        width="100%" height="100%"
+                        backgroundColor="#F4F4F4"
+                        borderThickness="0" borderStyle="none"
+                        paddingTop="1"
+                        paddingLeft="0"
+                        creationPolicy="auto"
+                        historyManagementEnabled="false">
+
+
+                    <!-- Info -->
+
+                    <pspui:SinglePartOverlappingPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_INFO}">
+                        <pspui:CompanyInformationView/>
+                    </pspui:SinglePartOverlappingPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.STRIKES}">
+                        <pspui:CompanyStrikesView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.LIMIT_VIOLATIONS_HISTORY}">
+                        <pspui:CompanyLimitViolationsView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_OFFERS}">
+                        <pspui:CompanyOffersView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_OFFERINGS}">
+                        <pspui:CompanyOfferingsView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.SUBSCRIPTION_STATUS}">
+                        <pspui:CompanyEditSubscriptionStatusView/>
+                    </pspui:SinglePartPageView>
+
+
+                    <!-- Employee -->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.EMPLOYEES}">
+                        <pspui:EmployeesView/>
+                    </pspui:SinglePartPageView>
+
+
+                    <!-- Payroll -->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL}">
+                        <pspui:PayrollView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYCHECK_LINE_ITEMS}">
+                        <pspui:EmployeeLineItemsView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_LIST}">
+                        <pspui:PayrollTransactionsListView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_VENDOR_TRANSACTION_LIST}">
+                        <pspui:PayrollTransactionsListView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_CANCEL}">
+                        <pspui:PayrollTransactionCancelView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_REVERSE}">
+                        <pspui:PayrollTransactionReverseView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_PAYROLL_LEDGER}">
+                        <pspui:PayrollLedgerView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView
+                            baseLabel="{CompanyInspectorPageEnum.COMPANY_PAYROLL_LEDGER_ACCOUNT_ENTRIES}">
+                        <pspui:PayrollLedgerEntriesView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_HISTORY}">
+                        <pspui:PayrollTransactionHistoryView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_CHANGE_REDEBIT}">
+                        <pspui:PayrollMultiItemEnteringPageView
+                                settlementTypes="{[SettlementTypeEnum.ACH]}"
+                                defaultSettlementType="{SettlementTypeEnum.ACH}"
+                                saveString="Are you sure you want to change the Initiation Date?"
+                                column1Header="Uncollected"
+                                column2Header="Redebit"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_NONACH_ADD_REDEBIT}">
+                        <pspui:PayrollMultiItemEnteringPageView
+                                settlementTypes="{SettlementTypeEnum.non_ach_values}"
+                                defaultSettlementType="{SettlementTypeEnum.WIRE}"
+                                saveString="Are you sure you want to record this Payment Transaction?"
+                                column1Header="Uncollected"
+                                column2Header="Redebit"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_ADD_REDEBIT}">
+                        <pspui:PayrollMultiItemEnteringPageView
+                                settlementTypes="{SettlementTypeEnum.values}"
+                                defaultSettlementType="{SettlementTypeEnum.WIRE}"
+                                saveString="Are you sure you want to record this Payment Transaction?"
+                                column1Header="Uncollected"
+                                column2Header="Redebit"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_LEDGER_RECOVER_BAD_DEBT}">
+                        <pspui:PayrollLedgerRecoverBadDebtView
+                                settlementTypes="{SettlementTypeEnum.non_ach_values}"
+                                defaultSettlementType="{SettlementTypeEnum.WIRE}"
+                                saveString="Are you sure you want to Recover Bad Debt?"
+                                column1Header="Unrecovered"
+                                column2Header="Recover"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_REFUND_FRAUD_ESCALATION}">
+                        <pspui:PayrollMultiItemEnteringPageView
+                                settlementTypes="{SettlementTypeEnum.values}"
+                                defaultSettlementType="{SettlementTypeEnum.WIRE}"
+                                saveString="Are you sure you want to submit this Refund to Employer for Fraud or Escalation?"
+                                column1Header="Original"
+                                column2Header="Refund"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_PAYROLL_ADD_ESCALATION}">
+                        <pspui:PayrollLedgerAddEscalationView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_CREATE_FEE}">
+                        <pspui:PayrollTransactionCreateFeeView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView
+                            baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_ISSUE_REISSUE_REFUND}">
+                        <pspui:PayrollTransactionIssueReissueRefundView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_LEDGER_FEE_TRANSFER}">
+                        <pspui:PayrollLedgerFeeTransfer/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_LEDGER_DD_REFUND}">
+                        <pspui:PayrollSettlementPageView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_LEDGER_EE_RETURN_REFUND}">
+                        <pspui:PayrollSettlementPageView
+                                saveConfirmationMessage="Are you sure you want to issue Refund?"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_LEDGER_ER_RETURN_REFUND}">
+                        <pspui:PayrollSettlementPageView
+                                saveConfirmationMessage="Are you sure you want to issue Refund?"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_TRANSACTION_REFUND_REBILL}">
+                        <pspui:PayrollRefundRebillView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_CONNECTIONS}">
+                        <pspui:CompanyConnectionsView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_CREATE_EXPECTED_WIRE_DATE}">
+                        <pspui:PayrollExpectedWireView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_PREFUNDING}">
+                        <pspui:PayrollMultiItemEnteringPageView
+                                settlementTypes="{SettlementTypeEnum.non_ach_values}"
+                                defaultSettlementType="{SettlementTypeEnum.WIRE}"
+                                saveString="Are you sure you want to record Prefunding Transactions?"
+                                column1Header="Amount Due"
+                                column2Header="Prefunding"/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.DATA_SYNC_SEARCH_VIEW}">
+                        <pspui:DataSyncSearchView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.DATA_SYNC_MANAGE_VIEW}">
+                        <pspui:DataSyncManageView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_LEDGER}">
+                        <pspui:LedgerView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COURTESY_REFUND}">
+                        <pspui:CourtesyRefundView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_LEDGER_ACCOUNT_ENTRIES}">
+                        <pspui:LedgerEntriesView/>
+                    </pspui:SinglePartPageView>
+
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLLS_PITEM_TAXABILITY}">
+                        <pspui:PayrollPItemsTaxabilityView/>
+                    </pspui:SinglePartPageView>
+
+                    <!-- Banks -->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.COMPANY_BANK}">
+                        <pspui:CompanyBankView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.BANKS_COMPANY_ACCOUNT_HISTORY}">
+                        <pspui:BanksCompanyAccountHistoryView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.BANKS_EMPLOYEE_ACCOUNT_HISTORY}">
+                        <pspui:BanksEmployeeAccountHistoryView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.BANKS_VENDOR_ACCOUNT_HISTORY}">
+                        <pspui:BanksVendorAccountHistoryView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.BANKS_ADD_ACCOUNT}">
+                        <pspui:BanksAddBankAccountView/>
+                    </pspui:SinglePartPageView>
+
+
+                    <!-- Connection Log -->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_CONNECTION_LOG}">
+                        <pspui:PayrollConnectionLogView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_CONNECTION_OFX}">
+                        <pspui:PayrollConnectionOFXView/>
+                    </pspui:SinglePartPageView>
+
+
+                    <!-- Event Log -->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.EVENT_LOG}">
+                        <pspui:CompanyEventLogView/>
+                    </pspui:SinglePartPageView>
+
+
+                    <!-- Chase Report -->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.CHASE_REPORT}">
+                        <pspui:ChaseReportView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.PAYROLL_APPLY_ER_PAYABLE}">
+                        <pspui:ApplyERPayableToBalanceDueView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.TAXES}">
+                        <pspui:TaxView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.TAX_OVERPAYMENT}">
+                        <pspui:TaxOverpaymentView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.TAX_OVERPAYMENT_REFUND_LIST}">
+                        <pspui:ERPayableRefundsView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.MONEY_MOVEMENT}">
+                        <pspui:MmtView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.FINANCIAL_LEDGER_ADJUSTMENT}">
+                        <pspui:FinancialLedgerAdjustmentView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView
+                            baseLabel="{CompanyInspectorPageEnum.FINANCIAL_LEDGER_ADJUSTMENT_PAYROLL}">
+                        <pspui:FinancialLedgerAdjustmentView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.TAX_PENALTIES_AND_INTEREST}">
+                        <pspui:PenaltiesAndInterestsView/>
+                    </pspui:SinglePartPageView>
+
+                    <!--pspui:SinglePartPageView
+                         label="{CompanyInspectorPageEnum.EMPLOYEES}"
+                         id="employeesView"
+                         styleName="companyInspector"
+                         pageLabel="">
+                         <pspui:EmployeesView/>
+                     </pspui:SinglePartPageView-->
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.BILLING}">
+                        <pspui:BillingView/>
+                    </pspui:SinglePartPageView>
+
+                    <!-- VMP Data -->
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.VIEW_MY_PAYCHECK_INFO}">
+                        <pspui:VMPEmployeeListView/>
+                    </pspui:SinglePartPageView>
+
+                    <pspui:SinglePartPageView baseLabel="{CompanyInspectorPageEnum.VIEW_MY_PAYCHECK_EMPLOYEE_INFO}">
+                        <pspui:VMPEmployeeView/>
+                    </pspui:SinglePartPageView>
+
+                </pspui:ViewStackControlEx>
+
+                <pspui:GradientBox
+                        gradientDirection="horizontal"
+                        colors="[#F4F4F4, #CED5E5]"
+                        direction="horizontal"
+                        id="noteBar"
+                        width="{inspectorCanvas.width}"
+                        includeInLayout="false"
+                        visible="false"
+                        styleName="notesBox"
+                        minHeight="100"
+                        verticalScrollPolicy="off"
+                        show="{noteText.setFocus()}">
+
+                    <mx:HBox width="100%" height="100%" horizontalAlign="right" paddingBottom="10" paddingLeft="10"
+                             paddingRight="10">
+                        <mx:TextArea id="noteText" height="100%" width="100%" maxChars="3998"/>
+                        <mx:VBox height="100%" width="100" horizontalAlign="right">
+                            <mx:Button label="Save" width="100%" click="viewModel.saveNote()"
+                                       enabled="{noteText.text != ''}"/>
+                            <mx:Button label="Clear" width="100%" click="viewModel.clearNote()"/>
+                            <mx:HBox verticalAlign="middle" styleName="noPadding">
+                                <mx:CheckBox id="alertCheckBox" label="Alert" toolTip="Show a link to this note in the company banner"/>
+                                <mx:Image source="{SAP.instance.icons.bell}" toolTip="{alertCheckBox.toolTip}"/>
+                            </mx:HBox>
+                        </mx:VBox>
+                    </mx:HBox>
+                </pspui:GradientBox>
+
+            </pspui:GradientVDividedBox>
+
+            <pspui:GradientBox
+                    gradientDirection="horizontal"
+                    colors="[#F4F4F4, #CED5E5]"
+                    direction="horizontal"
+                    id="fakePanel"
+                    width="100%"
+                    height="5"
+                    styleName="fakePanel"/>
+
+            <mx:HBox height="20" id="notesFakeTab" styleName="fakeTab" click="{viewModel.openOrCloseNote();}"
+                     paddingLeft="2" paddingRight="2" paddingTop="1">
+                <mx:Label text="{viewModel.company.legalName} Notes"
+                          fontWeight="{noteText.text == '' ? 'normal' : 'bold'}"/>
+                <mx:Image source="{SAP.instance.icons.addNote}"
+                          filters="{noteText.text == '' ? [] : [new GlowFilter(0x7CFC00,1,6,6,4)]}"/>
+            </mx:HBox>
+
+        </mx:Canvas>
+    </mx:HBox>
+
+    <mx:Binding source="companyInspectorPagesControl.selectedChild" destination="this.selectedChild"/>
+    <mx:Binding source="viewModel.activePageLabel" destination="companyInspectorPagesControl.selectedChildLabel"/>
+    <mx:Binding source="companyInspectorPagesControl.selectedChildLabel" destination="viewModel.activePageLabel"/>
+
+    <mx:Binding source="viewModel.topics" destination="topicNavigationMenu.dataProvider"/>
+    <mx:Binding source="viewModel.activeTopic" destination="topicNavigationMenu.selectedItem"/>
+
+    <mx:Binding source="viewModel.noteViewState" destination="currentState"/>
+    <mx:Binding source="topicNavigationMenu.width" destination="companyBanner.contentSpacer.width"/>
+
+    <mx:Binding source="viewModel.noteText" destination="noteText.text"/>
+    <mx:Binding source="noteText.text" destination="viewModel.noteText"/>
+
+    <mx:Binding source="viewModel.alert" destination="alertCheckBox.selected"/>
+    <mx:Binding source="alertCheckBox.selected" destination="viewModel.alert"/>
+
+    <!-- This keeps the fake "notes" tab where it ought to be, sorry that it's ugly, Raffi, but you work with what you have -->
+    <mx:Binding source="{inspectorCanvas.height-fakePanel.height}" destination="fakePanel.y"/>
+    <mx:Binding source="{inspectorCanvas.width-notesFakeTab.width - 20}" destination="notesFakeTab.x"/>
+    <mx:Binding
+            source="{inspectorCanvas.height - notesFakeTab.height - (noteBar.visible ? noteBar.height + 4 : fakePanel.height)}"
+            destination="notesFakeTab.y"/>
+</mx:VBox>

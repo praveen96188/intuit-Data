@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp1 (http://www.altova.com) by Fred Chen (Intuit) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:nts="http://www.intuit.com/ias/notification/pub/xsd" xmlns:tns="http://www.intuit.com/ias/notification/pub/wsdl" xmlns:ns1="http://www.intuit.com/ias/common/xsd" targetNamespace="http://www.intuit.com/ias/notification/pub/wsdl">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.intuit.com/ias/notification/pub/xsd" elementFormDefault="qualified">
+			<xsd:include schemaLocation="notification.xsd"/>
+		</xsd:schema>
+		<xsd:schema targetNamespace="http://www.intuit.com/ias/common/xsd" elementFormDefault="qualified">
+			<xsd:include schemaLocation="common.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="SendRequest">
+		<wsdl:part name="header" element="ns1:Header"/>
+		<wsdl:part name="body" element="nts:SendRequest"/>
+	</wsdl:message>
+	<wsdl:message name="SendResponse">
+		<wsdl:part name="header" element="ns1:Header"/>
+		<wsdl:part name="body" element="nts:SendResponse"/>
+	</wsdl:message>
+	<wsdl:message name="Fault">
+		<wsdl:part name="fault" element="ns1:Error"/>
+	</wsdl:message>
+	<wsdl:portType name="NotificationPort">
+		<wsdl:operation name="Send">
+			<wsdl:input message="tns:SendRequest"/>
+			<wsdl:output message="tns:SendResponse"/>
+			<wsdl:fault name="Fault" message="tns:Fault"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="NotificationSoapBinding" type="tns:NotificationPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="Send">
+			<soap:operation soapAction="Send"/>
+			<wsdl:input>
+				<soap:body parts="body" use="literal"/>
+				<soap:header message="tns:SendRequest" part="header" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body parts="body" use="literal"/>
+				<soap:header message="tns:SendResponse" part="header" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="Fault">
+				<soap:fault name="Fault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="NotificationService">
+		<wsdl:port name="NotificationPort" binding="tns:NotificationSoapBinding">
+			<soap:address location="http://www.intuit.com/notificationservice"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

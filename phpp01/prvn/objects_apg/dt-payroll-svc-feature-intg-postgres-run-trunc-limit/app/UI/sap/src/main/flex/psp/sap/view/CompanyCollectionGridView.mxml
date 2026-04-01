@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%">
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.CompanyCollectionViewModel;
+			
+			[Bindable]
+			public var viewModel:CompanyCollectionViewModel;
+			
+		
+			public function onKeyDown(e:KeyboardEvent):void {
+				if (e.keyCode == Keyboard.ENTER)
+					viewModel.editSelected();
+			}		
+		]]>
+	</mx:Script>	
+	
+	<!--
+		NOTE:	it is important to setup the two way 'concurrency' binding between
+				the grid's selectedIndex property and the ViewModel's selectedIndex
+				so that the two stay in sync, even if the ViewModel's selectedIndex
+				is changed via program code.
+	-->
+	<mx:DataGrid id="companyGrid" x="10" y="10" width="98%" height="98%" doubleClickEnabled="true"
+		dataProvider="{viewModel}" 
+		selectedIndex="{viewModel.selectedIndex}" 
+		doubleClick="viewModel.editSelected()"
+		keyDown="onKeyDown(event)">
+		
+		<mx:columns>
+			<mx:DataGridColumn headerText="Legal Name" dataField="legalName"/>
+			<mx:DataGridColumn headerText="Doing Business As" dataField="DBA"/>
+			<mx:DataGridColumn headerText="FEIN" dataField="fein"/>
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:Binding source="companyGrid.selectedIndex" destination="viewModel.selectedIndex"/>	
+	
+</mx:Canvas>
+
+	<!--
+		These buttons show off how the ViewModel and View can stay in sync and
+		how actions/eventing works in the View-ViewModel pattern.  The view
+		initiates a change on the ViewModel through a user action (i.e. clicking
+		a button.)  The ViewModel updates its selected index property, fires
+		a change event and the View handles that and all of these buttons
+		enabled properties magically update.
+		
+		To use, just copy into the block above.
+	-->	
+	<!--
+	<mx:Button x="51" y="213" label="Previous" 
+		enabled="{PresentationModel.CompaniesPresenter.canSelectPrevious}"
+		click="PresentationModel.CompaniesPresenter.selectPrevious(); companyGrid.scrollToIndex(PresentationModel.CompaniesPresenter.selectedIndex)"/>
+	
+	<mx:Button x="135" label="Next"
+		enabled="{PresentationModel.CompaniesPresenter.canSelectNext}" 
+		click="PresentationModel.CompaniesPresenter.selectNext(); companyGrid.scrollToIndex(PresentationModel.CompaniesPresenter.selectedIndex)" y="213" width="78"/>		
+	
+	<mx:Button x="462" y="213" label="Open" width="79"
+		enabled="{PresentationModel.CompaniesPresenter.hasSelection}"
+		click="PresentationModel.CompaniesPresenter.editSelectedCompany();"/>
+	
+	<mx:Button x="373" y="213" label="Select 3rd"
+		enabled="{PresentationModel.CompaniesPresenter.hasSelection}" 
+		click="PresentationModel.CompaniesPresenter.selectedCompany = DomainModel.Companies.getItemAt(3) as Company;"/>	
+	
+	<mx:Button x="276" y="213" label="Set Name" width="89"
+		enabled="{PresentationModel.CompaniesPresenter.hasSelection}"
+		click="PresentationModel.CompaniesPresenter.selectedCompany.legalName = 'Raffi'"/>
+	-->

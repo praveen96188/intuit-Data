@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="onCreationComplete();">
+	
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.viewmodel.CompanyDisplayCancellationInfoViewModel;
+
+        private var mViewModel:CompanyDisplayCancellationInfoViewModel;
+        private var mTempViewModel:CompanyDisplayCancellationInfoViewModel;
+        private const COLUMN_1_WIDTH:int = 225;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyDisplayCancellationInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyDisplayCancellationInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+	</mx:Script>
+
+    <mx:HBox>
+		<mx:Label text="Last payroll date:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.cancellationInfo.strLastPayrollDate()}"/>
+	</mx:HBox>
+
+    <mx:HBox>
+		<mx:Label text="Last quarter to file:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.cancellationInfo.strLastTaxQuarter()}"/>
+	</mx:HBox>
+
+   <mx:HBox>
+		<mx:Label text="File annual returns:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.cancellationInfo.fileAnnualReturns ? 'Yes' : 'No'}"/>
+	</mx:HBox>
+
+	<mx:HBox>
+		<mx:Label text="File final returns:" styleName="fieldLabel" width="{COLUMN_1_WIDTH}"/>
+		<mx:Text text="{viewModel.cancellationInfo.isFinal ? 'Yes' : 'No'}"/>
+	</mx:HBox>
+
+
+
+
+
+</mx:VBox>

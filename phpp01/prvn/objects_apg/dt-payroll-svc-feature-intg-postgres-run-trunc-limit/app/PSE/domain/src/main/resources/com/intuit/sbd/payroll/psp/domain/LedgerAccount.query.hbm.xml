@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+
+    <sql-query name="findLedgerEntriesBalanceByAccountCode">
+        <return-scalar column="ledgerBalance" type="java.lang.Double"/>
+        <![CDATA[
+	    select fn_get_ledger_balance(:company, :ledger) ledgerBalance from dual
+	]]>
+    </sql-query>
+
+     <query name="findPendingTransactionSumByAccountCodeAndPayroll">
+         <![CDATA[
+             Select distinct(ft)
+             from com.intuit.sbd.payroll.psp.domain.FinancialTransaction ft,
+                  com.intuit.sbd.payroll.psp.domain.PostingRule as rule
+             where ft.Company = :company
+               and ft.CurrentTransactionState.TransactionStateCd = 'Created'
+               and ft.PayrollRun.SourcePayRunId = :sourcePayrollRunId
+               and rule.TransactionType.TransactionTypeCd = ft.TransactionType.TransactionTypeCd
+               and rule.TransactionState.TransactionStateCd in ('Executed', 'Completed')
+               and rule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode
+               and rule.CreditDebitInd = :creditDebitInd
+         ]]>
+     </query>
+
+      <query name="findPendingTaxTransactionSumByAccountCodeAndPayroll">
+         <![CDATA[
+             Select distinct(ft)
+             from com.intuit.sbd.payroll.psp.domain.FinancialTransaction ft,
+                  com.intuit.sbd.payroll.psp.domain.PostingRule as rule
+             where ft.Company = :company
+               and ft.CurrentTransactionState.TransactionStateCd = 'Created'
+               and ft.PayrollRun.SourcePayRunId = :sourcePayrollRunId
+               and rule.TransactionType.TransactionTypeCd = ft.TransactionType.TransactionTypeCd
+               and rule.TransactionState.TransactionStateCd in ('Executed', 'Completed')
+               and rule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode
+               and rule.CreditDebitInd = :creditDebitInd
+               and 'Tax' = all elements(ft.TransactionType.ServiceSet)
+         ]]>
+     </query>
+
+    <query name="findPendingNotTaxTransactionSumByAccountCodeAndPayroll">
+         <![CDATA[
+             Select distinct(ft)
+             from com.intuit.sbd.payroll.psp.domain.FinancialTransaction ft,
+                  com.intuit.sbd.payroll.psp.domain.PostingRule as rule
+             where ft.Company = :company
+               and ft.CurrentTransactionState.TransactionStateCd = 'Created'
+               and ft.PayrollRun.SourcePayRunId = :sourcePayrollRunId
+               and rule.TransactionType.TransactionTypeCd = ft.TransactionType.TransactionTypeCd
+               and rule.TransactionState.TransactionStateCd in ('Executed', 'Completed')
+               and rule.LedgerAccount.LedgerAccountCd = :ledgerAccountCode
+               and rule.CreditDebitInd = :creditDebitInd
+               and 'Tax' != any elements(ft.TransactionType.ServiceSet)
+         ]]>
+     </query>
+
+    <sql-query name="findPayrollRunsWithLedgerBalance">
+        <return alias="payrollRun" class="com.intuit.sbd.payroll.psp.domain.PayrollRun"/>
+        <return-scalar column="balance" type="java.lang.Long"/>
+        <![CDATA[
+            select {payrollRun.*}, SUM (  ft.financial_transaction_amount
+                                     * DECODE (pr.credit_debit_ind,
+                                              'C', DECODE (la.balance_calculation_rule,'CreditAddsToBalance', 1,-1),
+                                              'D', DECODE (la.balance_calculation_rule,'DebitAddsToBalance', 1,-1)
+                                   )) as balance
+                              from psp_payroll_run payrollRun
+                                join psp_financial_transaction ft on ft.payroll_run_fk = payrollRun.payroll_run_seq
+                                                                    and ft.company_fk = :company_id
+                                join psp_financial_trans_state fts on fts.financial_transaction_fk = ft.financial_transaction_seq
+                                                                    and fts.company_fk = :company_id
+                                join psp_posting_rule pr on pr.transaction_type_fk = ft.transaction_type_fk
+                                                        and pr.transaction_state_fk = fts.transaction_state_fk
+                                join psp_ledger_account la on la.ledger_account_cd = pr.ledger_account_fk
+                              where payrollRun.company_fk = :company_id
+                              and la.ledger_account_cd = :ledgerAccountCode
+                              group by
+                                payrollRun.PAYROLL_RUN_SEQ,
+                                payrollRun.VERSION,
+                                payrollRun.CREATOR_ID,
+                                payrollRun.CREATED_DATE,
+                                payrollRun.MODIFIER_ID,
+                                payrollRun.MODIFIED_DATE,
+                                payrollRun.REALM_ID,
+                                payrollRun.PAYCHECK_DATE,
+                                payrollRun.PAYROLL_NET_AMOUNT,
+                                payrollRun.PAYROLL_RUN_DATE,
+                                payrollRun.SOURCE_PAY_RUN_ID,
+                                payrollRun.STATUS_EFFECTIVE_DATE,
+                                payrollRun.PAYROLL_RUN_STATUS,
+                                payrollRun.PAYCHECK_SETTLEMENT_DATE,
+                                payrollRun.PAYROLL_RUN_TYPE,
+                                payrollRun.WIRE_EXPECTED_DATE,
+                                payrollRun.COLLECTION_STAGE_FK,
+                                payrollRun.COMPANY_FK
+                             having
+                              SUM (  ft.financial_transaction_amount
+                                     * DECODE (pr.credit_debit_ind,
+                                              'C', DECODE (la.balance_calculation_rule,'CreditAddsToBalance', 1,-1),
+                                              'D', DECODE (la.balance_calculation_rule,'DebitAddsToBalance', 1,-1)
+                                   )) > 0
+        ]]>
+    </sql-query>
+    
+    <sql-query name="getLedgerAccountBalanceByTemplate">
+        <return-scalar column="law_id" type="java.lang.String"/>
+        <return-scalar column="amount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="quarterYear" type="int"/>
+        <return-scalar column="quarter" type="int"/>
+        <![CDATA[
+         select
+            law.LAW_ID,
+            SUM (
+               financial_transaction_amount
+               * DECODE (
+                    credit_debit_ind,
+                    'C', DECODE (balance_calculation_rule,
+                                 'CreditAddsToBalance', 1,
+                                 -1),
+                    'D', DECODE (balance_calculation_rule,
+                                 'DebitAddsToBalance', 1,
+                                 -1)))
+               amount,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY'))
+               quarteryear,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+               quarter
+       FROM PSP_FINANCIAL_TRANSACTION ft
+            JOIN psp_financial_trans_state fts
+               ON fts.financial_transaction_fk = ft.financial_transaction_seq
+                  AND fts.TRANSACTION_STATE_EFF_DATE >=
+                         TRUNC (ft.CREATED_DATE) - 2
+                  AND TRUNC (fts.TRANSACTION_STATE_EFF_DATE) >=
+                         TRUNC (ft.CREATED_DATE) - 2
+                  AND fts.company_fk = :company_fk
+            JOIN PSP_POSTING_RULE pr
+               ON pr.transaction_state_fk = fts.transaction_state_fk
+                  AND pr.transaction_type_fk = ft.transaction_type_fk
+            JOIN psp_ledger_account la
+               ON la.ledger_account_cd = pr.ledger_account_fk
+            JOIN PSP_LAW law
+               ON law.law_id = ft.law_fk
+            LEFT JOIN PSP_MONEY_MOVEMENT_TRANSACTION mmt
+               ON mmt.money_movement_transaction_seq =
+                     ft.money_movement_transaction_fk
+               AND mmt.company_fk = :company_fk
+            LEFT JOIN psp_payroll_run payroll
+               ON payroll.payroll_run_seq = ft.payroll_run_fk
+      WHERE pr.LEDGER_ACCOUNT_FK = :ledger_account_fk
+      and ft.company_fk = :company_fk
+      and law.payment_template_fk = :payment_template_fk
+              GROUP BY
+            law.law_id,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY')),
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+                      having SUM (
+               financial_transaction_amount
+               * DECODE (
+                    credit_debit_ind,
+                    'C', DECODE (balance_calculation_rule,
+                                 'CreditAddsToBalance', 1,
+                                 -1),
+                    'D', DECODE (balance_calculation_rule,
+                                 'DebitAddsToBalance', 1,
+                                 -1))) <> 0
+
+        ]]>
+    </sql-query>
+
+    <sql-query name="getLedgerAccountBalanceByTemplate_postgres">
+        <return-scalar column="law_id" type="java.lang.String"/>
+        <return-scalar column="amount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="quarterYear" type="int"/>
+        <return-scalar column="quarter" type="int"/>
+        <![CDATA[
+         select
+            law.LAW_ID,
+            SUM (
+               financial_transaction_amount
+               * (CASE credit_debit_ind
+                    WHEN 'C' THEN (CASE balance_calculation_rule
+                                 WHEN 'CreditAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    WHEN 'D' THEN (CASE balance_calculation_rule
+                                 WHEN 'DebitAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    END))       amount,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY'))
+               quarteryear,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+               quarter
+       FROM PSP_FINANCIAL_TRANSACTION ft
+            JOIN psp_financial_trans_state fts
+               ON fts.financial_transaction_fk = ft.financial_transaction_seq
+                  AND fts.TRANSACTION_STATE_EFF_DATE >=
+                         DATE_TRUNC ('day',ft.CREATED_DATE) - interval '2' day
+                  AND DATE_TRUNC ('day',fts.TRANSACTION_STATE_EFF_DATE) >=
+                         DATE_TRUNC ('day',ft.CREATED_DATE) - interval '2' day
+                  AND fts.company_fk = :company_fk
+            JOIN PSP_POSTING_RULE pr
+               ON pr.transaction_state_fk = fts.transaction_state_fk
+                  AND pr.transaction_type_fk = ft.transaction_type_fk
+            JOIN psp_ledger_account la
+               ON la.ledger_account_cd = pr.ledger_account_fk
+            JOIN PSP_LAW law
+               ON law.law_id = ft.law_fk
+            LEFT JOIN PSP_MONEY_MOVEMENT_TRANSACTION mmt
+               ON mmt.money_movement_transaction_seq =
+                     ft.money_movement_transaction_fk
+               AND mmt.company_fk = :company_fk
+            LEFT JOIN psp_payroll_run payroll
+               ON payroll.payroll_run_seq = ft.payroll_run_fk
+      WHERE pr.LEDGER_ACCOUNT_FK = :ledger_account_fk
+      and ft.company_fk = :company_fk
+      and law.payment_template_fk = :payment_template_fk
+              GROUP BY
+            law.law_id,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY')),
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+                      having SUM (
+               financial_transaction_amount
+               * (CASE credit_debit_ind
+                    WHEN 'C' THEN (CASE balance_calculation_rule
+                                 WHEN 'CreditAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    WHEN 'D' THEN (CASE balance_calculation_rule
+                                 WHEN 'DebitAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    END))              <> 0
+
+        ]]>
+    </sql-query>
+
+    <!-- Same as above but no template specified -->
+    <sql-query name="getLedgerAccountBalanceForAllTemplates">
+        <return-scalar column="law_id" type="java.lang.String"/>
+        <return-scalar column="amount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="quarterYear" type="int"/>
+        <return-scalar column="quarter" type="int"/>
+        <![CDATA[
+         select
+            law.LAW_ID,
+            SUM (
+               financial_transaction_amount
+               * DECODE (
+                    credit_debit_ind,
+                    'C', DECODE (balance_calculation_rule,
+                                 'CreditAddsToBalance', 1,
+                                 -1),
+                    'D', DECODE (balance_calculation_rule,
+                                 'DebitAddsToBalance', 1,
+                                 -1)))
+               amount,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY'))
+               quarteryear,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+               quarter
+       FROM PSP_FINANCIAL_TRANSACTION ft
+            JOIN psp_financial_trans_state fts
+               ON fts.financial_transaction_fk = ft.financial_transaction_seq
+                  AND fts.TRANSACTION_STATE_EFF_DATE >=
+                         TRUNC (ft.CREATED_DATE) - 2
+                  AND TRUNC (fts.TRANSACTION_STATE_EFF_DATE) >=
+                         TRUNC (ft.CREATED_DATE) - 2
+                  AND fts.company_fk = :company_fk
+            JOIN PSP_POSTING_RULE pr
+               ON pr.transaction_state_fk = fts.transaction_state_fk
+                  AND pr.transaction_type_fk = ft.transaction_type_fk
+            JOIN psp_ledger_account la
+               ON la.ledger_account_cd = pr.ledger_account_fk
+            JOIN PSP_LAW law
+               ON law.law_id = ft.law_fk
+            LEFT JOIN PSP_MONEY_MOVEMENT_TRANSACTION mmt
+               ON mmt.money_movement_transaction_seq =
+                     ft.money_movement_transaction_fk
+               AND mmt.company_fk = :company_fk
+            LEFT JOIN psp_payroll_run payroll
+               ON payroll.payroll_run_seq = ft.payroll_run_fk
+      WHERE pr.LEDGER_ACCOUNT_FK = :ledger_account_fk
+      and ft.company_fk = :company_fk
+              GROUP BY
+            law.law_id,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY')),
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+                      having SUM (
+               financial_transaction_amount
+               * DECODE (
+                    credit_debit_ind,
+                    'C', DECODE (balance_calculation_rule,
+                                 'CreditAddsToBalance', 1,
+                                 -1),
+                    'D', DECODE (balance_calculation_rule,
+                                 'DebitAddsToBalance', 1,
+                                 -1))) <> 0
+
+        ]]>
+    </sql-query>
+
+    <sql-query name="getLedgerAccountBalanceForAllTemplates_postgres">
+        <return-scalar column="law_id" type="java.lang.String"/>
+        <return-scalar column="amount" type="com.intuit.sbd.payroll.psp.hibernate.SpcfMoneyUserType"/>
+        <return-scalar column="quarterYear" type="int"/>
+        <return-scalar column="quarter" type="int"/>
+        <![CDATA[
+         select
+            law.LAW_ID,
+            SUM (
+               financial_transaction_amount
+               * (CASE credit_debit_ind
+                    WHEN 'C' THEN (CASE balance_calculation_rule
+                                 WHEN 'CreditAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    WHEN 'D' THEN (CASE balance_calculation_rule
+                                 WHEN 'DebitAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    END))       amount,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY'))
+               quarteryear,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+               quarter
+       FROM PSP_FINANCIAL_TRANSACTION ft
+            JOIN psp_financial_trans_state fts
+               ON fts.financial_transaction_fk = ft.financial_transaction_seq
+                  AND fts.TRANSACTION_STATE_EFF_DATE >=
+                         DATE_TRUNC ('day',ft.CREATED_DATE) - interval '2' day
+                  AND DATE_TRUNC ('day',fts.TRANSACTION_STATE_EFF_DATE) >=
+                         DATE_TRUNC ('day',ft.CREATED_DATE) - interval '2' day
+                  AND fts.company_fk = :company_fk
+            JOIN PSP_POSTING_RULE pr
+               ON pr.transaction_state_fk = fts.transaction_state_fk
+                  AND pr.transaction_type_fk = ft.transaction_type_fk
+            JOIN psp_ledger_account la
+               ON la.ledger_account_cd = pr.ledger_account_fk
+            JOIN PSP_LAW law
+               ON law.law_id = ft.law_fk
+            LEFT JOIN PSP_MONEY_MOVEMENT_TRANSACTION mmt
+               ON mmt.money_movement_transaction_seq =
+                     ft.money_movement_transaction_fk
+               AND mmt.company_fk = :company_fk
+            LEFT JOIN psp_payroll_run payroll
+               ON payroll.payroll_run_seq = ft.payroll_run_fk
+      WHERE pr.LEDGER_ACCOUNT_FK = :ledger_account_fk
+      and ft.company_fk = :company_fk
+              GROUP BY
+            law.law_id,
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'YYYY'),
+                      TO_CHAR (mmt.payment_period_end, 'YYYY')),
+            COALESCE (TO_CHAR (payroll.paycheck_date, 'Q'),
+                      TO_CHAR (mmt.payment_period_end, 'Q'))
+                      having SUM (
+               financial_transaction_amount
+               * (CASE credit_debit_ind
+                    WHEN 'C' THEN (CASE balance_calculation_rule
+                                 WHEN 'CreditAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    WHEN 'D' THEN (CASE balance_calculation_rule
+                                 WHEN 'DebitAddsToBalance' THEN 1
+                                 ELSE -1 END)
+                    END))              <> 0
+
+        ]]>
+    </sql-query>
+
+</hibernate-mapping>
+

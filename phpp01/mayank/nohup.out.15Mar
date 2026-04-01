@@ -1,0 +1,197 @@
+
+SQL*Plus: Release 12.1.0.2.0 Production on Sun Mar 12 22:35:09 2023
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+SQL> Connected.
+SQL> SQL> SQL> 22:35:09 SQL> 22:35:09 SQL> 22:35:09 SQL> 
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+PSPUWP01
+ip-172-19-1-245
+
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+22:35:09 SQL> 22:35:09 SQL> 22:35:09 SQL> set echo on timing on feedback on
+22:35:09 SQL> spool create_indexes_CHG2103248_13Mar
+22:35:09 SQL> --  disable online index rebuild cleanup job
+22:35:09 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+TRUE  SCHEDULED
+13-MAR-23 02.00.41.774381 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.10
+22:35:09 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.disable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.03
+22:35:09 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+FALSE DISABLED
+13-MAR-23 02.00.41.774381 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+22:35:09 SQL> 
+22:35:09 SQL> CREATE INDEX PSPADM.PSP_PSTUB_EMPLOYEE_INFO_FK3 ON PSPADM.PSP_PSTUB_EMPLOYEE_INFO (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:06:16.61
+22:41:26 SQL> alter index PSPADM.PSP_PSTUB_EMPLOYEE_INFO_FK3 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.02
+22:41:26 SQL> 
+22:41:26 SQL> CREATE INDEX PSPADM.PSP_PSTUB_PAID_TIMEOFF_ITE_FK2 ON PSPADM.PSP_PSTUB_PAID_TIMEOFF_ITEM (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:10:17.51
+22:51:43 SQL> alter index PSPADM.PSP_PSTUB_PAID_TIMEOFF_ITE_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+22:51:43 SQL> 
+22:51:43 SQL> CREATE INDEX PSPADM.PSP_PSTUB_DDITEM_FK2 ON PSPADM.PSP_PSTUB_DDITEM (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:04:50.89
+22:56:34 SQL> alter index PSPADM.PSP_PSTUB_DDITEM_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.00
+22:56:34 SQL> 
+22:56:34 SQL> CREATE INDEX PSPADM.PSP_PSTUB_MSG_FK2 ON PSPADM.PSP_PSTUB_MSG (COMPANY_FK, REALM_ID) online parallel 8;
+
+Index created.
+
+Elapsed: 00:04:46.52
+23:01:21 SQL> alter index PSPADM.PSP_PSTUB_MSG_FK2 noparallel;
+
+Index altered.
+
+Elapsed: 00:00:00.01
+23:01:21 SQL> 
+23:01:21 SQL> select degree from dba_indexes where index_name=upper('PSP_PSTUB_PAID_TIMEOFF_ITE_FK2');
+
+DEGREE
+----------------------------------------
+1
+
+1 row selected.
+
+Elapsed: 00:00:00.03
+23:01:21 SQL> select degree from dba_indexes where index_name=upper('PSP_PSTUB_DDITEM_FK2');
+
+DEGREE
+----------------------------------------
+1
+
+1 row selected.
+
+Elapsed: 00:00:00.03
+23:01:21 SQL> select degree from dba_indexes where index_name=upper('PSP_PSTUB_MSG_FK2');
+
+DEGREE
+----------------------------------------
+1
+
+1 row selected.
+
+Elapsed: 00:00:00.04
+23:01:21 SQL> select degree from dba_indexes where index_name=upper('PSP_PSTUB_EMPLOYEE_INFO_FK3');
+
+DEGREE
+----------------------------------------
+1
+
+1 row selected.
+
+Elapsed: 00:00:00.03
+23:01:21 SQL> 
+23:01:21 SQL> --  enable online index rebuild cleanup job
+23:01:21 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+FALSE DISABLED
+13-MAR-23 02.00.41.774381 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:01:21 SQL> exec rdsadmin.rdsadmin_dbms_scheduler.enable('SYS.CLEANUP_ONLINE_IND_BUILD');
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+23:01:21 SQL> select owner, job_name, enabled, state, next_run_date from DBA_SCHEDULER_JOBS where job_name ='CLEANUP_ONLINE_IND_BUILD';
+
+OWNER
+--------------------------------------------------------------------------------
+JOB_NAME
+--------------------------------------------------------------------------------
+ENABL STATE
+----- ---------------
+NEXT_RUN_DATE
+---------------------------------------------------------------------------
+SYS
+CLEANUP_ONLINE_IND_BUILD
+TRUE  SCHEDULED
+13-MAR-23 03.00.41.333989 AM -04:00
+
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+23:01:21 SQL> 
+23:01:21 SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+./tmp_gen_awr.sh: line 1: unexpected EOF while looking for matching `"'
+./tmp_gen_awr.sh: line 25: syntax error: unexpected end of file
+./tmp_gen_awr.sh: line 1: unexpected EOF while looking for matching `"'
+./tmp_gen_awr.sh: line 25: syntax error: unexpected end of file

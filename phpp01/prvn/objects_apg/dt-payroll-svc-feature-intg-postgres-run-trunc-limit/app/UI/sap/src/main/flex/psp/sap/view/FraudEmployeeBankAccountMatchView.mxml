@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns="*"
+         xmlns:pspui="psp.sap.view.*"
+         width="100%" height="100%"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete()">
+
+
+    <mx:Script>
+		<![CDATA[
+			import mx.controls.Text;
+		import psp.sap.model.EmployeeBankAccountFraud;
+		import mx.collections.ArrayCollection;
+		import psp.sap.model.EmployeeInfo;
+        import psp.sap.viewmodel.FraudEmployeeBankAccountMatchViewModel;
+
+        private var mViewModel:FraudEmployeeBankAccountMatchViewModel;
+        private var mTempViewModel:FraudEmployeeBankAccountMatchViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():FraudEmployeeBankAccountMatchViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:FraudEmployeeBankAccountMatchViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        
+        public function employeeList(item:Object,column:DataGridColumn):String {
+        	var fraudEmployees:String;
+			for each (var employeeNames:EmployeeInfo in (item as EmployeeBankAccountFraud).employeeInfo){
+				if (fraudEmployees == null) 
+					fraudEmployees = employeeNames.socialSecurityNumber + " - " + employeeNames.fullNameForward;
+				else
+					fraudEmployees += '\n' + employeeNames.socialSecurityNumber + " - " + employeeNames.fullNameForward;	
+			}
+			return fraudEmployees;
+        } 
+		]]>
+	</mx:Script>
+	
+    <mx:VBox width="100%" height="100%">
+        <mx:VBox width="100%" paddingLeft="5" height="50%" paddingBottom="5"
+        		 visible="{viewModel.employeeFraudBankAccounts != null ? viewModel.employeeFraudBankAccounts.length > 0 : false}"
+				 includeInLayout="{viewModel.employeeFraudBankAccounts != null ? viewModel.employeeFraudBankAccounts.length > 0 : false}">
+            <mx:Spacer height="5"/>
+            <controls:SAPDataGrid id="employeeMatchingBankAccounts"
+                                  variableRowHeight="true"
+                                  selectable="false"
+                                  width="100%"
+                                  draggableColumns="false"
+                                  dataProvider="{viewModel.employeeFraudBankAccounts}"
+                                  tabEnabled="false"                                  
+                                  rowCount="{UIUtils.getRowCountFor(viewModel.employeeFraudBankAccounts)+1}"	
+                                  backgroundColor="#ffffff">
+                <controls:columns>
+                    <mx:DataGridColumn
+                            headerText="Bank Name"
+                            minWidth="200"
+                            textAlign="left"
+                            headerStyleName="directDepositHeader"
+                            dataField="bankName"/>
+                    <mx:DataGridColumn
+                            headerText="Bank Account"
+                            minWidth="200"
+                            textAlign="right"
+                            headerStyleName="directDepositHeader"
+                            dataField="bankAccountNumber"/>
+                    <mx:DataGridColumn itemRenderer="mx.controls.Text"
+                            headerText="Employees With Matching Accounts"
+                            minWidth="400"
+                            textAlign="left"
+                            headerStyleName="directDepositHeader"
+                            labelFunction="employeeList"
+                            dataField="employeeInfo"/>
+                </controls:columns>
+            </controls:SAPDataGrid>
+        </mx:VBox>
+        	<mx:VBox
+				id="noSuspectPaychecks"
+				height="100%"
+				width="100%"
+				visible="{viewModel.employeeFraudBankAccounts == null || viewModel.employeeFraudBankAccounts.length == 0}"
+				includeInLayout="{viewModel.employeeFraudBankAccounts == null || viewModel.employeeFraudBankAccounts.length == 0}">
+				<mx:Label text="There are no paychecks with matching bank accounts for different employees in this payroll" fontWeight="bold"/>
+			</mx:VBox>
+    </mx:VBox>
+</mx:VBox>

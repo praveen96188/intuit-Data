@@ -1,0 +1,997 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 	xmlns="*"
+               xmlns:mx="http://www.adobe.com/2006/mxml"
+               xmlns:pspui="psp.sap.view.*"
+               xmlns:controls="psp.sap.view.controls.*"
+               xmlns:flexlib="flexlib.controls.*"
+               backgroundColor="white"
+               width="100%"
+               styleName="standardTabContainer"
+               show="onShow(event)"
+               hide="removeEventListeners()"
+               verticalScrollPolicy="off"
+               horizontalScrollPolicy="auto"
+               creationComplete="onCreationComplete()">
+
+    <mx:Script>
+		<![CDATA[
+			import psp.sap.view.controls.ProgressDisplayManager;
+			import mx.automation.AutomationManager;
+			import psp.sap.viewmodel.BankReturnsSearchAllReturnsViewModel;
+            import mx.controls.DataGrid;
+            import mx.collections.Sort;
+            import mx.collections.SortField;
+            import mx.controls.DateField;
+            import mx.events.CloseEvent;
+            import mx.controls.SWFLoader;
+            import mx.controls.Image;
+            import psp.sap.application.enums.BankReturnsSearchTypeEnum;
+            import psp.sap.viewmodel.BankReturnsSearchBaseViewModel;
+            import psp.sap.model.BankReturn;
+            import mx.printing.FlexPrintJob;
+            import mx.events.ValidationResultEvent;
+            import psp.sap.application.SAP;
+            import psp.sap.viewmodel.BankReturnsSearchViewModel;
+            import mx.states.SetStyle;
+            import mx.controls.Alert;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import psp.app.util.CommonUtil;
+
+            import mx.events.DataGridEvent;
+            import mx.events.ListEvent;
+
+            private var mViewModel:BankReturnsSearchViewModel = new BankReturnsSearchViewModel();
+
+            private var mCreationComplete:Boolean = false;
+            private var mTempViewModel:BankReturnsSearchViewModel;
+
+            private function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+            }
+
+            [Bindable]
+            public function get viewModel():BankReturnsSearchViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:BankReturnsSearchViewModel):void {
+                if (!mCreationComplete) {
+                    mTempViewModel = value;
+                    return;
+                }
+
+                if (mViewModel != null) {
+                    mViewModel.allReturnsViewModel.einValidator.listener = null;
+                    mViewModel.allReturnsViewModel.startDateValidator.listener = null;
+                    mViewModel.allReturnsViewModel.endDateValidator.listener = null;
+                    mViewModel.allReturnsViewModel.achReturnValidator.listener = null;
+
+                    mViewModel.financialResolutionsViewModel.einValidator.listener = null;
+                    mViewModel.financialResolutionsViewModel.startDateValidator.listener = null;
+                    mViewModel.financialResolutionsViewModel.endDateValidator.listener = null;
+                    mViewModel.financialResolutionsViewModel.achReturnValidator.listener = null;
+
+                    mViewModel.riskAssessmentViewModel.einValidator.listener = null;
+                    mViewModel.riskAssessmentViewModel.startDateValidator.listener = null;
+                    mViewModel.riskAssessmentViewModel.endDateValidator.listener = null;
+                    mViewModel.riskAssessmentViewModel.achReturnValidator.listener = null;
+
+                    mViewModel.riskCollectionsViewModel.einValidator.listener = null;
+                    mViewModel.riskCollectionsViewModel.startDateValidator.listener = null;
+                    mViewModel.riskCollectionsViewModel.endDateValidator.listener = null;
+                    mViewModel.riskCollectionsViewModel.achReturnValidator.listener = null;
+                }
+
+                mViewModel = value;
+
+                if (mViewModel != null) {
+                    mViewModel.allReturnsViewModel.einValidator.listener = einInput;
+                    mViewModel.allReturnsViewModel.startDateValidator.listener = startDateInput;
+                    mViewModel.allReturnsViewModel.endDateValidator.listener = endDateInput;
+                    mViewModel.allReturnsViewModel.achReturnValidator.listener = achReturnInput;
+
+                    mViewModel.financialResolutionsViewModel.einValidator.listener = FinancialResolutions_einInput;
+                    mViewModel.financialResolutionsViewModel.startDateValidator.listener = FinancialResolutions_startDateInput;
+                    mViewModel.financialResolutionsViewModel.endDateValidator.listener = FinancialResolutions_endDateInput;
+                    mViewModel.financialResolutionsViewModel.achReturnValidator.listener = FinancialResolutions_achReturnInput;
+
+                    mViewModel.riskAssessmentViewModel.einValidator.listener = RiskAssessment_einInput;
+                    mViewModel.riskAssessmentViewModel.startDateValidator.listener = RiskAssessment_startDateInput;
+                    mViewModel.riskAssessmentViewModel.endDateValidator.listener = RiskAssessment_endDateInput;
+                    mViewModel.riskAssessmentViewModel.achReturnValidator.listener = RiskAssessment_achReturnInput;
+
+                    mViewModel.riskCollectionsViewModel.einValidator.listener = RiskCollections_einInput;
+                    mViewModel.riskCollectionsViewModel.startDateValidator.listener = RiskCollections_startDateInput;
+                    mViewModel.riskCollectionsViewModel.endDateValidator.listener = RiskCollections_endDateInput;
+                    mViewModel.riskCollectionsViewModel.achReturnValidator.listener = RiskCollections_achReturnInput;
+                }
+            }
+
+            public function onShow(e:Event):void {
+                try {
+                    einInput.setFocus();
+                    focusManager.showFocus();
+                } catch (e:Error){
+                    // ignore
+                }
+                addEventListeners();
+
+                    //@TODO: Fix this!!
+                searchTabBar.selectedIndex = 0;
+            }
+
+            public function addEventListeners():void {
+                if(viewModel != null){
+                    //@TODO: hookup
+                    viewModel.allReturnsViewModel.addEventListener(ValidationResultEvent.INVALID, onInvalidValidation, false, 0, true);
+                    viewModel.allReturnsViewModel.addEventListener(ValidationResultEvent.VALID, onInvalidValidation, false, 0, true);
+
+                    viewModel.financialResolutionsViewModel.addEventListener(ValidationResultEvent.INVALID, onInvalidValidation, false, 0, true);
+                    viewModel.financialResolutionsViewModel.addEventListener(ValidationResultEvent.VALID, onInvalidValidation, false, 0, true);
+
+                    viewModel.riskAssessmentViewModel.addEventListener(ValidationResultEvent.INVALID, onInvalidValidation, false, 0, true);
+                    viewModel.riskAssessmentViewModel.addEventListener(ValidationResultEvent.VALID, onInvalidValidation, false, 0, true);
+
+                    viewModel.riskCollectionsViewModel.addEventListener(ValidationResultEvent.INVALID, onInvalidValidation, false, 0, true);
+                    viewModel.riskCollectionsViewModel.addEventListener(ValidationResultEvent.VALID, onInvalidValidation, false, 0, true);
+                }
+            }
+
+            public function removeEventListeners():void {
+                if(viewModel != null){
+                    //@TODO: hookup
+                    viewModel.allReturnsViewModel.removeEventListener(ValidationResultEvent.INVALID, onInvalidValidation);
+                    viewModel.allReturnsViewModel.removeEventListener(ValidationResultEvent.VALID, onInvalidValidation);
+
+                    viewModel.financialResolutionsViewModel.removeEventListener(ValidationResultEvent.INVALID, onInvalidValidation);
+                    viewModel.financialResolutionsViewModel.removeEventListener(ValidationResultEvent.VALID, onInvalidValidation);
+
+                    viewModel.riskAssessmentViewModel.removeEventListener(ValidationResultEvent.INVALID, onInvalidValidation);
+                    viewModel.riskAssessmentViewModel.removeEventListener(ValidationResultEvent.VALID, onInvalidValidation);
+
+                    viewModel.riskCollectionsViewModel.removeEventListener(ValidationResultEvent.INVALID, onInvalidValidation);
+                    viewModel.riskCollectionsViewModel.removeEventListener(ValidationResultEvent.VALID, onInvalidValidation);
+                }
+            }
+	
+            private function getStartDateField():DateField {
+                switch(viewModel.selectedSearchType) {
+                    case BankReturnsSearchTypeEnum.ALL_RETURNS:
+                        return startDateInput;
+                    case BankReturnsSearchTypeEnum.FINANCIAL_RESOLUTIONS:
+                        return FinancialResolutions_startDateInput;
+                    case BankReturnsSearchTypeEnum.RISK_COLLECTIONS:
+                        return RiskCollections_startDateInput;
+                    case BankReturnsSearchTypeEnum.RISK_ASSESSMENT:
+                        return RiskAssessment_startDateInput;
+                    default:
+                        return null;
+                }
+            }
+
+            private function getEndDateField():DateField {
+                switch(viewModel.selectedSearchType) {
+                    case BankReturnsSearchTypeEnum.ALL_RETURNS:
+                        return endDateInput;
+                    case BankReturnsSearchTypeEnum.FINANCIAL_RESOLUTIONS:
+                        return FinancialResolutions_endDateInput;
+                    case BankReturnsSearchTypeEnum.RISK_COLLECTIONS:
+                        return RiskCollections_endDateInput;
+                    case BankReturnsSearchTypeEnum.RISK_ASSESSMENT:
+                        return RiskAssessment_endDateInput;
+                    default:
+                        return null;
+                }
+            }
+
+            public function onInvalidValidation(e:ValidationResultEvent):void {
+                if (e.type == ValidationResultEvent.INVALID) {
+                    getStartDateField().validationResultHandler(e);
+                    getEndDateField().validationResultHandler(e);
+                }
+                else {
+                    getStartDateField().validationResultHandler(viewModel.selectedSearchViewModel.startDateValidator.validate(null, false));
+                    getEndDateField().validationResultHandler(viewModel.selectedSearchViewModel.endDateValidator.validate(null, false));
+                }
+            }
+
+            public function pageDataGridLoadDataFunction():void {
+                viewModel.selectedSearchViewModel.searchBankReturnsWithSameCritera();
+            }
+
+            public function goToPayrollTransactions(event:ActionLinkEvent):void
+            {
+                var link:ActionLink = event.currentTarget as ActionLink;
+                viewModel.goToPayrollTransactions( 	link.data.companySourceSystemCd,
+                        link.data.companyId,
+                        link.data.sourcePayRunId);
+            }
+
+            public function goToBankReturnsUpdate(event:ActionLinkEvent):void
+            {
+                var link:ActionLink = event.currentTarget as ActionLink;
+                viewModel.goToBankReturnsUpdate(link.data as BankReturn);
+            }
+
+            public function goToCompanyPayrolls(event:ActionLinkEvent):void
+            {
+                var link:ActionLink = event.currentTarget as ActionLink;
+                viewModel.goToCompanyPayrolls( 	link.data.companySourceSystemCd,
+                        link.data.companyId);
+            }
+
+            public function findBankReturns():void {
+                viewModel.findBankReturns();
+            }
+
+
+            public function determineScale(value:Image, pageWidth:Number, pageHeight:Number):Number {
+                var tempImage:Image = value;
+                var totalScale:Number = 1.0;
+                var tempMeasuredWidth:Number = tempImage.source.width;
+
+                while(tempMeasuredWidth > pageWidth)
+                {
+                    totalScale-= 0.01;
+                    tempImage.scaleX = totalScale;
+                    tempMeasuredWidth = tempImage.source.width * totalScale;
+                }
+
+                return totalScale;
+
+            }
+
+            private function printResultsConfirmation(event:Event):void
+            {
+                var estimateTime:Number = viewModel.selectedSearchViewModel.searchResults.totalRecords/100;
+                if(estimateTime > 1) {
+                    var seconds:Number = Math.round((estimateTime - Math.floor(estimateTime))*60);
+                    var msgString:String = "Are you sure you want to print this return set? \n";
+                    msgString += "Estimated Time to print: " + Math.floor(estimateTime) + " min " + seconds + " sec";
+
+                    Alert.show(	msgString,
+                            "Print Confirmation",
+                            Alert.OK | Alert.CANCEL,
+                            this,
+                            printResultsVerifyHandler,
+                            null,
+                            Alert.OK);
+                }
+                else {
+                    printResults();
+                }
+            }
+
+            public function printResultsVerifyHandler(evt_obj:CloseEvent):void {
+                if(evt_obj.detail == Alert.OK)
+                {
+                    printResults();
+                }
+            }
+
+            public function printResults(isForExport:Boolean = false):void {
+                var reportType:String = viewModel.selectedSearchViewModel.getReportTypeCode();
+
+                var callString:String = "?report=bankreturnsreport&" +
+                                        "&fein=" + blankIfNull(viewModel.selectedSearchViewModel.ein) +
+                                        "&from=" + blankIfNull(viewModel.selectedSearchViewModel.startDate) +
+                                        "&to=" + blankIfNull(viewModel.selectedSearchViewModel.endDate) +
+                                        "&achAmount=" + blankIfNull(viewModel.selectedSearchViewModel.achReturn) +
+                                        "&token=" + blankIfNull(SAP.instance.session.user.authorizationToken) +
+                                        "&reportType=" + blankIfNull(reportType) +
+                                        "&export=" + isForExport;
+
+                if(viewModel.selectedSearchType == BankReturnsSearchTypeEnum.ALL_RETURNS)
+                {
+                    viewModel.allReturnsViewModel.setupAllReturnSearch();
+                    callString+= "&showOpen=" + blankIfNull(viewModel.allReturnsViewModel.showOpenReturns) +
+                                 "&showResolved=" + blankIfNull(viewModel.allReturnsViewModel.showResolvedReturns) +
+                                 "&transactionType=" + blankIfNull(viewModel.allReturnsViewModel.transactionType) +
+                                 "&transactionCategory=" + blankIfNull(viewModel.allReturnsViewModel.transactionCategory) +
+                                 "&exclude5DayFunding=" + blankIfNull(viewModel.allReturnsViewModel.exclude5DayFunding) +
+                                 "&excludeCode=" + blankIfNull(viewModel.allReturnsViewModel.excludeCReturnCodes ? "R" : "");
+                }
+
+                if(CommonUtil.isDTApp()) {
+                    CommonUtil.showPrintWindow(callString, "Print");
+                } else {
+                    ExternalInterface.call("showPrintWindow", callString);
+                }
+            }
+
+            public function blankIfNull(c:*):* {
+                return (c == null) ? "" : c;
+            }
+
+
+            public function determineExpectedResolutionColor(value:Date):uint {
+                value.setHours(0, 0, 0, 0);
+                if(value < SAP.instance.PSPDate) {
+                    return UIUtils.COLOR_RED;
+                } else {
+                    return UIUtils.COLOR_BLACK;
+                }
+            }
+            
+            
+            public function exportResults():void {
+            	printResults(true);
+            }
+            
+		]]>
+	</mx:Script>
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+    <mx:DateFormatter id="expectedResolutionDateFormatter" formatString="{SAP.instance.configuration.dateFormatShort}"/>
+    <mx:CurrencyFormatter id="currencyFormatter" precision="2"
+                          currencySymbol="$" decimalSeparatorFrom="."
+                          decimalSeparatorTo="." useNegativeSign="true"
+                          useThousandsSeparator="true" alignSymbol="left"/>
+
+    <mx:Resize id="myEffect"/>
+
+  
+        <pspui:SaveStatusMessage id="saveMessage" paddingTop="10"/>
+
+        <mx:VBox height="100%" width="100%" verticalGap="0">
+            <mx:VBox verticalGap="0" width="100%">
+                <mx:HBox width="100%" horizontalAlign="left">
+                    <mx:TabBar id="searchTabBar" dataProvider="{BankReturnsSearchViewModel.SEARCH_TYPES}" tabWidth="175" width="80%"/>
+                	
+                </mx:HBox>
+                <mx:VBox styleName="ddDarkGrayMiniBoxStyle" width="100%" resizeEffect="{myEffect}" maxWidth="900" >
+                    <!-- All Returns Box -->
+                    <mx:VBox styleName="ddGrayMiniBoxNoBorder" width="100%" visible="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.ALL_RETURNS}" includeInLayout="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.ALL_RETURNS}" >
+                        <mx:HBox styleName="padderBox">
+                            <!-- EIN and ACH Return -->
+                            <mx:VBox width="260" verticalGap="1">
+
+                                <mx:FormItem label="EIN or CID" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="96">
+                                    <mx:TextInput id="einInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="96"/>
+                                    <mx:Label width="100%" textAlign="center" text="(5 characters minimum)"/>
+                                </mx:HBox>
+                                <mx:FormItem label="ACH $ Return" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="96">
+                                    <mx:TextInput id="achReturnInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+                            <!-- Returns Date -->
+                            <mx:VBox width="270" verticalGap="1">
+                                <mx:FormItem label="Returns Start Date" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="startDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="2"/>
+                                </mx:FormItem>
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="130"/>
+                                    <mx:Label width="100%" textAlign="center" text=" "/>
+                                </mx:HBox>
+                                <mx:FormItem label="Returns End Date" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="endDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="3"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+
+                            <!-- Exclude column -->
+                            <mx:VBox verticalGap="0.5">
+                                <mx:Label fontWeight="bold" text="Exclude:"/>
+                                <mx:CheckBox id="excludeCReturnCodes" label="C return Codes" fontWeight="bold"/>
+                                <mx:CheckBox id="exclude5DayFunding" label="5 Day Funding" fontWeight="bold"/>
+                            </mx:VBox>
+
+                            <!-- Search button -->
+                            <mx:VBox verticalGap="0.5">
+                            </mx:VBox>
+
+                        </mx:HBox>
+                        <!-- Show only horizontal row -->
+                        <mx:HBox styleName="padderBox" width="100%">
+                            <mx:HBox width="540">
+                                <mx:Label fontWeight="bold" textAlign="right" text="Show Only:" width="102"/>
+                                <mx:ComboBox id="showOnlyCombo1" change="viewModel.allReturnsViewModel.searchFilter1 = ComboBox(event.target).selectedItem as String" width="150"/>
+                                <mx:ComboBox id="showOnlyCombo2" change="viewModel.allReturnsViewModel.searchFilter2 = ComboBox(event.target).selectedItem as String" width="150"/>
+                            </mx:HBox>
+                            <mx:HBox horizontalAlign="left">
+                                <mx:Button
+                                        id="searchButton"
+                                        label="Find Bank Returns"
+                                        enabled="{viewModel.selectedSearchViewModel.canSearch}"
+                                        click="findBankReturns()"
+                                        tabIndex="6"/>
+                            </mx:HBox>
+                            <mx:HBox width="10"/>
+                        </mx:HBox>
+                    </mx:VBox>
+
+
+
+                    <mx:VBox styleName="ddGrayMiniBoxNoBorder" width="100%" visible="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.FINANCIAL_RESOLUTIONS}" includeInLayout="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.FINANCIAL_RESOLUTIONS}" >
+                        <mx:HBox styleName="padderBox">
+                            <!-- EIN and ACH Return -->
+                            <mx:VBox width="260" verticalGap="1">
+
+                                <mx:FormItem label="EIN or CID" labelStyleName="boldText" defaultButton="{FinancialResolutions_searchButton}" labelWidth="96">
+                                    <mx:TextInput id="FinancialResolutions_einInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="96"/>
+                                    <mx:Label width="100%" textAlign="center" text="(5 characters minimum)"/>
+                                </mx:HBox>
+                                <mx:FormItem label="ACH $ Return" labelStyleName="boldText" defaultButton="{FinancialResolutions_searchButton}" labelWidth="96">
+                                    <mx:TextInput id="FinancialResolutions_achReturnInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+                            <!-- Returns Date -->
+                            <mx:VBox width="270" verticalGap="1">
+                                <mx:FormItem label="Returns Start Date" labelStyleName="boldText" defaultButton="{FinancialResolutions_searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="FinancialResolutions_startDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="2"/>
+                                </mx:FormItem>
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="130"/>
+                                    <mx:Label width="100%" textAlign="center" text=" "/>
+                                </mx:HBox>
+                                <mx:FormItem label="Returns End Date" labelStyleName="boldText" defaultButton="{FinancialResolutions_searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="FinancialResolutions_endDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="3"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+
+                            <!-- Search button -->
+                            <mx:VBox verticalGap="0.5">
+                                <mx:HBox height="68" width="100%" horizontalAlign="right" verticalAlign="bottom">
+                                    <mx:Button
+                                            id="FinancialResolutions_searchButton"
+                                            label="Find Bank Returns"
+                                            enabled="{viewModel.selectedSearchViewModel.canSearch}"
+                                            click="findBankReturns()"
+                                            tabIndex="6"/>
+                                </mx:HBox>
+                            </mx:VBox>
+
+                        </mx:HBox>
+                    </mx:VBox>
+
+
+
+
+
+                    <mx:VBox styleName="ddGrayMiniBoxNoBorder" width="100%" visible="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.RISK_ASSESSMENT}" includeInLayout="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.RISK_ASSESSMENT}" >
+                        <mx:HBox styleName="padderBox">
+                            <!-- EIN and ACH Return -->
+                            <mx:VBox width="260" verticalGap="1">
+
+                                <mx:FormItem label="EIN or CID" labelStyleName="boldText" defaultButton="{RiskAssessment_searchButton}" labelWidth="96">
+                                    <mx:TextInput id="RiskAssessment_einInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="96"/>
+                                    <mx:Label width="100%" textAlign="center" text="(5 characters minimum)"/>
+                                </mx:HBox>
+                                <mx:FormItem label="ACH $ Return" labelStyleName="boldText" defaultButton="{RiskAssessment_searchButton}" labelWidth="96">
+                                    <mx:TextInput id="RiskAssessment_achReturnInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+                            <!-- Returns Date -->
+                            <mx:VBox width="270" verticalGap="1">
+                                <mx:FormItem label="Returns Start Date" labelStyleName="boldText" defaultButton="{RiskAssessment_searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="RiskAssessment_startDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="2"/>
+                                </mx:FormItem>
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="130"/>
+                                    <mx:Label width="100%" textAlign="center" text=" "/>
+                                </mx:HBox>
+                                <mx:FormItem label="Returns End Date" labelStyleName="boldText" defaultButton="{RiskAssessment_searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="RiskAssessment_endDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="3"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+
+                            <!-- Search button -->
+                            <mx:VBox verticalGap="0.5">
+                                <mx:HBox height="68" width="100%" horizontalAlign="right" verticalAlign="bottom">
+                                    <mx:Button
+                                            id="RiskAssessment_searchButton"
+                                            label="Find Bank Returns"
+                                            enabled="{viewModel.selectedSearchViewModel.canSearch}"
+                                            click="findBankReturns()"
+                                            tabIndex="6"/>
+                                </mx:HBox>
+                            </mx:VBox>
+
+                        </mx:HBox>
+                    </mx:VBox>
+
+                    <mx:VBox styleName="ddGrayMiniBoxNoBorder" width="100%" visible="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.RISK_COLLECTIONS}" includeInLayout="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.RISK_COLLECTIONS}" >
+                        <mx:HBox styleName="padderBox">
+                            <!-- EIN and ACH Return -->
+                            <mx:VBox width="260" verticalGap="1">
+
+                                <mx:FormItem label="EIN or CID" labelStyleName="boldText" defaultButton="{RiskCollections_searchButton}" labelWidth="96">
+                                    <mx:TextInput id="RiskCollections_einInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="96"/>
+                                    <mx:Label width="100%" textAlign="center" text="(5 characters minimum)"/>
+                                </mx:HBox>
+                                <mx:FormItem label="ACH $ Return" labelStyleName="boldText" defaultButton="{RiskCollections_searchButton}" labelWidth="96">
+                                    <mx:TextInput id="RiskCollections_achReturnInput" tabIndex="1" width="150"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+                            <!-- Returns Date -->
+                            <mx:VBox width="270" verticalGap="1">
+                                <mx:FormItem label="Returns Start Date" labelStyleName="boldText" defaultButton="{RiskCollections_searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="RiskCollections_startDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="2"/>
+                                </mx:FormItem>
+                                <mx:HBox verticalAlign="middle">
+                                    <!-- for alignment -->
+                                    <mx:Spacer width="130"/>
+                                    <mx:Label width="100%" textAlign="center" text=" "/>
+                                </mx:HBox>
+                                <mx:FormItem label="Returns End Date" labelStyleName="boldText" defaultButton="{RiskCollections_searchButton}" labelWidth="130">
+                                    <pspui:SAPDateField
+                                            id="RiskCollections_endDateInput"
+                                            width="100"
+                                            editable="true"
+                                            tabIndex="3"/>
+                                </mx:FormItem>
+                            </mx:VBox>
+
+                            <!-- Search button -->
+                            <mx:VBox verticalGap="0.5">
+                                <mx:HBox height="68" width="100%" horizontalAlign="right" verticalAlign="bottom">
+                                    <mx:Button
+                                            id="RiskCollections_searchButton"
+                                            label="Find Bank Returns"
+                                            enabled="{viewModel.selectedSearchViewModel.canSearch}"
+                                            click="findBankReturns()"
+                                            tabIndex="6"/>
+                                </mx:HBox>
+                            </mx:VBox>
+
+                        </mx:HBox>
+                    </mx:VBox>
+
+
+                </mx:VBox>
+            </mx:VBox>
+
+            <mx:Spacer height="10"/>
+
+            <pspui:PagingDataGrid id="searchResultsData"
+                                  width="100%"
+                                  paddingRight="10"
+                                  horizontalAlign="right"
+                                  verticalGap="0"
+                                  extendedInformationLoaded="{viewModel.selectedSearchViewModel.extendedInformationLoaded}"
+                                  isDataLoading="{viewModel.selectedSearchViewModel.isSearching}"
+                                  dataProvider="{viewModel.selectedSearchViewModel.searchResults}"
+                                  loadDataFunction="{pageDataGridLoadDataFunction}">
+                <pspui:columns>
+                    <controls:SAPDataGridColumn
+                            minWidth="95"
+                            dataField="payrollStatus"
+                            exportTitle="ER Debit Status"
+                            draggable="false">
+                        <controls:headerRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        verticalGap="0"
+                                        horizontalAlign="left"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <mx:Label text="Status" styleName="padderLeftRight"/>
+                                    <mx:Label
+                                            text="ER Debit Status"
+                                            fontWeight="normal"
+                                            fontSize="9"
+                                            styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:headerRenderer>
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox width="100%"
+                                         horizontalAlign="left"
+                                         verticalGap="0"
+                                         verticalScrollPolicy="off"
+                                         horizontalScrollPolicy="off">
+                                         
+                                    <controls:SAPColumnData displayData="{data.payrollStatusName}"/>
+                                     
+                                    <pspui:ActionLink
+                                            id="payrollStatusNameLink"
+                                            enabled="{data.sourcePayRunId}"
+                                            label="{data.payrollStatusName}"
+                                            actionClick="outerDocument.goToPayrollTransactions"
+                                            data="{data}"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn   id="allReturnsDataColumn"
+                                         visible="{viewModel.selectedSearchType == BankReturnsSearchTypeEnum.ALL_RETURNS}"
+                                         headerText="Transaction{String('\n')}Type"
+                                         minWidth="120"
+                                         dataField="transactionType"
+                                         itemRenderer="mx.controls.Text"
+                                         paddingLeft="5"
+                                         draggable="false"/>
+                    <controls:SAPDataGridColumn
+                            minWidth="190"
+                            dataField="companyName"
+                            exportTitle="Company Name (And EE name if EE return)"
+                            draggable="false">
+                        <controls:headerRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        verticalGap="0"
+                                        horizontalAlign="left"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <mx:Label text="Company Name" styleName="padderLeftRight"/>
+                                    <mx:Label
+                                            text="And EE name if EE return"
+                                            fontWeight="normal"
+                                            fontSize="9"
+                                            styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:headerRenderer>
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        width="100%"
+                                        horizontalAlign="left"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    
+                                    <controls:SAPColumnData displayData="{data.companyName + ' ' + data.employeeName}"/>
+                                    
+                                    <pspui:ActionLink
+                                            id="companyNameLink"
+                                            label="{data.companyName}"
+                                            actionClick="outerDocument.goToCompanyPayrolls"
+                                            data="{data}"/>
+                                    <mx:HBox visible="{data.employeeName != ''}" horizontalGap="0">
+                                        <mx:Label text="EE: " paddingLeft="5"/>
+                                        <mx:Text id="employeeNameText" text="{data.employeeName}" paddingRight="5"/>
+                                    </mx:HBox>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="EIN"
+                            width="80"
+                            resizable="false"
+                            dataField="fein"
+                            itemRenderer="mx.controls.Text"
+                            paddingLeft="5"
+                            draggable="false"/>
+                    <controls:SAPDataGridColumn
+                            minWidth="90"
+                            headerText="Account #{String('\n')}Routing #"
+                            exportTitle="Account # / Routing #"
+                            dataField="bankAccountNumber"
+                            draggable="false">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        width="100%"
+                                        horizontalAlign="left"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <controls:SAPColumnData displayData="{UIUtils.maskBankAccountNumbers(data.bankAccountNumber) + ' / ' + data.bankRoutingNumber}"/>
+                                    
+                                    <mx:Text
+                                            id="bankAccountNumberText"
+                                            text="{UIUtils.maskBankAccountNumbers(data.bankAccountNumber)}"
+                                            styleName="padderLeftRight"/>
+                                    <mx:Text
+                                            id="bankRoutingNumberText"
+                                            text="{data.bankRoutingNumber}"
+                                            styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            minWidth="90"
+                            dataField="returnDateTime"
+                            exportTitle="Return Date / Check Date"
+                            draggable="false">
+                        <controls:headerRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        verticalGap="0"
+                                        horizontalAlign="left"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <mx:Label text="Return Date" styleName="padderLeftRight"/>
+                                    <mx:Label text="Check Date" styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:headerRenderer>
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        width="100%"
+                                        horizontalAlign="left"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <mx:Script>
+										<![CDATA[
+											import psp.sap.application.enums.BankReturnsSearchTypeEnum;
+										]]>
+									</mx:Script>
+									<controls:SAPColumnData displayData="{outerDocument.dateFormatter.format(data.returnDate)} / {outerDocument.dateFormatter.format(data.checkDate)}"/>
+                                    <mx:Text id="returnDateText" text="{outerDocument.dateFormatter.format(data.returnDate)}" styleName="padderLeftRight"/>
+                                    <mx:Text id="checkDateText" text="{outerDocument.dateFormatter.format(data.checkDate)}" styleName="padderLeftRight"/>
+                                    <mx:HBox
+                                            id="canUpdateReturnsHBox"
+                                            width="100%"
+                                            horizontalAlign="center"
+                                            horizontalGap="0"
+                                            visible="{data.canUpdateReturns() ? outerDocument.viewModel.selectedSearchType == BankReturnsSearchTypeEnum.ALL_RETURNS : false}"
+                                            includeInLayout="{data.canUpdateReturns() ? outerDocument.viewModel.selectedSearchType == BankReturnsSearchTypeEnum.ALL_RETURNS : false}">
+                                        <pspui:ActionLink
+                                                id="reOpenReturnLink"
+                                                label="Reopen Return"
+                                                paddingLeft="5"
+                                                visible="{data.canReopenReturn()}"
+                                                includeInLayout="{data.canReopenReturn()}"
+                                                actionClick="outerDocument.goToBankReturnsUpdate"
+                                                data="{data}"/>
+                                        <pspui:ActionLink
+                                                id="resolveReturnLink"
+                                                label="Resolve Return"
+                                                paddingLeft="5"
+                                                visible="{!data.canReopenReturn()}"
+                                                includeInLayout="{!data.canReopenReturn()}"
+                                                actionClick="outerDocument.goToBankReturnsUpdate"
+                                                data="{data}"/>
+                                    </mx:HBox>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="ACH{String('\n')}Return"
+                            minWidth="80"
+                            textAlign="right"
+                            dataField="amount"
+                            draggable="false">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                            	<mx:VBox
+                                        width="100%"
+                                        horizontalAlign="right"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <controls:SAPColumnData displayData="{outerDocument.currencyFormatter.format(data.amount)}"/>    
+                                    <mx:Text id="amountText" text="{outerDocument.currencyFormatter.format(data.amount)}" styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Balance"
+                            textAlign="right"
+                            minWidth="80"
+                            dataField="payrollBalanceDue"
+                            draggable="false"
+                            sortable="false">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                            	<mx:VBox
+                                        width="100%"
+                                        horizontalAlign="right"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <controls:SAPColumnData  displayData="{outerDocument.currencyFormatter.format(data.bankReturnExtendedInfo.payrollBalanceDue)}"/>
+                                
+                                    <mx:Text
+                                            id="payrollBalanceDueText"
+                                            color="{data.bankReturnExtendedInfo == null ? 0xCCCCCC : data.bankReturnExtendedInfo.payrollBalanceDue == 0 ? 0x000000 : 0xFF0000}"
+                                            text="{data.bankReturnExtendedInfo != null ? outerDocument.currencyFormatter.format(data.bankReturnExtendedInfo.payrollBalanceDue) : 'Loading...'}"
+                                            styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                    <controls:SAPDataGridColumn
+                            headerText="Rtn{String('\n')}Cd"
+                            dataField="returnCd"
+                            textAlign="left"
+                            minWidth="35"
+                            itemRenderer="mx.controls.Text"
+                            paddingLeft="5"
+                            draggable="false"/>
+                    <controls:SAPDataGridColumn
+                            headerText="Expected{String('\n')}Resolution"
+                            dataField="expectedResolutionDate"
+                            textAlign="left"
+                            minWidth="90"
+                            draggable="false"
+                            sortable="false">
+                        <controls:itemRenderer>
+                            <mx:Component>
+                                <mx:VBox
+                                        width="100%"
+                                        horizontalAlign="left"
+                                        verticalGap="0"
+                                        verticalScrollPolicy="off"
+                                        horizontalScrollPolicy="off">
+                                    <controls:SAPColumnData displayData="{outerDocument.expectedResolutionDateFormatter.format(data.bankReturnExtendedInfo.expectedResolutionDate)}"/>
+                                    
+                                    <mx:Text
+                                            id="expectedResolutionDateText"
+                                            color="{data.bankReturnExtendedInfo != null ? outerDocument.determineExpectedResolutionColor(data.bankReturnExtendedInfo.expectedResolutionDate) : 0xCCCCCC}"
+                                            text="{data.bankReturnExtendedInfo != null ? outerDocument.expectedResolutionDateFormatter.format(data.bankReturnExtendedInfo.expectedResolutionDate) : 'Loading...'}"
+                                            styleName="padderLeftRight"/>
+                                </mx:VBox>
+                            </mx:Component>
+                        </controls:itemRenderer>
+                    </controls:SAPDataGridColumn>
+                </pspui:columns>
+            </pspui:PagingDataGrid>
+            <mx:Spacer height="10"/>
+            
+            <mx:HBox width="100%" horizontalAlign="left">
+            	 
+            	<pspui:ActionLink click="exportResults()" icon="{SAP.instance.icons.exportIcon}" labelPlacement="right" label="Export Results" enabled="{viewModel.selectedSearchViewModel.searchResults.length > 0}"/>
+            	<pspui:ActionLink id="printBankReturnsLink" label="Print Bank Returns"
+                                      icon="{SAP.instance.icons.printIcon}" labelPlacement="right" enabled="{viewModel.selectedSearchViewModel.searchResults.length > 0}"
+                                      click="printResultsConfirmation(event)" />
+            </mx:HBox>
+        
+        </mx:VBox>
+
+
+
+
+    <!-- ALL RETURNS -->
+
+    <!-- ein bindings -->
+    <mx:Binding source="einInput.text" destination="viewModel.allReturnsViewModel.ein" />
+    <mx:Binding source="viewModel.allReturnsViewModel.ein" destination="einInput.text" />
+
+    <!-- start date bindings -->
+    <mx:Binding source="startDateInput.text" destination="viewModel.allReturnsViewModel.startDate" />
+    <mx:Binding source="viewModel.allReturnsViewModel.startDate" destination="startDateInput.text" />
+
+    <!-- end date bindings -->
+    <mx:Binding source="endDateInput.text" destination="viewModel.allReturnsViewModel.endDate" />
+    <mx:Binding source="viewModel.allReturnsViewModel.endDate" destination="endDateInput.text" />
+
+    <!-- exclude CReturnCodes-->
+    <mx:Binding source="excludeCReturnCodes.selected" destination="viewModel.allReturnsViewModel.excludeCReturnCodes"/>
+    <mx:Binding source="viewModel.allReturnsViewModel.excludeCReturnCodes" destination="excludeCReturnCodes.selected"/>
+
+    <!-- exclude 5DayFunding -->
+    <mx:Binding source="exclude5DayFunding.selected" destination="viewModel.allReturnsViewModel.exclude5DayFunding"/>
+    <mx:Binding source="viewModel.allReturnsViewModel.exclude5DayFunding" destination="exclude5DayFunding.selected"/>
+
+    <!-- ach return binding -->
+    <mx:Binding source="achReturnInput.text" destination="viewModel.allReturnsViewModel.achReturn"/>
+    <mx:Binding source="viewModel.allReturnsViewModel.achReturn" destination="achReturnInput.text"/>
+
+
+    <!-- FINANCIAL RESOLUTIONS -->
+
+    <!-- ein bindings -->
+    <mx:Binding source="FinancialResolutions_einInput.text" destination="viewModel.financialResolutionsViewModel.ein" />
+    <mx:Binding source="viewModel.financialResolutionsViewModel.ein" destination="FinancialResolutions_einInput.text" />
+
+    <!-- start date bindings -->
+    <mx:Binding source="FinancialResolutions_startDateInput.text" destination="viewModel.financialResolutionsViewModel.startDate" />
+    <mx:Binding source="viewModel.financialResolutionsViewModel.startDate" destination="FinancialResolutions_startDateInput.text" />
+
+    <!-- end date bindings -->
+    <mx:Binding source="FinancialResolutions_endDateInput.text" destination="viewModel.financialResolutionsViewModel.endDate" />
+    <mx:Binding source="viewModel.financialResolutionsViewModel.endDate" destination="FinancialResolutions_endDateInput.text" />
+
+    <!-- ach return binding -->
+    <mx:Binding source="FinancialResolutions_achReturnInput.text" destination="viewModel.financialResolutionsViewModel.achReturn"/>
+    <mx:Binding source="viewModel.financialResolutionsViewModel.achReturn" destination="FinancialResolutions_achReturnInput.text"/>
+
+
+    <!-- RISK ASSESSMENT -->
+
+    <!-- ein bindings -->
+    <mx:Binding source="RiskAssessment_einInput.text" destination="viewModel.riskAssessmentViewModel.ein" />
+    <mx:Binding source="viewModel.riskAssessmentViewModel.ein" destination="RiskAssessment_einInput.text" />
+
+    <!-- start date bindings -->
+    <mx:Binding source="RiskAssessment_startDateInput.text" destination="viewModel.riskAssessmentViewModel.startDate" />
+    <mx:Binding source="viewModel.riskAssessmentViewModel.startDate" destination="RiskAssessment_startDateInput.text" />
+
+    <!-- end date bindings -->
+    <mx:Binding source="RiskAssessment_endDateInput.text" destination="viewModel.riskAssessmentViewModel.endDate" />
+    <mx:Binding source="viewModel.riskAssessmentViewModel.endDate" destination="RiskAssessment_endDateInput.text" />
+
+    <!-- ach return binding -->
+    <mx:Binding source="RiskAssessment_achReturnInput.text" destination="viewModel.riskAssessmentViewModel.achReturn"/>
+    <mx:Binding source="viewModel.riskAssessmentViewModel.achReturn" destination="RiskAssessment_achReturnInput.text"/>
+
+
+    <!-- RISK COLLECTIONS -->
+
+    <!-- ein bindings -->
+    <mx:Binding source="RiskCollections_einInput.text" destination="viewModel.riskCollectionsViewModel.ein" />
+    <mx:Binding source="viewModel.riskCollectionsViewModel.ein" destination="RiskCollections_einInput.text" />
+
+    <!-- start date bindings -->
+    <mx:Binding source="RiskCollections_startDateInput.text" destination="viewModel.riskCollectionsViewModel.startDate" />
+    <mx:Binding source="viewModel.riskCollectionsViewModel.startDate" destination="RiskCollections_startDateInput.text" />
+
+    <!-- end date bindings -->
+    <mx:Binding source="RiskCollections_endDateInput.text" destination="viewModel.riskCollectionsViewModel.endDate" />
+    <mx:Binding source="viewModel.riskCollectionsViewModel.endDate" destination="RiskCollections_endDateInput.text" />
+
+    <!-- ach return binding -->
+    <mx:Binding source="RiskCollections_achReturnInput.text" destination="viewModel.riskCollectionsViewModel.achReturn"/>
+    <mx:Binding source="viewModel.riskCollectionsViewModel.achReturn" destination="RiskCollections_achReturnInput.text"/>
+
+    <!-- Search filter 1 -->
+    <mx:Binding source="BankReturnsSearchAllReturnsViewModel.SEARCH_FILTER_1" destination="showOnlyCombo1.dataProvider"/>
+    <mx:Binding source="viewModel.allReturnsViewModel.searchFilter1" destination="showOnlyCombo1.selectedItem"/>
+
+    <!-- Search filter 2 -->
+    <mx:Binding source="viewModel.allReturnsViewModel.searchFilter2" destination="showOnlyCombo2.selectedItem"/>
+    <mx:Binding source="BankReturnsSearchAllReturnsViewModel.SEARCH_FILTER_2" destination="showOnlyCombo2.dataProvider"/>
+
+	
+	
+	
+    <!-- Global viewModel settings -->
+
+    <!-- error message -->
+    <mx:Binding source="viewModel.selectedSearchViewModel.errorString" destination="saveMessage.text" />
+    <mx:Binding source="viewModel.selectedSearchViewModel.isError" destination="saveMessage.isError" />
+
+    <!-- Tab Bar -->
+    <mx:Binding source="viewModel.selectedSearchIndex" destination="searchTabBar.selectedIndex"/>
+    <mx:Binding source="searchTabBar.selectedIndex" destination="viewModel.selectedSearchIndex"/>
+</mx:Canvas>

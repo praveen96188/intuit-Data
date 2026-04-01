@@ -1,0 +1,34 @@
+db-telemetry:
+  thread-sleep: 5000
+  enable-aspect: DummyAspect
+  excluded-tables: PSP_SYSTEM_PARAMETER
+  flush:
+    interval: 120000
+  stack-trace:
+    enabled: true
+    filter: com.intuit.sbd.payroll.psp
+    depth: -1
+    flush:
+      interval: 600000
+kafka:
+  internal:
+    consumer:
+      west:
+        enabled: true
+      east:
+        enabled: true
+  producer:
+    topicRegionMapping:
+      allTopics:
+        region: UW2
+    uw2:
+      enabled: true
+    ue2:
+      enabled: false
+  consumer:
+    uw2:
+      enabled: true
+    ue2:
+      enabled: false
+hystrix:
+  registerRequestContextHook : false

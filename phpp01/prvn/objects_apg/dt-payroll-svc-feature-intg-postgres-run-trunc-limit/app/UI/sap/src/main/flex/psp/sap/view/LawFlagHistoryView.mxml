@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.viewmodel.LawFlagHistoryViewModel;
+
+        private var mViewModel:LawFlagHistoryViewModel;
+        private var mTempViewModel:LawFlagHistoryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():LawFlagHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:LawFlagHistoryViewModel):void {
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="Filing Flag History for {viewModel.paymentTemplate.getSimplifiedName()}"
+              styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+
+    <mx:Text text="No history was found for this payment template."
+             visible="{viewModel.propertyAudits.source.length == 0 &amp;&amp; !viewModel.isDataLoading}"
+             includeInLayout="{viewModel.propertyAudits.source.length == 0 &amp;&amp; !viewModel.isDataLoading}"/>
+
+    <mx:VBox styleName="noPadding"
+             visible="{viewModel.propertyAudits.source.length != 0}"
+             includeInLayout="{viewModel.propertyAudits.source.length != 0}">
+
+        <mx:HBox>
+            <mx:Label text="Law:"/>
+            <controls:SAPComboBox dataProvider="{viewModel.laws}" dataField="selectedLaw" width="100"/>
+            <mx:Label text="Flag:"/>
+            <controls:SAPComboBox dataProvider="{viewModel.flags}" dataField="selectedFlag"/>
+        </mx:HBox>
+
+        <controls:SAPDataGrid
+                width="700"
+                paddingTop="4"
+                paddingRight="10"
+                selectable="false"
+                dataProvider="{viewModel.propertyAudits}"
+                rowCount="10"
+                draggableColumns="false">
+            <controls:columns>
+                <controls:SAPDataGridColumn
+                        headerText="Law"
+                        width="100"
+                        dataField="category"/>
+                <controls:SAPDataGridColumn
+                        headerText="Flag"
+                        dataField="propertyName"
+                        width="100"/>
+                <controls:SAPDataGridColumn
+                        headerText="Old Value"
+                        dataField="oldPropertyValue"
+                        width="80"/>
+                <controls:SAPDataGridColumn
+                        headerText="New Value"
+                        dataField="newPropertyValue"
+                        width="80"/>
+                <controls:SAPDataGridColumn
+                        headerText="Change Date"
+                        width="200"
+                        dataField="auditDate"
+                        labelFunction="SAPDataGrid.formatDateTimeMedium"/>
+                <controls:SAPDataGridColumn
+                        headerText="Changed By"
+                        width="130"
+                        dataField="userId"/>
+            </controls:columns>
+        </controls:SAPDataGrid>
+    </mx:VBox>
+</mx:VBox>

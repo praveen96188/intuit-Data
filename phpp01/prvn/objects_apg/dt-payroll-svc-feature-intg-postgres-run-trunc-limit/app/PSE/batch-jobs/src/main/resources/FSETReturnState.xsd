@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 rel. 3 sp1 (http://www.altova.com) by Terry Garber (SC Department of Revenue & Tax) -->
+<xsd:schema xmlns="http://www.irs.gov/efile" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.irs.gov/efile" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xsd:annotation>
+		<xsd:documentation>
+			<Description>State e-file Individual Income Tax Schema</Description>
+		</xsd:documentation>
+	</xsd:annotation>
+    <!--Updated links manually -->
+	<xsd:include schemaLocation="FSETReturnHeaderState.xsd"/>
+	<xsd:include schemaLocation="ReturnDataState.xsd"/>
+	<xsd:include schemaLocation="BinaryAttachment.xsd"/>
+	<xsd:include schemaLocation="FinancialTransaction.xsd"/>
+	<!-- Individual Return - 1040 -->
+	<xsd:element name="ReturnState">
+		<xsd:annotation>
+			<xsd:documentation>FSET Return - wraps around Return Header, Return Data, BinaryAttachment, and FinancialTransaction</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ReturnHeaderState" minOccurs="0"/>
+				<!--ReturnDataState to be built by each state -->
+				<xsd:element ref="ReturnDataState" minOccurs="0"/>
+				<xsd:element ref="BinaryAttachment" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="FinancialTransaction" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="stateSchemaVersion" type="String50Type"/>
+			<!-- Version of the state schema set used for the filing-->
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

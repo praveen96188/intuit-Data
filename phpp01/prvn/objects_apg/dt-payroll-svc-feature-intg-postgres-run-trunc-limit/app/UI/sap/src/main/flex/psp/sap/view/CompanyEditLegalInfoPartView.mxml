@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         creationComplete="onCreationComplete()"
+         width="100%" height="100%">
+
+    <mx:Script>
+			<![CDATA[
+        import mx.controls.Alert;
+        import mx.controls.Menu;
+        import mx.events.CloseEvent;
+
+        import mx.events.MenuEvent;
+        import mx.utils.StringUtil;
+
+        import psp.sap.formatters.SAPDateFormatters;
+
+        import psp.sap.model.Address;
+        import psp.sap.viewmodel.CompanyEditLegalInfoViewModel;
+
+        import mx.managers.PopUpManager;
+
+        // declare a variable for the reusable custom PopUp Window
+
+
+        private var mViewModel:CompanyEditLegalInfoViewModel;
+        private var mTempViewModel:CompanyEditLegalInfoViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private static const labelWidth:int = 140;
+
+        [Bindable]
+        public function get viewModel():CompanyEditLegalInfoViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyEditLegalInfoViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+            viewModel.effectiveDateValidator.listener = effectiveDateField;
+            if (viewModel.isDirectDepositCustomer()) {
+                viewModel.populateIndustryType();
+            }
+        }
+
+        private var popup:CaseIdSave;
+
+        // method to open the PopUp Window on creationComplete
+        private function openPopUpWindow():void {
+            // open the PopUp Window as a modal popup window
+            // and store it in a variable for later use
+            popup = PopUpManager.createPopUp(this, CaseIdSave, true) as CaseIdSave;
+            popup.heading.label="Are you sure you want to edit this company's legal info? If yes please provide caseId";
+            popup.addEventListener("close", removeMe);
+            popup.cancel.addEventListener("click", removeMe);
+            popup.save.addEventListener("click", submitData);
+            PopUpManager.centerPopUp(popup);
+
+        }
+
+        private function removeMe(event:Event):void {
+            PopUpManager.removePopUp(popup);
+        }
+
+        private function submitData(event:Event):void {
+            if (popup.caseIdInput.text == null || StringUtil.trim(popup.caseIdInput.text) == "") {
+                popup.caseIdMandatoryItem.visible = true;
+            } else {
+                viewModel.caseId = popup.caseIdInput.text;
+                PopUpManager.removePopUp(popup);
+                viewModel.save();
+            }
+        }
+
+        private function confirmSave():void {
+            openPopUpWindow();
+
+            /* var msgString:String = "Are you sure you want to edit this company's legal info?";
+
+             Alert.show(msgString,
+             "Save Confirmation",
+             Alert.OK | Alert.CANCEL,
+             this,
+             confirmVerifyHandler,
+             null,
+             Alert.OK);*/
+        }
+
+        private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+            if (evt_obj.detail == Alert.OK) {
+                viewModel.save();
+            }
+        }
+
+        private function onCopyClicked(event:MouseEvent):void {
+            var menu:Menu = Menu.createMenu(this, viewModel.additionalAddresses, false);
+            menu.labelField = "description";
+            menu.addEventListener("itemClick", function (e:MenuEvent):void {
+                viewModel.copy(Address(e.item));
+            }, false, 0, true);
+
+            var pt:Point = new Point(event.localX, event.localY);
+            pt = event.target.localToGlobal(pt);
+
+            menu.show(pt.x, pt.y);
+        }
+        ]]>
+    </mx:Script>
+
+
+    <mx:VBox height="100%" width="100%">
+        <mx:HBox>
+            <controls:RequiredLabel styleName="fieldLabel" width="{labelWidth}" text="Legal Name:"
+                                    dataField="legalName"/>
+            <controls:SAPTextInput maxChars="100" width="350" dataField="legalInfo.legalName"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label id="businessNameLabel" styleName="fieldLabel" width="{labelWidth}" text="Business Name:"/>
+            <controls:SAPTextInput maxChars="100" width="350" dataField="legalInfo.doingBusinessAs"/>
+        </mx:HBox>
+        <mx:HBox enabled="{viewModel.mayEditEin()}">
+            <controls:RequiredLabel text="EIN:" dataField="ein"
+                                    styleName="fieldLabel" width="{labelWidth}"/>
+            <controls:SAPTextInput maxChars="10" width="120" id="einInput" dataField="ein"/>
+        </mx:HBox>
+        <mx:HBox visible="{viewModel.isDirectDepositCustomer()}"
+                 includeInLayout="{viewModel.isDirectDepositCustomer()}">
+            <controls:RequiredLabel text="Industry Type:" dataField="industryType"
+                                    styleName="fieldLabel" width="{labelWidth}"/>
+            <controls:SAPComboBox dataProvider="{viewModel.IndustryTypes}" dataField="legalInfo.industryType"/>
+        </mx:HBox>
+        <mx:HBox
+                visible="{viewModel.includeEffectiveDate}"
+                includeInLayout="{viewModel.includeEffectiveDate}" enabled="{viewModel.canEditEffectiveDate}"
+                id="effectiveDateContainter">
+            <controls:RequiredLabel styleName="fieldLabel" width="{labelWidth}" text="EIN Effect Date:"
+                                    errorCode="lessThanDaysBeforeAllowed" dataField="effectiveDate"
+                                    validator="{viewModel.effectiveDateValidator}"/>
+            <pspui:SAPDateField text="" id="effectiveDateField" editable="true"/>
+
+
+        </mx:HBox>
+        <mx:HBox visible="{viewModel.includeEffectiveDate}" enabled="{viewModel.canEditEffectiveDate}">
+            <mx:Label text="Is Error:" styleName="fieldLabel" width="{labelWidth}"/>
+
+            <controls:SAPCheckBox id="isErrorBox" dataField="isError"/>
+        </mx:HBox>
+    </mx:VBox>
+    <mx:Spacer height="10"/>
+    <mx:HBox>
+        <mx:VBox height="100%" width="100%">
+            <mx:HBox>
+                <controls:RequiredLabel text="Legal Address:" dataField="addressLine1"
+                                        styleName="fieldLabel"
+                                        width="{labelWidth}"/>
+                <mx:VBox>
+                    <controls:SAPTextInput maxChars="40" width="350" dataField="legalInfo.address.addressLine1"/>
+                    <controls:SAPTextInput maxChars="40" width="350" dataField="legalInfo.address.addressLine2"/>
+                </mx:VBox>
+            </mx:HBox>
+            <mx:HBox>
+                <controls:RequiredLabel text="City:" dataField="city"
+                                        styleName="fieldLabel" width="{labelWidth}"/>
+                <controls:SAPTextInput maxChars="30" width="350" dataField="legalInfo.address.city"/>
+            </mx:HBox>
+            <mx:HBox>
+                <controls:RequiredLabel text="State:" dataField="state"
+                                        styleName="fieldLabel" width="{labelWidth}"/>
+                <controls:SAPTextInput restrict="A-Za-z" maxChars="2" width="40" dataField="legalInfo.address.state"/>
+            </mx:HBox>
+            <mx:HBox horizontalGap="0">
+                <controls:RequiredLabel text="Zip+4:" dataField="zipCode"
+                                        styleName="fieldLabel" width="{labelWidth}"/>
+                <mx:Spacer width="8"/>
+                <controls:SAPTextInput restrict="0-9" maxChars="5" width="60" dataField="legalInfo.address.zipCode"/>
+                <mx:Text text="-" width="10" paddingLeft="0" paddingRight="-10"/>
+                <controls:SAPTextInput restrict="0-9" maxChars="4" width="50"
+                                       dataField="legalInfo.address.zipCodeExtension"/>
+            </mx:HBox>
+
+        </mx:VBox>
+        <mx:LinkButton
+                id="copyLinkButton"
+                visible="{viewModel.additionalAddresses.length > 0}"
+                includeInLayout="{viewModel.additionalAddresses.length > 0}"
+                label="Copy address from..."
+                toolTip="Copy the details from another address to this one"
+                styleName="standardLinkButtonStyle"
+                click="onCopyClicked(event)"/>
+    </mx:HBox>
+    <mx:Spacer height="10"/>
+
+    <mx:HBox horizontalAlign="right" width="100%" visible="{viewModel.showSaveButtons}"
+             includeInLayout="{viewModel.showSaveButtons}">
+
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="confirmSave()" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+    <mx:Binding source="viewModel.effectiveDate" destination="effectiveDateField.text"/>
+    <mx:Binding source="effectiveDateField.text" destination="viewModel.effectiveDate"/>
+
+</mx:VBox>
+		
+		

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns="http://schema.intuit.com/platform/entitlement/entitledoffering/v1"
+           targetNamespace="http://schema.intuit.com/platform/entitlement/entitledoffering/v1"
+           attributeFormDefault="unqualified" elementFormDefault="unqualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:base="http://schema.intuit.com/platform/enterpriseinterface/common/v1">
+
+    <xs:import namespace="http://schema.intuit.com/platform/enterpriseinterface/common/v1"
+               schemaLocation="common.xsd"/>
+
+
+    <xs:element name="entitledOfferings" type="entitledOfferingsType"/>
+    <xs:element name="entitledOffering" type="entitledOfferingType"/>
+
+    <xs:complexType name="entitledOfferingsType">
+        <xs:sequence>
+            <xs:element name="entitledOffering" type="entitledOfferingType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="entitledOfferingType">
+        <xs:sequence>
+
+            <xs:element name="entitledOfferingResourceId" type="xs:string"/>
+
+            <!-- CAS ID
+            -->
+            <xs:element name="entitledOfferingId" type="xs:string"/><!-- Siebel asset ID -->
+
+            <xs:element name="type">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Service"/><!-- for billingType = "OneTime" -->
+                        <xs:enumeration value="Subscription"/><!-- for billingType = "Recurring" -->
+                        <xs:enumeration value="Other"/><!-- TBD -->
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+
+            <xs:element name="status"><!-- Product Status -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Active"/> <!-- For this status flags will be: isResumeAllowed = false, isUpdateAllowed = false, isCancelAllowed = true-->
+                        <xs:enumeration value="Suspended"/><!-- For this status flags will be: isResumeAllowed = true, isUpdateAllowed = false, isCancelAllowed = false -->
+                        <xs:enumeration value="Cancelled"/><!-- For this status flags will be: isResumeAllowed = false, isUpdateAllowed = false, isCancelAllowed = false -->
+                        <xs:enumeration value="Resume In Progress"/><!-- This is a temporary status until the Resume Entitled Offering Order is Processed -->
+                        <xs:enumeration value="Other"/><!-- For this status flags will be: isResumeAllowed = false, isUpdateAllowed = false, isCancelAllowed = false -->
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+
+            <xs:element name="name" type="xs:string"/><!-- Product name in Enterprise system -->
+
+            <xs:element name="purchasePrice" type="base:priceType" minOccurs="0"/><!-- price paid by customer at the time of purchase -->
+            <xs:element name="serviceAccountNumber" type="xs:string" minOccurs="0"/><!-- Customer Account Number to which the product belongs to -->
+
+            <xs:element name="entitlementInformation" type="entitlementInformationType"/>
+            <xs:element name="billingInformation" type="billingInformationType"/>
+
+            <xs:element name="signupDate" type="xs:string" minOccurs="0"/><!-- The date the customer signed up for the subscription -->
+            <xs:element name="activationDate" type="xs:string" minOccurs="0"/><!-- E.g. QuickBooks UniReg activation date -->
+            <xs:element name="startDate" type="xs:string" minOccurs="0"/><!-- Start date for subscriptions -->
+            <xs:element name="endDate" type="xs:string" minOccurs="0"/><!-- End date for subscriptions  -->
+            <xs:element name="cancellationDate" type="xs:string" minOccurs="0"/><!-- date when the product was cancelled -->
+
+            <xs:element name="itemReference" type="itemReferenceType" minOccurs="0"/><!-- Enterprise Item reference -->
+
+            <xs:element name="isCancelAllowed" type="xs:boolean" minOccurs="0"/><!-- Flag to indicate if product can be cancelled -->
+            <xs:element name="isUpdateAllowed" type="xs:boolean" minOccurs="0"/><!-- Flag to indicate if product can be upgraded/downgraded?-->
+            <xs:element name="isResumeAllowed" type="xs:boolean" minOccurs="0"/><!-- Flag to indicate if product can be resumed/reactivated?-->
+
+            <xs:element name="productLine" type="xs:string" minOccurs="0"/><!-- Name of the Product Line the Offering is associated to -->
+
+            <xs:element name="purchaseChannel">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Direct"/>
+                        <xs:enumeration value="Retail"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="childEntitledOfferings" type="entitledOfferingsType" minOccurs="0"/>
+
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="entitlementInformationType">
+        <xs:sequence>
+            <xs:element name="entitlementId" type="xs:string" minOccurs="0"/><!-- Entitlement Offering Code (EOC) -->
+            <xs:element name="licenseNumber" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="billingInformationType">
+        <xs:sequence>
+            <xs:element name="billingProfileId" type="xs:string" minOccurs="0"/><!-- billing profile associated with the Siebel asset -->
+            <xs:element name="billingType">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="OneTime"/>
+                        <xs:enumeration value="Recurring"/>
+                        <xs:enumeration value="Usage"/>
+                        <xs:enumeration value="Other"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="billingPeriod" minOccurs="0"><!-- subscription billing period -->
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Per Month"/>
+                        <xs:enumeration value="Per Year"/>
+                        <xs:enumeration value="Per Quarter"/>
+                        <xs:enumeration value="Per Use"/>
+                        <xs:enumeration value="Semi Annual"/>
+                        <xs:enumeration value="Each"/>
+                        <xs:enumeration value="Other"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="nextBillDate" type="xs:string" minOccurs="0"/><!-- Will be included for subscriptions -->
+            <xs:element name="nextBillAmount" type="base:priceType" minOccurs="0"/><!-- renewalAmount for subscriptions -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="itemReferenceType">
+        <xs:sequence>
+            <xs:element name="itemNumber" type="xs:string" minOccurs="0"/><!-- Item Number in Enterprise system -->
+            <xs:element name="attributes" type="base:transactionAttributesType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+</xs:schema>

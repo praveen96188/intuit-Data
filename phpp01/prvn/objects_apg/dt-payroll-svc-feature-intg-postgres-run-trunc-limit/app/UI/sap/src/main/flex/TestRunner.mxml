@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:flexunit="flexunit.flexui.*" 
+	layout="absolute"
+	pageTitle="SAP Test Runner" 
+	creationComplete="onCreationComplete()">
+	 
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import psp.sap.application.events.SAPEvent;
+			import test.sap.SAPTestSuite;
+			private var testSuite:SAPTestSuite;
+			private var iteration:int = 0;
+			
+			private function onCreationComplete():void {
+				testSuite = new SAPTestSuite();
+				testSuite.prepareForTests(onPrepareComplete);	
+			}
+			
+			private function onPrepareComplete(e:SAPEvent):void {
+				iteration++;
+				if (iteration > 1) {
+					Alert.show("INVESTIGATE NOW: a FlexUnit test is calling SAP.instance.lookupService.loadData() -- this can cause infinite test runs.");
+					return;
+				}
+				
+ 				testRunner.test = testSuite.createSuite();
+ 				testRunner.startTest();
+			}
+
+		]]>
+	</mx:Script>
+
+	<!-- flexunit provides a very handy default test runner GUI -->
+	<flexunit:TestRunnerBase id="testRunner" width="100%" height="100%" />
+	
+</mx:Application>

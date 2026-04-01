@@ -1,0 +1,593 @@
+<?xml version="1.0"?>
+
+    <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         creationComplete="onCreationComplete();"
+         width="100%" verticalGap="0" paddingTop="0" paddingBottom="0" verticalScrollPolicy="off" >
+
+        <mx:Script>
+        <![CDATA[
+            import mx.collections.ArrayCollection;
+            import mx.controls.Alert;
+            import mx.controls.dataGridClasses.DataGridColumn;
+            import mx.core.UIComponent;
+            import mx.events.CloseEvent;
+
+            import psp.sap.application.SAP;
+            import psp.sap.application.enums.OperationsEnum;
+
+            import psp.sap.formatters.SAPCurrencyFormatters;
+            import psp.sap.formatters.SAPRateFormatter;
+            import psp.sap.model.AgencyInfoDTO;
+            import psp.sap.model.CompanyFilingAmount;
+            import psp.sap.model.CompanyLawRateDetail;
+            import psp.sap.model.CompanyPaymentTemplate;
+            import psp.sap.model.PaymentMethod;
+            import psp.sap.view.controls.SAPDataGrid;
+            import psp.sap.viewmodel.AgencyInfoTabViewModel;
+
+            private var mViewModel:AgencyInfoTabViewModel;
+            private var mTempViewModel:AgencyInfoTabViewModel;
+            private var mCreationComplete:Boolean = false;
+
+            [Bindable]
+            public function get viewModel():AgencyInfoTabViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:AgencyInfoTabViewModel):void {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                } else {
+                    mTempViewModel = value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+            }
+
+            public function getYesNo(item:Object, column:DataGridColumn):String {
+                if (item[column.dataField] == null)
+                    return 'No';
+                return (item[column.dataField]) ? "Yes" : "No";
+            }
+
+            public function formatYesNo(value:Boolean):String {
+                return value ? 'Yes' : 'No';
+            }
+
+            public function showEntityChangeHistory(event:ActionLinkEvent):void {
+                viewModel.viewEntityChangeHistory();
+            }
+
+            public function showAgencyIdHistory(event:ActionLinkEvent):void {
+                viewModel.viewAgencyIdHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate)
+            }
+
+            public function showEFTPSHistory(event:ActionLinkEvent):void {
+                viewModel.viewEFTPSHistory();
+            }
+
+            public function showRAFHistory(event:ActionLinkEvent):void {
+                viewModel.viewRAFHistory();
+            }
+
+            private function showFilerTypeHistory(event:ActionLinkEvent):void {
+                viewModel.viewFilerTypeHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate.paymentTemplateName);
+            }
+
+            public function showErFicaDeferralHistory(event:ActionLinkEvent):void {
+                viewModel.viewErFicaDeferralHistory()
+            }
+
+            public function showDepositFrequencyHistory(event:ActionLinkEvent):void {
+                viewModel.viewDepositFrequencyHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            public function showACHRegistrationHistory(event:ActionLinkEvent):void {
+                viewModel.viewACHRegistrationHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            public function updateAgentEnabled(event:ActionLinkEvent):void {
+                viewModel.updateAgentEnabled(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate, event.data);
+            }
+
+            public function showACHEnrollmentHistory():void {
+                viewModel.viewACHEnrollmentHistory();
+            }
+
+            public function showLawRatesHistory(event:ActionLinkEvent):void {
+                viewModel.viewLawRatesHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            public function editLawRates(event:ActionLinkEvent):void {
+                viewModel.editLawRates(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            public function editFlags(event:ActionLinkEvent):void {
+                viewModel.editLawFlags(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+
+            public function showAdditionalAmountHistory(event:ActionLinkEvent):void {
+                viewModel.agencyInfoViewModel.viewFilingAmountHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+
+            public function showPaymentMethodsHistory(event:ActionLinkEvent):void {
+                viewModel.showPaymentMethodsHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate.paymentTemplateCd);
+            }
+
+            private function showAdditionalIdHistory(event:ActionLinkEvent):void {
+                viewModel.showAdditionalIdHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate.paymentTemplateCd);
+            }
+
+            private function editAgencyIDs(event:ActionLinkEvent):void {
+                viewModel.editAgencyIds(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            private function editDepositFrequencies(event:ActionLinkEvent):void {
+                viewModel.editDepositFrequencies(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            private function editAdditionalFilingAmounts(event:ActionLinkEvent):void {
+                viewModel.editAdditionalFilingAmounts(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            private function viewLawFlagHistory(event:ActionLinkEvent):void {
+                viewModel.viewLawFlagHistory(CompanyPaymentTemplate((event.currentTarget as UIComponent).getRepeaterItem()).paymentTemplate);
+            }
+
+            private function showACHRegistration(paymentMethods:ArrayCollection):Boolean {
+                for each(var paymentMethod:PaymentMethod in paymentMethods) {
+                    if (paymentMethod.hasManualRequirement) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public function getRequirementsString(item:Object, column:DataGridColumn):String {
+                var requirements:ArrayCollection = (item[column.dataField]) as ArrayCollection;
+                return requirements.toArray().join('\n');
+            }
+
+            public function getRequirementsTip(item:PaymentMethod):String {
+                return item.requirements.length > 0 ? "These errors must be corrected in order to send payments using " + item.paymentMethodName : "";
+            }
+
+            public function getAdditionalRequirementsTip(item:PaymentMethod):String {
+                return item.additionalRequirements.length > 0 ? "Each payment must also meet these requirements to be sent using " + item.paymentMethodName : "";
+            }
+
+            public function lawNameTip(item:Object):String {
+                return (item as CompanyLawRateDetail).sourceLawID + ' - ' + (item as CompanyLawRateDetail).sourceLawDescription;
+            }
+
+            public function formatY_N(item:Object, column:DataGridColumn):String {
+                if (item[column.dataField] == null)
+                    return 'N';
+                return (Boolean(item[column.dataField])) ? 'Y' : 'N';
+            }
+
+            public function formatAdditionalAmount(value:String, isRate:Boolean):String {
+                if (value == "Missing") {
+                    return "Missing";
+                }
+                if (isRate) {
+                    return SAPRateFormatter.formatRateAsPercentage(parseFloat(value));
+                } else {
+                    return SAPCurrencyFormatters.defaultFormatter.format(parseFloat(value));
+                }
+            }
+
+            private function confirmChangeErFicaDeferral(e:ActionLinkEvent):void {
+                var newErFicaDeferral:Boolean = !(e.currentTarget.data as Boolean);
+                var msgString:String = "Are you sure you want to " + (newErFicaDeferral ? "enable" : "disable") + " ER FICA Deferral?";
+                Alert.show(msgString,
+                        "ER FICA Deferral Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        null,
+                        function (e:CloseEvent):void {
+                            if (e.detail == Alert.OK) {
+                                viewModel.updateErFicaDeferral(newErFicaDeferral);
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            }
+            ]]>
+        </mx:Script>
+            <mx:Label text="{AgencyInfoDTO(viewModel.agencyInfo).agency.agencyName}" styleName="heading"
+                      paddingBottom="3" paddingLeft="10"
+                      paddingTop="5"/>
+            <mx:HBox width="100%">
+                <mx:Spacer width="25"/>
+                <mx:VBox width="100%">
+                    <mx:VBox includeInLayout="{AgencyInfoDTO(viewModel.agencyInfo).isIRS()}"
+                             visible="{AgencyInfoDTO(viewModel.agencyInfo).isIRS()}">
+                        <mx:HBox verticalAlign="middle">
+                            <pspui:ActionLink actionClick="{showEFTPSHistory}"
+                                              label="EFTPS Enrollment:"
+                                              toolTip="More EFTPS Enrollment Details" textAlign="center" paddingTop="0" paddingBottom="0"/>
+                            <mx:Label text="{AgencyInfoDTO(viewModel.agencyInfo).currentEFTPSStatus}"/>
+                        </mx:HBox>
+                        <mx:HBox verticalAlign="middle">
+                            <pspui:ActionLink actionClick="{showRAFHistory}"
+                                              label="RAF Enrollment:"
+                                              toolTip="View RAF Enrollment History" textAlign="center" paddingTop="0" paddingBottom="0"/>
+                            <mx:Label text="{AgencyInfoDTO(viewModel.agencyInfo).currentRAFStatus}"/>
+                        </mx:HBox>
+                        <mx:HBox verticalAlign="middle">
+                            <mx:Label text="Name Control:" color="blue" fontStyle="normal" fontWeight="bold" textAlign="center"
+                                              paddingTop="0" paddingBottom="0" paddingLeft="10"/>
+                            <mx:Label text="{AgencyInfoDTO(viewModel.agencyInfo).nameControl}"/>
+                        </mx:HBox>
+                        <mx:HBox verticalAlign="middle">
+                            <pspui:ActionLink actionClick="{showErFicaDeferralHistory}"
+                                              label="CARES ER FICA Deferral:"
+                                              toolTip="View CARES ER FICA Deferral History" textAlign="left" paddingBottom="0"/>
+                            <mx:Label
+                                    text="{AgencyInfoDTO(viewModel.agencyInfo).erFicaDeferralEnabled ? 'Enabled' : 'Disabled'}" paddingBottom="0" paddingTop="2"/>
+                            <pspui:ActionLink actionClick="confirmChangeErFicaDeferral"
+                                              label="{AgencyInfoDTO(viewModel.agencyInfo).erFicaDeferralEnabled ? 'Disable' : 'Enable'} ER FICA Deferral"
+                                              textAlign="left" paddingBottom="0"
+                                              data="{AgencyInfoDTO(viewModel.agencyInfo).erFicaDeferralEnabled as Boolean}"
+                                              enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_AGENCY_IDS)}"/>
+                        </mx:HBox>
+                    </mx:VBox>
+                    <mx:Repeater id="templateRepeater"
+                                 dataProvider="{AgencyInfoDTO(viewModel.agencyInfo).companyPaymentTemplates}" recycleChildren="true">
+                        <mx:VBox>
+                            <mx:Label
+                                    text="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.paymentTemplateName}"
+                                    styleName="heading"
+                                    paddingLeft="5"
+                                    paddingBottom="0"
+                                    paddingTop="0"/>
+                            <mx:HBox>
+                                <mx:Spacer width="25"/>
+                                <mx:VBox paddingLeft="0" textAlign="left">
+                                    <mx:HBox verticalAlign="middle" textAlign="left">
+                                        <pspui:ActionLink label="Agency ID:"
+                                                          actionClick="{AgencyInfoDTO(viewModel.agencyInfo).isIRS() ? showEntityChangeHistory : showAgencyIdHistory}"
+                                                          toolTip="{AgencyInfoDTO(viewModel.agencyInfo).isIRS() ? 'View EIN Change History': 'View Agency Id History'}" paddingBottom="0" paddingTop="0"/>
+                                        <mx:Text text="{CompanyPaymentTemplate(templateRepeater.currentItem).agencyTaxpayerId}" paddingBottom="0"/>
+                                        <pspui:ActionLink label="Edit Agency IDs"
+                                                          actionClick="{editAgencyIDs}"
+                                                          visible="{!AgencyInfoDTO(viewModel.agencyInfo).isIRS() &amp;&amp; !CompanyPaymentTemplate(templateRepeater.currentItem).isNYMetro}"
+                                                          includeInLayout="{!AgencyInfoDTO(viewModel.agencyInfo).isIRS() &amp;&amp; !CompanyPaymentTemplate(templateRepeater.currentItem).isNYMetro}"
+                                                          enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_AGENCY_IDS)}"/>
+                                    </mx:HBox>
+
+                                    <mx:HBox
+                                            visible="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.getIRS94x()=='941'}"
+                                            includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.getIRS94x()=='941'}"
+                                            paddingLeft="1" textAlign="left"
+                                            width="100%">
+                                        <pspui:ActionLink actionClick="{showFilerTypeHistory}"
+                                                          label="Filer Type:"
+                                                          toolTip="View Filer Type History" textAlign="left" paddingBottom="0"/>
+                                        <mx:Label
+                                                text="{CompanyPaymentTemplate(templateRepeater.currentItem).filerType}" paddingBottom="0" paddingTop="2"/>
+                                        <mx:Label text="Effective {CompanyPaymentTemplate(templateRepeater.currentItem).filerTypeFutureEffectiveQuarter.label}"
+                                                  styleName="grayDataGridSubText"
+                                                  visible="{CompanyPaymentTemplate(templateRepeater.currentItem).filerTypeFutureEffectiveQuarter != null}"
+                                                  includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).filerTypeFutureEffectiveQuarter != null}"
+                                                  paddingBottom="0"
+                                                  paddingTop="2"/>
+                                        <pspui:ActionLink click="viewModel.editFilerType();"
+                                                          label="Edit Filer Type"
+                                                          textAlign="left" paddingBottom="0"
+                                                          enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_FILER_TYPE)}"/>
+                                    </mx:HBox>
+                                    <mx:HBox verticalAlign="middle">
+                                        <pspui:ActionLink actionClick="{showDepositFrequencyHistory}"
+                                                          label="Deposit Frequency:"
+                                                          toolTip="View Deposit Frequency History"
+                                                          textAlign="center" paddingTop="0"/>
+                                        <mx:Label text="{CompanyPaymentTemplate(templateRepeater.currentItem).currentDepositFrequency.depositFrequency}" paddingTop="0"/>
+                                        <mx:Label text="Follows federal deposit frequency"
+                                                  styleName="grayDataGridSubText"
+                                                  visible="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.followsFedDepositFrequency}"
+                                                  includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.followsFedDepositFrequency}"/>
+                                        <pspui:ActionLink actionClick="{editDepositFrequencies}"
+                                                          label="Edit Deposit Frequency"
+                                                          textAlign="center" paddingTop="0"
+                                                          visible="{CompanyPaymentTemplate(templateRepeater.currentItem).canChangeDepositFrequency}"
+                                                          includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).canChangeDepositFrequency}"
+                                                          enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_DEPOSIT_FREQ)}"/>
+                                    </mx:HBox>
+                                    <mx:HBox
+                                            visible="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.hasACHEnrollment()}"
+                                            includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.hasACHEnrollment()}">
+                                        <pspui:ActionLink click="showACHEnrollmentHistory()"
+                                                          label="ACH Enrollment:"
+                                                          toolTip="View ACH Enrollment History"
+                                                          textAlign="center" paddingTop="0"/>
+                                        <mx:Label text="{AgencyInfoDTO(viewModel.agencyInfo).currentACHEnrollmentStatus}"/>
+                                    </mx:HBox>
+                                    <mx:HBox
+                                            visible="{!CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.isIRSPaymentTemplate()
+                                            &amp;&amp; showACHRegistration(CompanyPaymentTemplate(templateRepeater.currentItem).paymentMethods)}"
+                                            includeInLayout="{!CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.isIRSPaymentTemplate()
+                                            &amp;&amp; showACHRegistration(CompanyPaymentTemplate(templateRepeater.currentItem).paymentMethods)}">
+                                        <pspui:ActionLink actionClick="{showACHRegistrationHistory}"
+                                                          label="Registered for ACH:"
+                                                          toolTip="View ACH Registration History"
+                                                          textAlign="center" paddingTop="0"/>
+                                        <mx:Label
+                                                text="{formatYesNo(CompanyPaymentTemplate(templateRepeater.currentItem).registeredForACH)}"
+                                                paddingTop="0"/>
+                                        <pspui:ActionLink actionClick="{updateAgentEnabled}"
+                                                          label="{CompanyPaymentTemplate(templateRepeater.currentItem).registeredForACH ? 'Cancel Registration' : 'Register'}"
+                                                          textAlign="center" paddingTop="0"
+                                                          data="{!CompanyPaymentTemplate(templateRepeater.currentItem).registeredForACH}"
+                                                          enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_ACH_REG_FLAG)}"
+                                                          visible="{!CompanyPaymentTemplate(templateRepeater.currentItem).isNYMetro}"
+                                                          includeInLayout="{!CompanyPaymentTemplate(templateRepeater.currentItem).isNYMetro}"/>
+                                    </mx:HBox>
+                                    <mx:HBox>
+                                        <mx:Spacer width="3"/>
+                                        <mx:VBox width="730" styleName="backgroundGrey" verticalAlign="middle">
+                                            <pspui:ActionLink actionClick="{showPaymentMethodsHistory}"
+                                                              label="Payment Methods"
+                                                              toolTip="View Payment Methods History"
+                                                              textAlign="center" paddingTop="8" paddingLeft="0"/>
+                                            <controls:SAPDataGrid dataProvider="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentMethods}"
+                                                                  maxRows="8" width="100%"
+                                                                  selectable="false" draggableColumns="false" sortableColumns="false" resizableColumns="false">
+                                                <controls:columns>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Method"
+                                                            width="120"
+                                                            resizable="false"
+                                                            dataField="paymentMethodName"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Enabled"
+                                                            labelFunction="getYesNo"
+                                                            width="80"
+                                                            dataField="isEnabled"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Reasons not enabled"
+                                                            labelFunction="getRequirementsString"
+                                                            dataTipFunction="getRequirementsTip"
+                                                            showDataTips="true"
+                                                            width="250"
+                                                            wordWrap="true"
+                                                            dataField="requirements"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Additional requirements"
+                                                            labelFunction="getRequirementsString"
+                                                            dataTipFunction="getAdditionalRequirementsTip"
+                                                            showDataTips="true"
+                                                            minWidth="340"
+                                                            wordWrap="true"
+                                                            dataField="additionalRequirements"/>
+                                                </controls:columns>
+                                            </controls:SAPDataGrid>
+                                        </mx:VBox>
+                                    </mx:HBox>
+                                    <mx:HBox>
+                                        <mx:Spacer width="3"/>
+                                        <mx:VBox paddingTop="0"
+                                                 styleName="backgroundGrey"
+                                                 visible="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.agencyIDs.length > 0}"
+                                                 includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.agencyIDs.length > 0}">
+                                            <mx:HBox width="100%" verticalAlign="middle" styleName="noPadding" paddingTop="8">
+                                                <pspui:ActionLink actionClick="{showAdditionalIdHistory}"
+                                                                  label="Additional Agency IDs"
+                                                                  toolTip="View Additional Agency Id History" paddingLeft="0"
+                                                                  textAlign="center"/>
+                                                <mx:HBox width="100%" horizontalAlign="right" verticalAlign="middle" styleName="noPadding">
+                                                    <pspui:ActionLink label="Edit Agency IDs"
+                                                                      actionClick="{editAgencyIDs}"
+                                                                      enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_AGENCY_IDS)}"
+                                                                      visible="{!CompanyPaymentTemplate(templateRepeater.currentItem).isNYMetro}"
+                                                                      includeInLayout="{!CompanyPaymentTemplate(templateRepeater.currentItem).isNYMetro}"/>
+                                                </mx:HBox>
+                                            </mx:HBox>
+
+
+                                            <mx:DataGrid paddingRight="10"
+                                                         rowCount="{CompanyPaymentTemplate(templateRepeater.currentItem).additionalIds.length}"
+                                                         selectable="false"
+                                                         dataProvider="{CompanyPaymentTemplate(templateRepeater.currentItem).additionalIds}"
+                                                         width="100%"
+                                                         sortableColumns="false"
+                                                         draggableColumns="false">
+                                                <mx:columns>
+                                                    <mx:DataGridColumn
+                                                            headerText=""
+                                                            width="120"
+                                                            draggable="false"
+                                                            resizable="false"
+                                                            sortable="false"
+                                                            dataField="name"/>
+                                                    <mx:DataGridColumn
+                                                            headerText="ID"
+                                                            width="197">
+                                                        <mx:itemRenderer>
+                                                            <mx:Component>
+                                                                <mx:Text selectable="false"
+                                                                         text="{CompanyAgencyPaymentTemplateAgencyId(data).id != null ? CompanyAgencyPaymentTemplateAgencyId(data).id : 'Missing'}"
+                                                                         fontStyle="{CompanyAgencyPaymentTemplateAgencyId(data).id != null ? 'normal' : 'italic'}">
+                                                                    <mx:Script><![CDATA[
+                                                                        import psp.sap.model.CompanyAgencyPaymentTemplateAgencyId;
+                                                                        ]]></mx:Script>
+                                                                </mx:Text>
+                                                            </mx:Component>
+                                                        </mx:itemRenderer>
+                                                    </mx:DataGridColumn>
+                                                </mx:columns>
+                                            </mx:DataGrid>
+
+                                        </mx:VBox>
+                                    </mx:HBox>
+                                    <mx:HBox>
+                                        <mx:Spacer width="3"/>
+                                        <mx:VBox width="550" paddingTop="7"
+                                                 styleName="backgroundGrey" verticalAlign="middle">
+                                            <mx:HBox width="100%" verticalAlign="middle" styleName="noPadding">
+                                                <mx:Label text="Laws"/>
+                                                <pspui:ActionLink actionClick="{showLawRatesHistory}"
+                                                                  data="{data}"
+                                                                  label="Rate History" paddingLeft="0" paddingTop="0" paddingRight="0" paddingBottom="0"
+                                                                  toolTip="View {CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.paymentTemplateName} Law Rates History"
+                                                                  textAlign="center"/>
+                                                <pspui:ActionLink actionClick="{viewLawFlagHistory}"
+                                                                  data="{data}"
+                                                                  label="Flag History" paddingLeft="0" paddingTop="0" paddingRight="0" paddingBottom="0"
+                                                                  toolTip="View {CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.paymentTemplateName} Filing Flag History"
+                                                                  textAlign="center"/>
+                                                <mx:HBox width="100%" horizontalAlign="right">
+                                                    <pspui:ActionLink actionClick="{editLawRates}"
+                                                                      data="{data}"
+                                                                      label="Edit Rates" paddingLeft="0" paddingTop="0" paddingRight="0" paddingBottom="0"
+                                                                      toolTip="Edit {CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.paymentTemplateName} Law Rates"
+                                                                      textAlign="center"
+                                                                      visible="{CompanyPaymentTemplate(templateRepeater.currentItem).hasSUIERRates || SAP.canPerformOperation(OperationsEnum.EDIT_RATES_OTHER_LAWS)}"
+                                                                      includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).hasSUIERRates || SAP.canPerformOperation(OperationsEnum.EDIT_RATES_OTHER_LAWS)}"
+                                                                      enabled="{SAP.canPerformOperation(CompanyPaymentTemplate(templateRepeater.currentItem).hasSUIERRates ? OperationsEnum.EDIT_SUI_RATE_CURR_QTR : OperationsEnum.EDIT_RATES_OTHER_LAWS)}"/>
+                                                    <pspui:ActionLink actionClick="{editFlags}"
+                                                                      data="{data}"
+                                                                      label="Edit Flags" paddingLeft="0" paddingTop="0" paddingRight="0" paddingBottom="0"
+                                                                      toolTip="Edit {CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.paymentTemplateName} Law Flags"
+                                                                      textAlign="center"
+                                                                      enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_FILING_FLAGS)}"/>
+                                                </mx:HBox>
+                                            </mx:HBox>
+                                            <controls:SAPDataGrid paddingRight="10"
+                                                                  dataProvider="{CompanyPaymentTemplate(templateRepeater.currentItem).lawRates}"
+                                                                  maxRows="8" width="100%"
+                                                                  selectable="false">
+                                                <controls:columns>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Law"
+                                                            dataTipFunction="lawNameTip"
+                                                            showDataTips="true"
+                                                            width="250"
+                                                            draggable="false"
+                                                            resizable="false"
+                                                            sortable="false"
+                                                            dataField="lawName"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Rate"
+                                                            width="110"
+                                                            draggable="false"
+                                                            textAlign="right"
+                                                            resizable="false"
+                                                            sortable="false"
+                                                            dataField="rate"
+                                                            labelFunction="SAPDataGrid.formatRateAsPercentage"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Inactive"
+                                                            width="75"
+                                                            draggable="false"
+                                                            textAlign="right"
+                                                            resizable="false"
+                                                            sortable="false"
+                                                            labelFunction="formatY_N"
+                                                            dataField="inactive"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Exempt"
+                                                            width="70"
+                                                            draggable="false"
+                                                            textAlign="right"
+                                                            resizable="false"
+                                                            sortable="false"
+                                                            labelFunction="formatY_N"
+                                                            dataField="exempt"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Reimbursable"
+                                                            width="110"
+                                                            draggable="false"
+                                                            textAlign="right"
+                                                            resizable="false"
+                                                            sortable="false"
+                                                            labelFunction="formatY_N"
+                                                            dataField="reimbursable"/>
+                                                </controls:columns>
+                                            </controls:SAPDataGrid>
+                                        </mx:VBox>
+                                    </mx:HBox>
+
+                                    <mx:HBox visible="{CompanyPaymentTemplate(templateRepeater.currentItem).activeFilingAmounts.length > 0}"
+                                             includeInLayout="{CompanyPaymentTemplate(templateRepeater.currentItem).activeFilingAmounts.length > 0}">
+                                        <mx:Spacer width="3"/>
+                                        <mx:VBox width="550" paddingTop="7"
+                                                 styleName="backgroundGrey" verticalAlign="middle">
+                                            <mx:HBox verticalAlign="middle" width="100%">
+                                                <pspui:ActionLink actionClick="{showAdditionalAmountHistory}"
+                                                                  data="{data}"
+                                                                  label="Additional Filing Amounts/Rates" paddingLeft="0"
+                                                                  toolTip="View {CompanyPaymentTemplate(templateRepeater.currentItem).paymentTemplate.paymentTemplateName} Additional Filing Amount/Rate History"
+                                                                  textAlign="center" />
+                                                <mx:HBox verticalAlign="middle" width="100%" horizontalAlign="right">
+                                                    <pspui:ActionLink actionClick="{editAdditionalFilingAmounts}"
+                                                                      data="{data}"
+                                                                      label="Edit Additional Filing Amounts/Rates" paddingLeft="0"
+                                                                      textAlign="center"
+                                                                      enabled="{SAP.canPerformOperation(OperationsEnum.EDIT_FILING_AMTS)}"/>
+                                                </mx:HBox>
+                                            </mx:HBox>
+
+                                            <controls:SAPDataGrid paddingRight="10"
+                                                                  dataProvider="{CompanyPaymentTemplate(templateRepeater.currentItem).activeFilingAmounts}"
+                                                                  maxRows="8" width="100%"
+                                                                  draggableColumns="false"
+                                                                  sortableColumns="false"
+                                                                  resizableColumns="false"
+                                                                  selectable="false">
+                                                <controls:columns>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Name"
+                                                            width="170"
+                                                            dataField="name"/>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Current Quarter Value"
+                                                            width="125"
+                                                            textAlign="right"
+                                                            dataField="value">
+                                                        <controls:itemRenderer>
+                                                            <mx:Component>
+                                                                <mx:Text selectable="false"
+                                                                         text="{CompanyFilingAmount(data).value == 'Missing' ? '' : outerDocument.formatAdditionalAmount(CompanyFilingAmount(data).value, CompanyFilingAmount(data).isRate)}">
+                                                                    <mx:Script><![CDATA[
+                                                                        import psp.sap.model.CompanyFilingAmount;
+                                                                        ]]></mx:Script>
+                                                                </mx:Text>
+                                                            </mx:Component>
+                                                        </controls:itemRenderer>
+                                                    </controls:SAPDataGridColumn>
+                                                    <controls:SAPDataGridColumn
+                                                            headerText="Previous Quarter Value"
+                                                            width="125"
+                                                            textAlign="right"
+                                                            dataField="previousQuarterValue">
+                                                        <controls:itemRenderer>
+                                                            <mx:Component>
+                                                                <mx:Text selectable="false"
+                                                                         text="{CompanyFilingAmount(data).previousQuarterValue == 'Missing' ? '' : outerDocument.formatAdditionalAmount(CompanyFilingAmount(data).previousQuarterValue, CompanyFilingAmount(data).isRate)}">
+                                                                    <mx:Script><![CDATA[
+                                                                        import psp.sap.model.CompanyFilingAmount;
+                                                                        ]]></mx:Script>
+                                                                </mx:Text>
+                                                            </mx:Component>
+                                                        </controls:itemRenderer>
+                                                    </controls:SAPDataGridColumn>
+                                                </controls:columns>
+                                            </controls:SAPDataGrid>
+                                        </mx:VBox>
+                                    </mx:HBox>
+
+                                </mx:VBox>
+                            </mx:HBox>
+                        </mx:VBox>
+                    </mx:Repeater>
+                </mx:VBox>
+            </mx:HBox>
+</mx:VBox>

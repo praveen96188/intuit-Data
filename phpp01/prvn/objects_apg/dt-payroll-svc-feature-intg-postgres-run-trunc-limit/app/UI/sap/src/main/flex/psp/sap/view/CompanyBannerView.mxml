@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:flexlib="http://code.google.com/p/flexlib/"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:sap="psp.sap.view.*" xmlns:controls="psp.sap.view.controls.*"
+        width="100%"
+        horizontalScrollPolicy="off"
+        verticalScrollPolicy="off">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.CompanyNote;
+        import psp.sap.model.ServiceSubStatus;
+        import psp.sap.view.controls.HTMLToolTip;
+        import psp.sap.viewmodel.CompanyEventLogViewModel;
+        import psp.sap.viewmodel.CompanyManageStrikesViewModel;
+        import psp.sap.viewmodel.CompanySummaryBannerViewModel;
+
+
+        private const TRUNC_TEXT_HEIGHT:int = 20;
+        private const TRUNC_TEXT_WIDTH:int = 150;
+
+        [Bindable]
+        public var viewModel:CompanySummaryBannerViewModel;
+
+        private function lookupSubStatus(substatusCd:String):String {
+            var substatus:ServiceSubStatus = SAP.instance.lookupService.serviceSubStatuses.getItemByKey(substatusCd) as ServiceSubStatus;
+            return substatus.subStatusName;
+        }
+
+        private function showEntityChangeHistory(event:ActionLinkEvent):void {
+            viewModel.showEntityChangeHistory();
+        }
+
+        private function getAlertNoteTooltip(note:CompanyNote):String {
+            if (note == null) {
+                return "";
+            }
+            return "<b>An alert has been placed on this company.</b><br/>Click here to see the event log for details.<br/>Note:<br/>   " + note.notes;
+        }
+        ]]>
+    </mx:Script>
+    <mx:HBox width="100%" backgroundColor="#F4F4F4" paddingTop="0" verticalGap="0">
+
+        <mx:HBox width="10" id="contentSpacer" horizontalAlign="right">
+            <mx:LinkButton icon="{SAP.instance.icons.bell}"
+                           styleName="standardLinkButtonStyle"
+                           paddingRight="-10"
+                           visible="{viewModel.alertNote != null}"
+                           toolTipCreate="event.toolTip = new HTMLToolTip();"
+                           toolTip="{getAlertNoteTooltip(viewModel.alertNote)}"
+                           click="viewModel.inspector.getPage(CompanyInspectorPageEnum.EVENT_LOG).activatePage(CompanyEventLogViewModel.createActivator(viewModel.alertNote.eventId))"/>
+        </mx:HBox>
+
+        <!-- company information -->
+        <mx:VBox verticalGap="-2">
+            <pspui:TruncatedText
+                    id="legalNameText"
+                    text="{viewModel.company.legalName}"
+                    height="{TRUNC_TEXT_HEIGHT}"
+                    width="{TRUNC_TEXT_WIDTH}"
+                    includeInLayout="{viewModel.company.legalName != null}"
+                    visible="{viewModel.company.legalName != null}"/>
+            <pspui:TruncatedText
+                    id="companyIdText"
+                    text="{viewModel.company.sourceSystemCd + ' : ' + viewModel.company.companyId}"
+                    height="{TRUNC_TEXT_HEIGHT}"
+                    width="{TRUNC_TEXT_WIDTH}"/>
+            <mx:HBox horizontalGap="0">
+                <mx:Text id="einText" text="EIN: {viewModel.company.einLabel}"
+                         color="0x000000"
+                         visible="{viewModel.entityChangeHistory.length==0}"
+                         includeInLayout="{viewModel.entityChangeHistory.length==0}"/>
+                <pspui:ActionLink id="showEntityChangeHistoryAction" actionClick="{showEntityChangeHistory}"
+                                  label="{viewModel.company.einLabel}"
+                                  toolTip="View EIN History"
+                                  color="0x0000FF" paddingLeft="0"
+                                  visible="{viewModel.entityChangeHistory.length!=0}"
+                                  includeInLayout="{viewModel.entityChangeHistory.length!=0}"/>
+            </mx:HBox>
+            <mx:HBox horizontalGap="0" width="100%" verticalAlign="middle">
+                <mx:Label text="Balance:"/>
+                <mx:Label text="{SAPCurrencyFormatters.defaultFormatter.format(viewModel.companyBalance)}"
+                          color="{viewModel.companyBalance > 0 ? 0xFF0000 : 0x000000}" width="100%"/>
+
+                <mx:PopUpButton
+                        textAlign="right"
+                        icon="{SAP.instance.icons.dropDown}" skin="{null}"
+                        openAlways="true"
+                        paddingLeft="0" paddingRight="0"
+                        arrowButtonWidth="0"
+                        useHandCursor="true"
+                        buttonMode="true"
+                        tabEnabled="false">
+                    <mx:popUp>
+                        <pspui:BannerSubscriptionStatusPopUp
+                                borderStyle="solid"
+                                borderColor="#9B9EA0"
+                                backgroundColor="#CED5E5"
+                                color="black"
+                                dropShadowEnabled="true"
+                                cornerRadius="5"
+                                verticalGap="0">
+                            <mx:Label text="Current" textAlign="center" width="100%"/>
+                            <mx:Grid verticalGap="-2" fontWeight="normal" borderSides="top" borderStyle="solid">
+                                <mx:GridRow>
+                                    <mx:GridItem>
+                                        <mx:Label text="Strikes:"/>
+                                    </mx:GridItem>
+                                    <mx:GridItem>
+                                        <mx:Label id="strikeCountLabel" text="{CompanyManageStrikesViewModel.getTwelveMonthStrikeCount(viewModel.strikes)}"
+                                                  textAlign="right" width="100%"/>
+                                    </mx:GridItem>
+                                </mx:GridRow>
+                            </mx:Grid>
+                            <mx:Label text="History" textAlign="center" width="100%"/>
+                            <mx:Grid verticalGap="-2" fontWeight="normal" borderSides="top" borderStyle="solid">
+                                <mx:GridRow>
+                                    <mx:GridItem>
+                                        <mx:Label text="Payrolls:"/>
+                                    </mx:GridItem>
+                                    <mx:GridItem>
+                                        <mx:Label id="payrollRunCountLabel" text="{viewModel.payrollRunCount}"
+                                                  textAlign="right" width="100%"/>
+                                    </mx:GridItem>
+                                </mx:GridRow>
+                                <mx:GridRow>
+                                    <mx:GridItem>
+                                        <mx:Label text="Returns:"/>
+                                    </mx:GridItem>
+                                    <mx:GridItem>
+                                        <mx:Label id="bankReturnCountLabel" text="{viewModel.bankReturnCount}"
+                                                  textAlign="right" width="100%"/>
+                                    </mx:GridItem>
+                                </mx:GridRow>
+                            </mx:Grid>
+                        </pspui:BannerSubscriptionStatusPopUp>
+                    </mx:popUp>
+                </mx:PopUpButton>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:Spacer width="10"/>
+
+
+        <mx:HBox>
+            <mx:Repeater id="serviceRepeater" dataProvider="{viewModel.companyStatus.serviceStatusCollection}">
+                <pspui:BannerSubscriptionStatus data="{serviceRepeater.currentItem}"/>
+            </mx:Repeater>
+        </mx:HBox>
+
+    </mx:HBox>
+    <controls:PopUpPart id="entityChangeHistoryModal" label="{CompanyInspectorPageEnum.COMPANY_ENTITY_CHANGE+'_pup'}"
+                        showCloseButton="true"
+                        resizeToContent="true" accountForVerticalScrollBar="true" horizontalResizeEnabled="false">
+        <pspui:EntityChangeHistoryPopUpView id="entityChangeHistoryView"
+                                            label="{CompanyInspectorPageEnum.COMPANY_ENTITY_CHANGE}"/>
+    </controls:PopUpPart>
+</mx:Canvas>

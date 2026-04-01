@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<controls:InterviewPage xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*"
+                        tagText="{resourceManager.getString('interview','dates_tag')}"
+                        creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.utils.ObjectUtil;
+
+        import psp.taxcredits.model.ModelUtils;
+
+        public function onCreationComplete():void {
+            
+            validators.addItem(offeredValidator);
+            validators.addItem(startedValidator);
+            validators.addItem(startingWageValidator);
+            validators.addItem(positionValidator);
+            validators.addItem(ssnValidator);
+            validators.addItem(workStateValidator);
+
+        }
+
+
+        public function writeToModel():void {
+            if (ObjectUtil.dateCompare(model.employee.offeredDate, dateOffered.selectedDate) != 0) {
+                model.employee.offeredDate = dateOffered.selectedDate;
+            }
+            if (ObjectUtil.dateCompare(model.employee.startDate, dateStarted.selectedDate) != 0) {
+                model.employee.startDate = dateStarted.selectedDate;
+            }
+
+            model.employee.startingWage = startingWage.text;
+            model.employee.position = position.text;
+            model.employee.ssn = ssn.text;
+            model.employee.workState = workState.selectedItem as String;
+        }
+
+
+        override public function readFromModel():void {
+            dateOffered.selectedDate = model.employee.offeredDate;
+            dateStarted.selectedDate = model.employee.startDate;
+
+            startingWage.text = model.employee.startingWage;
+            position.text = model.employee.position;
+            ssn.text = model.employee.ssn;
+            workState.selectedItem = model.employee.workState;
+
+        }
+
+
+
+        ]]>
+    </mx:Script>
+
+    <mx:Validator id="offeredValidator" source="{dateOffered}" property="selectedDate" required="true" triggerEvent="none"/>
+    <controls:DateAfterValidator id="startedValidator" source="{dateStarted}" property="selectedDate" required="true" triggerEvent="none"
+                                 dateAfter="{model.employee.hireDate}" dateNotAfter="{resourceManager.getString('interview','dates_started_before_hire_date')}"/>
+    <mx:Validator id="startingWageValidator" source="{startingWage}" property="text" required="true" triggerEvent="none"/>
+    <mx:Validator id="positionValidator" source="{position}" property="text" required="true" triggerEvent="none"/>
+    <mx:SocialSecurityValidator id="ssnValidator" source="{ssn}" property="text" required="true" triggerEvent="none"/>            
+    <mx:Validator id="workStateValidator" source="{workState}" property="selectedItem" required="true" triggerEvent="none"/> 
+    
+    <mx:Form>
+        <mx:FormItem label="{resourceManager.getString('interview','dates_job_offered')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:DateField id="dateOffered"
+                          width="150"
+                          change="writeToModel();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','dates_started')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:DateField id="dateStarted"
+                          width="150"
+                          change="writeToModel();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','ssn')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="ssn" width="182" maxChars="11" restrict="0-9\-" change="writeToModel();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','starting_wage')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="startingWage" width="182" maxChars="50" change="writeToModel();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','position')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <mx:TextInput id="position" width="182" maxChars="50" change="writeToModel();"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString('interview','work_state')}"
+                     labelStyleName="formLabel"
+                     required="true">
+            <controls:ComboBoxExt id="workState" dataProvider="{ModelUtils.states}" change="writeToModel();"/>
+        </mx:FormItem>
+    </mx:Form>
+
+</controls:InterviewPage>

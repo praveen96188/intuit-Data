@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:flexunit="flexunit.flexui.*" 
+	layout="absolute"
+	pageTitle="SAP Test Runner" 
+	creationComplete="onCreationComplete()">
+	 
+	<mx:Script>
+		<![CDATA[
+			import test.sap.application.SAPTestBase;
+			import test.sap.TestDataLoader;
+			import test.sap.viewModel.BankReturnsSearchExplorerViewModelTest;
+			import test.sap.viewModel.PayrollTransactionReverseViewModelTest;			
+        	import test.sap.viewModel.PayrollTransactionCancelViewModelTest;
+			import mx.rpc.Responder;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.remoting.RemoteObject;
+			import mx.controls.Alert;
+			import psp.sap.application.events.SAPEvent;
+			import psp.sap.application.SAP;
+			import test.sap.viewModel.PayrollTransactionsListViewModelTest;
+			import test.sap.viewModel.CompanyEditFormPageViewModelTest;
+			import test.sap.viewModel.CompanyFundingModelHistoryViewModelTest;
+			import test.sap.viewModel.CompanyInspectorViewModelTest;
+			import test.sap.viewModel.PayrollsListViewModelTest;			
+			import test.sap.service.CompanyServiceTest;
+			//import test.sap.service.CompanyServiceTest;
+			import test.sap.service.CompanyServiceSearchTest;
+			import test.sap.service.PayrollRunServiceTest;			
+			import test.sap.viewModel.LoginViewModelTest;
+			import test.sap.application.SessionTest;
+			import test.sap.application.MRUListTest;
+			import test.sap.application.CompanyEntityTest;
+			
+			import test.sap.application.SAPActiveExplorerTest;
+			import test.intuit.framework.CollectionViewModelTest;
+
+			import flexunit.framework.TestSuite;
+
+			// guard to prevent accidental multiple runs due to tests
+			// calling SAP.instance.lookupService.loadData();
+			// they shouldn't... but just in case.
+			private var iteration:int = 0;
+
+			// After everything is built, configure the test
+			// runner to use the appropriate test suite and
+			// kick off the unit tests
+			private function onCreationComplete():void
+			{
+				SAP.instance.resetForTesting();
+				var dataLoader:RemoteObject = new RemoteObject("dataloaderservice");
+				var token:AsyncToken = dataLoader.runDataLoader("Load User Data Only");
+				token.addResponder(new mx.rpc.Responder(onLoadUsersComplete, onLoadUsersFault));
+			}
+			
+			private function onLoadUsersFault(e:FaultEvent):void {
+				trace("Error loading user data!");
+			}
+			
+			private function onLoadUsersComplete(e:ResultEvent):void {
+				// log in a test user
+				SAP.instance.session.login(
+					"automatedtaxforms",
+					"AutomatedTaxFormsZHZ", 
+					onDataLoaderComplete, 
+					onDataLoaderFault);
+			}
+
+			private function onDataLoaderComplete(e:ResultEvent):void {
+				// tests will fail unless all lookup data is loaded first
+				SAP.instance.lookupService.addEventListener(SAPEvent.DATA_LOAD_COMPLETED, onLookupDataLoaded);
+				SAP.instance.testMode = true;
+				SAP.instance.lookupService.loadData();
+ 			}
+
+ 			private function onDataLoaderFault(e:FaultEvent):void {
+ 				trace("Error starting test cases because data loader service failed.");
+ 			}
+
+			private function onLookupDataLoaded(e:SAPEvent):void {
+				iteration++;
+				if (iteration > 1) {
+					Alert.show("INVESTIGATE NOW: a FlexUnit test is calling SAP.instance.lookupService.loadData() -- this can cause infinite test runs.");
+					return;
+				}
+				
+ 				testRunner.test = createSuite();
+ 				testRunner.startTest();
+			}
+
+
+
+			// Creates the test suite to run
+			private function createSuite():TestSuite {
+
+ 				var ts:TestSuite = new TestSuite();
+
+				ts.addTest( CompanyServiceSearchTest.suite() );
+				ts.addTest( CompanyServiceTest.suite() );
+                ts.addTest( PayrollRunServiceTest.suite() );	 			              
+
+                return ts;
+ 			}
+			
+		]]>
+	</mx:Script>
+
+	<!-- flexunit provides a very handy default test runner GUI -->
+	<flexunit:TestRunnerBase id="testRunner" width="100%" height="100%" />
+	
+</mx:Application>

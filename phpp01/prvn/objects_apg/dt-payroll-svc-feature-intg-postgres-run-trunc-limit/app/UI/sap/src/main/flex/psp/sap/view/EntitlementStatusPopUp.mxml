@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         borderStyle="solid"
+         borderColor="#9B9EA0"
+         backgroundColor="#CED5E5"
+         color="black"
+         cornerRadius="5"
+         verticalGap="6"
+         rollOver="mouseOver = true"
+         rollOut="onMouseOut(event)">
+    <mx:Script>
+		<![CDATA[
+
+        import psp.sap.model.EntitlementSearchResult;
+        import psp.sap.model.StatusEntitlements;
+
+        [Bindable] public var statusEntitlements:StatusEntitlements;
+
+        private var mMouseOver:Boolean = false;
+
+        [Bindable]
+        public function get mouseOver():Boolean {
+            return mMouseOver;
+        }
+
+        public function set mouseOver(value:Boolean):void {
+            mMouseOver = value;
+        }
+
+        private function onMouseOut(e:MouseEvent):void {
+            // check if the mouse is over the popup
+            if(this.mouseY > 0 || (this.mouseY < 0 && owner.mouseX < 0)){
+                mouseOver = false;
+            }
+        }
+		]]>
+	</mx:Script>
+    <mx:Repeater id="entitlementRepeater" dataProvider="{statusEntitlements.entitlements}">
+
+        <mx:Form paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" verticalGap="0">
+            <mx:FormItem label="Subtype:">
+                <mx:Text text="{EntitlementSearchResult(entitlementRepeater.currentItem).subtypeDescription}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Entitlement Status:">
+                <mx:Text text="{EntitlementSearchResult(entitlementRepeater.currentItem).entitlementStatus}"/>
+            </mx:FormItem>
+        </mx:Form>
+
+    </mx:Repeater>
+
+
+</mx:VBox>

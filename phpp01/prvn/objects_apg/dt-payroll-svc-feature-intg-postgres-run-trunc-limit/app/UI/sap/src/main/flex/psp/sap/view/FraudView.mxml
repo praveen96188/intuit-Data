@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*"
+	height="100%"
+	width="100%"	
+	verticalGap="0" 	
+	creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.FraudViewModel;
+			import psp.sap.application.enums.FraudInspectorPageEnum;
+			
+			
+			private var mViewModel:FraudViewModel;
+			private var mTempViewModel:FraudViewModel;
+			private var mCreationComplete:Boolean = false;			
+								
+			[Bindable]
+			public function get viewModel():FraudViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:FraudViewModel):void {												
+				if (mCreationComplete) {
+					mViewModel = value;															
+				} 
+				else {
+					mTempViewModel = value;
+				}
+			}
+	
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;	
+				//tabNavigator.activate();											
+			}
+			
+						
+		]]>
+	</mx:Script>
+
+	<controls:PartsTabNavigator id="tabNavigator"
+		label="{FraudInspectorPageEnum.FRAUD_SEARCH+'_ptn'}"
+		width="100%"		
+		tabEnabled="false"		
+		horizontalGap="4">
+		<pspui:FraudSearchView 
+			label="{FraudInspectorPageEnum.FRAUD_SEARCH}"/>
+		
+		<pspui:FraudDetailView 
+			label="{FraudInspectorPageEnum.FRAUD_DETAIL}"
+			id = "fraudDetail" />
+			
+	</controls:PartsTabNavigator>
+				
+</mx:VBox>

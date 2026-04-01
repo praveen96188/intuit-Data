@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+			horizontalAlign="center" 
+			verticalGap="0"
+			width="90%">
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.BankReturnsSearchViewModel;
+			import psp.sap.application.SAP;
+			
+			private var mViewModel:BankReturnsSearchViewModel = new BankReturnsSearchViewModel();
+			
+			[Bindable]
+            public var pageNumber:Number = 1;
+			
+			[Bindable]
+			public function get viewModel():BankReturnsSearchViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:BankReturnsSearchViewModel):void {
+				mViewModel = value;
+			}
+			
+			public function showPage(pageType:String):void {
+                if(pageType == "middle" || pageType == "last") {
+                    // The header won't be used again; hide it.
+                    header.includeInLayout=false;
+                    header.visible = false;
+                }
+                
+                //Update the DataGrid layout to reflect the results.
+                validateNow();
+            }
+			
+		]]>
+	</mx:Script>
+	
+	<mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+    <mx:CurrencyFormatter id="currencyFormatter" precision="2"
+                          currencySymbol="$" decimalSeparatorFrom="."
+                          decimalSeparatorTo="." useNegativeSign="true"
+                          useThousandsSeparator="true" alignSymbol="left"/>
+    	                          
+    <mx:HBox width="100%" horizontalGap="0" horizontalAlign="left">            
+		<mx:Label text="Bank Returns - {dateFormatter.format(SAP.instance.PSPDate)}" fontSize="8" fontWeight="bold"/>
+	</mx:HBox>
+	
+	<mx:HBox id="header" width="100%" horizontalGap="0" horizontalAlign="right">            
+		<mx:Label 
+			text="Displaying {viewModel.selectedSearchViewModel.startIndex} to {viewModel.selectedSearchViewModel.lastIndex} of {viewModel.selectedSearchViewModel.totalRecords} records"
+			styleName="smallFont"/>
+	</mx:HBox>		
+
+	<mx:PrintDataGrid id="printableDataGrid" width="80%" height="100%" >
+		<mx:columns>
+			<mx:DataGridColumn
+				headerText="ACH Processing Status{String('\n')}ER Debit Status"
+				dataField="statusCd"
+				minWidth="60"/>
+				
+			<mx:DataGridColumn
+				headerText="Transaction Type"
+				dataField="transactionType" 
+				minWidth="80"/>				
+			<mx:DataGridColumn
+				headerText="Company Name{String('\n')}Company ID{String('\n')}EIN"
+				minWidth="160">				
+				<mx:itemRenderer>		
+					<mx:Component>
+						<mx:Text  
+								id="companyNameIdAndEINText"
+                                text="{data.companyName}{String('\n')}CID: {data.companyId}{String('\n')}EIN: {data.fein}"
+								styleName="smallFont"/>						
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				headerText="Employee"
+				minWidth="75">				
+				<mx:itemRenderer>		
+					<mx:Component>
+						<mx:VBox 
+							width="100%" 
+							horizontalAlign="left"  
+							verticalGap="0"
+							verticalScrollPolicy="off"
+							horizontalScrollPolicy="off">
+							<mx:Text id="employeeName" text="{data.employeeName}" styleName="smallFont"/>
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				headerText="Bank{String('\n')}Account #"
+				minWidth="40">										
+				<mx:itemRenderer>		
+					<mx:Component>						
+						<mx:Text 
+							id="bankAccountNumberText"
+                            text="{UIUtils.maskBankAccountNumbers(data.bankAccountNumber)}"
+							styleName="smallFont"/>							
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				headerText="ACH{String('\n')}Amount"
+				minWidth="70">
+				<mx:itemRenderer>		
+					<mx:Component>
+						<mx:VBox										 
+							width="100%"
+							horizontalAlign="left"  
+							verticalGap="0"
+							verticalScrollPolicy="off"
+							horizontalScrollPolicy="off">
+							<mx:Text id="amountText" text="{outerDocument.currencyFormatter.format(data.amount)}" styleName="smallFont"/>
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+					headerText="Rtn{String('\n')}Code"
+				 	dataField="returnCd"
+				 	textAlign="left"
+				 	width="35"/>	
+			<mx:DataGridColumn
+				headerText="Check Date{String('\n')}Return Date"				
+				minWidth="70">				
+				<mx:itemRenderer>		
+					<mx:Component>																							
+							<mx:Text
+                                id="returnDateText"
+								text="{outerDocument.dateFormatter.format(data.checkDate)}{String('\n')}{outerDocument.dateFormatter.format(data.returnDate)}" 
+								styleName="smallFont"/>																
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>					
+		</mx:columns>
+	</mx:PrintDataGrid>
+	
+	<mx:HBox id="footer" width="100%" horizontalGap="0" horizontalAlign="right">            
+		<mx:Label 
+			text="Page {pageNumber}"
+			styleName="smallFont"/>
+	</mx:HBox>
+	
+</mx:VBox>
+
+

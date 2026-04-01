@@ -1,0 +1,82 @@
+-- TEAMTRACK NUM: PSRV001543
+-- CREATED  DATE: 08.10.2009
+-- MODIFIED DATE: 08.10.2009
+-- AUTHOR       : TT
+-- MODIFIER     : 
+--
+-- PURPOSE: 
+--   The purpose of this script is extend extend offer codes P61460 and P61461 through 9-1-2010
+--   and add new offer P62255:  2 months free Direct Deposit for DIY customers - expires 8-31-2010
+--
+-- LOGON AS : PSPADM
+
+
+SET SERVEROUTPUT ON
+SET HEADING      ON
+SET LINESIZE     1000
+SET PAGESIZE     0
+SET DEFINE       OFF
+
+
+SPOOL dbupgrade_PSRV001543.log
+
+SELECT 'User = ' || USER
+  FROM DUAL;
+  
+SELECT 'Start Time = ' || TO_CHAR (SYSDATE, 'MM.DD.YYYY HH24:MI')
+  FROM DUAL;
+
+
+SELECT offer_Cd, end_date FROM psp_offer
+WHERE offer_cd in ('P61460','P61461')
+/
+
+UPDATE PSP_OFFER
+SET END_DATE = TIMESTAMP '2010-09-01 00:00:01.00'
+where offer_cd in ('P61460','P61461')
+
+SELECT offer_Cd, end_date FROM psp_offer
+WHERE offer_cd in ('P61460','P61461')
+/
+
+
+
+
+		Insert into PSP_OFFER (
+		  OFFER_SEQ, VERSION, CREATOR_ID, CREATED_DATE, MODIFIER_ID, MODIFIED_DATE, REALM_ID, 
+		  OFFER_CD,  NAME,  DESCRIPTION, 
+		  IS_APPROVED,  DISCOUNT_TYPE, DISCOUNT_AMOUNT,  DISCOUNT_PERCENT, 
+		  BEGIN_EVENT, END_EVENT, END_DATE, 
+		  DURATION_DAYS, USAGES_ALLOWED, EFFECTIVE_DATE
+		)
+		Values (
+		  '799e6fbf-9cae-900e-e040-10ac1a43735e', 0, 'MANUAL_12072009', SYSTIMESTAMP, 'MANUAL_12072009', SYSTIMESTAMP,  -1, 
+		  'P62255','P62255', '90Days Free Direct Deposit for DIY customers', 
+		  1, 'PercentOff',  0, 
+		  100, 'RedemptionEvent', 'DurationEvent', 
+		  TO_TIMESTAMP('08/31/2010 12:00:01.000000 AM','fmMMfm/fmDDfm/YYYY fmHH12fm:MI:SS.FF AM'), 
+		  90, 0, TO_TIMESTAMP('11/29/2009 12:00:01.000000 AM','fmMMfm/fmDDfm/YYYY fmHH12fm:MI:SS.FF AM')
+		) ;
+
+
+
+
+INSERT INTO PSP_OFFER_SVCCHG_ASSOC (OFFER_FK, OFFERING_SERVICE_CHARGE_FK) 
+VALUES ( '799e6fbf-9cae-900e-e040-10ac1a43735e', '70995ef3-0001-9373-e040-11ac3bda020f');
+
+INSERT INTO PSP_OFFER_SVCCHG_ASSOC (OFFER_FK, OFFERING_SERVICE_CHARGE_FK) 
+VALUES ( '799e6fbf-9cae-900e-e040-10ac1a43735e', '70995ef3-0002-9373-e040-11ac3bda020f');
+
+INSERT INTO PSP_OFFER_SVCCHG_ASSOC (OFFER_FK, OFFERING_SERVICE_CHARGE_FK) 
+VALUES ( '799e6fbf-9cae-900e-e040-10ac1a43735e', '70995ef3-0007-9373-e040-11ac3bda020f');
+
+
+
+
+ commit;
+ 
+ SELECT 'END Time = ' || TO_CHAR (SYSDATE, 'MM.DD.YYYY HH24:MI')
+   FROM DUAL;
+   
+spool off;
+

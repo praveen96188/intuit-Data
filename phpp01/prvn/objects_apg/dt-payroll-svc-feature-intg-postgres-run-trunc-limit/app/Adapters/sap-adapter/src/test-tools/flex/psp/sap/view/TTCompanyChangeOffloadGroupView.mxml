@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:pspui="psp.sap.view.*"
+	height="100%" width="100%"
+	creationComplete="onCreationComplete()" xmlns:controls="psp.sap.view.controls.*">
+
+	<mx:Script>
+		<![CDATA[
+			import psp.sap.viewmodel.PartAdditionStrategy;
+			import psp.sap.application.enums.TestToolsPageEnum;
+			import psp.sap.viewmodel.CompanyInformationViewModel;
+			import psp.sap.viewmodel.AbstractCompanyInspectorPageViewModel;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+		
+			import psp.sap.viewmodel.TTCompanyChangeOffloadGroupViewModel;
+			import psp.sap.viewmodel.events.ViewModelEvent;
+			import psp.sap.viewmodel.events.ViewModelFaultEvent;
+			
+			private var mViewModel:TTCompanyChangeOffloadGroupViewModel;
+			private var mTempViewModel:TTCompanyChangeOffloadGroupViewModel;
+			private var mCreationComplete:Boolean = false;
+			
+			[Bindable]
+			public function get viewModel():TTCompanyChangeOffloadGroupViewModel {
+				return mViewModel;
+			}
+			
+			public function set viewModel(value:TTCompanyChangeOffloadGroupViewModel):void {
+				if (mCreationComplete) {
+					mViewModel = value;
+				} else {
+					mTempViewModel = value;
+				}
+			}
+			
+			public var mParentViewModel:Object;
+			
+			[Bindable]
+			public function get parentViewModel():Object {
+				return mParentViewModel;
+			}
+			
+			public function set parentViewModel(value:Object):void {
+				mParentViewModel = value;
+				
+				if (value is CompanyInformationViewModel) {
+					var parentCompanyInfoViewModel:CompanyInformationViewModel = value as CompanyInformationViewModel;
+					viewModel = parentCompanyInfoViewModel.addNewPart(TTCompanyChangeOffloadGroupViewModel,TestToolsPageEnum.COMPANY_CHANGE_OFFLOAD_GROUP,PartAdditionStrategy.LAZY_COMPOSITE) as TTCompanyChangeOffloadGroupViewModel;				
+					viewModel.company = parentCompanyInfoViewModel.company;
+					this.viewModel.refresh();
+				}
+			}
+			
+			public function onCreationComplete():void {
+				mCreationComplete = true;
+				viewModel = mTempViewModel;
+			}
+			
+			private function confirmSave():void 
+			{
+				var msgString:String = "Are you sure you want to change the offload group?";
+        		Alert.show(	msgString, 
+        					"Save Confirmation", 
+        					Alert.OK | Alert.CANCEL, 
+        					this, 
+        					confirmVerifyHandler, 
+        					null, 
+        					Alert.OK);
+        	}
+        	
+        	private function confirmVerifyHandler(evt_obj:CloseEvent):void {
+        		if(evt_obj.detail == mx.controls.Alert.OK)
+        		{
+        			viewModel.save();
+        		}
+        	}
+		]]>
+	</mx:Script>	
+	
+	<mx:Label text="{viewModel.saveMsg}" includeInLayout="{viewModel.saveMsg.length > 0}" enabled="{viewModel.saveMsg.length > 0}" fontWeight="bold" color="{viewModel.saveFaulted ? 0xff0000 : 0x009900}" />
+	<mx:HBox>
+		<mx:Label text="Offload Group:" />
+		<mx:ComboBox id="offloadGroupComboBox" dataProvider="{viewModel.offloadGroupList}" />
+		<mx:Button id="saveButton" label="Change Offload Group" click="confirmSave()" enabled="{viewModel.canSave}" />
+	</mx:HBox>
+	<mx:Spacer height="30" />
+	
+	<mx:Binding source="offloadGroupComboBox.selectedIndex" destination="viewModel.selectedOffloadGroupIndex" />		
+	<mx:Binding source="viewModel.selectedOffloadGroupIndex" destination="offloadGroupComboBox.selectedIndex" />
+</mx:VBox>

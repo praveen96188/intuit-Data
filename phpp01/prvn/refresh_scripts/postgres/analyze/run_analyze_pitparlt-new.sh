@@ -1,0 +1,9 @@
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_1.sql > pspadm_analyze_pitparlt_1.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_2.sql > pspadm_analyze_pitparlt_2.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_3.sql > pspadm_analyze_pitparlt_3.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_4.sql > pspadm_analyze_pitparlt_4.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_5.sql > pspadm_analyze_pitparlt_5.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_nonpart_1.sql > pspadm_analyze_nonpart_pitparlt_1.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_nonpart_2.sql > pspadm_analyze_nonpart_pitparlt_2.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_nonpart_3.sql > pspadm_analyze_nonpart_pitparlt_3.log &
+nohup ./run_on_ppsp-stg-pitparlt-new.sh pspadm_analyze_nonpart_4.sql > pspadm_analyze_nonpart_pitparlt_4.log &

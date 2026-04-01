@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name:\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAccountABCSImpl\IntuitCustomerAccountABM.xsd
+
+Domain: Account
+Source of Truth, Perforce Location: wcgbosp4.bos.intuit.com_1666\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\CustomerAccountABCSImpl
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====          Intuit ABO Customer Account ABM Schema Module           ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:xacml-context="urn:oasis:names:tc:xacml:2.0:context:schema:cd:04" xmlns:xacml="urn:oasis:names:tc:xacml:2.0:policy:schema:cd:04" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/iep/CustomerAccount/IntuitCustomerAccountABO/V1" targetNamespace="http://www.intuit.com/iep/CustomerAccount/IntuitCustomerAccountABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.01">
+	<!-- ====================================================================== -->
+	<!-- ==============  Imports and Includes   =============================== -->
+	<!-- ====================================================================== -->
+	<xsd:include schemaLocation="IntuitCustomerAccountABO.xsd"/>
+	<!-- ====================================================================== -->
+	<xsd:annotation>
+		<xsd:documentation>
+			<svcdoc:ABO>
+				<svcdoc:Description>IntuitCustomerAccount ABM identifies all the service operations that are supported for the Customer Account ABO</svcdoc:Description>
+				<svcdoc:Type>ABM</svcdoc:Type>
+				<svcdoc:Industry/>
+				<svcdoc:ABOName>IntuitCustomerAccountABO</svcdoc:ABOName>
+			</svcdoc:ABO>
+		</xsd:documentation>
+	</xsd:annotation>
+	<!-- ====================================================================== -->
+	<xsd:complexType name="IntuitCustomerAccountABMType">
+		<xsd:complexContent>
+			<xsd:extension base="IntuitCustomerAccountABOType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ==================    GetCustomerAccount Service     =================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="GetCustomerAccountABM" type="GetCustomerAccountDataAreaType"/>
+	<xsd:complexType name="GetCustomerAccountDataAreaType">
+		<xsd:sequence>
+			<xsd:element name="TransactionInfo" type="TransactionInfoType">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Info</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="GetCustomerAccount"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="GetCustomerAccountType">
+		<xsd:complexContent>
+			<xsd:extension base="CustomerAccountRequestType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="GetCustomerAccount" type="GetCustomerAccountType"/>
+	<!-- ====================================================================== -->
+	<!-- =============      GetCustomerAccount Response Service     ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="GetCustomerAccountResponseABM" type="GetCustomerAccountResponseDataAreaType"/>
+	<xsd:complexType name="GetCustomerAccountResponseDataAreaType">
+		<xsd:sequence>
+			<xsd:element ref="GetCustomerAccountResponse"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="GetCustomerAccountResponseType">
+		<xsd:complexContent>
+			<xsd:extension base="CustomerAccountResponseType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="GetCustomerAccountResponse" type="GetCustomerAccountResponseType"/>
+	<!-- ====================================================================== -->
+	<!-- =============     CustomerAccount EventService     ============= -->
+	<!-- ====================================================================== -->
+	<xsd:element name="SyncCustomerAccountABM" type="SyncCustomerAccountDataAreaType"/>
+	<xsd:complexType name="SyncCustomerAccountDataAreaType">
+		<xsd:sequence>
+			<xsd:element ref="SyncCustomerAccount"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="SyncCustomerAccount" type="IntuitCustomerAccountABOType"/>
+</xsd:schema>

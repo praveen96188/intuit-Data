@@ -1,0 +1,269 @@
+<project name="build-configuration-files" default="all">
+    <target name="all" depends="clean, generate, package"/>
+    <property name="base.dir" location="./src/main/resources"/>
+
+    <target name="clean">
+        <delete dir="${base.dir}/target"/>
+        <delete dir="${base.dir}/build.xml"/>
+        <delete dir="${base.dir}/local"/>
+        <delete dir="${base.dir}/e2e"/>
+        <delete dir="${base.dir}/e2edr"/>
+        <delete dir="${base.dir}/ds2"/>
+        <delete dir="${base.dir}/prf"/>
+        <delete dir="${base.dir}/qal"/>
+        <delete dir="${base.dir}/prd"/>
+        <delete dir="${base.dir}/prddr"/>
+        <delete dir="${base.dir}/stg"/>
+
+    </target>
+
+    <target name="generate">
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="local.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="local.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="local.test.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="e2e.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="e2e.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="e2e.test.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="e2edr.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="e2edr.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="e2edr.test.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="ds2.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="ds2.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="prf.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="prf.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="qal.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="qal.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="qal.test.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="prd.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="prd.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="prddr.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="prddr.jboss.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="stg.batch.xml"/>
+        </ant>
+        <ant antfile="${base.dir}/generate.xml">
+            <property name="include.keys" value="true"/>
+            <property name="substitution.file" value="stg.jboss.xml"/>
+        </ant>
+    </target>
+
+    <target name="package">
+        <property name="zip.prefix" value="psp-configuration-${psp.project.version}"/>
+
+        <!-- local/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="local"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- local/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="local"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- local/test-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="local"/>
+            <property name="zip.subtype" value="test-conf"/>
+        </ant>
+
+        <!-- prd/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="prd"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- prd/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="prd"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- prddr/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="prddr"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- prddr/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="prddr"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- e2e/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="e2e"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- e2e/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="e2e"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- e2e/test-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="e2e"/>
+            <property name="zip.subtype" value="test-conf"/>
+        </ant>
+
+        <!-- e2edr/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="e2edr"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- e2edr/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="e2edr"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- e2edr/test-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="e2edr"/>
+            <property name="zip.subtype" value="test-conf"/>
+        </ant>
+
+        <!-- ds2/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="ds2"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- ds2/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="ds2"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- prf/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="prf"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- prf/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="prf"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- qal/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="qal"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- qal/jboss-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="qal"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+        <!-- qal/test-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="qal"/>
+            <property name="zip.subtype" value="test-conf"/>
+        </ant>
+
+        <!-- stg/batch-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="stg"/>
+            <property name="zip.subtype" value="batch-conf"/>
+        </ant>
+
+        <!-- stg/test-conf -->
+        <ant antfile="${base.dir}/package.xml">
+            <property name="zip.prefix" value="${zip.prefix}"/>
+            <property name="zip.env" value="stg"/>
+            <property name="zip.subtype" value="jboss-conf"/>
+        </ant>
+
+    </target>
+</project>

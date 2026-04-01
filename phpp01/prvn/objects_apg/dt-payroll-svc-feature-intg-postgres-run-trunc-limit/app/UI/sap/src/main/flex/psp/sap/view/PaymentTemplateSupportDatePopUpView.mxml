@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="550"
+         height="400"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import mx.collections.ArrayCollection;
+        import mx.collections.IHierarchicalCollectionView;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Agency;
+        import psp.sap.model.PaymentTemplate;
+        import psp.sap.viewmodel.PaymentTemplateSupportDatePopUpViewModel;
+
+        private var mViewModel:PaymentTemplateSupportDatePopUpViewModel;
+        private var mTempViewModel:PaymentTemplateSupportDatePopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        [ArrayElementType("psp.sap.model.Agency")]
+        public var supportedDates:ArrayCollection = new ArrayCollection();
+
+        [Bindable]
+        public function get viewModel():PaymentTemplateSupportDatePopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PaymentTemplateSupportDatePopUpViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        private function filterIt():void {
+            // assign filter function to the AdvancedDataGrid's dataProvider
+            IHierarchicalCollectionView(agenciesGrid.dataProvider).filterFunction = processFilter;
+
+            // refresh the ADG's dataProvider
+            IHierarchicalCollectionView(agenciesGrid.dataProvider).refresh();
+        }
+
+        public function processFilter(item:Object):Boolean {
+            var result:Boolean = false;
+            var searchString:String = filterField.text.toUpperCase();
+            /*  If no filter text, or a match, then true    */
+            if (searchString == "" || item is Agency && (!item.agencyName
+                    || item.agencyName.toUpperCase().indexOf(searchString) >= 0)) {
+                /*  If agency's name is null or has the filter string */
+                return true;
+            }
+            if (item is Agency) {
+                /*  Otherwise go through all the payment templates for this agency and see if there's a match   */
+                for each (var template:PaymentTemplate in item.paymentTemplates) {
+                    if (template.paymentTemplateName.toUpperCase().indexOf(searchString) >= 0) {
+                        return true;
+                    }
+                }
+            } else if (item is PaymentTemplate) {
+                if (item.paymentTemplateName.toUpperCase().indexOf(searchString) >= 0 || item.agencyName.toUpperCase().indexOf(searchString)) {
+                    return true;
+                }
+            }
+            return result;
+        }
+
+        public function formatDate(item:Object):String {
+            if (item is PaymentTemplate && item.supportStartDate != null)
+                return  SAPDateFormatters.dateFormatMedium.format((item as PaymentTemplate).supportStartDate);
+            else
+                return '';
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="PSP Supported Dates" styleName="heading" id="headerLabel" paddingLeft="2" paddingBottom="3"
+              paddingTop="5"/>
+    <mx:HBox width="100%" height="30">
+        <mx:TextInput id="filterField" width="140" toolTip="Filter on Agency or Template name" change="filterIt();"/>
+        <mx:Image id="filterIcon" source="{SAP.instance.icons.magnifier}"/>
+    </mx:HBox>
+    <controls:SAPAdvancedDataGrid
+            id="agenciesGrid"
+            sortExpertMode="false"
+            folderClosedIcon="{null}"
+            folderOpenIcon="{null}"
+            disclosureOpenIcon="{SAP.instance.icons.collapse}"
+            disclosureClosedIcon="{SAP.instance.icons.expand}"
+            displayItemsExpanded="{viewModel.agencyShowSelection}"
+            defaultLeafIcon="{null}"
+            verticalAlign="middle"
+            selectable="false"
+            draggableColumns="false"
+            width="100%" height="100%"
+            fontWeight="bold"
+            borderSides="left, right, bottom">
+        <controls:dataProvider>
+            <mx:HierarchicalData id="dpTagHC" source="{viewModel.supportedAgencies}" childrenField="paymentTemplates"/>
+        </controls:dataProvider>
+        <controls:columns>
+            <mx:AdvancedDataGridColumn
+                    headerText="Agency"
+                    dataField="agencyAbbrev"
+                    textAlign="left"
+                    minWidth="150"
+                    id="supportedAgency"/>
+            <mx:AdvancedDataGridColumn
+                    headerText="Payment Template"
+                    dataField="paymentTemplateName"
+                    textAlign="left"
+                    minWidth="110"
+                    id="agency"/>
+            <mx:AdvancedDataGridColumn
+                    headerText="Support Date"
+                    dataField="supportStartDate"
+                    textAlign="left"
+                    minWidth="110"
+                    id="supportDate">
+                <mx:itemRenderer>
+                    <mx:Component>
+                        <mx:VBox
+                                width="100%"
+                                horizontalAlign="right"
+                                verticalGap="0"
+                                verticalScrollPolicy="off"
+                                horizontalScrollPolicy="off">
+                            <mx:Text text="{outerDocument.formatDate(data)}"/>
+                        </mx:VBox>
+                    </mx:Component>
+                </mx:itemRenderer></mx:AdvancedDataGridColumn>
+        </controls:columns>
+    </controls:SAPAdvancedDataGrid>
+</mx:VBox>

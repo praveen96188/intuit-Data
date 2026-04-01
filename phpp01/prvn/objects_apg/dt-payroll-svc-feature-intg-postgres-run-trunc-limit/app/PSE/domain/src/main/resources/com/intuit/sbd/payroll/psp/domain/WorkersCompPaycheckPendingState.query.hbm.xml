@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findDistinctCompaniesWithWCPendingPaychecks">
+        <![CDATA[
+            Select wcpps.WorkersCompPaycheck.Paycheck.Company.Id, count(wcpps.id)
+            From com.intuit.sbd.payroll.psp.domain.WorkersCompPaycheckPendingState as wcpps
+            Where
+                wcpps.StateCd in ('PendingNew', 'PendingDelete', 'PendingEdit')
+            Group by wcpps.WorkersCompPaycheck.Paycheck.Company.Id
+            ]]>
+    </query>
+
+    <!-- Split customers -->
+    <query name="findDistinctSplitLimitCompaniesWithWCPendingPaychecks">
+        <![CDATA[
+            Select wcpps.WorkersCompPaycheck.Paycheck.Company.Id, count(wcpps.id)
+            From com.intuit.sbd.payroll.psp.domain.WorkersCompPaycheckPendingState as wcpps,
+                com.intuit.sbd.payroll.psp.domain.WcCompany as wc,
+                com.intuit.sbd.payroll.psp.domain.Company as comp
+            Where
+                wcpps.WorkersCompPaycheck.Paycheck.Company=comp and
+                wcpps.WorkersCompPaycheck.Paycheck.Company=wcpps.WorkersCompPaycheck.Company and
+                comp=wc.Company and
+                wcpps.StateCd in ('PendingNew', 'PendingDelete', 'PendingEdit')
+                and wc.SubsTypeCd in ('SplitLimit')
+            Group by wcpps.WorkersCompPaycheck.Paycheck.Company.Id
+            ]]>
+    </query>
+
+    <!-- Next customers -->
+    <query name="findDistinctNextCompaniesWithWCPendingPaychecks">
+        <![CDATA[
+            Select wcpps.WorkersCompPaycheck.Paycheck.Company.Id, count(wcpps.id)
+            From com.intuit.sbd.payroll.psp.domain.WorkersCompPaycheckPendingState as wcpps,
+                 com.intuit.sbd.payroll.psp.domain.Company as comp,
+                 com.intuit.sbd.payroll.psp.domain.WcCompany as wc
+            Where
+                comp=wcpps.WorkersCompPaycheck.Paycheck.Company and
+                wcpps.WorkersCompPaycheck.Paycheck.Company=wcpps.WorkersCompPaycheck.Company and
+                comp=wc.Company and
+                wcpps.StateCd in ('PendingNew', 'PendingDelete', 'PendingEdit')
+                and wc.SubsTypeCd in ('Next')
+            Group by wcpps.WorkersCompPaycheck.Paycheck.Company.Id
+            ]]>
+    </query>
+    <query name="findWCPendingPaychecksByCompanies">
+        <![CDATA[
+            SELECT
+              wcpps
+            FROM
+               com.intuit.sbd.payroll.psp.domain.WorkersCompPaycheckPendingState as wcpps
+               left join fetch wcpps.WorkersCompPaycheck as wcp
+               left join fetch wcp.Paycheck as pc
+               left join fetch pc.SourceEmployee se
+               left join fetch pc.PayrollRun
+               left join fetch pc.Company as c
+               left join fetch c.LegalAddress
+            WHERE
+               c.Id in (:companyIds)
+               and wcpps.StateCd in ('PendingNew', 'PendingDelete', 'PendingEdit')
+            ORDER BY
+               wcpps.WorkersCompPaycheck.Paycheck.Company
+            ]]>
+    </query>
+    <query name="findWCPendingPaychecksByNextCompanies">
+        <![CDATA[
+            SELECT
+              wcpps.Id
+            FROM
+               com.intuit.sbd.payroll.psp.domain.WorkersCompPaycheckPendingState as wcpps
+               inner join  wcpps.WorkersCompPaycheck as wcp
+               inner join  wcp.Paycheck as pc
+               inner join  pc.PayrollRun as prun
+               left join  pc.Company as c
+            WHERE
+               wcp.Company=pc.Company and
+               c.Id in (:companyIds)
+               and prun.PaycheckDate <= (:currentDate)
+               and wcpps.StateCd in (:subsCode)
+            ]]>
+    </query>
+    <query name="findAllCompanieshavingTodaySubsEndDates">
+        <![CDATA[
+           SELECT
+              distinct comp.SourceCompanyId
+            FROM
+              com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+              com.intuit.sbd.payroll.psp.domain.WcCompany as wc,
+              com.intuit.sbd.payroll.psp.domain.Company as comp
+            WHERE
+               cs.Company=wc.Company and
+               comp=cs.Company and
+               wc.SubsTypeCd in (:subsCode)
+               and wc.SubsEndDate < (:currentDate)
+               and cs.StatusCd in ('ActiveCurrent')
+               and cs.Service in ('WorkersComp')
+            ]]>
+    </query>
+    <query name="findWCPaychecksForSplitHavingStatusDeleteOrEdit">
+        <![CDATA[
+            SELECT
+              wcp
+            FROM
+               com.intuit.sbd.payroll.psp.domain.WorkersCompPaycheck as wcp,
+               com.intuit.sbd.payroll.psp.domain.Paycheck as pay,
+               com.intuit.sbd.payroll.psp.domain.Company as c,
+               com.intuit.sbd.payroll.psp.domain.PayrollRun as prun,
+               com.intuit.sbd.payroll.psp.domain.WcCompany as wc
+            Where
+                c=wc.Company and
+                wcp.Company=pay.Company
+                and pay.Company=c
+                and pay=wcp.Paycheck and prun=pay.PayrollRun and
+                prun.PaycheckDate <= (:currentDate) and
+                wcp.CurrentStateCd in ('PendingDelete', 'PendingEdit')
+                and wc.SubsTypeCd in ('SplitLimit')
+            ]]>
+    </query>
+
+</hibernate-mapping>

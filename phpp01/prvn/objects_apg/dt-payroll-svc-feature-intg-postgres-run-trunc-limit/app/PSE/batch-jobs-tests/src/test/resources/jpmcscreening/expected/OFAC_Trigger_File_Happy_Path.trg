@@ -1,0 +1,28 @@
+<BatchManifest>
+  <BillingCode>
+    <PartnerCode>cca614ce-6fad-4e70-ad3e-24986c8ac14c</PartnerCode>
+    <BillingGUID>cca614ce-6fad-4e70-ad3e-24986c8ac14c</BillingGUID>
+    <ClientCode>cca614ce-6fad-4e70-ad3e-24986c8ac14c</ClientCode>
+    <Version>3.00.00</Version>
+  </BillingCode>
+  <Settings>
+    <BatchName>OFAC_FILE_(FILEDATE)</BatchName>
+    <FileExtension>.pgp</FileExtension>
+    <PerformDecryption>true</PerformDecryption>
+    <GCLFilter>true</GCLFilter>
+<Threshold>0.90</Threshold>
+    <TranslatorProcessor>AT.Batch.Generator.AttusDefaultPipeAddressStatus</TranslatorProcessor>
+    <DeliveryProcessor>AT.Batch.Delivery.DeliverableStatOnly</DeliveryProcessor>
+  <AddressDisqualification>true</AddressDisqualification>
+    <DOBDisqualification>false</DOBDisqualification>
+    <DOBRange>0</DOBRange>
+    <GenerateCustomerID>false</GenerateCustomerID>
+  </Settings>
+  <DataLists>
+    <Lists>
+      <DataList>
+        <ListName>OFAC</ListName>
+      </DataList>
+    </Lists>
+  </DataLists>
+</BatchManifest>

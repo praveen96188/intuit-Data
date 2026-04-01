@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name:integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\ProvisioningABCSImpl\IntuitProvisioningOrderABO.xsd
+
+Domain: Provisioning
+Source of Truth, Perforce Location: wcgbosp4.bos.intuit.com_1666\integration\Interfaces\ABCSInterfaces\Schema\AIAComponents\ProvisioningABCSImpl
+ 
+-->
+<!-- ====================================================================== -->
+<!-- =====      Intuit ABO Customer Account ABO Schema Module               ===== -->
+<!-- ====================================================================== -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:corecom="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/V2" xmlns:corecommunicationcust="http://xmlns.oracle.com/EnterpriseObjects/Industry/Intuit/EBO/Communication/V1" xmlns:corecomcust="http://xmlns.oracle.com/EnterpriseObjects/Core/Custom/Common/V2" xmlns:corecomEBO="http://xmlns.oracle.com/EnterpriseObjects/Core/Common/EBO/V1" xmlns:svcdoc="http://xmlns.oracle.com/Services/Documentation/V1" xmlns="http://www.intuit.com/iep/ProvisioningOrder/IntuitProvisioningOrderABO/V1" xmlns:qs="http://www.intuit.com/iep/gcs/quote/xsd" xmlns:pa="xml.payauth.bob.intuit.com" xmlns:ca="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" targetNamespace="http://www.intuit.com/iep/ProvisioningOrder/IntuitProvisioningOrderABO/V1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.00.00">
+	<xsd:import namespace="http://www.intuit.com/iep/CustomerAccount/CustomerAccountBase/V1" schemaLocation="CustomerAccountBase.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- ==============       Intuit Provisioning Order ABO      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="IntuitProvisioningOrderABO">
+		<xsd:annotation>
+			<xsd:documentation>Order Object</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="IntuitProvisioningOrderABOType"/>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="IntuitProvisioningOrderABOType">
+		<xsd:annotation>
+			<xsd:documentation>Intuit ProvisioningOrder ABO</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="SourceOrderNumber" type="OrderNumberType"/>
+			<xsd:element name="OrderSource" type="xsd:string"/>
+			<xsd:element name="OrderDateTime" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="ProvisioningOrderLine" type="ProvisioningLineType" maxOccurs="unbounded"/>
+			<xsd:element name="CustomerAccount" type="ca:CustomerAccountType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Each Prvisioning line could potentially be associated to a different Customer Account (ie. Siebel Service Account).    
+				In 10.1, the 'Service Account' concept is not supported on eStore.  eStore always defaults the Primary Account to the Service Account.   However, it is possible via the Agent channel (Siebel)  for the Service Account to be different from the Primary Account. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProvisioningItemType">
+		<xsd:annotation>
+			<xsd:documentation>ProvisioningItem</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ItemId" type="ItemIdType">
+				<xsd:annotation>
+					<xsd:documentation>The Primary Item Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionAttributes" type="TransactionAttributeType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Item Attributes</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LicenseId" type="LicenseIdType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Entitlement-related Information</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EntitlementId" type="EntitlementIdType" minOccurs="0"/>
+			<xsd:element name="ProductClass" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProvisioningOrderHeaderType">
+		<xsd:annotation>
+			<xsd:documentation>ProvisioningOrder Header</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocumentId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>The unique Identifier assigned to this business transaction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="DocumentDateTime" type="xsd:dateTime">
+				<xsd:annotation>
+					<xsd:documentation>The Date Time at which this service request is created or recorded</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProvisioningOrderRequestType">
+		<xsd:sequence>
+			<xsd:element name="CustomerAccountNumber" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProvisioningOrderResponseType">
+		<xsd:annotation>
+			<xsd:documentation>A data typa to represent a response to ProvisioningOrderRequest.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="Result"/>
+			<xsd:element name="ProvisioningOrder" type="IntuitProvisioningOrderABOType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProvisioningLineType">
+		<xsd:annotation>
+			<xsd:documentation>Provisioning line type</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="LineNumber" type="xsd:nonNegativeInteger">
+				<xsd:annotation>
+					<xsd:documentation>A unique Serial Number assigned to the line by the source system.  Each line must have a unique value on a given transaction document.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ParentLineNumber" type="xsd:nonNegativeInteger" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Parent Line Number for bundle, ensemble, etc.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="RelatedLine" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="OrderQuantity" type="QuantityType">
+				<xsd:annotation>
+					<xsd:documentation>The Ordered Quantity for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Status" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="ProvisioningItem" type="ProvisioningItemType">
+				<xsd:annotation>
+					<xsd:documentation>The Product/Service item information for the Line Item</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ActionType" default="ADD" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>The Action to be performed on the Line Item.  Specifically, it indicates whether the line item is added, changed, cancelled or refunded.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="ADD"/>
+						<xsd:enumeration value="CANCEL"/>
+						<xsd:enumeration value="CHANGE"/>
+						<xsd:enumeration value="REFUND"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="ServiceAccountContactId" type="ca:ContactIdType">
+				<xsd:annotation>
+					<xsd:documentation>This is the Primary contact of the Service Account.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ServiceAccountNumber" type="ca:AccountNumberType">
+				<xsd:annotation>
+					<xsd:documentation>This is the CAN to be referenced on the subscription in BRM, and on the entitlement in ERS.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ====================================================================== -->
+	<!-- ==============       Data Types      ====================== -->
+	<!-- ====================================================================== -->
+	<xsd:element name="Result" type="ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the result after processing the request.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the header information that can be supplied to DigiComms.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="CreationDateTime" type="xsd:dateTime" minOccurs="0"/>
+			<xsd:element name="CallerSystem" type="xsd:string"/>
+			<xsd:element name="SourceSystem" type="xsd:string"/>
+			<xsd:element name="Endpoint" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="ServiceVersion" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:element name="Header" type="HeaderType">
+		<xsd:annotation>
+			<xsd:documentation>Represents the header information that can be supplied to DigiComms</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the error information.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Category">
+				<xsd:annotation>
+					<xsd:documentation>The category of the error. i.e. Functional, Input, Operational, Transitory</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:annotation>
+						<xsd:documentation>The category of the error. i.e. SYSTEM,INPUT,BUSINESS_LOGIC</xsd:documentation>
+					</xsd:annotation>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="Functional"/>
+						<xsd:enumeration value="Input"/>
+						<xsd:enumeration value="Operational"/>
+						<xsd:enumeration value="Transitory"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Code" type="xsd:string"/>
+			<xsd:element name="Description" type="xsd:string"/>
+			<xsd:element name="Source" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="Error" type="ErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Represents error information.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ResponseTypeType">
+		<xsd:annotation>
+			<xsd:documentation>A data type to represent the response returned by ProvisioningOrder.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element name="Success" type="xsd:string"/>
+			<xsd:element name="Error" type="ErrorType"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="TransactionInfoType">
+		<xsd:annotation>
+			<xsd:documentation>Transaction Info</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="TransactionId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Id</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TransactionDatetime" type="xsd:dateTime" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Transaction Datetime</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SalesOrganization" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Sales Organization requesting the service</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="OrderNumberType">
+		<xsd:annotation>
+			<xsd:documentation>Order Number</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Scheme Name e.g Intuit, Partner, etc.</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="Intuit"/>
+							<xsd:enumeration value="Partner"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="QuantityType">
+		<xsd:annotation>
+			<xsd:documentation>Quantity</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:nonNegativeInteger">
+				<xsd:attribute name="uom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Unit of Measure  Count by unit (e.g. Each) or Time-based (e.g. Day, Month and Year).</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="Day"/>
+							<xsd:enumeration value="Each"/>
+							<xsd:enumeration value="Month"/>
+							<xsd:enumeration value="Year"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="ItemIdType">
+		<xsd:annotation>
+			<xsd:documentation>Item Id</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Id">
+				<xsd:annotation>
+					<xsd:documentation>Item Id</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute name="schemeName">
+								<xsd:annotation>
+									<xsd:documentation>Scheme Name</xsd:documentation>
+								</xsd:annotation>
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:string">
+										<xsd:enumeration value="PIM"/>
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TransactionAttributeType">
+		<xsd:annotation>
+			<xsd:documentation>Transaction Attributes</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Attribute Name</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Value" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>Attribute Value</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="LicenseIdType">
+		<xsd:annotation>
+			<xsd:documentation>License Id</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Scheme Name e.g. ERS</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="ERS"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="EntitlementIdType">
+		<xsd:annotation>
+			<xsd:documentation>Entitlement Id</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="SchemeName" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Scheme Name e.g. ERS for EOC</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="ERS"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,1 @@
+-- No differences were detected between schemas PSP_LOCAL@XE and PREVIOUS_PSP_LOCAL@XEselect 'finished DBUpgradeFrom_1.9.2.0_To_1.9.3.0.sql ' || to_char(sysdate, 'MM/DD/YYYY HH24:MI:SS') from dual

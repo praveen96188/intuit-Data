@@ -1,0 +1,38 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column IS_USAGE_BILLING;
+ALTER TABLE PSP_ENTITLEMENT_CODE
+ ADD (IS_USAGE_BILLING  NUMBER(1));
+
+Prompt Column IS_FIRST_USAGE_FREE;
+ALTER TABLE PSP_ENTITLEMENT_CODE
+ ADD (IS_FIRST_USAGE_FREE  NUMBER(1));
+
+Prompt Column BILLING_FREQUENCY_TYPE;
+ALTER TABLE PSP_ENTITLEMENT_CODE
+ ADD (BILLING_FREQUENCY_TYPE  VARCHAR2(255 CHAR));
+
+Prompt Column VERSION;
+ALTER TABLE PSP_AUTH_USER
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_COMPANY
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_QUICKBOOKS_INFO
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_ENTITLEMENT_UNIT
+MODIFY(VERSION  DEFAULT 0);
+
+PROMPT finished DBUpgrade_002.013.007.002.sql

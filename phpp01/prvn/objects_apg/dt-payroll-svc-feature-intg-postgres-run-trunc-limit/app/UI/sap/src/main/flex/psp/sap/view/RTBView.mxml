@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<!--
+  Created by anandp233 on 2/11/14.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:control="http://www.adobe.com/2006/mxml"
+         width="100%" verticalGap="0" creationComplete="onCreationComplete();">
+
+    <mx:Script><![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.utils.StringUtil;
+
+        import psp.sap.application.SAP;
+        import psp.sap.viewmodel.RTBViewModel;
+        import psp.app.util.CommonUtil;
+
+        private var mViewModel:RTBViewModel;
+        private var mTempViewModel:RTBViewModel;
+        private var mCreationComplete:Boolean = false;
+        private static const fileType:FileFilter = new FileFilter("EXCEL FILES (*.xls)", "*.xls");
+        //private var .fileRef:FileReference;
+
+        [Bindable]
+        public function get viewModel():RTBViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:RTBViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function changeEvt(event:Event):void {
+            var index:int = event.currentTarget.selectedIndex;
+            if(index==1){            //&& viewModel.isAutomateMassCanFeautureEnable
+                errorFileComboboxId.visible = true;
+            }else{
+                errorFileComboboxId.visible = false;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+
+            viewModel.fileRef = new FileReference();
+            viewModel.fileRef.addEventListener(Event.SELECT, onFileSelect, false, 0, false);
+            viewModel.fileRef.addEventListener(IOErrorEvent.IO_ERROR, onFormUploadFailure, false, 0, true);
+            viewModel.fileRef.addEventListener(Event.COMPLETE, onFormUploadComplete, false, 0, true);
+
+        }
+
+        public function loadFile():void {
+            viewModel.fileRef.browse([fileType]);
+        }
+
+        public function onFileSelect(e:Event):void {
+            viewModel.currentFileUploaded = false;
+            viewModel.fileName = viewModel.fileRef.name;
+            viewModel.fileRef.load();
+        }
+
+        private function confirmSave():void {
+            viewModel.selectedMassCnFile = null;
+            if (viewModel.selectedRTBJob !=null && viewModel.selectedRTBJob.jobName!= null && viewModel.fileName !=null && StringUtil.trim(viewModel.fileName.toString()) !="") {
+                var msgString:String = "Are you sure you want to execute "+viewModel.selectedRTBJob.shortDescription+" job for provided data?";
+                Alert.show(msgString,
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        confirmVerifyHandler,
+                        null,
+                        Alert.OK);
+
+            }else{
+                Alert.show("Please select the job and the filename to proceed");
+            }
+        }
+        private function processFile():void{
+            if (viewModel.selectedMassCnFile !=null && viewModel.selectedMassCnFile!="") {
+                var msgString:String = "Are you sure you want to execute "+viewModel.selectedMassCnFile+" to run mass cancellation?";
+                Alert.show(msgString,
+                        "Execute Confirmation",
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        confirmVerifyHandler,
+                        null,
+                        Alert.OK);
+
+            }else{
+                Alert.show("Please select the filename to proceed");
+            }
+        }
+
+        private function confirmVerifyHandler(event:CloseEvent):void {
+            if (event.detail == Alert.OK) {
+                viewModel.canSave=true;
+                viewModel.save();
+            }
+        }
+
+        public function onFormUploadFailure(e:IOErrorEvent):void {
+            SAP.instance.hideProgress();
+            viewModel.saveFaulted = true;
+            viewModel.saveMsg = "Error while executing your job : " + e.text;
+        }
+
+        public function onFormUploadComplete(e:Event):void {
+            SAP.instance.hideProgress();
+            viewModel.currentFileUploaded = true;
+            viewModel.saveFaulted = false;
+            viewModel.saveMsg = "Your file is uploaded.";
+            viewModel.refresh(false);
+        }
+
+        public function downloadFile():void {
+            if (viewModel.selectedRTBJob !=null && viewModel.selectedRTBJob.jobName!= null) {
+                var urlRequest:URLRequest = new URLRequest("DownloadRTBSampleFile?jobName=" + viewModel.selectedRTBJob.jobName + "&token=" + SAP.instance.session.user.authorizationToken);
+                if(CommonUtil.isDTApp()) {
+                    CommonUtil.downloadFromSAPURL(urlRequest.url, viewModel.selectedRTBJob.jobName.toString() + ".xls");
+                } else {
+                    navigateToURL(urlRequest, '_blank');
+                }
+            }else{
+                Alert.show("Please select the job from dropdown.");
+            }
+        }
+
+        public function downloadTextContentFile(textContent:String):void {
+            if (textContent != null) {
+                var urlRequest:URLRequest = new URLRequest("DownloadTextContent?textContent=" + textContent + "&token=" + SAP.instance.session.user.authorizationToken);
+                if(CommonUtil.isDTApp()) {
+                    CommonUtil.downloadFromSAPURL(urlRequest.url, "output.txt");
+                } else {
+                    navigateToURL(urlRequest, '_blank');
+                }
+            }
+        }
+        ]]></mx:Script>
+
+    <mx:HBox width="100%">
+    
+        <mx:VBox id="jobActionDiv" width="35%">
+        		
+        	  <mx:VBox id="launchQueryConsole" width="10%">
+                <mx:HBox>
+                    <mx:Label text="Launch Query Console" styleName="subheading"/>
+                    <mx:LinkButton label="Open New SQL Query Window" styleName="inlineLinkButtonStyleBoldNoUnderline"
+                                   click="viewModel.launchQueryConsole()"/>
+                </mx:HBox>
+           </mx:VBox>
+           
+            <mx:Label text="Run RTB Job" styleName="subheading"/>
+
+            <mx:Form paddingTop="0">
+                <mx:HBox verticalAlign="middle" paddingLeft="20">
+                    <controls:RequiredLabel text="Select RTB Job:" width="150" horizontalAlign="right"/>
+                    <controls:SAPComboBox dataField="selectedRTBJob" dataProvider="{viewModel.rtbJobList}"
+                                          labelField="shortDescription" change="{viewModel.rtbJobList != null? changeEvt(event):''}"/>
+                    <mx:LinkButton label="Download Template" styleName="inlineLinkButtonStyleBoldNoUnderline"
+                                   click="downloadFile()"/>
+
+                </mx:HBox>
+
+
+                <mx:HBox verticalAlign="middle" paddingLeft="20">
+                    <controls:RequiredLabel text="Upload Input File:" dataField="fileData" width="150"
+                                            horizontalAlign="right"/>
+                    <mx:TextInput text="{viewModel.fileName}" minWidth="200" click="loadFile()"/>
+                    <mx:Button label="Browse" click="loadFile()"/>
+                </mx:HBox>
+                <mx:HBox paddingLeft="175">
+                    <mx:Label text="Please upload .xls file only."/>
+                </mx:HBox>
+                <mx:HBox paddingLeft="175" paddingBottom="20" paddingTop="10">
+                    <mx:Button label="Execute" click="confirmSave()"/>
+                </mx:HBox>
+
+                <mx:HBox verticalAlign="middle" paddingLeft="20" id="errorFileComboboxId" visible="false">
+                    <controls:RequiredLabel text="Select file:" width="150" horizontalAlign="right"/>
+                    <controls:SAPComboBox id="selectedMassCnFileID" dataField="selectedMassCnFile" dataProvider="{viewModel.processMassCanFileList}"
+                                          labelField="MCFileName"/>
+                    <mx:Button label="Execute" click="processFile()"/>
+                </mx:HBox>
+            </mx:Form>
+            <mx:VBox id="logWindowBox" width="65%">
+                <mx:HBox>
+                    <mx:Label text="RTB Processing Logs" styleName="subheading"/>
+                    <mx:LinkButton label="Download Logs" styleName="inlineLinkButtonStyleBoldNoUnderline"
+                                   click="downloadTextContentFile(processedLogs.text)"/>
+                </mx:HBox>
+                <mx:Box paddingTop="5">
+                    <mx:TextArea id="processedLogs" editable="false" text="{viewModel.processedLogs}" height="500"
+                                 width="900"></mx:TextArea>
+                </mx:Box>
+            </mx:VBox>
+            
+        </mx:VBox>
+        <mx:VBox id="rightWindowBox" width="65%">
+            <mx:HBox>
+                <mx:Label text="RTB Job Details" styleName="subheading"/>
+            </mx:HBox>
+
+            <mx:HBox verticalAlign="middle" height="100%" width="100%">
+                <mx:Text width="100%">
+                    <mx:text >{viewModel.selectedRTBJob.description}</mx:text>
+                </mx:Text>
+            </mx:HBox>
+
+        </mx:VBox>
+
+
+    </mx:HBox>
+
+</mx:VBox>

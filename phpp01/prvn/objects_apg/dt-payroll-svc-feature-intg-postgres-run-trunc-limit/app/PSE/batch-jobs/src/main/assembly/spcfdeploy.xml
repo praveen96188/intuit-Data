@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">    
+    <id>spcfdeploy</id>
+    <!-- Specifies that our binary distribution is a zip package -->
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    
+    <dependencySets>
+        <dependencySet>
+            <includes>
+                <!-- hibernate jars -->
+                <!--<include>groupid:artifactid:type:version</includes>-->  
+                <include>net.minidev:accessors-smart:jar:1.2</include>
+                <include>asm:asm:jar:1.5.3</include>       
+                <include>asm:asm-attrs:jar:1.5.3</include>
+                <include>antlr:antlr:jar:2.7.6</include>
+                <include>org.bouncycastle:bcprov-jdk15on:jar:1.60</include>
+                <include>cglib:cglib:jar:2.1.3</include>
+                <include>cglib:cglib-nodep:jar:2.1_3</include>
+                <include>commons-logging:commons-logging:jar:1.1.0.jboss</include>
+
+                <include>commons-collections:commons-collections:jar:3.1</include>
+                <include>org.dom4j:dom4j:jar:2.1.1</include>
+                <include>org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final</include>
+                <include>org.hibernate:hibernate-testing:jar:3.6.10.Final</include>
+                <include>localRepo.org.hibernate:hibernate:jar:3.6.10</include>
+                <include>javassist:javassist:jar:3.12.0.GA</include>
+                <include>org.jboss.javaee:jboss-transaction-api:jar:1.0.1.GA</include>
+                <include>org.slf4j:slf4j-api:jar:1.6.1</include>
+                
+                <include>localRepo.security.ingrian:ingrian-log4j:jar:1.2.9</include>
+                <include>localRepo.security.ingrian:ingrian-nae:jar:4.3.0</include>
+                <include>castor:castor:jar:0.9.6</include>
+
+                <include>localRepo.net.sf:ehcache:jar:1.5.0</include>
+                <include>backport-util-concurrent:backport-util-concurrent:jar:3.0</include>
+                <include>xerces:xercesImpl:jar:2.8.0</include>
+                <!-- <include>log4j:log4j:jar:1.2.14</include> -->
+    
+                <include>jboss:jboss-annotations-ejb3:jar:4.2.0CP02</include>
+            </includes>
+            <unpack>false</unpack> 
+        </dependencySet>  
+        <dependencySet>
+            <includes>
+                <include>com.intuit.sbg.psp:domain:jar:${psp.project.version}</include>
+            </includes>
+            <outputFileNameMapping>psp-domain-${psp.project.version}.jar</outputFileNameMapping>
+            <unpack>false</unpack>
+        </dependencySet>
+        <dependencySet>
+            <includes>
+                <include>com.intuit.sbg.psp:domain-secondary:jar:${psp.project.version}</include>
+            </includes>
+            <outputFileNameMapping>psp-domain-secondary${psp.project.version}.jar</outputFileNameMapping>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+    <files>
+        <file>
+            <source>${project.resources.dir}/lib/xercesImpl-2.12.0.jar</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+        <file>
+            <source>${project.resources.dir}/lib/commons-lang-2.6.jar</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+        <file>
+            <source>${project.resources.dir}/lib/asm-1.5.3.jar</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+        <file>
+            <source>${project.resources.dir}/lib/commons-logging-1.1.0.jboss.jar</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+    </files>
+</assembly>

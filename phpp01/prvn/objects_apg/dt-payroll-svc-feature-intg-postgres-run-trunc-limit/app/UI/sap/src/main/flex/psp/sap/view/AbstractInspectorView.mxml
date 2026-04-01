@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:intuit="intuit.sbd.flex.framework.view.*"
+	paddingTop="0"
+	width="100%" height="100%"
+    initialize="onInit();"
+    creationComplete="onCreationComplete()"
+	backgroundColor="#F4F4F4">
+
+    <mx:Metadata>
+    	[DefaultProperty("pages")]
+    </mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+        import mx.containers.ViewStack;
+        import mx.core.Container;
+        import mx.events.ChildExistenceChangedEvent;
+        import mx.events.FlexEvent;
+
+        import psp.sap.application.ViewModelSync;
+        import psp.sap.viewmodel.AbstractInspectorViewModel;
+        import psp.sap.viewmodel.AbstractPartViewModel;
+        import psp.sap.viewmodel.InspectorTopicViewModel;
+        import psp.sap.viewmodel.InspectorTopicViewModel;
+
+        [Bindable] public var showTopicsMenu:Boolean = true;
+
+        private var mViewModel:AbstractInspectorViewModel;
+        private var mTempViewModel:AbstractInspectorViewModel;
+        private var mCreationComplete:Boolean = false;
+        private var mPages:Array = [];
+        private var mPagesChanged:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():AbstractInspectorViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:AbstractInspectorViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                syncViewModels();
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;            
+        }
+
+        protected function syncViewModels():void {
+            for each (var part:AbstractPartViewModel in viewModel.getAllPages()) {
+                var pageView:Container = inspectorPagesControl.getChildByLabel(part.label);
+                if (pageView != null) {
+                    pageView["viewModel"] = part;
+                    ViewModelSync.associatePageViewModels(pageView, part);
+                }
+            }
+        }
+
+        public function set pages(value:Array):void
+        {
+            mPages = value;
+
+            mPagesChanged = true;
+            invalidateProperties();
+        }
+
+        public function get pages():Array
+        {
+            return mPages;
+        }
+
+
+        protected function onInit():void {
+            addPagesToViewStack();
+        }
+
+        private function addPagesToViewStack():void {
+            if (mPagesChanged)
+            {
+                for each(var page:DisplayObject in pages) {
+                    inspectorPagesControl.addChild(page);
+                    dispatchEvent(new ChildExistenceChangedEvent(ChildExistenceChangedEvent.CHILD_ADD, false, false, page));
+                }
+
+                if (viewModel != null) {
+                    syncViewModels();
+                }
+
+                mPagesChanged = false;
+            }
+
+        }
+
+        public function set selectedChild(value:Container):void {
+            var part:AbstractPartViewModel = viewModel.findPart(value.label);
+
+            if (value.initialized) {
+                //value["viewModel"] = page;
+                ViewModelSync.associatePageViewModels(value, part);
+            } else {
+                value.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
+                    ViewModelSync.associatePageViewModels(value, part);
+                }, false, 0, false);
+            }
+
+        }
+
+        public function onTopicClick():void {        
+            viewModel.activeTopic = topicNavigationMenu.selectedItem as InspectorTopicViewModel;
+        }
+
+
+		]]>
+	</mx:Script>
+
+    <mx:HBox horizontalGap="0" height="100%" width="100%">
+        <mx:VBox verticalGap="0" visible="{showTopicsMenu}" includeInLayout="{showTopicsMenu}">
+            <mx:Spacer height="10"/>
+            <mx:HBox horizontalGap="0" height="100%">
+                <pspui:InspectorLinkBarExt id="topicNavigationMenu"
+                                           trackSelectionState="true" separatorWidth="0"
+                                           height="100%"
+                                           direction="vertical"
+                                           linkButtonStyleName="leftNavigation"
+                                           paddingRight="0" paddingLeft="10" paddingTop="10"
+                                           buttonMinWidth="115" buttonPercentWidth="100"
+                                           itemClick="onTopicClick();"/>
+                <mx:VBox verticalGap="0" height="100%" id="topicMenuBox">
+                    <pspui:GradientBox
+                            width="5"
+                            verticalAlign="middle"
+                            gradientDirection="horizontal"
+                            colors="[#F4F4F4, #000000]"
+                            direction="horizontal"
+                            height="{ViewStack(inspectorPagesControl).height > (topicNavigationMenu.selectedChild.y - topicMenuBox.y) ? (topicNavigationMenu.selectedChild.y - topicMenuBox.y) : ViewStack(inspectorPagesControl).height}"
+                            cornerRadius="3"/>
+                    <mx:VBox
+                            width="5"
+                            height="{topicNavigationMenu.selectedChild.height}"
+                            backgroundColor="#FFFFFF"
+                            borderStyle="solid"
+                            borderColor="#EEEEEE"
+                            borderSides="top, bottom"
+                            borderThickness="1"/>
+                    <pspui:GradientBox
+                            width="5"
+                            verticalAlign="middle"
+                            gradientDirection="horizontal"
+                            colors="[#F4F4F4, #000000]"
+                            cornerRadius="3"
+                            direction="horizontal"
+                            height="{ViewStack(inspectorPagesControl).height - (topicNavigationMenu.selectedChild.y + topicNavigationMenu.selectedChild.height + 15) > 0 ? ViewStack(inspectorPagesControl).height - (topicNavigationMenu.selectedChild.y + topicNavigationMenu.selectedChild.height + 15) : 0}"/>
+                </mx:VBox>
+            </mx:HBox>
+        </mx:VBox>
+
+        <mx:Canvas id="inspectorCanvas" height="100%" width="100%">
+            <pspui:ViewStackControlEx
+                    id="inspectorPagesControl"
+                    width="100%" height="100%"
+                    borderThickness="0" borderStyle="none"
+                    paddingTop="1"
+                    paddingLeft="0"
+                    historyManagementEnabled="false"/>
+        </mx:Canvas>
+    </mx:HBox>
+
+
+    <mx:Binding source="viewModel.topics" destination="topicNavigationMenu.dataProvider" />
+
+    <mx:Binding source="viewModel.activeTopic" destination="topicNavigationMenu.selectedItem" />
+
+    <mx:Binding source="viewModel.activePageLabel" destination="inspectorPagesControl.selectedChildLabel" />
+
+    <mx:Binding source="inspectorPagesControl.selectedChild" destination="this.selectedChild"/>
+</mx:VBox>

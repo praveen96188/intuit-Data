@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*">
+    <mx:Script>
+    <![CDATA[
+        import mx.controls.Alert;
+
+        import psp.sap.model.Offer;
+
+        import mx.collections.ArrayCollection;
+
+        import psp.sap.viewmodel.CompanyEditPriceTypeViewModel;
+        [Bindable]public var viewModel:CompanyEditPriceTypeViewModel;
+
+         private function changeEvt(event:Event):void {
+            var index:int = event.currentTarget.selectedIndex;
+            var tempPriceTypes=new ArrayCollection();
+            tempPriceTypes=viewModel.priceTypeOffers;
+            viewModel.assistedOffers=new ArrayCollection();
+            if(tempPriceTypes!=null)
+                viewModel.assistedOffers = tempPriceTypes.getItemAt(index).offerList ;
+
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:VBox>
+        <mx:HBox>
+            <controls:RequiredLabel fontWeight="bold" text="Price Type:" dataField="priceType" width="120"/>
+            <controls:SAPComboBox dataField="priceType"  dataProvider="{viewModel.priceTypes}" change="{viewModel.itemNumber != null? changeEvt(event):''}"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Label text="Discount:" styleName="fieldLabel" width="120"/>
+            <controls:SAPComboBox dataField="offer"  dataProvider="{viewModel.assistedOffers}" labelField="description" />
+        </mx:HBox>
+    </mx:VBox>
+    <mx:HBox horizontalAlign="right" width="100%" visible="{viewModel.showSaveButtons}" includeInLayout="{viewModel.showSaveButtons}">
+        <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+        <mx:Button id="saveButton" label="Save" click="viewModel.save();" enabled="{viewModel.canSave}"/>
+    </mx:HBox>
+
+</mx:VBox>

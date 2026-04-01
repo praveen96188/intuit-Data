@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" xmlns:controls="psp.sap.view.controls.*" creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[			
+
+
+            private var mViewModel:UniversalSearchFieldViewModel;
+            private var mTempViewModel:UniversalSearchFieldViewModel;
+            private var mCreationComplete:Boolean = false;
+
+
+            [Bindable]
+            public function get viewModel():UniversalSearchFieldViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:UniversalSearchFieldViewModel):void {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+
+            public function onCreationComplete():void {
+                mCreationComplete = true;
+                viewModel = mTempViewModel;
+            }
+
+
+			public function search():void {
+				if (viewModel.canSearch) {
+					viewModel.search();
+				}
+			}
+			
+			public function onSearchInputTextInput(e:TextEvent):void {
+				//this prevents undisplayable characters from appearing in the text field
+				//when you use shortcuts in IE.
+				//You would think this behavior might be default in such a framework,
+				//that you users wouldn't have a need to insert vertical tabs
+				//and bullshit like that, but hey, I'm sure the engineers who wrote the framework
+				//knew what they were doing.
+				for (var i:int=0; i< e.text.length; i++) {					
+					if (e.text.charCodeAt(i) < 32) {					
+						e.preventDefault();					
+					}
+				}
+			}
+
+            private function onKeyUp(event:KeyboardEvent):void {
+                if (event.keyCode == Keyboard.UP) {
+                    viewModel.prevSearchType();
+                } else if (event.keyCode == Keyboard.DOWN) {
+                    viewModel.nextSearchType();
+                }
+            }
+
+			
+			[Bindable ("propertyChange")]
+			private function get automationId():String {
+				return this.id;
+			}
+		]]>
+	</mx:Script>
+	<mx:Form defaultButton="{searchTypes}" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+		<controls:ErrorEatingFormItem direction="horizontal">
+			<mx:TextInput id="searchInput" automationName="searchInput_{automationId}" width="200" textInput="onSearchInputTextInput(event);" focusIn="focusManager.defaultButton = searchTypes;"/>
+			<mx:PopUpButton id="searchTypes" automationName="searchTypes_{automationId}" width="150" enabled="{viewModel.canSearch}" click="viewModel.search();" keyUp="onKeyUp(event);"/>
+		</controls:ErrorEatingFormItem>
+	</mx:Form>
+	<mx:Binding source="viewModel.searchTypeMenu" destination="searchTypes.popUp"/>	
+	<mx:Binding source="searchInput.text" destination="viewModel.searchText"/>
+	<mx:Binding source="viewModel.searchText" destination="searchInput.text"/>
+	<mx:Binding source="viewModel.searchButtonLabel" destination="searchTypes.label"/>	
+</mx:HBox>

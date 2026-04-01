@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:formatters="psp.sap.formatters.*"
+	xmlns:controls="psp.sap.view.controls.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.PropertyAudit;
+        import psp.sap.viewmodel.EmployeeHistoryViewModel;
+
+        private var mViewModel:EmployeeHistoryViewModel;
+        private var mTempViewModel:EmployeeHistoryViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        private function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        [Bindable]
+        public function get viewModel():EmployeeHistoryViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:EmployeeHistoryViewModel):void {
+            if (!mCreationComplete) {
+                mTempViewModel = value;
+                return;
+            }
+            mViewModel = value;
+        }
+
+        private function formatPropertyAuditValue(item:Object, dgc:DataGridColumn):String {
+            var propertyAudit:PropertyAudit = item as PropertyAudit;
+            var fieldValue:String = item[dgc.dataField];
+            if (propertyAudit == null) return '';
+            if ((propertyAudit.propertyName == "Hire Date") || (propertyAudit.propertyName == "Birth Date")) {
+                if (fieldValue == "") {
+                    return "Missing";
+                } else {
+                    return fieldValue;
+                }
+            } else if ((propertyAudit.propertyName == "SSN")) {
+                if (fieldValue == "") {
+                    return "Missing";
+                } else {
+                    return UIUtils.maskSSN(fieldValue);
+                }
+            } else {
+                return fieldValue;
+            }
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatDateOverTime.format(item.createdDate);
+        }
+
+		]]>
+	</mx:Script>
+
+	<controls:DataLoadFade id="postLoadFadeIn" target="{historyListVBox}" isLoading="{viewModel.isDataLoading}" />
+
+	<mx:VBox width="100%" id="historyListVBox" horizontalGap="0" visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+
+		<mx:VBox visible="{viewModel.propertyHistory.length == 0}" includeInLayout="{viewModel.propertyHistory.length == 0}" verticalGap="0" width="100%" height="30" id="noResultsPanel" verticalAlign="middle" horizontalAlign="center" backgroundColor="#b7b7b7" borderStyle="none" color="#000000" fontWeight="normal" dropShadowEnabled="false">
+			<mx:Text id="noHistoryFound" text="No history found."/>
+		</mx:VBox>
+
+		<controls:SAPDataGrid id="paychecksGrid" dataProvider="{viewModel.propertyHistory}" selectable="false" backgroundColor="#ffffff"
+			autoResizeToFitContent="true"
+			focusAlpha="0" visible="{viewModel.propertyHistory.length > 0}" includeInLayout="{viewModel.propertyHistory.length > 0}"
+			width="100%" height="100%">
+			<controls:columns>
+				<mx:DataGridColumn
+					headerText="Created date"
+					dataField="createdDate"
+                    labelFunction="formatDate"
+					minWidth="150"/>
+                <mx:DataGridColumn
+					headerText="Property Name"
+					dataField="propertyName"
+					minWidth="150"/>
+                <mx:DataGridColumn
+					headerText="Old Value"
+					dataField="oldPropertyValue"
+                    labelFunction="formatPropertyAuditValue"
+                    sortable="false"
+					minWidth="150"/>
+                <mx:DataGridColumn
+					headerText="New Value"
+					dataField="newPropertyValue"
+                    labelFunction="formatPropertyAuditValue"
+                    sortable="false"
+					minWidth="150"/>
+			</controls:columns>
+		</controls:SAPDataGrid>
+	</mx:VBox>
+
+</mx:VBox>

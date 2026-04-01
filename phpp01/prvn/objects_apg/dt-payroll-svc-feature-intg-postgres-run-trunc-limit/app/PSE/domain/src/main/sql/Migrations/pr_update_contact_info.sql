@@ -1,0 +1,139 @@
+CREATE OR REPLACE procedure PSPADM.pr_update_contact_info
+  (
+  p_batch_id in number
+    )
+  is
+  UPD_CONTACT_ADDRESS_LINE1  TEMP_COMPANY.CONTACT_ADDRESS_LINE1%TYPE;
+ UPD_CONTACT_ADDRESS_LINE2  TEMP_COMPANY.CONTACT_ADDRESS_LINE2%TYPE;
+ UPD_CONTACT_CITY  TEMP_COMPANY.CONTACT_CITY%TYPE;
+ UPD_CONTACT_COUNTRY  TEMP_COMPANY.CONTACT_COUNTRY%TYPE;
+ UPD_CONTACT_EMAIL  TEMP_COMPANY.CONTACT_EMAIL%TYPE;
+ UPD_CONTACT_FIRST_NAME  TEMP_COMPANY.CONTACT_FIRST_NAME%TYPE;
+ UPD_CONTACT_JOB_TITLE  TEMP_COMPANY.CONTACT_JOB_TITLE%TYPE;
+ UPD_CONTACT_LAST_NAME  TEMP_COMPANY.CONTACT_LAST_NAME%TYPE;
+ UPD_CONTACT_MIDDLE_NAME  TEMP_COMPANY.CONTACT_MIDDLE_NAME%TYPE;
+ UPD_CONTACT_PHONE  TEMP_COMPANY.CONTACT_PHONE%TYPE;
+  UPD_CONTACT_SECOND_PHONE  TEMP_COMPANY.CONTACT_SECOND_PHONE%TYPE;
+ UPD_CONTACT_STATE  TEMP_COMPANY.CONTACT_STATE%TYPE;
+ UPD_CONTACT_TITLE  TEMP_COMPANY.CONTACT_TITLE%TYPE;
+ UPD_CONTACT_ZIP_CODE  TEMP_COMPANY.CONTACT_ZIP_CODE%TYPE;
+ UPD_GENDER_CD  TEMP_COMPANY.CONTACT_GENDER_CD%TYPE;
+  UPD_CONTACT_FAX  TEMP_COMPANY.CONTACT_FAX%TYPE;
+CNT NUMBER:=0;
+begin
+for i in ( SELECT DISTINCT CRIS_ACCT_ROWID FROM TEMP_COMPANY  TC WHERE TC.BATCH_ID=p_batch_id )
+LOOP
+BEGIN
+SELECT X.ADDR,
+       X.ADDR_LINE_2,
+       X.CITY,
+       X.COUNTRY,
+       X.x_email_addr,
+       X.fst_name,
+       X.job_title,
+       X.LAST_NAME,
+       X.x_mid_initial,
+       X.work_ph_num,
+       X.home_ph_num,
+       X.STATE,
+       X.PER_TITLE,
+       X.ZIPCODE,
+       X.sex_mf,
+       X.fax_ph_num
+  INTO UPD_CONTACT_ADDRESS_LINE1,
+       UPD_CONTACT_ADDRESS_LINE2,
+       UPD_CONTACT_CITY,
+       UPD_CONTACT_COUNTRY,
+       UPD_CONTACT_EMAIL,
+       UPD_CONTACT_FIRST_NAME,
+       UPD_CONTACT_JOB_TITLE,
+       UPD_CONTACT_LAST_NAME,
+       UPD_CONTACT_MIDDLE_NAME,
+       UPD_CONTACT_PHONE,
+        UPD_CONTACT_SECOND_PHONE,
+       UPD_CONTACT_STATE,
+       UPD_CONTACT_TITLE,
+       UPD_CONTACT_ZIP_CODE,
+       UPD_GENDER_CD,
+       UPD_CONTACT_FAX
+  FROM (SELECT /*+ DRIVING_SITE (addr ) DRIVING_SITE(con) DRIVING_SITE(rel) DRIVING_SITE(org ) */
+                            ADDR.ADDR,
+               ADDR.ADDR_LINE_2,
+               ADDR.CITY,
+               ADDR.COUNTRY,
+               ADDR.STATE,
+               ADDR.ZIPCODE,
+                CON.PER_TITLE,
+               con.job_title,
+               con.home_ph_num,
+               con.fst_name,
+               CON.LAST_NAME,
+               con.sex_mf,
+               con.fax_ph_num,
+               con.x_mid_initial,
+               con.x_email_addr,
+               con.work_ph_num,
+                 ROW_NUMBER ()
+               OVER (PARTITION BY REL.PARTY_ID
+                     ORDER BY REL.REL_TYPE_CD, REL.LAST_UPD DESC)
+                  RN
+          FROM siebel.s_addr_per@CRIS_PROD addr,
+               siebel.s_contact@CRIS_PROD con,
+               siebel.s_party_rel@CRIS_PROD rel,
+               SIEBEL.s_org_ext@CRIS_PROD org
+                WHERE     rel.party_id = org.ROW_ID
+               AND rel.rel_party_id = con.row_id
+               AND con.pr_per_addr_id = ADDR.ROW_ID(+)
+               AND ORG.ROW_ID=I.CRIS_ACCT_ROWID
+                  AND REL.REL_TYPE_CD IN
+                      ('Payroll Administrator', 'Primary Contact')) X
+ WHERE RN = 1 ;
+ EXCEPTION WHEN NO_DATA_FOUND
+ THEN 
+ UPD_CONTACT_ADDRESS_LINE1:=null ; 
+       UPD_CONTACT_ADDRESS_LINE2:=null ; 
+       UPD_CONTACT_CITY:=null ; 
+       UPD_CONTACT_COUNTRY:=null ; 
+       UPD_CONTACT_EMAIL:=null ; 
+       UPD_CONTACT_FIRST_NAME:=null ; 
+       UPD_CONTACT_JOB_TITLE:=null ; 
+       UPD_CONTACT_LAST_NAME:=null ; 
+       UPD_CONTACT_MIDDLE_NAME:=null ; 
+       UPD_CONTACT_PHONE:=null ; 
+        UPD_CONTACT_SECOND_PHONE:=null ; 
+       UPD_CONTACT_STATE:=null ; 
+       UPD_CONTACT_TITLE:=null ; 
+       UPD_CONTACT_ZIP_CODE:=null ; 
+       UPD_GENDER_CD:=null ; 
+       UPD_CONTACT_FAX:=null ; 
+ END;
+/* Formatted on 8/18/2011 5:02:41 AM (QP5 v5.163.1008.3004) */
+UPDATE TEMP_COMPANY TC
+   SET    CONTACT_ZIP_CODE = UPD_CONTACT_ZIP_CODE,
+       CONTACT_STATE = UPD_CONTACT_STATE,
+       CONTACT_COUNTRY = UPD_CONTACT_COUNTRY,
+       CONTACT_CITY = UPD_CONTACT_CITY,
+       CONTACT_ADDRESS_LINE1 = UPD_CONTACT_ADDRESS_LINE1,
+       CONTACT_ADDRESS_LINE2 = UPD_CONTACT_ADDRESS_LINE2,
+       CONTACT_PHONE = UPD_CONTACT_PHONE,
+       CONTACT_EMAIL = UPD_CONTACT_EMAIL,
+       CONTACT_MIDDLE_NAME = UPD_CONTACT_MIDDLE_NAME,
+       CONTACT_LAST_NAME = UPD_CONTACT_LAST_NAME,
+       CONTACT_FIRST_NAME = UPD_CONTACT_FIRST_NAME,
+       CONTACT_SECOND_PHONE = UPD_CONTACT_SECOND_PHONE,
+       CONTACT_JOB_TITLE = UPD_CONTACT_JOB_TITLE,
+       CONTACT_TITLE = UPD_CONTACT_TITLE,
+       CONTACT_GENDER_CD = UPD_GENDER_CD,CONTACT_FAX = UPD_CONTACT_FAX  WHERE TC.CRIS_ACCT_ROWID=I.CRIS_ACCT_ROWID and TC.BATCH_ID=p_batch_id LOG ERRORS REJECT LIMIT UNLIMITED;
+       CNT:= CNT+1;
+       IF(CNT=5000)
+       THEN 
+       COMMIT;
+       CNT:=0;
+       ELSE 
+       NULL;
+       END IF;
+             
+       END LOOP;
+       COMMIT;
+       END pr_update_contact_info;
+/

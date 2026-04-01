@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+        height="100%" width="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script><![CDATA[
+        import psp.sap.viewmodel.SqlConsoleViewModel;
+
+        private var mViewModel:SqlConsoleViewModel;
+        private var mTempViewModel:SqlConsoleViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():SqlConsoleViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:SqlConsoleViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+                mViewModel.expectedRowCountValidator.listener = expectedRowCount;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+        ]]></mx:Script>
+
+    <mx:Form width="90%">
+        <mx:FormItem label="Reason" width="100%">
+            <mx:TextArea id="reason" text="{viewModel.reason}" height="40" width="100%"/>
+        </mx:FormItem>
+        <mx:FormItem label="SQL Statement" width="100%">
+            <mx:TextArea id="sqlStatement" text="{viewModel.sqlStatement}" height="450" width="100%" verticalScrollPolicy="on"/>
+        </mx:FormItem>
+
+        <mx:FormItem width="100%">
+            <mx:HBox width="100%" horizontalAlign="left">
+                <mx:HBox borderColor="black" borderStyle="solid" width="60%" backgroundColor="silver">
+                    <mx:Label text="Row Count:"/>
+                    <mx:Text text="{viewModel.rowCount}" width="60" textAlign="right"/>
+                    <mx:Spacer width="50"/>
+                    <mx:Label text="Execution Time:"/>
+                    <mx:Text text="{viewModel.executionTime}" width="130" textAlign="right"/>
+                </mx:HBox>
+                <mx:HBox width="100%" horizontalAlign="right">
+                    <mx:Label text="Expected Row Count" verticalCenter="true"/>
+                    <mx:TextInput id="expectedRowCount" text="{viewModel.expectedRowCount}" width="70"/>
+                    <mx:Button label="Execute" enabled="{viewModel.canSave}" click="viewModel.save()"/>
+                    <mx:Button label="Reset" enabled="{viewModel.canSave}" click="viewModel.refresh()"/>
+                </mx:HBox>
+            </mx:HBox>
+        </mx:FormItem>
+        <mx:Spacer height="10"/>
+        <mx:FormItem visible="{viewModel.showErrorMessage}" width="100%">
+            <mx:TextArea height="200" width="100%" verticalScrollPolicy="on" borderColor="red" borderStyle="solid"
+                         text="{viewModel.errorMessage}"/>
+        </mx:FormItem>
+    </mx:Form>
+
+    <mx:Binding source="reason.text" destination="viewModel.reason" />
+    <mx:Binding source="sqlStatement.text" destination="viewModel.sqlStatement" />
+    <mx:Binding source="expectedRowCount.text" destination="viewModel.expectedRowCount" />
+
+</mx:VBox>

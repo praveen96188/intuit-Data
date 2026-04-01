@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+         xmlns:pspui="psp.sap.view.*" width="753" height="540" paddingLeft="3">
+    <mx:Script>
+		<![CDATA[
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.UsageBillingEmployeeDetail;
+        import psp.sap.viewmodel.BillingDetailsViewModel;
+        import psp.sap.viewmodel.events.ViewModelEvent;
+        import psp.sap.application.SAP;
+        import psp.app.util.CommonUtil;
+
+        private var mViewModel:BillingDetailsViewModel;
+
+        [Bindable]
+        public function get viewModel():BillingDetailsViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:BillingDetailsViewModel):void {
+            mViewModel = value;
+            viewModel.addEventListener(ViewModelEvent.ACTIVATED, onActivation, false, 0, true);
+        }
+
+        private function onActivation(e:ViewModelEvent):void {
+        }
+
+        private function formatCurrency(item:Object):String {
+            return SAPCurrencyFormatters.defaultFormatter.format(item);
+        }
+
+        public function getEmployeeDisplayName(item:UsageBillingEmployeeDetail):String {
+            return item.employeeName;
+        }
+
+        public function displayPaycheckDate(item:UsageBillingEmployeeDetail, dgc:DataGridColumn):String {
+            var billEmployeeDetail:UsageBillingEmployeeDetail = UsageBillingEmployeeDetail(item);
+            return SAPDateFormatters.dateFormatShort.format(billEmployeeDetail.paycheckDate)
+        }
+
+        public function displayCompanyName(item:UsageBillingEmployeeDetail, dgc:DataGridColumn):String {
+            var billEmployeeDetail:UsageBillingEmployeeDetail = UsageBillingEmployeeDetail(item);
+            var shouldDisplayCompanyName:Boolean = true;
+            var index:int = viewModel.billingDetail.employeeDetails.getItemIndex(billEmployeeDetail);
+            if (index > 0 && viewModel.billingDetail.employeeDetails.length > 1) {
+                var prevEmployee:UsageBillingEmployeeDetail = UsageBillingEmployeeDetail(viewModel.billingDetail.employeeDetails.getItemAt(index - 1));
+                shouldDisplayCompanyName = (billEmployeeDetail.companyName != prevEmployee.companyName);
+            }
+            return (shouldDisplayCompanyName ? billEmployeeDetail.companyName + '\nEIN: ' + billEmployeeDetail.ein : '');
+        }
+
+        public function displayEmployeeName(item:Object, dgc:DataGridColumn):String {
+            var billEmployeeDetail:UsageBillingEmployeeDetail = UsageBillingEmployeeDetail(item);
+            var shouldDisplayName:Boolean = true;
+            var index:int = viewModel.billingDetail.employeeDetails.getItemIndex(billEmployeeDetail);
+            if (index > 0 && viewModel.billingDetail.employeeDetails.length > 1) {
+                var prevEmployee:UsageBillingEmployeeDetail = UsageBillingEmployeeDetail(viewModel.billingDetail.employeeDetails.getItemAt(index - 1));
+                shouldDisplayName = (getEmployeeDisplayName(billEmployeeDetail) != getEmployeeDisplayName(prevEmployee));
+            }
+            return (shouldDisplayName ? getEmployeeDisplayName(billEmployeeDetail) : '');
+        }
+
+        private function exportResults():void {
+            var callString:String = "?report=billingDetailsReport" +
+                    "&companyId=" + blankIfNull(viewModel.company.companyId) +
+                    "&sourceSystemCd=" + blankIfNull(viewModel.company.sourceSystemCd) +
+                    "&billDate=" + blankIfNull(viewModel.billingHistoryInfo.statementDate.toDateString()) +
+                    "&isViewAll=" + blankIfNull(viewModel.isViewAll.toString()) +
+                    "&token=" + blankIfNull(SAP.instance.session.user.authorizationToken) +
+                    "&export=true";
+
+            if(CommonUtil.isDTApp()) {
+                CommonUtil.showPrintWindow(callString, "Billing_Details_Report.xls");
+            } else {
+                ExternalInterface.call("showPrintWindow", callString);
+            }
+        }
+
+        public function blankIfNull(c:*):* {
+            return (c == null) ? "" : c;
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Label
+            text="Employees Paid in Previous Month"
+            styleName="heading" id="headerLabel"/>
+    <mx:VBox
+            id="dataContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}"
+            width="90%"
+            height="90%"
+            paddingRight="0"
+            verticalGap="0">
+        <mx:Text
+                width="100%"
+                paddingTop="6"
+                paddingBottom="6"
+                textAlign="left"
+                visible="{viewModel.isMultiEin}"
+                includeInLayout="{viewModel.isMultiEin}">
+            <mx:htmlText><![CDATA[<p align="left">Because this is a multi-EIN subscription, you might not see all employees. To see all companies and employees for this subscription, click <b>Show All.</b></p>]]>
+            </mx:htmlText>
+        </mx:Text>
+        <mx:DataGrid
+                width="100%"
+                minWidth="500"
+                dataProvider="{viewModel.billingDetail.employeeDetails}"
+                selectable="true"
+                height="93%"
+                variableRowHeight="true"
+                draggableColumns="false"
+                verticalScrollPolicy="on"
+                sortableColumns="false"
+                visible="{viewModel.hasBillingEmployeeDetails}"
+                includeInLayout="{viewModel.hasBillingEmployeeDetails}">
+            <mx:columns>
+
+                <mx:DataGridColumn
+                        width="0.3"
+                        headerText="Company({viewModel.billingDetail.numCompaniesBilled})"
+                        dataField="companyName"
+                        textAlign="left"
+                        labelFunction="displayCompanyName"
+                        minWidth="150"/>
+
+                <mx:DataGridColumn
+                        headerText="Employee({viewModel.billingDetail.numEmployeesBilled})"
+                        textAlign="left"
+                        labelFunction="displayEmployeeName"
+                        minWidth="50"/>
+
+                <mx:DataGridColumn
+                        headerText="Pay Date"
+                        dataField="checkNumber"
+                        textAlign="left"
+                        labelFunction="displayPaycheckDate"
+                        minWidth="50"/>
+
+                <mx:DataGridColumn
+                        headerText="Check Number"
+                        dataField="checkNumber"
+                        textAlign="left"
+                        minWidth="50"/>
+            </mx:columns>
+        </mx:DataGrid>
+        <mx:Text
+                id="noBillingHistoryText"
+                text="No billing details were found."
+                width="100%"
+                textAlign="center"
+                visible="{!viewModel.hasBillingEmployeeDetails}"
+                includeInLayout="{!viewModel.hasBillingEmployeeDetails}"
+                fontWeight="bold"/>
+
+        <mx:LinkButton label="Show All" visible="{viewModel.showViewAllLink}" styleName="standardLinkButtonStyle"
+                       click="viewModel.displayViewMore();"/>
+
+        <mx:LinkButton label="Show Less" visible="{viewModel.showViewLessLink}" styleName="standardLinkButtonStyle"
+                       click="viewModel.displayViewLess();"/>
+
+        <mx:LinkButton label="Export Results" visible="{viewModel.showExportLink}" styleName="standardLinkButtonStyle"
+                       click="exportResults();"/>
+
+    </mx:VBox>
+
+
+</mx:VBox>

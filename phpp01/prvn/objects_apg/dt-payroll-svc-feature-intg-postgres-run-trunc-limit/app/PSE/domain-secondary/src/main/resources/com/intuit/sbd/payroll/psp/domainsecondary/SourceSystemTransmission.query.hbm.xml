@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domainsecondary">
+
+    <query name="findLastTransmissionSecondary">
+        <![CDATA[
+            select sst
+            from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission sst
+            where sst.CompanyId = :company
+            and sst.CreatedDate = (
+			select max(max_sst.CreatedDate)
+			from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission max_sst
+			where max_sst.CompanyId = :company
+			and max_sst.CreatedDate >= :lowerDateBound)
+			]]>
+    </query>
+
+    <query name="findLastTransmissionTimeSecondary">
+        <![CDATA[
+            select sst.CreatedDate
+            from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission as sst
+            where sst.CompanyId = :company
+            and sst.CreatedDate = (
+			select max(max_sst.CreatedDate)
+			from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission as max_sst
+			where max_sst.CompanyId = :company
+			and max_sst.CreatedDate >= :lowerDateBound)
+			]]>
+    </query>
+
+    <query name="findLastTransmissionResponseTokenSecondary">
+        <![CDATA[
+            select sst.ResponseToken
+            from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission as sst
+            where sst.CompanyId = :company
+            and sst.CreatedDate = (
+			select max(max_sst.CreatedDate)
+			from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission as max_sst
+			where max_sst.CompanyId = :company
+			and max_sst.CreatedDate >= :lowerDateBound)
+			]]>
+    </query>
+
+    <query name="findFailedCompanyTransmissionsSecondary">
+
+        <![CDATA[
+
+                     select ssTransmission
+                     from com.intuit.sbd.payroll.psp.domainsecondary.SourceSystemTransmission as ssTransmission
+                     where
+                        ssTransmission.TransmissionIdentifier in (:companyEventDetailsValue)
+                        and ssTransmission.CreatedDate >=:fromDate
+                        and ssTransmission.CreatedDate <=:toDate
+                        and ssTransmission.CompanyId = :companyId
+                      order by ssTransmission.CreatedDate
+
+            ]]>
+
+    </query>
+
+</hibernate-mapping>

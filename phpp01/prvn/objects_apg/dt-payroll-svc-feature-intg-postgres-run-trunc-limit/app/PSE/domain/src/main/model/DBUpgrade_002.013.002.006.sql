@@ -1,0 +1,44 @@
+--------------------------------------------------------------------------
+-- Play this script in PREVIOUS_PSP_LOCAL@XE to make it look like PSP_LOCAL@XE
+--
+-- Please review the script before using it to make sure it won't
+-- cause any unacceptable data loss.
+--
+-- PREVIOUS_PSP_LOCAL@XE Schema Extracted by User PREVIOUS_PSP_LOCAL 
+-- PSP_LOCAL@XE Schema Extracted by User PSP_LOCAL 
+
+Prompt Column OBJECT_HASH;
+ALTER TABLE PSP_PSTUB_EMPLOYER_INFO
+ ADD (OBJECT_HASH  VARCHAR2(200 CHAR));
+
+Prompt Column VERSION;
+ALTER TABLE PSP_AUTH_USER
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_COMPANY
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_QUICKBOOKS_INFO
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column VERSION;
+ALTER TABLE PSP_ENTITLEMENT_UNIT
+MODIFY(VERSION  DEFAULT 0);
+
+Prompt Column FED_EXTRA;
+ALTER TABLE PSP_PSTUB_EMPLOYEE_INFO
+MODIFY(FED_EXTRA NUMBER(19,4));
+
+
+Prompt Column STATE_EXTRA;
+ALTER TABLE PSP_PSTUB_EMPLOYEE_INFO
+MODIFY(STATE_EXTRA NUMBER(19,4));
+
+
+Prompt Column SOURCE_MOD_TIME;
+ALTER TABLE PSP_PAYSTUB
+ ADD (SOURCE_MOD_TIME  NUMBER(10));
+
+PROMPT finishedDBUpgrade_002.013.002.006.sql

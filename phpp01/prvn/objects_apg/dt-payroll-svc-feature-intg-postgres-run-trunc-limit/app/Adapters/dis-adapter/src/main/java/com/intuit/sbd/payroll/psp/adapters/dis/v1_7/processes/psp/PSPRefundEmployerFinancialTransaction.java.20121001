@@ -1,0 +1,165 @@
+package com.intuit.sbd.payroll.psp.adapters.dis.v1_7.processes.psp;
+
+import com.intuit.sbd.payroll.psp.Application;
+import com.intuit.sbd.payroll.psp.DomainEntitySet;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.DISException;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.DISMessages;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.disdtos.enums.SourceSystemEnum;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.disdtos.requests.RefundEmployerFinancialTransactionRequestDISDTO;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.disdtos.responses.RefundEmployerFinancialTransactionResponseDISDTO;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.disdtos.responses.ResponseDISDTO;
+import com.intuit.sbd.payroll.psp.adapters.dis.v1_7.processes.DISProcessInterface;
+import com.intuit.sbd.payroll.psp.adapters.sap.adapter.PayrollRunAdapter;
+import com.intuit.sbd.payroll.psp.api.PayrollServices;
+import com.intuit.sbd.payroll.psp.domain.*;
+import com.intuit.sbd.payroll.psp.util.SpcfUtils;
+import com.intuit.spc.foundations.portability.util.SpcfDecimal;
+import com.intuit.spc.foundations.primary.SpcfMoney;
+import com.intuit.spc.foundations.primary.logging.SpcfLogger;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
+
+import static com.intuit.sbd.payroll.psp.adapters.dis.v1_7.PSPDISTranslator.translateSourceSystemCode;
+
+/**
+ * $Author: JChickanosky $
+ * $File: //PSP/dev/Adapters/DIS/src/com/intuit/sbd/payroll/psp/adapters/dis/v1_7/processes/psp/PSPRefundEmployerFinancialTransaction.java $
+ * $Revision: #1 $
+ * $DateTime: 2012/08/30 22:27:03 $
+ * $Author: JChickanosky $
+ * <p/>
+ * Query company event Process
+ */
+public class PSPRefundEmployerFinancialTransaction extends DISProcessInterface {
+    private static final SpcfLogger logger;
+
+    static {
+        logger = PayrollServices.getLogger(PSPRefundEmployerFinancialTransaction.class);
+    }
+
+    public static final int MAX_RESULT_CNT = 1000;
+
+    private RefundEmployerFinancialTransactionRequestDISDTO requestDISDTO;
+    private RefundEmployerFinancialTransactionResponseDISDTO responseDISDTO;
+
+    /**
+     * Constructor
+     *
+     * @param pRefundEmployerFinancialTransactionsDISDTO
+     *
+     */
+    public PSPRefundEmployerFinancialTransaction(RefundEmployerFinancialTransactionRequestDISDTO pRefundEmployerFinancialTransactionsDISDTO) {
+        requestDISDTO = pRefundEmployerFinancialTransactionsDISDTO;
+    }
+
+    @Override
+    public Object process() throws Throwable {
+        logger.debug("Entering PSPRefundEmployerFinancialTransactions.process()");
+        responseDISDTO = new RefundEmployerFinancialTransactionResponseDISDTO();
+
+        SourceSystemEnum sourceSystem = requestDISDTO.getSourceSystem();
+        String sourceCompanyId = requestDISDTO.getSourceCompanyId();
+        String financialTxId = requestDISDTO.getFinancialTransactionId();
+        Double refundAmount = requestDISDTO.getRefundAmount();
+
+        Calendar txDate = requestDISDTO.getTransactionDate();
+        SettlementType settlementType = requestDISDTO.getSettlementType();
+
+        String refundTransactionId = doWork(sourceSystem,
+                sourceCompanyId,
+                financialTxId,
+                refundAmount,
+                txDate,
+                settlementType);
+        responseDISDTO.setRefundTransactionId(refundTransactionId);
+        logger.debug("Leaving PSPRefundEmployerFinancialTransactions.process()");
+        return responseDISDTO;
+    }
+
+    private String doWork(SourceSystemEnum pSourceSystemCd,
+                          String pSourceCompanyId,
+                          String pFinancialTxId,
+                          Double pRefundAmount,
+                          Calendar pTxDate,
+                          SettlementType pSettlementType) throws Throwable {
+
+        String refundTransactionId = null;
+        try {
+            PayrollServices.beginUnitOfWork();
+            Company company = Company.findCompany(pSourceCompanyId, translateSourceSystemCode(pSourceSystemCd));
+            if (company == null) {
+                throw new DISException(DISMessages.companyDoesNotExist(pSourceCompanyId));
+            }
+
+//            FinancialTransaction fnTx = Application.findById(FinancialTransaction.class, pFinancialTxId);
+//            PayrollServices.rollbackUnitOfWork();
+//
+//            SpcfMoney transactionAmount = fnTx.getFinancialTransactionAmount();
+//
+//            BigDecimal refundAmountBD = new BigDecimal(pRefundAmount);
+//            SpcfDecimal refundAmountSD = SpcfUtils.convertToSpcfDecimal(refundAmountBD);
+//
+//            int transactionAmtCompare = SpcfUtils.compareSpcfDecimalTo(transactionAmount, refundAmountSD);
+//
+//            if (transactionAmtCompare == 0) {
+//                performRefund(pSourceCompanyId,
+//                        pFinancialTxId,
+//                        pRefundAmount,
+//                        pTxDate,
+//                        pSettlementType.toString()
+//                );
+//            } else {
+//                performRebill(fnTx);
+//            }
+//
+
+        } finally {
+            PayrollServices.rollbackUnitOfWork();
+        }
+        return refundTransactionId;
+    }
+
+
+//    private void performRebill(String pSourceCompanyId,
+//                               String pFinancialTxId,
+//                               Double pFinancialTxAmt,
+//                               Calendar pTxnDate,
+//                               String pSettlementType
+//    ) {
+//        PayrollRunAdapter payrollRunAdapter = new PayrollRunAdapter();
+//
+//        payrollRunAdapter.addRefundRebillTransaction(
+//                SourceSystemCode.QBDT.toString(),
+//                pSourceCompanyId,
+//                pFinancialTxId,
+//                pFinancialTxAmt,
+//                pTxnDate,
+//                pSettlementType);
+//    }
+//
+//
+//    private void performRefund(String pSourceCompanyId,
+//                               String pFinancialTxId,
+//                               Double pFinancialTxAmt,
+//                               Calendar pTxnDate,
+//                               String pSettlementType
+//    ) {
+//        PayrollRunAdapter payrollRunAdapter = new PayrollRunAdapter();
+//
+//        payrollRunAdapter.refundEmployerTransaction(
+//                SourceSystemCode.QBDT.toString(),
+//                pSourceCompanyId,
+//                pFinancialTxId,
+//                pFinancialTxAmt,
+//                pTxnDate,
+//                pSettlementType);
+//
+//    }
+
+    @Override
+    public ResponseDISDTO getResponse() {
+        return responseDISDTO;
+    }
+
+}

@@ -1,0 +1,6 @@
+--
+-- This script will be executed BEFORE the automatically generated
+-- C:\dev\PSP\main\PSE\Domain\src\main\model\DBUpgradeFrom_1.4.0.0_To_1.5.0.0.sql
+--
+-- Developers can hand code logic here for data migration purposes
+--

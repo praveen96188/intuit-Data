@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <localRepository>${user.home}/.m2/repository</localRepository>
+  <interactiveMode>false</interactiveMode>
+  <servers>
+    <server>
+      <id>releases</id>
+      <username>deploy</username>
+      <password>sss</password>
+    </server>
+    <server>
+      <id>snapshots</id>
+      <username>deploy</username>
+      <password>sss</password>
+    </server>
+    <server>
+      <id>site</id>
+      <username>deploy</username>
+      <password>sss</password>
+    </server>
+  </servers>
+
+  <mirrors>
+    <mirror>
+      <id>nexus</id>
+      <mirrorOf>external:*,!servebox,!localR</mirrorOf>
+      <url>https://artifact.intuit.com/artifactory/maven-proxy/</url>
+    </mirror>
+  </mirrors>
+
+  <profiles>
+    <profile>
+      <id>nexus-repo</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>http://central</url>
+          <releases />
+          <snapshots />
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>central</id>
+          <url>http://central</url>
+          <releases />
+          <snapshots />
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+    <profile>
+      <id>sandbox-deploy</id>
+      <properties>
+        <url.releases>file://${env.TEMP}/repos</url.releases>
+        <url.snapshots>file://${env.TEMP}/repos</url.snapshots>
+        <url.site>file://${env.TEMP}/site/${env.JOB_NAME}/LATEST</url.site>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>nexus-deploy</id>
+      <properties>
+        <url.releases>https://artifact.intuit.com/artifactory/SBG.Payments.Intuit-Snapshots</url.releases>
+        <url.snapshots>https://artifact.intuit.com/artifactory/SBG.Payments.Intuit-Releases</url.snapshots>
+        <url.site>file://${env.TEMP}/site/${env.JOB_NAME}/LATEST</url.site>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>always-active</id>
+      <properties>
+        <surefire.useFile>false</surefire.useFile>
+        <bldUserName>${env.USERNAME}</bldUserName>
+        <bldChangeList>${env.P4_CHANGELIST}</bldChangeList>
+        <bldTimeStamp>${env.BUILD_ID}</bldTimeStamp>
+        <bldNumber>${env.BUILD_NUMBER}</bldNumber>
+        <bldURL>${env.HUDSON_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/</bldURL>
+        <bldTag>${env.BUILD_TAG}</bldTag>
+      </properties>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>always-active</activeProfile>
+    <activeProfile>nexus-repo</activeProfile>
+    <activeProfile>nexus-deploy</activeProfile>
+  </activeProfiles>
+</settings>

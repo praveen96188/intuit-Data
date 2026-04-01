@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*" xmlns:pspui="psp.sap.view.*"
+         width="100%" verticalGap="0" creationComplete="onCreationComplete();">
+    <mx:Script>
+        <![CDATA[
+        import psp.sap.application.enums.EnrollmentsPageEnum;
+        import psp.sap.viewmodel.RAFViewModel;
+
+        private var mViewModel:RAFViewModel;
+        private var mTempViewModel:RAFViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():RAFViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:RAFViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        ]]>
+    </mx:Script>
+
+    <controls:PartsTabNavigator
+        label="{EnrollmentsPageEnum.RAF_ENROLLMENTS+ '_ptn'}">
+        <pspui:RAFPendingEnrollmentsView label="{EnrollmentsPageEnum.RAF_PENDING_ENROLLMENTS}"/>
+        <pspui:RAFPendingTapeView label="{EnrollmentsPageEnum.RAF_PENDING_TAPE}"/>
+        <pspui:RAFPendingResponseView label="{EnrollmentsPageEnum.RAF_PENDING_RESPONSE}"/>
+        <pspui:RAFRejectedView label="{EnrollmentsPageEnum.RAF_REJECTED}"/>
+        <pspui:RAFUnenrollTapeView label="{EnrollmentsPageEnum.RAF_UNENROLL_TAPE}"/>
+    </controls:PartsTabNavigator>
+</mx:VBox>

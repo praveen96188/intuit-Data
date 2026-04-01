@@ -1,0 +1,266 @@
+off
+SET
+Timing is on.
+psql:run_perf_sql_apg_staging.sql:38: INFO:  pg_hint_plan: hint syntax error at or near "APPEND "
+DETAIL:  Unrecognized hint keyword "APPEND".
+                                                                                                                                                                                                                                                                                   QUERY PLAN                                                                                                                                                                                                                                                                                   
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Insert on pspadm.psp_financial_trans_state  (cost=481401405.98..1055320091.03 rows=0 width=0) (actual time=23260075.851..23260075.875 rows=0 loops=1)
+   ->  Subquery Scan on "*SELECT*"  (cost=481401405.98..1055320091.03 rows=2302870057 width=2418) (actual time=12256126.184..14715747.670 rows=1935440 loops=1)
+         Output: "*SELECT*".nextval, "*SELECT*"."?column?", 'PerformanceTest'::character varying(30), ("*SELECT*"."timestamp")::timestamp(6) without time zone, 'PerformanceTest'::character varying(30), ("*SELECT*".timestamp_1)::timestamp(6) without time zone, "*SELECT*"."?column?_3", ("*SELECT*".timestamp_2)::timestamp(6) without time zone, NULL::character varying(30), NULL::character varying(255), "*SELECT*".financial_transaction_seq, 'Executed'::character varying(255), NULL::character varying(255), "*SELECT*".company_fk, "*SELECT*".transaction_type_fk
+         ->  Merge Join  (cost=481401405.98..1009262689.89 rows=2302870057 width=322) (actual time=12256126.179..14712857.619 rows=1935440 loops=1)
+               Output: nextval('perf_test'::regclass), 0, NULL::unknown, '2023-04-26 08:00:00'::timestamp without time zone, NULL::unknown, '2023-04-26 08:00:00'::timestamp without time zone, '-1'::integer, '2023-04-26 08:00:00'::timestamp without time zone, NULL::unknown, NULL::unknown, ft.financial_transaction_seq, NULL::unknown, NULL::unknown, ft.company_fk, ft.transaction_type_fk
+               Merge Cond: ((mmt.money_movement_transaction_seq)::text = (ft.money_movement_transaction_fk)::text)
+               Join Filter: ((ft.settlement_date >= mmt.initiation_date) AND (date(ft.settlement_date) >= date(mmt.initiation_date)))
+               ->  Sort  (cost=33566.62..33573.17 rows=2618 width=45) (actual time=8787.299..10551.097 rows=1781458 loops=1)
+                     Output: mmt.money_movement_transaction_seq, mmt.initiation_date
+                     Sort Key: mmt.money_movement_transaction_seq
+                     Sort Method: external merge  Disk: 101112kB
+                     ->  Append  (cost=3714.75..33417.99 rows=2618 width=45) (actual time=145.124..2807.960 rows=1781458 loops=1)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p0 mmt_1  (cost=3714.75..4021.28 rows=302 width=45) (actual time=145.123..352.329 rows=224130 loops=1)
+                                 Output: mmt_1.money_movement_transaction_seq, mmt_1.initiation_date
+                                 Recheck Cond: (((mmt_1.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_1.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=8310
+                                 ->  BitmapAnd  (cost=3714.75..3714.75 rows=302 width=0) (actual time=125.383..125.385 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p0  (cost=0.00..1840.87 rows=219107 width=0) (actual time=61.692..61.692 rows=2251614 loops=1)
+                                             Index Cond: ((mmt_1.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p0  (cost=0.00..1873.48 rows=223321 width=0) (actual time=60.673..60.673 rows=2253638 loops=1)
+                                             Index Cond: (mmt_1.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p1 mmt_2  (cost=3842.19..4170.03 rows=323 width=45) (actual time=143.083..345.848 rows=223109 loops=1)
+                                 Output: mmt_2.money_movement_transaction_seq, mmt_2.initiation_date
+                                 Recheck Cond: (((mmt_2.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_2.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=8271
+                                 ->  BitmapAnd  (cost=3842.19..3842.19 rows=323 width=0) (actual time=123.504..123.506 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p1  (cost=0.00..1917.92 rows=228314 width=0) (actual time=60.620..60.620 rows=2228841 loops=1)
+                                             Index Cond: ((mmt_2.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p1  (cost=0.00..1923.85 rows=229371 width=0) (actual time=59.825..59.825 rows=2229328 loops=1)
+                                             Index Cond: (mmt_2.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p2 mmt_3  (cost=3773.95..4093.68 rows=315 width=45) (actual time=142.941..344.244 rows=220772 loops=1)
+                                 Output: mmt_3.money_movement_transaction_seq, mmt_3.initiation_date
+                                 Recheck Cond: (((mmt_3.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_3.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=8185
+                                 ->  BitmapAnd  (cost=3773.95..3773.95 rows=315 width=0) (actual time=123.314..123.315 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p2  (cost=0.00..1884.36 rows=224239 width=0) (actual time=60.704..60.704 rows=2201625 loops=1)
+                                             Index Cond: ((mmt_3.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p2  (cost=0.00..1889.18 rows=225282 width=0) (actual time=59.513..59.514 rows=2204968 loops=1)
+                                             Index Cond: (mmt_3.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p3 mmt_4  (cost=4013.07..4373.40 rows=355 width=45) (actual time=135.282..326.964 rows=226975 loops=1)
+                                 Output: mmt_4.money_movement_transaction_seq, mmt_4.initiation_date
+                                 Recheck Cond: ((mmt_4.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone) AND ((mmt_4.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text))
+                                 Heap Blocks: exact=8416
+                                 ->  BitmapAnd  (cost=4013.07..4013.07 rows=355 width=0) (actual time=116.722..116.723 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p3  (cost=0.00..2004.82 rows=238967 width=0) (actual time=56.231..56.232 rows=2092121 loops=1)
+                                             Index Cond: (mmt_4.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p3  (cost=0.00..2007.82 rows=238967 width=0) (actual time=57.406..57.406 rows=2089217 loops=1)
+                                             Index Cond: ((mmt_4.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p4 mmt_5  (cost=4392.58..4824.97 rows=426 width=45) (actual time=254.070..315.383 rows=223862 loops=1)
+                                 Output: mmt_5.money_movement_transaction_seq, mmt_5.initiation_date
+                                 Recheck Cond: (((mmt_5.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_5.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=8298
+                                 ->  BitmapAnd  (cost=4392.58..4392.58 rows=426 width=0) (actual time=112.236..112.237 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p4  (cost=0.00..2188.71 rows=260552 width=0) (actual time=54.771..54.771 rows=2008726 loops=1)
+                                             Index Cond: ((mmt_5.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p4  (cost=0.00..2203.41 rows=262645 width=0) (actual time=54.631..54.631 rows=2015320 loops=1)
+                                             Index Cond: (mmt_5.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p5 mmt_6  (cost=4027.37..4386.68 rows=354 width=45) (actual time=255.962..317.495 rows=224179 loops=1)
+                                 Output: mmt_6.money_movement_transaction_seq, mmt_6.initiation_date
+                                 Recheck Cond: (((mmt_6.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_6.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=8310
+                                 ->  BitmapAnd  (cost=4027.37..4027.37 rows=354 width=0) (actual time=112.812..112.813 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p5  (cost=0.00..2001.56 rows=238265 width=0) (actual time=55.392..55.392 rows=2015515 loops=1)
+                                             Index Cond: ((mmt_6.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p5  (cost=0.00..2025.38 rows=241442 width=0) (actual time=54.703..54.703 rows=2017669 loops=1)
+                                             Index Cond: (mmt_6.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p6 mmt_7  (cost=3753.34..4074.08 rows=316 width=45) (actual time=125.819..302.838 rows=214363 loops=1)
+                                 Output: mmt_7.money_movement_transaction_seq, mmt_7.initiation_date
+                                 Recheck Cond: (((mmt_7.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_7.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=7948
+                                 ->  BitmapAnd  (cost=3753.34..3753.34 rows=316 width=0) (actual time=108.259..108.260 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p6  (cost=0.00..1865.40 rows=221978 width=0) (actual time=53.421..53.421 rows=1925419 loops=1)
+                                             Index Cond: ((mmt_7.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p6  (cost=0.00..1887.53 rows=225061 width=0) (actual time=52.090..52.090 rows=1932036 loops=1)
+                                             Index Cond: (mmt_7.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+                           ->  Bitmap Heap Scan on pspadm.psp_money_movement_transaction_p7 mmt_8  (cost=3230.38..3460.78 rows=227 width=45) (actual time=131.379..318.573 rows=224068 loops=1)
+                                 Output: mmt_8.money_movement_transaction_seq, mmt_8.initiation_date
+                                 Recheck Cond: (((mmt_8.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text) AND (mmt_8.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone))
+                                 Heap Blocks: exact=8308
+                                 ->  BitmapAnd  (cost=3230.38..3230.38 rows=227 width=0) (actual time=113.137..113.138 rows=0 loops=1)
+                                       ->  Bitmap Index Scan on psp_money_movement_transac_fk3_p7  (cost=0.00..1607.54 rows=191329 width=0) (actual time=56.102..56.102 rows=2014955 loops=1)
+                                             Index Cond: ((mmt_8.offload_batch_fk)::text = 'b7c48409-b9c6-3ea4-e053-0100007fdf27'::text)
+                                       ->  Bitmap Index Scan on psp_mm_transaction_i2_p7  (cost=0.00..1622.47 rows=193454 width=0) (actual time=54.317..54.317 rows=2015497 loops=1)
+                                             Index Cond: (mmt_8.initiation_date = '2022-12-28 08:00:00'::timestamp without time zone)
+               ->  Materialize  (cost=481367839.36..489284504.95 rows=1583333118 width=135) (actual time=12247330.913..14211417.373 rows=1579903854 loops=1)
+                     Output: ft.financial_transaction_seq, ft.company_fk, ft.transaction_type_fk, ft.money_movement_transaction_fk, ft.settlement_date
+                     ->  Sort  (cost=481367839.36..485326172.16 rows=1583333118 width=135) (actual time=12247330.904..13923422.588 rows=1579903854 loops=1)
+                           Output: ft.financial_transaction_seq, ft.company_fk, ft.transaction_type_fk, ft.money_movement_transaction_fk, ft.settlement_date
+                           Sort Key: ft.money_movement_transaction_fk
+                           Sort Method: external merge  Disk: 226196640kB
+                           ->  Append  (cost=0.00..115734124.04 rows=1583333118 width=135) (actual time=3.668..1083919.029 rows=1581523369 loops=1)
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p0 ft_1  (cost=0.00..6763807.67 rows=99340286 width=135) (actual time=3.667..58465.576 rows=99213329 loops=1)
+                                       Output: ft_1.financial_transaction_seq, ft_1.company_fk, ft_1.transaction_type_fk, ft_1.money_movement_transaction_fk, ft_1.settlement_date
+                                       Filter: ((ft_1.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1086973
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p1 ft_2  (cost=0.00..6732832.34 rows=98837902 width=135) (actual time=1.027..55624.512 rows=98757255 loops=1)
+                                       Output: ft_2.financial_transaction_seq, ft_2.company_fk, ft_2.transaction_type_fk, ft_2.money_movement_transaction_fk, ft_2.settlement_date
+                                       Filter: ((ft_2.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1058049
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p2 ft_3  (cost=0.00..6753247.35 rows=99172236 width=135) (actual time=0.780..53880.132 rows=99068323 loops=1)
+                                       Output: ft_3.financial_transaction_seq, ft_3.company_fk, ft_3.transaction_type_fk, ft_3.money_movement_transaction_fk, ft_3.settlement_date
+                                       Filter: ((ft_3.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1075811
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p3 ft_4  (cost=0.00..6743676.33 rows=98981436 width=135) (actual time=0.912..53152.420 rows=98906506 loops=1)
+                                       Output: ft_4.financial_transaction_seq, ft_4.company_fk, ft_4.transaction_type_fk, ft_4.money_movement_transaction_fk, ft_4.settlement_date
+                                       Filter: ((ft_4.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1094337
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p4 ft_5  (cost=0.00..6696179.71 rows=98345496 width=135) (actual time=0.954..53302.404 rows=98241728 loops=1)
+                                       Output: ft_5.financial_transaction_seq, ft_5.company_fk, ft_5.transaction_type_fk, ft_5.money_movement_transaction_fk, ft_5.settlement_date
+                                       Filter: ((ft_5.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1075365
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p5 ft_6  (cost=0.00..6794016.53 rows=99794532 width=135) (actual time=0.968..52927.441 rows=99656284 loops=1)
+                                       Output: ft_6.financial_transaction_seq, ft_6.company_fk, ft_6.transaction_type_fk, ft_6.money_movement_transaction_fk, ft_6.settlement_date
+                                       Filter: ((ft_6.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1091476
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p6 ft_7  (cost=0.00..6612588.69 rows=97050015 width=135) (actual time=0.958..57932.980 rows=96959450 loops=1)
+                                       Output: ft_7.financial_transaction_seq, ft_7.company_fk, ft_7.transaction_type_fk, ft_7.money_movement_transaction_fk, ft_7.settlement_date
+                                       Filter: ((ft_7.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1079238
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p7 ft_8  (cost=0.00..6865351.38 rows=100820368 width=135) (actual time=1.272..65345.191 rows=100688441 loops=1)
+                                       Output: ft_8.financial_transaction_seq, ft_8.company_fk, ft_8.transaction_type_fk, ft_8.money_movement_transaction_fk, ft_8.settlement_date
+                                       Filter: ((ft_8.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1073973
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p8 ft_9  (cost=0.00..6756189.36 rows=99198170 width=135) (actual time=0.975..68180.874 rows=99103690 loops=1)
+                                       Output: ft_9.financial_transaction_seq, ft_9.company_fk, ft_9.transaction_type_fk, ft_9.money_movement_transaction_fk, ft_9.settlement_date
+                                       Filter: ((ft_9.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1079075
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p9 ft_10  (cost=0.00..6810998.29 rows=100020226 width=135) (actual time=1.921..55284.517 rows=99888852 loops=1)
+                                       Output: ft_10.financial_transaction_seq, ft_10.company_fk, ft_10.transaction_type_fk, ft_10.money_movement_transaction_fk, ft_10.settlement_date
+                                       Filter: ((ft_10.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1113356
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p10 ft_11  (cost=0.00..6649946.42 rows=97657856 width=135) (actual time=1.025..53169.032 rows=97547975 loops=1)
+                                       Output: ft_11.financial_transaction_seq, ft_11.company_fk, ft_11.transaction_type_fk, ft_11.money_movement_transaction_fk, ft_11.settlement_date
+                                       Filter: ((ft_11.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1071798
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p11 ft_12  (cost=0.00..6715052.30 rows=98608179 width=135) (actual time=0.862..54500.777 rows=98481570 loops=1)
+                                       Output: ft_12.financial_transaction_seq, ft_12.company_fk, ft_12.transaction_type_fk, ft_12.money_movement_transaction_fk, ft_12.settlement_date
+                                       Filter: ((ft_12.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1082741
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p12 ft_13  (cost=0.00..6755030.40 rows=99238241 width=135) (actual time=0.970..54762.073 rows=99076373 loops=1)
+                                       Output: ft_13.financial_transaction_seq, ft_13.company_fk, ft_13.transaction_type_fk, ft_13.money_movement_transaction_fk, ft_13.settlement_date
+                                       Filter: ((ft_13.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1096374
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p13 ft_14  (cost=0.00..6824693.09 rows=100239952 width=135) (actual time=1.431..56360.487 rows=100156225 loops=1)
+                                       Output: ft_14.financial_transaction_seq, ft_14.company_fk, ft_14.transaction_type_fk, ft_14.money_movement_transaction_fk, ft_14.settlement_date
+                                       Filter: ((ft_14.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1083542
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p14 ft_15  (cost=0.00..6597109.91 rows=96928354 width=135) (actual time=1.416..64308.050 rows=96810949 loops=1)
+                                       Output: ft_15.financial_transaction_seq, ft_15.company_fk, ft_15.transaction_type_fk, ft_15.money_movement_transaction_fk, ft_15.settlement_date
+                                       Filter: ((ft_15.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1052698
+                                 ->  Seq Scan on pspadm.psp_financial_transaction_p15 ft_16  (cost=0.00..6746738.69 rows=99099869 width=135) (actual time=1.020..62296.466 rows=98966419 loops=1)
+                                       Output: ft_16.financial_transaction_seq, ft_16.company_fk, ft_16.transaction_type_fk, ft_16.money_movement_transaction_fk, ft_16.settlement_date
+                                       Filter: ((ft_16.current_transaction_state_fk)::text = ANY ('{Executed,Completed}'::text[]))
+                                       Rows Removed by Filter: 1087903
+ Query Identifier: 900334855827879985
+ Planning Time: 522.006 ms
+ Trigger RI_ConstraintTrigger_c_228233 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p11: time=16761.811 calls=122989
+ Trigger RI_ConstraintTrigger_c_228284 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p11: time=2110.830 calls=122989
+ Trigger RI_ConstraintTrigger_c_228335 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p11: time=376.941 calls=122989
+ Trigger RI_ConstraintTrigger_c_228386 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p11: time=1523.268 calls=122989
+ Trigger RI_ConstraintTrigger_c_228437 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p11: time=218.949 calls=122989
+ Trigger RI_ConstraintTrigger_c_228534 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p11: time=138430.627 calls=122989
+ Trigger RI_ConstraintTrigger_c_228218 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p6: time=16039.706 calls=115430
+ Trigger RI_ConstraintTrigger_c_228269 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p6: time=1968.317 calls=115430
+ Trigger RI_ConstraintTrigger_c_228320 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p6: time=436.653 calls=115430
+ Trigger RI_ConstraintTrigger_c_228371 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p6: time=1428.916 calls=115430
+ Trigger RI_ConstraintTrigger_c_228422 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p6: time=202.204 calls=115430
+ Trigger RI_ConstraintTrigger_c_228519 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p6: time=131489.180 calls=115430
+ Trigger RI_ConstraintTrigger_c_228242 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p14: time=16330.644 calls=117928
+ Trigger RI_ConstraintTrigger_c_228293 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p14: time=2011.123 calls=117928
+ Trigger RI_ConstraintTrigger_c_228344 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p14: time=417.175 calls=117928
+ Trigger RI_ConstraintTrigger_c_228395 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p14: time=1447.939 calls=117928
+ Trigger RI_ConstraintTrigger_c_228446 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p14: time=208.242 calls=117928
+ Trigger RI_ConstraintTrigger_c_228543 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p14: time=123892.814 calls=117928
+ Trigger RI_ConstraintTrigger_c_228230 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p10: time=16455.367 calls=119563
+ Trigger RI_ConstraintTrigger_c_228281 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p10: time=2046.151 calls=119563
+ Trigger RI_ConstraintTrigger_c_228332 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p10: time=386.126 calls=119563
+ Trigger RI_ConstraintTrigger_c_228383 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p10: time=1470.308 calls=119563
+ Trigger RI_ConstraintTrigger_c_228434 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p10: time=212.036 calls=119563
+ Trigger RI_ConstraintTrigger_c_228531 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p10: time=134023.075 calls=119563
+ Trigger RI_ConstraintTrigger_c_228209 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p3: time=16698.843 calls=123089
+ Trigger RI_ConstraintTrigger_c_228260 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p3: time=2092.776 calls=123089
+ Trigger RI_ConstraintTrigger_c_228311 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p3: time=411.143 calls=123089
+ Trigger RI_ConstraintTrigger_c_228362 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p3: time=1514.438 calls=123089
+ Trigger RI_ConstraintTrigger_c_228413 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p3: time=220.855 calls=123089
+ Trigger RI_ConstraintTrigger_c_228510 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p3: time=139412.130 calls=123089
+ Trigger RI_ConstraintTrigger_c_228206 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p2: time=16630.560 calls=120703
+ Trigger RI_ConstraintTrigger_c_228257 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p2: time=2057.275 calls=120703
+ Trigger RI_ConstraintTrigger_c_228308 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p2: time=533.174 calls=120703
+ Trigger RI_ConstraintTrigger_c_228359 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p2: time=1492.747 calls=120703
+ Trigger RI_ConstraintTrigger_c_228410 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p2: time=215.013 calls=120703
+ Trigger RI_ConstraintTrigger_c_228507 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p2: time=137941.918 calls=120703
+ Trigger RI_ConstraintTrigger_c_228239 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p13: time=16757.102 calls=123013
+ Trigger RI_ConstraintTrigger_c_228290 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p13: time=2099.466 calls=123013
+ Trigger RI_ConstraintTrigger_c_228341 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p13: time=473.785 calls=123013
+ Trigger RI_ConstraintTrigger_c_228392 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p13: time=1513.692 calls=123013
+ Trigger RI_ConstraintTrigger_c_228443 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p13: time=225.470 calls=123013
+ Trigger RI_ConstraintTrigger_c_228540 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p13: time=128649.570 calls=123013
+ Trigger RI_ConstraintTrigger_c_228203 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p1: time=16534.551 calls=119049
+ Trigger RI_ConstraintTrigger_c_228254 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p1: time=2030.811 calls=119049
+ Trigger RI_ConstraintTrigger_c_228305 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p1: time=441.838 calls=119049
+ Trigger RI_ConstraintTrigger_c_228356 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p1: time=1461.320 calls=119049
+ Trigger RI_ConstraintTrigger_c_228407 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p1: time=209.938 calls=119049
+ Trigger RI_ConstraintTrigger_c_228504 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p1: time=134715.091 calls=119049
+ Trigger RI_ConstraintTrigger_c_228221 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p7: time=16915.757 calls=122292
+ Trigger RI_ConstraintTrigger_c_228272 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p7: time=2087.609 calls=122292
+ Trigger RI_ConstraintTrigger_c_228323 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p7: time=492.069 calls=122292
+ Trigger RI_ConstraintTrigger_c_228374 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p7: time=1505.290 calls=122292
+ Trigger RI_ConstraintTrigger_c_228425 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p7: time=224.534 calls=122292
+ Trigger RI_ConstraintTrigger_c_228522 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p7: time=139770.052 calls=122292
+ Trigger RI_ConstraintTrigger_c_228212 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p4: time=16324.230 calls=120843
+ Trigger RI_ConstraintTrigger_c_228263 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p4: time=2074.226 calls=120843
+ Trigger RI_ConstraintTrigger_c_228314 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p4: time=402.634 calls=120843
+ Trigger RI_ConstraintTrigger_c_228365 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p4: time=1481.970 calls=120843
+ Trigger RI_ConstraintTrigger_c_228416 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p4: time=212.841 calls=120843
+ Trigger RI_ConstraintTrigger_c_228513 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p4: time=136133.361 calls=120843
+ Trigger RI_ConstraintTrigger_c_228245 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p15: time=16449.148 calls=121160
+ Trigger RI_ConstraintTrigger_c_228296 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p15: time=2064.987 calls=121160
+ Trigger RI_ConstraintTrigger_c_228347 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p15: time=384.066 calls=121160
+ Trigger RI_ConstraintTrigger_c_228398 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p15: time=1502.967 calls=121160
+ Trigger RI_ConstraintTrigger_c_228449 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p15: time=235.406 calls=121160
+ Trigger RI_ConstraintTrigger_c_228546 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p15: time=126564.119 calls=121160
+ Trigger RI_ConstraintTrigger_c_228200 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p0: time=16734.277 calls=121417
+ Trigger RI_ConstraintTrigger_c_228251 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p0: time=2077.456 calls=121417
+ Trigger RI_ConstraintTrigger_c_228302 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p0: time=506.001 calls=121417
+ Trigger RI_ConstraintTrigger_c_228353 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p0: time=1495.046 calls=121417
+ Trigger RI_ConstraintTrigger_c_228404 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p0: time=215.825 calls=121417
+ Trigger RI_ConstraintTrigger_c_228501 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p0: time=138169.878 calls=121417
+ Trigger RI_ConstraintTrigger_c_228227 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p9: time=16652.869 calls=123431
+ Trigger RI_ConstraintTrigger_c_228278 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p9: time=2110.473 calls=123431
+ Trigger RI_ConstraintTrigger_c_228329 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p9: time=415.930 calls=123431
+ Trigger RI_ConstraintTrigger_c_228380 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p9: time=1531.133 calls=123431
+ Trigger RI_ConstraintTrigger_c_228431 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p9: time=225.417 calls=123431
+ Trigger RI_ConstraintTrigger_c_228528 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p9: time=140245.210 calls=123431
+ Trigger RI_ConstraintTrigger_c_228215 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p5: time=16784.101 calls=120649
+ Trigger RI_ConstraintTrigger_c_228266 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p5: time=2054.670 calls=120649
+ Trigger RI_ConstraintTrigger_c_228317 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p5: time=501.487 calls=120649
+ Trigger RI_ConstraintTrigger_c_228368 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p5: time=1498.431 calls=120649
+ Trigger RI_ConstraintTrigger_c_228419 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p5: time=233.135 calls=120649
+ Trigger RI_ConstraintTrigger_c_228516 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p5: time=137500.362 calls=120649
+ Trigger RI_ConstraintTrigger_c_228224 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p8: time=16352.775 calls=121855
+ Trigger RI_ConstraintTrigger_c_228275 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p8: time=2082.117 calls=121855
+ Trigger RI_ConstraintTrigger_c_228326 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p8: time=365.994 calls=121855
+ Trigger RI_ConstraintTrigger_c_228377 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p8: time=1500.259 calls=121855
+ Trigger RI_ConstraintTrigger_c_228428 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p8: time=220.515 calls=121855
+ Trigger RI_ConstraintTrigger_c_228525 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p8: time=137949.766 calls=121855
+ Trigger RI_ConstraintTrigger_c_228236 for constraint psp_financialtransactionst_fk1 on psp_financial_trans_state_p12: time=16862.067 calls=122029
+ Trigger RI_ConstraintTrigger_c_228287 for constraint psp_financialtransactionst_fk2 on psp_financial_trans_state_p12: time=2082.674 calls=122029
+ Trigger RI_ConstraintTrigger_c_228338 for constraint psp_financial_transaction__fk7 on psp_financial_trans_state_p12: time=464.728 calls=122029
+ Trigger RI_ConstraintTrigger_c_228389 for constraint psp_financial_transaction__fk6 on psp_financial_trans_state_p12: time=1512.111 calls=122029
+ Trigger RI_ConstraintTrigger_c_228440 for constraint psp_financial_transaction__fk4 on psp_financial_trans_state_p12: time=221.045 calls=122029
+ Trigger RI_ConstraintTrigger_c_228537 for constraint psp_financial_transaction__fk5 on psp_financial_trans_state_p12: time=127516.773 calls=122029
+ Execution Time: 25769741.763 ms
+(254 rows)
+
+Time: 25770274.092 ms (07:09:30.274)
+ROLLBACK
+Time: 1.336 ms

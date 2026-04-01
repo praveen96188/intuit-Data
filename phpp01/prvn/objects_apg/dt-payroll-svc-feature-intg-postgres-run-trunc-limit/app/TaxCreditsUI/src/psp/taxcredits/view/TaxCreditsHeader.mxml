@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.taxcredits.view.controls.*" width="100%" horizontalGap="0">
+    <mx:Style source="psp/taxcredits/view/TaxCreditsHeader.css"/>
+    <mx:Script>
+		<![CDATA[
+
+        import psp.taxcredits.model.TaxCreditsModel;
+        import psp.taxcredits.model.TaxCreditsPageEnum;
+
+        [Bindable]
+        public var model:TaxCreditsModel = TaxCreditsModel.instance;
+
+        private function onClickIntuit():void {
+            model.tracker.trackEvent("Navigation","Click Intuit Logo");
+            navigateToURL(new URLRequest("http://www.intuit.com"));
+        }
+
+        private function onClickHome():void {
+            model.tracker.trackEvent("Navigation","Click Logo");
+            model.pageManager.switchPage(TaxCreditsPageEnum.INTRO);
+        }
+
+        private function onLink(e:TextEvent):void {
+            model.tracker.trackEvent("Navigation", "Click Email", "Header");
+            navigateToURL(new URLRequest(e.text), "_self");
+        }
+
+        //debug only
+        private function onClickCreators():void {
+//            WindowManager.add(new DebugConsole(), DisplayObject(Application.application));
+        }
+
+		]]>
+	</mx:Script>
+
+    <mx:VBox paddingLeft="15" width="400" verticalGap="0" verticalAlign="bottom">
+        <mx:Label click="onClickHome();" useHandCursor="true" mouseChildren="false" buttonMode="true"
+                  styleName="headerTitle" text="{resourceManager.getString('header','service_name')}"/>
+        <mx:Box paddingLeft="3" paddingTop="2">
+            <mx:Image source="psp/taxcredits/view/assets/fromcretor_text.gif" click="onClickCreators();"/>
+        </mx:Box>
+
+    </mx:VBox>
+
+    <mx:VBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom" verticalGap="0" paddingRight="8">
+        <mx:Box paddingRight="3" width="100%" horizontalAlign="right">
+            <mx:Image source="psp/taxcredits/view/assets/intuit_logo.gif" click="onClickIntuit();" buttonMode="true"/>
+        </mx:Box>        
+        <controls:SupText paddingTop="11" paddingRight="0" selectable="true" styleName="headerQuestions" htmlText="{resourceManager.getString('header','questions')}" link="onLink(event);"/>
+    </mx:VBox>
+
+</mx:HBox>

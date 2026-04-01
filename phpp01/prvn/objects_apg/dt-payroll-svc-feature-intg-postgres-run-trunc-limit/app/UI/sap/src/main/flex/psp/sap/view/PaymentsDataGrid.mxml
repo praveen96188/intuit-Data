@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<controls:FooterDataGrid xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="psp.sap.view.controls.*"
+                         xmlns:pspui="psp.sap.view.*"
+                         selectable="true"
+                         allowMultipleSelection="false"
+                         width="100%"
+                         draggableColumns="false"
+                         selectionColor="#FFFFCC"
+                         rollOverColor="#FFFFE6"
+                         toolTip="Click any row to view detail."
+                         click="dispatchEvent(new SAPEvent('paymentSelect',event))"
+                         maxRows="5"
+                         fudgeFactor="10"
+                         variableRowHeight="true">
+    <mx:Metadata>
+        [Event(name="historyClick", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="paymentSelect", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="editPaymentMethod", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="editPayDate", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="removeHold", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="addHold", type="psp.sap.application.events.SAPEvent")]
+        [Event(name="rejectPayment", type="psp.sap.application.events.SAPEvent")]
+    </mx:Metadata>
+    <mx:Script><![CDATA[
+        import mx.utils.ObjectUtil;
+
+        import psp.sap.application.SAP;
+        import psp.sap.application.events.SAPEvent;
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.model.Payment;
+
+        [Bindable]
+        public var totalText:String;
+        [Bindable]
+        public var holdStr:String = "On Hold - ";
+        [Bindable]
+        public var isPendingPayment:Boolean = true;
+
+        public function isLatePayment(payment:Payment):Boolean {
+            //late if settlement date > due date OR if pending, if due date has passed
+            return (payment.status.indexOf("ending") != -1 && ObjectUtil.dateCompare(payment.dueDate, SAP.instance.PSPDate)) != 1 || ObjectUtil.dateCompare(payment.dueDate, payment.settlementDate) == -1;
+        }
+
+        private function formatDate(item:Object, dgc:DataGridColumn):String {
+            return SAPDateFormatters.dateFormatMedium.format(item[dgc.dataField]);
+        }
+
+        public function canAddAgentHold(payment:Payment):Boolean {
+            if (!isPendingPayment) {
+                return false;
+            }
+            if (payment.status == "Finalized") {
+                return false;
+            }
+            for (var i:int = 0; i < payment.holds.length; i++) {
+                if (payment.holds.getItemAt(i) == 'Agent') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public function canRemoveHold(holdName:String):Boolean {
+            return holdName == 'Agent' || holdName == 'BackDate';
+
+        }
+
+        public function isOnHold(status:String):Boolean {
+            return status.indexOf(holdStr) == 0;
+        }
+
+        public function canEditPaymentMethod(payment:Payment):Boolean {
+            return isPendingPayment && payment.paymentMethod != 'EFTPS' && payment.paymentMethod != 'EFTPSDirectDebit' && !(isFinalizedNonSUIPayment(payment));
+        }
+
+        public function canEditPayDate(payment:Payment):Boolean {
+            return isPendingPayment && payment.status != "Finalized";
+        }
+
+        public function canRejectPayment(paymentMethod:String):Boolean {
+            return !isPendingPayment && (paymentMethod == 'ACHCredit' || paymentMethod == 'CheckPayment' || paymentMethod == 'ACHDebit');
+        }
+
+        public function getAgentHoldToolTip(payment:Payment):String {
+
+            var userFullName:String = payment.manualHoldCreator;
+
+            return "Hold added by: <b>" + userFullName + "</b>" + ((payment.manualHoldReason == null || payment.manualHoldReason == "") ? "" : ("<br>" + payment.manualHoldReason));
+        }
+
+        /**
+         * PSP-14128: Add NY MTA305 PAYMENT to the list of payments that can be Finalized
+         * Return true if the payment is finalized
+         * @param payment
+         * @return
+         */
+        private function isFinalizedNonSUIPayment(payment:Payment):Boolean{
+            return payment.agencyName=="NYDTF2" && payment.paymentMethod=="ACHDebit" && payment.status == "Finalized";
+        }
+
+        ]]></mx:Script>
+    <controls:columns>
+        <controls:FooterDataGridColumn
+                headerText="Settlement Date"
+                dataField="settlementDate"
+                width="145"
+                minWidth="145"
+                resizable="false">
+            <controls:itemRenderer>
+                <mx:Component>
+                    <mx:HBox paddingLeft="5" paddingRight="5" horizontalGap="5" horizontalScrollPolicy="off"
+                             width="100%" height="25"
+                             verticalAlign="top">
+                        <mx:Script><![CDATA[
+                            import psp.sap.application.SAP;
+                            import psp.sap.application.enums.OperationsEnum;
+                            import psp.sap.application.events.SAPEvent;
+                            import psp.sap.formatters.SAPDateFormatters;
+                            import psp.sap.model.Payment;
+                            ]]></mx:Script>
+                        <pspui:ActionLink
+                                click="outerDocument.dispatchEvent(new SAPEvent('historyClick', event));"
+                                label="H"
+                                toolTip="View History"
+                                tabEnabled="false"
+                                data="{data}"
+                                paddingLeft="0"
+                                paddingRight="0"
+                                paddingTop="0"
+                                paddingBottom="0"/>
+                        <mx:Text
+                                textAlign="left"
+                                text="{SAPDateFormatters.dateFormatMedium.format(Payment(data).settlementDate)}"
+                                width="100%"
+                                color="{outerDocument.isLatePayment(Payment(data)) ? 0xFF0000 : 0x000000}"/>
+                        <pspui:ActionLink
+                                id="payDateEditLink"
+                                label="E"
+                                toolTip="Edit Settlement Date"
+                                click="{outerDocument.dispatchEvent(new SAPEvent('editPayDate', event))}"
+                                enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_TAX_PAYMENTS)}"
+                                paddingLeft="0"
+                                paddingRight="0"
+                                paddingTop="0"
+                                paddingBottom="0"
+                                data="{data}"
+                                visible="{outerDocument.canEditPayDate(Payment(data))}"
+                                includeInLayout="{outerDocument.canEditPayDate(Payment(data))}"/>
+                    </mx:HBox>
+                </mx:Component>
+            </controls:itemRenderer>
+            <mx:DataGridColumn
+                    headerText="Total Payments"
+                    textAlign="right"
+                    dataField="settlementDate"
+                    paddingRight="5"/>
+        </controls:FooterDataGridColumn>
+        <controls:FooterDataGridColumn
+                headerText="Due Date"
+                dataField="dueDate"
+                labelFunction="formatDate"
+                textAlign="left"
+                width="100"
+                minWidth="100"
+                resizable="false">
+            <mx:DataGridColumn
+                    dataField="dueDate"
+                    textAlign="right"
+                    headerText=""/>
+        </controls:FooterDataGridColumn>
+        <controls:FooterDataGridColumn
+                headerText="Amount"
+                dataField="amount"
+                textAlign="right"
+                labelFunction="formatCurrency"
+                width="100"
+                minWidth="100"
+                resizable="false">
+            <mx:DataGridColumn headerText="{totalText}" dataField="amount"/>
+        </controls:FooterDataGridColumn>
+        <controls:FooterDataGridColumn
+                headerText="Payment{String('\n')}Method"
+                dataField="paymentMethod"
+                textAlign="center"
+                width="145"
+                minWidth="145"
+                resizable="false">
+            <controls:itemRenderer>
+                <mx:Component>
+                    <mx:HBox
+                            paddingLeft="5"
+                            paddingRight="5"
+                            horizontalGap="5"
+                            horizontalScrollPolicy="off"
+                            width="100%"
+                            verticalAlign="top"
+                            horizontalAlign="center">
+                        <mx:Script><![CDATA[
+                            import psp.sap.application.SAP;
+                            import psp.sap.application.enums.OperationsEnum;
+                            import psp.sap.application.events.SAPEvent;
+                            import psp.sap.model.Payment;
+                            ]]></mx:Script>
+                        <mx:Text
+                                textAlign="right"
+                                text="{Payment(data).paymentMethod}"/>
+                        <mx:Image source="{SAP.instance.icons.help}"
+                                  toolTip="{Payment(data).strNotPriorityPaymentMethodReasons()}"
+                                  visible="{Payment(data).isNotPriorityPaymentMethod}"
+                                  includeInLayout="{Payment(data).isNotPriorityPaymentMethod}"/>
+                        <pspui:ActionLink
+                                id="paymentMethodLink"
+                                label="E"
+                                toolTip="Change Payment Method"
+                                tabEnabled="false"
+                                paddingLeft="0"
+                                paddingRight="0"
+                                paddingTop="0"
+                                paddingBottom="0"
+                                data="{data}"
+                                enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_TAX_PAYMENTS)}"
+                                click="outerDocument.dispatchEvent(new SAPEvent('editPaymentMethod', event));"
+                                visible="{outerDocument.canEditPaymentMethod(Payment(data))}"
+                                includeInLayout="{outerDocument.canEditPaymentMethod(Payment(data))}"/>
+                    </mx:HBox>
+                </mx:Component>
+            </controls:itemRenderer>
+            <mx:DataGridColumn
+                    headerText=""
+                    dataField="paymentMethod"
+                    textAlign="center"/>
+        </controls:FooterDataGridColumn>
+        <controls:FooterDataGridColumn
+                headerText="Status"
+                dataField="status"
+                textAlign="left">
+            <controls:itemRenderer>
+                <mx:Component>
+                    <mx:VBox width="100%"
+                             horizontalAlign="left"
+                             verticalGap="0"
+                             verticalScrollPolicy="off"
+                             horizontalScrollPolicy="off">
+                        <mx:Script><![CDATA[
+                            import psp.sap.application.SAP;
+                            import psp.sap.application.enums.OperationsEnum;
+                            import psp.sap.application.events.SAPEvent;
+                            import psp.sap.model.Payment;
+                            import psp.sap.view.controls.HTMLToolTip;
+                            ]]></mx:Script>
+                        <mx:HBox horizontalGap="1">
+                            <pspui:ActionLink
+                                    id="holdAddLink"
+                                    label="+"
+                                    toolTip="Add Agent Hold"
+                                    click="{outerDocument.dispatchEvent(new SAPEvent('addHold', event))}"
+                                    visible="{outerDocument.canAddAgentHold(Payment(data))}"
+                                    includeInLayout="{outerDocument.canAddAgentHold(Payment(data))}"
+                                    enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_TAX_PAYMENTS)}"
+                                    styleName="noPadding"
+                                    data="{data}"/>
+                            <mx:Text text="{Payment(data).status}"
+                                     visible="{!outerDocument.isOnHold(Payment(data).status)}"
+                                     includeInLayout="{!outerDocument.isOnHold(Payment(data).status)}" styleName="noPadding"/>
+                            <mx:Text text="On Hold -" visible="{outerDocument.isOnHold(Payment(data).status)}"
+                                     includeInLayout="{outerDocument.isOnHold(Payment(data).status)}" styleName="noPadding"/>
+                            <mx:Repeater id="holdsRepeater" dataProvider="{Payment(data).holds}">
+                                <pspui:ActionLink
+                                        id="holdsChangeLink"
+                                        automationName="pendingHistoryLink"
+                                        label="{holdsRepeater.currentItem}"
+                                        toolTip="Remove hold"
+                                        click="outerDocument.dispatchEvent(new SAPEvent('removeHold', event));"
+                                        visible="{outerDocument.canRemoveHold(String(holdsRepeater.currentItem))}"
+                                        includeInLayout="{outerDocument.canRemoveHold(String(holdsRepeater.currentItem))}"
+                                        enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_TAX_PAYMENTS)}"
+                                        styleName="noPadding"
+                                        data="{data}"/>
+                                <mx:Image source="{SAP.instance.icons.userComment}"
+                                          toolTipCreate="event.toolTip = new HTMLToolTip();"
+                                          toolTip="{outerDocument.getAgentHoldToolTip(Payment(data))}"
+                                          visible="{Payment(data).manualHoldCreator != null &amp;&amp; String(holdsRepeater.currentItem) == 'Agent'}"
+                                          includeInLayout="{Payment(data).manualHoldCreator != null &amp;&amp; String(holdsRepeater.currentItem) == 'Agent'}"/>
+                                <mx:Text text="{holdsRepeater.currentItem}"
+                                         visible="{!outerDocument.canRemoveHold(String(holdsRepeater.currentItem))}"
+                                         includeInLayout="{!outerDocument.canRemoveHold(String(holdsRepeater.currentItem))}" styleName="noPadding"/>
+                            </mx:Repeater>
+
+                            <mx:Button
+                                        id="rejectPaymentLink"
+                                        label="Reject"
+                                        click="outerDocument.dispatchEvent(new SAPEvent('rejectPayment', event))"
+                                        visible="{outerDocument.canRejectPayment(Payment(data).paymentMethod)}"
+                                        includeInLayout="{outerDocument.canRejectPayment(Payment(data).paymentMethod)}"
+                                        enabled="{SAP.canPerformOperation(OperationsEnum.MANAGE_TAX_PAYMENTS)}"
+                                        paddingLeft="0"
+                                        paddingRight="0"
+                                        paddingTop="0"
+                                        paddingBottom="0"
+                                        data="{data}"/>
+                        </mx:HBox>
+                    </mx:VBox>
+                </mx:Component>
+            </controls:itemRenderer>
+            <mx:DataGridColumn
+                    headerText=""
+                    dataField="status"
+                    textAlign="left"/>
+        </controls:FooterDataGridColumn>
+        <controls:FooterDataGridColumn
+                headerText="Agency Id"
+                dataField="agencyId"
+                textAlign="left"
+                width="120"
+                minWidth="120"
+                resizable="false">
+            <mx:DataGridColumn
+                    headerText=""
+                    dataField="agencyId"
+                    textAlign="center"/>
+        </controls:FooterDataGridColumn>
+        <controls:FooterDataGridColumn
+                headerText="Deposit{String('\n')}Frequency"
+                dataField="paymentFrequency"
+                textAlign="left"
+                width="130"
+                minWidth="130"
+                resizable="false">
+            <mx:DataGridColumn
+                    headerText=""
+                    dataField="paymentFrequency"
+                    textAlign="left"/>
+        </controls:FooterDataGridColumn>
+    </controls:columns>
+
+</controls:FooterDataGrid>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <sql-query name="findEntitlementInfoByQbLicense">
+        <return-scalar column="subscription_end_date" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        <return-scalar column="entitlement_state" type="string"/>
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="entitlement_unit_status" type="string"/>
+        <return-scalar column="license_number" type="string"/>
+        <![CDATA[
+SELECT ent.subscription_end_date, ent.entitlement_state,
+co.source_company_id,
+eu.entitlement_unit_status,
+qInfo.license_number
+FROM psp_quickbooks_info qInfo,
+psp_company co,
+psp_entitlement_unit eu,
+psp_entitlement_code ec,
+psp_entitlement ent
+WHERE EC.IS_PRIMARY = 1
+AND (qinfo.application_version is null  or not regexp_like(application_version, '^\d{2}.\d{2}.[B|A|P].?*$') )
+AND qInfo.license_number in :qbLicenseNums
+AND co.company_seq = qInfo.company_fk
+AND co.company_seq = eu.company_fk
+AND ENT.ENTITLEMENT_CODE_FK = ec.entitlement_code_seq
+AND ent.entitlement_seq = eu.entitlement_fk
+AND eu.company_fk = co.company_seq
+			]]>
+    </sql-query>
+
+    <sql-query name="findEntitlementInfoByQbLicense_postgres">
+        <return-scalar column="subscription_end_date" type="com.intuit.sbd.payroll.psp.hibernate.SpcfCalendarUserType"/>
+        <return-scalar column="entitlement_state" type="string"/>
+        <return-scalar column="source_company_id" type="string"/>
+        <return-scalar column="entitlement_unit_status" type="string"/>
+        <return-scalar column="license_number" type="string"/>
+        <![CDATA[
+SELECT ent.subscription_end_date, ent.entitlement_state,
+co.source_company_id,
+eu.entitlement_unit_status,
+qInfo.license_number
+FROM psp_quickbooks_info qInfo,
+psp_company co,
+psp_entitlement_unit eu,
+psp_entitlement_code ec,
+psp_entitlement ent
+WHERE EC.IS_PRIMARY = 1
+AND (qinfo.application_version is null  or not application_version ~ '^\d{2}.\d{2}.[BAP].*$')
+AND qInfo.license_number in :qbLicenseNums
+AND co.company_seq = qInfo.company_fk
+AND co.company_seq = eu.company_fk
+AND ENT.ENTITLEMENT_CODE_FK = ec.entitlement_code_seq
+AND ent.entitlement_seq = eu.entitlement_fk
+AND eu.company_fk = co.company_seq
+			]]>
+    </sql-query>
+
+
+
+</hibernate-mapping>
+

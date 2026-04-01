@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:controls="psp.sap.view.controls.*"
+        xmlns:pspui="psp.sap.view.*"
+        width="100%" height="100%"
+        creationComplete="onCreationComplete()">
+
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+        import mx.formatters.CurrencyFormatter;
+
+        import psp.sap.application.SAP;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.PayrollRun;
+        import psp.sap.viewmodel.PayrollTransactionCancelViewModel;
+
+        private var mCreationComplete:Boolean = false;
+        private var mViewModel:PayrollTransactionCancelViewModel;
+        private var mTempViewModel:PayrollTransactionCancelViewModel;
+
+        [Bindable]
+        public function get viewModel():PayrollTransactionCancelViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollTransactionCancelViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        /**
+         * Confirmation dialog
+         */
+        private function confirm():void {
+            var msgString:String = "Are you sure you want to cancel the selected transactions?";
+            Alert.show(msgString, "Confirmation", Alert.OK | Alert.CANCEL, null, confirmVerifyHandler, null, Alert.OK);
+        }
+
+        private function confirmVerifyHandler(e:CloseEvent):void {
+            if (e.detail == Alert.OK) {
+                viewModel.save();
+            }
+            // I don't think this is a very good user experience, but the spec says to do this
+            else if (e.detail == Alert.CANCEL) {
+                viewModel.selectAll = false;
+            }
+        }
+
+        [Bindable] public var paycheckDate:String = "";
+
+        public function set payrollRun(value:PayrollRun):void {
+            paycheckDate = dateFormatter.format(value.paycheckDate);
+        }
+
+        [Bindable] public var currencyFormatter:CurrencyFormatter = SAPCurrencyFormatters.defaultFormatter;
+        ]]>
+    </mx:Script>
+
+    <controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+
+    <mx:DateFormatter id="dateFormatter" formatString="{SAP.instance.configuration.dateFormatMedium}"/>
+
+    <mx:VBox
+            height="100%"
+            verticalGap="0"
+            width="100%"
+            id="dataContainer"
+            visible="{!viewModel.isDataLoading}"
+            includeInLayout="{!viewModel.isDataLoading}">
+        <!-- Employee Transactions -->
+        <mx:VBox visible="{viewModel.employeeTransactions.length == 0}" includeInLayout="{viewModel.employeeTransactions.length == 0}" verticalGap="0" minWidth="900" id="noEmployeeTransactionsPanel" verticalAlign="middle" horizontalAlign="center" styleName="grayDataGridVBox" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+            <mx:HBox width="100%" textAlign="left" verticalAlign="middle">
+                <mx:Label id="eeDDTxnsLabel1" text="Direct Deposit Transactions" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+            <mx:Text id="noEEDDTxnsText" text="This payroll does not have any direct deposit transactions that can be cancelled" fontWeight="bold"/>
+        </mx:VBox>
+        <mx:VBox verticalGap="5" visible="{viewModel.employeeTransactions.length > 0}" includeInLayout="{viewModel.employeeTransactions.length > 0}" id="employeeTransactionsPanel" height="100%" width="100%">
+            <mx:VBox styleName="grayDataGridVBox" verticalScrollPolicy="off" horizontalScrollPolicy="off" width="100%">
+                <mx:HBox width="100%" textAlign="left" verticalAlign="middle" horizontalGap="0">
+                    <mx:Label id="eeDDTxnsLabel2" text="Direct Deposit Transactions" styleName="grayDataGridHeading"/>
+                    <mx:Label id="paycheckDateLabel" text="(for paycheck date {dateFormatter.format(viewModel.payrollRun.paycheckDate)})" fontSize="14" color="gray"/>
+                </mx:HBox>
+                <controls:SAPDataGrid
+                        id="eeTxnsData"
+                        dataProvider="{viewModel.employeeTransactions}"                        
+                        selectable="false"
+                        width="100%"
+                        maxRows="10"
+                        backgroundColor="#ffffff">
+                    <controls:columns>
+                        <pspui:CheckBoxHeaderColumn
+                                id="eeTxnSelectColumn"
+                                headerText=""
+                                textAlign="center"
+                                dataField="selected"
+                                sortable="false"
+                                headerRenderer="psp.sap.view.CheckBoxHeaderRenderer"
+                                viewModel="{viewModel}"
+                                selected="{viewModel.selected}"
+                                enabled="true"
+                                minWidth="24">
+                            <pspui:itemRenderer>
+                                <mx:Component>
+                                    <mx:HBox horizontalAlign="center">
+                                        <!-- this is tricky the data bindind is inline a.s. onClick -->
+                                        <mx:CheckBox id="eeTxnBox" selected="{data.selected}" click="data.selected = CheckBox(event.currentTarget).selected" />
+                                    </mx:HBox>
+                                </mx:Component>
+                            </pspui:itemRenderer>
+                        </pspui:CheckBoxHeaderColumn>
+                        <mx:DataGridColumn
+                                id="eeNameColumn"
+                                headerText="Name"
+                                textAlign="left"
+                                dataField="employeeName"
+                                minWidth="250">
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn
+                                id="ddACHAmountColumn"
+                                headerText="DD ACH Amount"
+                                textAlign="right"
+                                dataField="amount"
+                                minWidth="100">
+                            <mx:itemRenderer>
+                                <mx:Component id="amountText">
+                                    <mx:Text text="{outerDocument.currencyFormatter.format(data.amount)}"/>
+                                </mx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn
+                                id="eeBANumberColumn"
+                                headerText="Bank Account #"
+                                textAlign="right"
+                                dataField="employeeBankAccountNumber"
+                                sortable="false"
+                                minWidth="150">
+                            <mx:itemRenderer>
+                                <mx:Component id="eeBANumberText">
+                                    <mx:Text text="{UIUtils.maskBankAccountNumbers(data.employeeBankAccountNumber)}" />
+                                </mx:Component>
+                            </mx:itemRenderer>
+                        </mx:DataGridColumn>
+                        <mx:DataGridColumn
+                                id="eeBankRoutingNumberColumn"
+                                headerText="Bank Routing #"
+                                textAlign="center"
+                                dataField="employeeBankRoutingNumber"
+                                sortable="false"
+                                minWidth="150">
+                        </mx:DataGridColumn>
+                    </controls:columns>
+                </controls:SAPDataGrid>
+            </mx:VBox>
+            <mx:HBox width="100%" horizontalAlign="right">
+                <mx:Button id="cancelEETxnsButton" label="Cancel Transactions" click="{confirm()}" enabled="{viewModel.canSave}"/>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:VBox>
+
+    <mx:Binding source="viewModel.payrollRun" destination="payrollRun"/>
+
+</mx:VBox>

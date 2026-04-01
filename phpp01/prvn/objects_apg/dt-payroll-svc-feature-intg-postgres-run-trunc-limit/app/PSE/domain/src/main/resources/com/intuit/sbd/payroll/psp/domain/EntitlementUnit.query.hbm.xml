@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ * $Id: $
+ *
+ * Copyright (c) 2007 Intuit, Inc. All Rights Reserved.
+ *
+ * Unauthorized reproduction is a violation of applicable law.
+ * This material contains certain confidential or proprietary
+ * information and trade secrets of Intuit Inc.
+ */
+ -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">    
+    <query name="findDistinctEntitlementUnitsBySubscriptionNumber">
+        <![CDATA[
+                 select distinct entitlementUnit
+                 from com.intuit.sbd.payroll.psp.domain.EntitlementUnit as entitlementUnit
+                 where entitlementUnit.Entitlement.SubscriptionNumber = :subNum
+ 	]]>
+    </query>
+    <query name="findEntitlementUnitsOnUsageBillingBySubscriptionStartDate">
+            <![CDATA[
+                 select  eu
+                 from com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu
+                 join fetch eu.Entitlement as e
+                 join fetch e.EntitlementCode as ec
+                 join fetch eu.Company as c
+                 where trunc(e.SubscriptionStartDate) = trunc(to_date(:subscriptionStartDate, 'mmddyyyy'))
+                 and ec.IsUsageBilling = true
+                 and ec.AssetItemNumber not in ('1300009', '1400076')
+     	    ]]>
+    </query>
+
+    <query name="findEntitlementUnitsOnUsageBillingBySubscriptionStartDate_postgres">
+        <![CDATA[
+                 select  eu
+                 from com.intuit.sbd.payroll.psp.domain.EntitlementUnit as eu
+                 join fetch eu.Entitlement as e
+                 join fetch e.EntitlementCode as ec
+                 join fetch eu.Company as c
+                 where date_trunc('day',e.SubscriptionStartDate) = date_trunc('day',to_date(:subscriptionStartDate, 'mmddyyyy'))
+                 and ec.IsUsageBilling = true
+                 and ec.AssetItemNumber not in ('1300009', '1400076')
+     	    ]]>
+    </query>
+    
+    <query name="entitlementunit.query.by.encein">
+        <![CDATA[
+               SELECT entitlement.SubscriptionNumber AS subscriptionNumber,
+                      entitlementUnit.EntitlementUnitStatus AS entitilementUnitStatus,
+                      entitlement.LicenseNumber as licenseNumber,
+                      entitlement.CustomerId AS customerId,
+					  entitlement.EntitlementState AS entitlementState
+                FROM com.intuit.sbd.payroll.psp.domain.EntitlementUnit as entitlementUnit
+                JOIN entitlementUnit.Entitlement AS entitlement
+                WHERE entitlementUnit.FedTaxIdEnc in (:companyFedTaxId)
+                AND entitlement.SubscriptionNumber IS NOT NULL
+                AND entitlement.CustomerId IS NOT NULL
+                  
+ 	]]>
+    </query>
+
+    <sql-query name="updateEntitlementUnitStatus">
+        <![CDATA[
+                UPDATE PSP_ENTITLEMENT_UNIT PEU
+                SET MODIFIED_DATE = SYS_EXTRACT_UTC (SYSTIMESTAMP),
+                modifier_id = 'JIRA-14162',
+                PEU.ENTITLEMENT_UNIT_STATUS = 'PendingActivation'
+                WHERE PEU.ENTITLEMENT_UNIT_STATUS = 'ErrorActivating' and peu.entitlement_unit_seq not in ('735016b7-670a-45de-84f8-715c28877ea4',
+                '482bc8d2-1b57-4ffe-a820-26d282b66449',
+                'ef068853-0702-4086-865c-d847239fd745',
+                'bb3fb150-b629-4a23-b4eb-a807b6a2d211',
+                'b2180985-6d73-4377-8344-029fa730efed',
+                'd34e2c2f-7bf9-46b3-80a0-a5a7262c48a4',
+                '2976276e-401b-4094-ab98-2011af19207a',
+                '8ebfb1e0-98da-419d-a255-e490338189eb',
+                '71f8dab9-e4a7-4a62-9d23-de2d1877b71c',
+                '90b51924-9f9b-48d3-932c-3a7dc6918bbf',
+                'f2669462-43b0-4209-8c84-068cb9bb7683',
+                '19048cd8-b85e-44d6-9cef-7e5f86bc5208',
+                '89cd742f-eb7c-4ef6-8832-6bdb63a0b5b0',
+                '24ebc614-24ee-42de-aebe-a20a0da6a042',
+                '2b7596e5-f799-4d63-af1d-47572f571523',
+                '12a9dc2f-c500-464f-a85c-72ecd0ab24e2',
+                '37002a82-2c11-46ab-a762-43a6cc467a87',
+                '97d95e3f-2bfd-4b23-81c5-9513616f34b9',
+                '922c0ff5-9c23-4f86-adc1-3e5112b82212',
+                'b3de9de0-67b9-4abc-987b-9f0b97a5e799',
+                '781aa5a4-6ce5-431b-adee-de3e2172c35f',
+                'fec63166-b368-4868-819e-0eced850bbfa',
+                '320f3eda-aeb2-479c-a3a8-610dcb4854ff',
+                '7d5fd555-7c63-4476-98eb-a1e10e946e93',
+                'c1f838d7-03ec-42f3-8407-496bec085db3',
+                '19791707-7edd-4010-b2bf-f2d05c0f9aeb',
+                'c52fcb40-ae3a-4faf-9273-b4c1d2f2219a',
+                'f0f5ca44-59bf-41ea-99f4-9d497a89d418',
+                '30af52b7-ba85-40c1-8b74-6dad1bab0baf',
+                'eee968cc-cede-46ee-afa9-02a2962efa9f',
+                '07bb810d-d4ee-4b88-8fd6-d9109a9dee19',
+                '8d6370ca-0a05-4014-b5fa-09b5566f27fa',
+                '0338c55c-3489-4bff-97f9-40aac66e63aa',
+                'c9eb2120-c706-418e-99ea-18e4a8180082',
+                '98c428bd-676d-4981-9f61-9c10d2059767',
+                '79e6f774-7516-4457-b5f6-c9fca37b9f33',
+                'b7b421cc-31c2-4259-880c-c6a3688cb4f1',
+                'c8cd5c67-3426-4ec2-aa2f-49947be47d31',
+                'ca0d0ab6-f829-4880-96cc-9480f8468a73',
+                'aa2edff7-d309-4ecb-b1e2-3b69e5610909',
+                '76582794-38b7-4e64-95cd-79ef3ae2e3da','517f50e1-bf9a-44e4-9752-52b46bb71958','23466f97-343e-4a60-86d1-c43459e5df60','03564b7f-14a8-4e09-a8f8-e80db1d83767','2f77d6f3-8c0f-4bf8-8393-e9a48cca52bb') AND EXISTS
+                (SELECT 1
+                FROM psp_entitlement pe
+                WHERE PE.ENTITLEMENT_SEQ = PEU.ENTITLEMENT_FK
+                AND PE.ENTITLEMENT_STATE = 'Enabled')
+ 	]]>
+    </sql-query>
+
+
+    <sql-query name="updateEntitlementUnitStatus_postgres">
+        <![CDATA[
+                UPDATE PSP_ENTITLEMENT_UNIT
+                SET MODIFIED_DATE = timezone('UTC', cast (CURRENT_TIMESTAMP AS timestamptz)),
+                modifier_id = 'JIRA-14162',
+                ENTITLEMENT_UNIT_STATUS = 'PendingActivation'
+                WHERE ENTITLEMENT_UNIT_STATUS = 'ErrorActivating' and entitlement_unit_seq not in ('735016b7-670a-45de-84f8-715c28877ea4',
+                '482bc8d2-1b57-4ffe-a820-26d282b66449',
+                'ef068853-0702-4086-865c-d847239fd745',
+                'bb3fb150-b629-4a23-b4eb-a807b6a2d211',
+                'b2180985-6d73-4377-8344-029fa730efed',
+                'd34e2c2f-7bf9-46b3-80a0-a5a7262c48a4',
+                '2976276e-401b-4094-ab98-2011af19207a',
+                '8ebfb1e0-98da-419d-a255-e490338189eb',
+                '71f8dab9-e4a7-4a62-9d23-de2d1877b71c',
+                '90b51924-9f9b-48d3-932c-3a7dc6918bbf',
+                'f2669462-43b0-4209-8c84-068cb9bb7683',
+                '19048cd8-b85e-44d6-9cef-7e5f86bc5208',
+                '89cd742f-eb7c-4ef6-8832-6bdb63a0b5b0',
+                '24ebc614-24ee-42de-aebe-a20a0da6a042',
+                '2b7596e5-f799-4d63-af1d-47572f571523',
+                '12a9dc2f-c500-464f-a85c-72ecd0ab24e2',
+                '37002a82-2c11-46ab-a762-43a6cc467a87',
+                '97d95e3f-2bfd-4b23-81c5-9513616f34b9',
+                '922c0ff5-9c23-4f86-adc1-3e5112b82212',
+                'b3de9de0-67b9-4abc-987b-9f0b97a5e799',
+                '781aa5a4-6ce5-431b-adee-de3e2172c35f',
+                'fec63166-b368-4868-819e-0eced850bbfa',
+                '320f3eda-aeb2-479c-a3a8-610dcb4854ff',
+                '7d5fd555-7c63-4476-98eb-a1e10e946e93',
+                'c1f838d7-03ec-42f3-8407-496bec085db3',
+                '19791707-7edd-4010-b2bf-f2d05c0f9aeb',
+                'c52fcb40-ae3a-4faf-9273-b4c1d2f2219a',
+                'f0f5ca44-59bf-41ea-99f4-9d497a89d418',
+                '30af52b7-ba85-40c1-8b74-6dad1bab0baf',
+                'eee968cc-cede-46ee-afa9-02a2962efa9f',
+                '07bb810d-d4ee-4b88-8fd6-d9109a9dee19',
+                '8d6370ca-0a05-4014-b5fa-09b5566f27fa',
+                '0338c55c-3489-4bff-97f9-40aac66e63aa',
+                'c9eb2120-c706-418e-99ea-18e4a8180082',
+                '98c428bd-676d-4981-9f61-9c10d2059767',
+                '79e6f774-7516-4457-b5f6-c9fca37b9f33',
+                'b7b421cc-31c2-4259-880c-c6a3688cb4f1',
+                'c8cd5c67-3426-4ec2-aa2f-49947be47d31',
+                'ca0d0ab6-f829-4880-96cc-9480f8468a73',
+                'aa2edff7-d309-4ecb-b1e2-3b69e5610909',
+                '76582794-38b7-4e64-95cd-79ef3ae2e3da','517f50e1-bf9a-44e4-9752-52b46bb71958','23466f97-343e-4a60-86d1-c43459e5df60','03564b7f-14a8-4e09-a8f8-e80db1d83767','2f77d6f3-8c0f-4bf8-8393-e9a48cca52bb') AND EXISTS
+                (SELECT 1
+                FROM psp_entitlement pe
+                WHERE PE.ENTITLEMENT_SEQ = ENTITLEMENT_FK
+                AND PE.ENTITLEMENT_STATE = 'Enabled')
+ 	]]>
+    </sql-query>
+
+</hibernate-mapping>

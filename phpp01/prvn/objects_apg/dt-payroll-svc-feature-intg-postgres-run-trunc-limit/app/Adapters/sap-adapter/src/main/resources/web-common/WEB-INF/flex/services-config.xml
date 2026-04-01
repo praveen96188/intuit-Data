@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services-config>
+
+    <services>
+		<service-include file-path="remoting-config.xml" />
+        <service-include file-path="proxy-config.xml" />
+        <service-include file-path="messaging-config.xml" />
+        <!--<service-include file-path="data-management-config.xml" />-->
+
+	    <!--
+	    <service class="com.intuit.sap.lcds.CompanyDataDestination" id="runtime-company-ds"></service>
+
+    	Application level default channels. Application level default channels are
+    	necessary when a dynamic destination is being used by a service component
+    	and no ChannelSet has been defined for the service component. In that case,
+    	application level default channels will be used to contact the destination.
+        -->
+        <default-channels>
+           <channel ref="sap-secure-http"/>
+        </default-channels>
+
+	</services>
+
+<!--
+    <security>
+        <security-constraint id="sap-users">
+            <auth-method>Custom</auth-method>
+            <roles>
+                <role>sampleusers</role>
+            </roles>
+        </security-constraint>
+
+        <login-command class="flex.messaging.security.JRunLoginCommand" server="JRun"/> -->
+        <!-- Uncomment the correct app server
+        <login-command class="flex.messaging.security.TomcatLoginCommand" server="Tomcat"/>
+        <login-command class="flex.messaging.security.WeblogicLoginCommand" server="Weblogic"/>
+        <login-command class="flex.messaging.security.WebSphereLoginCommand" server="WebSphere"/>
+
+    </security>
+-->
+
+    <channels>
+        <!-- use an SAP derivative of HTTPEndpoint to write the PSPDate into the headers on Ack messages -->
+        <!-- <endpoint url="http://{server.name}:{server.port}/{context.root}/messagebroker/http" class="flex.messaging.endpoints.HTTPEndpoint"/> -->
+        <!--
+        <channel-definition id="sap-secure-http" class="psp.sap.service.SAPHttpChannel">
+            <endpoint url="http://{server.name}:{server.port}/{context.root}/messagebroker/http" class="com.intuit.sbd.payroll.psp.adapters.sap.SAPHTTPEndpoint"/>
+            <properties>
+                <add-no-cache-headers>false</add-no-cache-headers>
+            </properties>                
+        </channel-definition>
+        -->
+
+        <channel-definition id="sap-secure-http" class="psp.sap.service.SAPSecureHTTPChannel">
+            <endpoint url="https://{server.name}:{server.port}/{context.root}/messagebroker/http" class="com.intuit.sbd.payroll.psp.adapters.sap.SAPSecureHTTPEndpoint"/>
+            <properties>
+                <add-no-cache-headers>false</add-no-cache-headers>
+            </properties>                
+        </channel-definition>	        	
+
+    </channels>
+
+    <clusters>
+        <cluster id="default-cluster" properties="jgroups-default.xml" />
+    </clusters>
+
+    <logging>
+        <!-- You may also use flex.messaging.log.ServletLogTarget -->
+        <target class="flex.messaging.log.ConsoleTarget" level="Error">
+            <properties>
+                <prefix>[Flex] </prefix>
+                <includeDate>false</includeDate>
+                <includeTime>false</includeTime>
+                <includeLevel>true</includeLevel>
+                <includeCategory>false</includeCategory>
+            </properties>
+            <filters>
+                <!--<pattern>Endpoint.*</pattern>-->
+                <!--<pattern>Service.*</pattern>-->
+                <pattern>Message.*</pattern>
+                <pattern>DataService.*</pattern>
+                <pattern>Configuration</pattern>
+            </filters>
+        </target>
+    </logging>
+
+    <system>
+        <redeploy>
+            <enabled>true</enabled>
+            <watch-interval>20</watch-interval>
+            <watch-file>{context.root}/WEB-INF/flex/services-config.xml</watch-file>
+            <watch-file>{context.root}/WEB-INF/flex/proxy-config.xml</watch-file>
+            <watch-file>{context.root}/WEB-INF/flex/remoting-config.xml</watch-file>
+            <watch-file>{context.root}/WEB-INF/flex/messaging-config.xml</watch-file>
+            <watch-file>{context.root}/WEB-INF/flex/data-management-config.xml</watch-file>
+            <touch-file>{context.root}/WEB-INF/web.xml</touch-file>
+        </redeploy>
+    </system>
+
+</services-config>

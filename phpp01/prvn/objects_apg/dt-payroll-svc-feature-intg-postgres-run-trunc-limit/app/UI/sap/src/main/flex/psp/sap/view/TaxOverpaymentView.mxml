@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+    <mx:Script>
+        <![CDATA[
+        import mx.controls.Alert;
+        import mx.core.UIComponent;
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.CompanyInspectorLinkHandler;
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.OperationsEnum;
+        import psp.sap.formatters.SAPCurrencyFormatters;
+        import psp.sap.model.CompanyLedgerAccount;
+        import psp.sap.model.TemplateQuarterAmount;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+        import psp.sap.viewmodel.TaxOverpaymentViewModel;
+
+        [Bindable]
+        public var viewModel:TaxOverpaymentViewModel;
+
+        private function createTOR(event:MouseEvent):void {
+            var target:TemplateQuarterAmount = TemplateQuarterAmount(UIComponent(event.target).getRepeaterItem());
+
+            Alert.show("Are you sure you want to create this TOR?",
+                    "Save Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.createTOR(target);
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        ]]>
+    </mx:Script>
+    <mx:Grid paddingLeft="15" paddingTop="15">
+        <mx:Repeater id="ledgerAccounts" dataProvider="{viewModel.ledgerAccounts}">
+            <mx:GridRow>
+                <mx:GridItem horizontalAlign="left" height="100%">
+                    <mx:Label text="{CompanyLedgerAccount(ledgerAccounts.currentItem).name}" fontWeight="bold"
+                              visible="{CompanyLedgerAccount(ledgerAccounts.currentItem).ledgerAccountCode != 'ERPayable'}"
+                              includeInLayout="{CompanyLedgerAccount(ledgerAccounts.currentItem).ledgerAccountCode != 'ERPayable'}"/>
+                    <mx:LinkButton styleName="inlineLinkButtonStyle"
+                                   label="{CompanyLedgerAccount(ledgerAccounts.currentItem).name}"
+                                   toolTip="View or create ER Payable Refunds"
+                                   fontWeight="bold"
+                                   click="new CompanyInspectorLinkHandler(CompanyInspectorViewModel(viewModel.inspector)).goToTaxOverpaymentsRefunds();"
+                                   visible="{CompanyLedgerAccount(ledgerAccounts.currentItem).ledgerAccountCode == 'ERPayable'}"
+                                   includeInLayout="{CompanyLedgerAccount(ledgerAccounts.currentItem).ledgerAccountCode == 'ERPayable'}"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="right" height="100%">
+                    <mx:Text id="ledgerBalanceText"
+                             text="{SAPCurrencyFormatters.defaultFormatter.format(Math.abs(CompanyLedgerAccount(ledgerAccounts.currentItem).balance))}"/>
+                </mx:GridItem>
+                <mx:GridItem horizontalAlign="left" height="100%" >
+                    <mx:VBox horizontalAlign="left" verticalGap="0" height="100%" verticalScrollPolicy="off">
+                        <mx:Label
+                                id="ledgerAccountTypeLabel"
+                                text="{CompanyLedgerAccount(ledgerAccounts.currentItem).accountType}"
+                                visible="{CompanyLedgerAccount(ledgerAccounts.currentItem).balance != 0}"
+                                includeInLayout="{CompanyLedgerAccount(ledgerAccounts.currentItem).balance != 0}"
+                                fontWeight="bold"
+                                paddingLeft="5"
+                                color="{CompanyLedgerAccount(ledgerAccounts.currentItem).credit ? UIUtils.COLOR_BLACK : UIUtils.COLOR_RED}"/>
+                    </mx:VBox>
+                </mx:GridItem>
+            </mx:GridRow>
+
+            <mx:Repeater dataProvider="{viewModel.atrBreakdown}"
+                         id="atrBreakdown">
+                <mx:GridRow visible="{CompanyLedgerAccount(ledgerAccounts.currentItem).ledgerAccountCode == 'AgencyTaxRefund'}"
+                            includeInLayout="{CompanyLedgerAccount(ledgerAccounts.currentItem).ledgerAccountCode == 'AgencyTaxRefund'}"
+                            paddingLeft="10">
+                    <mx:GridItem>
+                        <mx:Text text="{TemplateQuarterAmount(atrBreakdown.currentItem).label}"/>
+                    </mx:GridItem>
+                    <mx:GridItem>
+                        <mx:Text text="{SAPCurrencyFormatters.defaultFormatter.format(Math.abs(TemplateQuarterAmount(atrBreakdown.currentItem).amount))}"/>
+                    </mx:GridItem>
+                    <mx:GridItem>
+                        <mx:Label
+                                text="{TemplateQuarterAmount(atrBreakdown.currentItem).creditDebit}"
+                                fontWeight="bold"
+                                paddingLeft="5"
+                                color="{TemplateQuarterAmount(atrBreakdown.currentItem).isCredit ? UIUtils.COLOR_BLACK : UIUtils.COLOR_RED}"/>
+                    </mx:GridItem>
+                    <mx:GridItem>
+                        <mx:LinkButton styleName="inlineLinkButtonStyle"
+                                       label="Create TOR"
+                                       toolTip="Create TOR transactions for the ATR balance on this template and quarter"
+                                       fontWeight="bold"
+                                       click="createTOR(event)"
+                                       visible="{TemplateQuarterAmount(atrBreakdown.currentItem).amount > 0}"
+                                       includeInLayout="{TemplateQuarterAmount(atrBreakdown.currentItem).amount > 0}"
+                                       enabled="{SAP.canPerformOperation(OperationsEnum.CREATE_TOR)}"/>
+                    </mx:GridItem>
+                </mx:GridRow>
+            </mx:Repeater>
+
+        </mx:Repeater>
+    </mx:Grid>
+</mx:VBox>

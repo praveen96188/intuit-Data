@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://payrollrunret.xsd.wsapi.dd.pse.osp.intuit"
+           xmlns:ba="http://bankaccount.xsd.wsapi.dd.pse.osp.intuit"
+           xmlns:dd="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit"
+           targetNamespace="http://payrollrunret.xsd.wsapi.dd.pse.osp.intuit" elementFormDefault="qualified">
+    <xs:import namespace="http://pseddcommontypes.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="PSEDDCommonTypes.xsd"/>
+    <xs:import namespace="http://bankaccount.xsd.wsapi.dd.pse.osp.intuit" schemaLocation="BankAccount.xsd"/>
+    <xs:annotation>
+        <xs:documentation>Data Transfer Object PayrollRunRet</xs:documentation>
+    </xs:annotation>
+    <xs:complexType name="PayrollRunRet">
+        <xs:sequence>
+            <xs:element name="SourceSystemCd" type="dd:SourceSystemType" nillable="false"/>
+            <xs:element name="CompanyID" type="dd:IDType" nillable="false"/>
+            <xs:element name="DDTXBatchID" type="dd:IDType" nillable="false"/>
+            <xs:element name="CompanyBankAccountID" type="dd:IDType" nillable="false"/>
+            <xs:element name="BankAccount" type="ba:BankAccount" nillable="false"/>
+            <xs:element name="PayrollNetAmount" type="dd:AmountType" minOccurs="0"/>
+            <xs:element name="PaycheckDepositDate" type="xs:date" nillable="false"/>
+            <xs:element name="PayrollRunDate" type="xs:date" minOccurs="0"/>
+            <xs:element name="PayrollStatusCd" type="xs:string" nillable="false"/>
+            <xs:element name="PayrollStatusDesc" type="xs:string" minOccurs="0"/>
+            <xs:element name="AllowedOperation" type="ns:OperationType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="OperationType">
+        <xs:sequence>
+            <xs:element name="OperationCd" type="xs:string" nillable="false"/>
+            <xs:element name="OperationDesc" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

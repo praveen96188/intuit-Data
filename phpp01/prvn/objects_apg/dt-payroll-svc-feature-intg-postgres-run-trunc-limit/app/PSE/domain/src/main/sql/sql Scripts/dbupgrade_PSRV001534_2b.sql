@@ -1,0 +1,10 @@
+  UPDATE PSP_PAYCHECK SET STATUS = 'Active'  
+   WHERE STATUS is null;
+   
+   COMMIT;
+
+PROMPT Count Paychecks
+
+SELECT STATUS, count(*) from PSP_PAYCHECK
+GROUP BY STATUS
+/

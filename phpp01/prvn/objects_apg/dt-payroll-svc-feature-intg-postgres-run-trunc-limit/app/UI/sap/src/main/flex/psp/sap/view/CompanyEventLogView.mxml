@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox
+	xmlns:pspui="psp.sap.view.*"
+	xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:controls="psp.sap.view.controls.*" horizontalScrollPolicy="off" 
+	width="100%" height="100%" creationComplete="onCreationComplete()"
+	>
+
+	<mx:Script>
+		<![CDATA[
+        import psp.sap.application.SAP;
+        import psp.sap.application.enums.CompanyInspectorPageEnum;
+        import psp.sap.model.CompanyEventItem;
+        import psp.sap.viewmodel.CompanyEventLogViewModel;
+        import psp.sap.viewmodel.CompanyInspectorViewModel;
+
+        //Due to stupid flex bug
+        private var justSoItCompilesProperly:TreeCheckboxItemRenderer = new TreeCheckboxItemRenderer();
+
+        private var mCreationComplete:Boolean = false;
+
+        private var mViewModel:CompanyEventLogViewModel;
+        private var mTempViewModel:CompanyEventLogViewModel;
+
+        [Bindable]
+        public function get viewModel():CompanyEventLogViewModel {
+            return mViewModel;
+        }
+
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+
+            viewModel = mTempViewModel;
+
+            callLater(resizeDataGrid);
+
+        }
+
+        public function set viewModel(value:CompanyEventLogViewModel):void {
+
+            if (mViewModel != null) {
+                mViewModel.startDateValidator.listener = null;
+                mViewModel.endDateValidator.listener = null;
+                mViewModel.dateRangeValidator.startDateListener = null;
+                mViewModel.dateRangeValidator.endDateListener = null;
+            }
+
+            if (value != null) {
+                if (mCreationComplete) {
+                    mViewModel = value;
+                    expandStartup();	//on first go to the page
+                    viewModel.addEventListener("expandStartup", expandStartup); //on future activations
+                }
+                else {
+                    mTempViewModel = value;
+                }
+            }
+
+            if (mViewModel != null) {
+                mViewModel.startDateValidator.listener = startDateInput;
+                mViewModel.endDateValidator.listener = endDateInput;
+                mViewModel.dateRangeValidator.startDateListener = startDateInput;
+                mViewModel.dateRangeValidator.endDateListener = endDateInput;
+
+            }
+
+
+        }
+
+        private function expandStartup(e:Event = null):void {
+            var startupEventId:String = viewModel.startupEventId;
+            if (startupEventId != "") {
+                viewModel.startupEventId = "";
+                var index:int = 0;
+                for each (var eventItem:CompanyEventItem in viewModel.companyEventsHierarchicalData.source) {
+                    if (eventItem.id == startupEventId) {
+                        callLater(function():void {
+                            companyEventsGrid.expandItem(eventItem, true);
+                            callLater(function():void {
+                                companyEventsGrid.scrollToIndex(index);
+                            });
+                            callLater(resizeDataGrid);
+                        });
+                        break;
+                    }
+                    index++;
+                }
+            }
+
+        }
+
+
+        public function addNoteToEvent(value:Object):void {
+            viewModel.addNewNoteToEvent(value as CompanyEventItem);
+        }
+
+        public function addNote():void {
+            viewModel.addNewNoteToEvent(null);
+        }
+
+        public function collapseAll():void {
+            if (viewModel.eventsShowing) {
+                companyEventsGrid.collapseAll();
+            }
+        }
+
+        public function expandAll():void {
+            if (viewModel.eventsShowing) {
+                companyEventsGrid.expandAll();
+            }
+        }
+
+
+        public function resizeDataGrid():void {
+
+            if (companyEventsGrid != null) {
+                //todo this shouldn't be so context sensitive
+                companyEventsGrid.height = parent.parent.parent.height - mainSearchBox.height - 130;
+            }
+
+        }
+
+        public function getAddIcon():Class {
+            return SAP.instance.icons.addNote;
+        }
+
+        public function getNoteIcon():Class {
+            return SAP.instance.icons.note;
+        }
+
+        public function set preferencesChanged(changed:Boolean):void {
+            if (! changed) {
+                preferenceImage.source = SAP.instance.icons.lock;
+                preferenceImage.toolTip = "These columns will show every visit to this page";
+                preferenceImage.buttonMode = false;
+            } else {
+                preferenceImage.source = SAP.instance.icons.unLock;
+                preferenceImage.toolTip = "Show these columns every visit to this page";
+                preferenceImage.buttonMode = true;
+            }
+        }
+
+        public function set as400PreferencesChanged(changed:Boolean):void {
+            if (! changed) {
+                preferenceImageAS400.source = SAP.instance.icons.lock;
+                preferenceImageAS400.toolTip = "This setting will be used for every visit to the page";
+                preferenceImageAS400.buttonMode = false;
+            } else {
+                preferenceImageAS400.source = SAP.instance.icons.unLock;
+                preferenceImageAS400.toolTip = "Save this setting for every visit to the page";
+                preferenceImageAS400.buttonMode = true;
+            }
+        }
+
+        private function onPreferenceClick():void {
+            if (preferenceImage.buttonMode) {
+                viewModel.savePreferences();
+            }
+        }
+
+        private function onAS400PreferenceClick():void {
+            if (preferenceImageAS400.buttonMode) {
+                viewModel.saveAS400Preferences();
+            }
+        }
+        ]]>
+	</mx:Script>
+
+	<controls:DataLoadFade id="postLoadFadeIn" target="{companyEventsGrid}" isLoading="{viewModel.isDataLoading}" />
+		 
+	<!-- Main content -->
+
+	<mx:Box id="mainBox" height="100%" width="100%">		
+		<!-- Top Box -->
+		<controls:FilterBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="825" id="mainSearchBox"
+			filterStringFunction="{viewModel.getFilterString}"
+			transitionEffectEnd="resizeDataGrid();"
+			>
+			<mx:VBox verticalGap="1" paddingLeft="0">
+				<mx:HBox paddingLeft="0">
+					<mx:Label text="Date:" fontWeight="bold" paddingLeft="0"/>
+					<mx:VBox horizontalGap="0" width="200">
+						<mx:FormItem id="fromItem" label="From" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="60">
+							<pspui:SAPDateField
+							id="startDateInput"
+							width="100"
+							editable="true"
+							tabIndex="1"/>
+						</mx:FormItem>
+						<mx:FormItem id="toItem" label="To" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="60">
+							<pspui:SAPDateField
+							id="endDateInput"
+							width="100"
+							editable="true"
+							tabIndex="2"/>
+						</mx:FormItem>
+						<mx:Spacer height="10"/>
+					</mx:VBox>
+				</mx:HBox>
+				<mx:FormItem id="creatorItem" label="Creator:" labelStyleName="boldText" defaultButton="{searchButton}" labelWidth="60">
+					<pspui:AutoComplete  id="creatorComboBox"
+                                         tabIndex="3"
+                                         labelField="fullName"
+                                         dataProvider="{viewModel.creators}"
+                                         minWidth="180"
+                                         dataField="creator"
+                                         filterFunction="{viewModel.creatorFilterFunction}"/>
+				</mx:FormItem>
+				<mx:HBox>
+					<mx:VBox>
+                        <mx:Label text="Columns:" styleName="boldText"/>
+                        <mx:HBox width="100%" horizontalAlign="center">
+                            <mx:Image id="preferenceImage"
+                                      visible="{SAP.instance.session.user.inlineSettingsEnabled}"
+                                      includeInLayout="{SAP.instance.session.user.inlineSettingsEnabled}"
+                                      click="onPreferenceClick();"/>
+                        </mx:HBox>
+                    </mx:VBox>
+					<mx:VBox verticalGap="0">						
+						<mx:CheckBox id="typeColumnCheckBox" label="Event Type"/>
+						<mx:CheckBox id="descriptionColumnCheckBox" label="Description"/>
+						<mx:CheckBox id="creatorColumnCheckBox" label="Creator"/>
+						<mx:CheckBox id="notesColumnCheckBox" label="Notes/Last Updated"/>
+					</mx:VBox>	
+				</mx:HBox>				
+			</mx:VBox>
+
+			<mx:Label text="Event Type" fontWeight="bold" width="100"/>
+
+            <mx:VBox>
+                <mx:Tree labelFunction="{viewModel.eventGroupLabel}"
+                         disclosureOpenIcon="{SAP.instance.icons.collapse}" disclosureClosedIcon="{SAP.instance.icons.expand}"
+                         folderClosedIcon="{null}" folderOpenIcon="{null}"
+                         itemRenderer="psp.sap.view.TreeCheckboxItemRenderer"
+                         showRoot="true"
+                         dataProvider="{viewModel.eventGroups}" height="110" tabIndex="4"
+                         minWidth="320" labelField="name" id="eventGroupsTree"/>
+                <mx:HBox>
+                    <mx:Image id="preferenceImageAS400"
+                              visible="{SAP.instance.session.user.inlineSettingsEnabled}"
+                              includeInLayout="{SAP.instance.session.user.inlineSettingsEnabled}"
+                              click="onAS400PreferenceClick();"/>
+                    <mx:CheckBox label="Include AS/400 Events" id="includeAS400Events"/>
+                </mx:HBox>
+                
+            </mx:VBox>
+
+			<mx:HBox verticalAlign="bottom" height="110" horizontalAlign="right" width="120">
+				<mx:Button label="Find Event" id="searchButton" click="viewModel.search(); mainSearchBox.collapse();" enabled="{viewModel.canSave}" tabIndex="5"/>
+			</mx:HBox>
+		</controls:FilterBox>
+
+		<mx:VBox
+        	styleName="standardTabbedBody"
+        	id="dataContainer"
+        	visible="{!viewModel.isDataLoading}"
+        	includeInLayout="{!viewModel.isDataLoading}"
+        	width="100%"
+        	height="100%"
+        	paddingRight="0"
+        	paddingLeft="0"
+        	paddingTop="0"
+        	paddingBottom="0"
+        	>
+
+			<mx:VBox styleName="ddDarkGrayMiniBoxStyleOnlyTopPadding" width="100%">
+				<mx:HBox width="100%">
+					<mx:HBox width="100%">
+						<mx:LinkButton tabIndex="6" label="Expand All" icon="{SAP.instance.icons.expand}" click="expandAll()"/>
+						<mx:LinkButton tabIndex="7" label="Collapse All" icon="{SAP.instance.icons.collapse}" click="collapseAll()"/>											
+					</mx:HBox>
+					<mx:VBox width="100%" horizontalAlign="right">
+						<mx:LinkButton icon="{SAP.instance.icons.addNote}" click="(viewModel.inspector as CompanyInspectorViewModel).openNote()" label="Add Note" tabIndex="8"/>
+					</mx:VBox>
+				</mx:HBox>				
+				<mx:HBox width="100%" height="100%" verticalAlign="top" horizontalGap="0">
+				    <pspui:CompanyEventResultsADG
+				    	tabIndex="9"
+				    	selectionMode="singleRow"
+				    	useHandCursor="true"
+				    	selectable="false"
+				    	folderClosedIcon="{null}"
+				    	folderOpenIcon="{null}"
+				    	disclosureOpenIcon="{SAP.instance.icons.collapse}"
+				    	disclosureClosedIcon="{SAP.instance.icons.expand}"
+				    	id="companyEventsGrid"
+				    	dataProvider="{viewModel.companyEventsHierarchicalData}"
+				    	variableRowHeight="true"
+				    	width="100%"				    	
+				    	updateComplete="callLater(resizeDataGrid);">
+						<pspui:columns>
+								<pspui:CompanyEventResultsADGColumn
+									headerText = "Date/Time (PST)"
+									textAlign="center"
+									dataField="eventDate"
+									labelFunction="{viewModel.formatDate}"									
+									width="150"
+									resizable="false"
+									visible="true"
+									/>
+								<pspui:CompanyEventResultsADGColumn
+									headerText = "Event Type"
+									textAlign="left"
+									dataField="eventTypeString"
+									minWidth="110"
+									visible="{typeColumnCheckBox.selected}"/>
+								<pspui:CompanyEventResultsADGColumn
+									headerText="Description"
+									textAlign="left"
+									dataField="builtDescription"
+									minWidth="110"
+									visible="{descriptionColumnCheckBox.selected}">
+									<pspui:itemRenderer>
+										<mx:Component>											
+											<mx:Box horizontalScrollPolicy="off" direction="horizontal">
+												<mx:Script>
+												<![CDATA[
+                                                    import psp.sap.model.CompanyEventItem;
+                                                    import psp.sap.model.CompanyEventItemChild;
+
+                                                    private function getHtmlText(data:Object):String {
+                                                        if (data is CompanyEventItem) {
+                                                            return CompanyEventItem(data).builtDescription;
+                                                        } else if (data is CompanyEventItemChild) {
+                                                            return CompanyEventItemChild(data).item.builtDescription;
+                                                        } else {
+                                                            return "";
+                                                        }
+                                                    }
+
+                                                    private function onLink(data:Object, e:TextEvent):void {
+                                                        if (data is CompanyEventItem) {
+                                                            CompanyEventItem(data).eventHandler.onLink(e);
+                                                        } else if (data is CompanyEventItemChild) {
+                                                            CompanyEventItemChild(data).item.eventHandler.onLink(e);
+                                                        }
+                                                    }
+                                                    ]]>
+												</mx:Script>
+												<controls:LinkableText 		
+													id="linkableText"																							
+													htmlText="{getHtmlText(data)}" 
+													link="onLink(data, event);"
+													styleName="linkableTextBox"/>	
+											</mx:Box>											
+										</mx:Component>
+									</pspui:itemRenderer>	
+								</pspui:CompanyEventResultsADGColumn>
+								<pspui:CompanyEventResultsADGColumn
+									headerText = "Creator"
+									textAlign="left"
+									dataField="creatorId"
+									width="170"  
+                                    resizable="false"
+									visible="{creatorColumnCheckBox.selected}"/>
+								<pspui:CompanyEventResultsADGColumn
+									headerText = "Note/Last Updated"
+									textAlign="left"
+									dataField="lastNoteDate"
+									resizable="false"
+									width="170"
+									visible="{notesColumnCheckBox.selected}">
+                                    <pspui:itemRenderer>
+                                        <mx:Component>
+                                            <mx:HBox width="100%">
+                                                <mx:Script>
+													<![CDATA[
+                                                    import psp.sap.formatters.SAPDateFormatters;
+                                                    ]]>
+												</mx:Script>
+                                                <mx:HBox width="100%" visible="{data.id != null}" includeInLayout="{data.id != null}">
+                                                    <mx:LinkButton id="addNoteButton" icon="{outerDocument.getAddIcon()}"  visible="{!(data.noteInserted)}" includeInLayout="{!(data.noteInserted)}" click="outerDocument.addNoteToEvent(data)"/>
+                                                    <mx:LinkButton id="noteButton" icon="{outerDocument.getNoteIcon()}"  visible="{(data.noteInserted)}" includeInLayout="{(data.noteInserted)}" click="outerDocument.addNoteToEvent(data)"/>
+                                                    <mx:Text id="lastNoteDateText" text="{SAPDateFormatters.dateTimeFormatShort.format(data.lastNoteDate)}"/>
+                                                </mx:HBox>
+                                            </mx:HBox>
+                                        </mx:Component>
+									</pspui:itemRenderer>
+								</pspui:CompanyEventResultsADGColumn>
+						</pspui:columns>
+		
+						<pspui:rendererProviders>
+							<mx:AdvancedDataGridRendererProvider depth="2" columnIndex="0" renderer="psp.sap.view.ADGRenderer" columnSpan="0" />
+						</pspui:rendererProviders>
+		
+					</pspui:CompanyEventResultsADG>
+	
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:Box>
+
+	<controls:PopUpPart id="addNoteModal" label="{CompanyInspectorPageEnum.EVENT_LOG_ADD_NOTE+'_pup'}">
+		<pspui:CompanyEventLogAddNoteView id="eventLogAddNoteView" label="{CompanyInspectorPageEnum.EVENT_LOG_ADD_NOTE}"/>
+	</controls:PopUpPart>
+
+			
+	<!-- start date bindings -->
+	<mx:Binding source="startDateInput.text" destination="viewModel.startDate" />
+	<mx:Binding source="viewModel.startDate" destination="startDateInput.text" />     
+    
+    <!-- end date bindings -->
+    <mx:Binding source="endDateInput.text" destination="viewModel.endDate" />
+    <mx:Binding source="viewModel.endDate" destination="endDateInput.text" />
+
+    <!-- preferences -->
+    <mx:Binding source="viewModel.typeColumnVisible" destination="typeColumnCheckBox.selected"/>
+    <mx:Binding source="typeColumnCheckBox.selected" destination="viewModel.typeColumnVisible"/>
+    <mx:Binding source="viewModel.descriptionColumnVisible" destination="descriptionColumnCheckBox.selected"/>
+    <mx:Binding source="descriptionColumnCheckBox.selected" destination="viewModel.descriptionColumnVisible"/>
+    <mx:Binding source="viewModel.creatorColumnVisible" destination="creatorColumnCheckBox.selected"/>
+    <mx:Binding source="creatorColumnCheckBox.selected" destination="viewModel.creatorColumnVisible"/>
+    <mx:Binding source="viewModel.notesColumnVisible" destination="notesColumnCheckBox.selected"/>
+    <mx:Binding source="notesColumnCheckBox.selected" destination="viewModel.notesColumnVisible"/>
+
+    <mx:Binding source="viewModel.includeAS400Events" destination="includeAS400Events.selected"/>
+    <mx:Binding source="includeAS400Events.selected" destination="viewModel.includeAS400Events"/>
+
+    <mx:Binding source="viewModel.preferencesChanged" destination="preferencesChanged"/>
+    <mx:Binding source="viewModel.as400PreferencesChanged" destination="as400PreferencesChanged"/>
+
+	
+</mx:HBox>

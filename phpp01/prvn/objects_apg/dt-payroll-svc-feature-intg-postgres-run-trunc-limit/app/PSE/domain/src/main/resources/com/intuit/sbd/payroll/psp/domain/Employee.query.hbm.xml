@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--	*****************************************************************
+	Copyright (c) 2007 Intuit, Inc. All rights reserved.
+	Unauthorized reproduction is a violation of applicable law.
+	*****************************************************************
+
+	*****************************************************************
+	Company.query.hbm.xml auto-generated on Mon Jul 30 12:34:32 -0700 2007
+
+	Author	MDA Toolkit
+	CodeGen Version	2.2.4.0
+	*****************************************************************  -->
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.intuit.sbd.payroll.psp.domain">
+
+    <query name="findEmployeesByBAFraudCriteriaENC">
+        <![CDATA[
+            SELECT employee
+            FROM com.intuit.sbd.payroll.psp.domain.Employee as employee,
+                com.intuit.sbd.payroll.psp.domain.EmployeeBankAccount as eeBA,
+                com.intuit.sbd.payroll.psp.domain.Company as company,
+                com.intuit.sbd.payroll.psp.domain.CompanyService as compServices
+            WHERE eeBA.Employee=employee
+                AND eeBA.BankAccount.AccountNumberEnc in (:accountNumberEncList)
+                AND eeBA.BankAccount.RoutingNumber=:routingNumber
+                and employee.Company=company
+                and employee.Company!=:pCompany
+                and compServices.Company=company
+                and (compServices.StatusCd='Terminated' or
+                    (exists (from company.OnHoldReasonSet as onHoldReason where onHoldReason.ExpirationDate is null)))
+
+			]]>
+    </query>
+
+    <query name="findEmployeesBySourceSystemAndService">
+        <![CDATA[
+            Select employee
+			from com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.Employee as employee
+			where cs.Company.SourceSystemCd = :sourceSystemCd
+			  and cs.Service.ServiceCd = :serviceCd
+			  and cs.Company=comp
+			  and employee.Company=comp
+			  order by comp.CreatedDate, employee.CreatedDate, employee.SourceEmployeeId
+			]]>
+    </query>
+
+      <query name="findUpdatedEmployeesForATFDataExtract">
+        <![CDATA[
+            Select employee
+			from com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.CompanyService as cs,
+			     com.intuit.sbd.payroll.psp.domain.Employee as employee
+			where comp.SourceSystemCd = :sourceSystemCd
+			  and cs.Company=comp
+			  and cs.Service.ServiceCd = :serviceCd
+			  and employee.Company=comp
+			  and ( (employee.ModifiedDate >= :fromDate and employee.ModifiedDate < :toDate)
+			      )
+              order by comp.CreatedDate, employee.CreatedDate, employee.SourceEmployeeId
+			]]>
+    </query>
+
+    <query name="findEmployeeWagePlanCountByCompanyId">
+        <![CDATA[
+            Select count(*)
+			from com.intuit.sbd.payroll.psp.domain.Company as comp,
+			     com.intuit.sbd.payroll.psp.domain.EmployeeWagePlan as wagePlan,
+			     com.intuit.sbd.payroll.psp.domain.Employee as employee
+			where comp.Id = :companyId
+			  and employee.Company=comp
+			  and wagePlan.Employee = employee
+			]]>
+    </query>
+
+    <query name="findEmployeesByNameAndCompanyServiceStatus">
+        <![CDATA[
+            select distinct employee
+            from com.intuit.sbd.payroll.psp.domain.Employee employee
+                join employee.Company comp
+                join comp.CompanyServiceSet compService
+            where lower(COALESCE(cast(employee.FirstName as java.lang.String),'')) = lower(COALESCE(cast(:firstName as java.lang.String),''))
+             and lower(COALESCE(cast(employee.LastName as java.lang.String),'')) = lower(COALESCE(cast(:lastName as java.lang.String),''))
+             and compService.StatusCd = :statusCd
+			]]>
+    </query>
+
+    <query name="findEmployeesWithoutCurrentYearPaychecks">
+        <![CDATA[
+            select distinct employee
+            from com.intuit.sbd.payroll.psp.domain.Employee employee
+            where employee.Company = :company
+            and not exists (
+                                from com.intuit.sbd.payroll.psp.domain.PayrollRun pr
+                                    join pr.PaycheckSet paycheck
+                                where paycheck.SourceEmployee = employee
+                                    and pr.PaycheckDate >= :checkDate
+                           )
+            ]]>
+    </query>
+
+    <query name="updateExistingEmpInvite">
+        <![CDATA[
+            UPDATE com.intuit.sbd.payroll.psp.domain.Employee
+			SET PersonaId=:personaId,
+				Email=:email,
+				ModifiedDate=:modifiedDate,
+				ModifierId=:modifierId
+			WHERE Id=:empUUId
+            ]]>
+    </query>
+
+    <query name="updateExistingEmpRelam">
+        <![CDATA[
+             UPDATE com.intuit.sbd.payroll.psp.domain.Employee
+			 SET ConsumerRealmId=:consumerRealmId,
+				 ModifiedDate=:modifiedDate,
+				 ModifierId=:modifierId
+			 WHERE Id=:empUUId
+            ]]>
+    </query>
+
+
+    <query name="findEmployeesByNonAuthCriteria">
+        <![CDATA[
+            select distinct employee
+            from com.intuit.sbd.payroll.psp.domain.Employee employee
+                join employee.Company comp
+            where lower(employee.FirstName) = lower(:firstName)
+             and lower(employee.LastName) = lower(:lastName)
+             and comp.SourceSystemCd = :sourceSystemCode
+             and lower(employee.Email) = :email
+             and regexp_replace(employee.Phone, '[^0-9]', '') = :phone
+             and employee.TaxIdEnc in :ssnList
+			]]>
+    </query>
+
+    <query name="findEmployeesByNonAuthCriteria_postgres">
+        <![CDATA[
+            select distinct employee
+            from com.intuit.sbd.payroll.psp.domain.Employee employee
+                join employee.Company comp
+            where lower(COALESCE(cast(employee.FirstName as java.lang.String),'')) = lower(COALESCE(cast(:firstName as java.lang.String),''))
+             and lower(COALESCE(cast(employee.LastName as java.lang.String),'')) = lower(COALESCE(cast(:lastName as java.lang.String),''))
+             and comp.SourceSystemCd = :sourceSystemCode
+             and lower(COALESCE(cast(employee.Email as java.lang.String),''))= :email
+             and regexp_replace(employee.Phone, '[^0-9]', '','g') = :phone
+             and employee.TaxIdEnc in :ssnList
+			]]>
+    </query>
+
+    <query name="findEligibleEmployeesForWorkforceInvitations">
+        <![CDATA[
+             select distinct emp.id
+             from com.intuit.sbd.payroll.psp.domain.Paycheck as paychk,
+             com.intuit.sbd.payroll.psp.domain.PayrollRun as payrun,
+             com.intuit.sbd.payroll.psp.domain.Employee as emp
+             where paychk.SourceEmployee = emp
+             and paychk.Company.id = :companySeq
+             and (CASE WHEN (:isDD = TRUE) THEN paychk.DDEmployee ELSE '1' END) is not null
+             and paychk.PayrollRun = payrun
+             and emp.Company.id = :companySeq
+             and paychk.CreatedDate > :fromDate
+             and payrun.PaycheckSettlementDate >= :settlementFromDate
+             and payrun.PaycheckSettlementDate <= :settlementToDate
+             and emp.Email is not null
+             and emp.IsDgDisassociated = 0
+             and emp.ConsumerRealmId is null and emp.PersonaId is null
+             and emp.StatusCd = 'Active'
+			]]>
+    </query>
+
+    <query name="findEmployeeCompensationsForGuideline">
+        <![CDATA[
+            select empPItem.Id, empPItem.Amount,
+                compPItem.Id, compPItem.Status,
+                pItem.PayrollItemCode,
+                qbdtPItemInfo.OvertimeMultiplier
+            from com.intuit.sbd.payroll.psp.domain.EmployeePayrollItem as empPItem,
+                com.intuit.sbd.payroll.psp.domain.Employee as emp,
+                com.intuit.sbd.payroll.psp.domain.CompanyPayrollItem as compPItem,
+                com.intuit.sbd.payroll.psp.domain.PayrollItem as pItem,
+                com.intuit.sbd.payroll.psp.domain.QbdtPayrollItemInfo as qbdtPItemInfo
+            where empPItem.Employee = emp
+                and empPItem.CompanyPayrollItem = compPItem
+                and qbdtPItemInfo.CompanyPayrollItem = compPItem
+                and compPItem.PayrollItem = pItem
+                and emp.Id=:employeeId
+                and pItem.PayrollItemType='Compensation'
+			]]>
+    </query>
+
+</hibernate-mapping>
+

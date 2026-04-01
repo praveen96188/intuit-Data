@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:pspui="psp.sap.view.*"
+         width="100%" height="100%">
+
+    <mx:Script>
+		<![CDATA[
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
+
+        import psp.sap.application.SAP;
+        import psp.sap.viewmodel.PayrollLedgerAddEscalationViewModel;
+
+        private var mViewModel:PayrollLedgerAddEscalationViewModel;
+
+        [Bindable]
+        public function get viewModel():PayrollLedgerAddEscalationViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:PayrollLedgerAddEscalationViewModel):void {
+            if (value != null) {
+                mViewModel = value;
+            }
+        }
+
+        public function save():void {
+            Alert.show("Are you sure want to add an escalation for this payroll?",
+                    SAP.instance.applicationTitle,
+                    Alert.OK | Alert.CANCEL,
+                    this,
+                    function(e:CloseEvent):void {
+                        if (e.detail == Alert.OK) {
+                            viewModel.save();
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+		]]>
+	</mx:Script>
+
+    <pspui:ActionLink label="Go to Company Payroll Transactions" click="viewModel.goToPayrollTransactions()" paddingTop="10" paddingLeft="0" tabEnabled="false"/>
+
+    <mx:VBox verticalGap="0">
+
+
+        <mx:VBox styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="400">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox verticalAlign="middle" width="100%" styleName="padderBox">
+                        <mx:Label text="Escalation Type" width="250"/>
+                        <mx:VBox verticalGap="0">
+                            <mx:RadioButtonGroup id="escalationType"/>
+                            <mx:RadioButton
+                                    id="employerRB"
+                                    value="false"
+                                    label="Employer" width="100" groupName="escalationType"/>
+                            <mx:RadioButton
+                                    id="employeeRB"
+                                    value="true"
+                                    label="Employee" width="100" groupName="escalationType"/>
+                        </mx:VBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>
+
+        <pspui:PayrollSettlementView
+                id="payrollSettlementView"
+                width="100%"
+                viewModel="{this.viewModel}" />
+
+        <mx:Spacer height="5"/>
+
+        <mx:HBox horizontalAlign="right" width="400">
+            <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button id="saveButton" label="Save" click="save()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+        </mx:HBox>
+
+    </mx:VBox>
+    <mx:Binding source="escalationType.selectedValue" destination="viewModel.isEmployee" />
+    <mx:Binding source="viewModel.isEmployee" destination="escalationType.selectedValue" />
+
+
+</mx:VBox>

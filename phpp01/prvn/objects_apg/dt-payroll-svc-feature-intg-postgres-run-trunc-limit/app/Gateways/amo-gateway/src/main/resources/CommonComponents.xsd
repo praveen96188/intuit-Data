@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by Lynn Luu (Intuit) -->
+<!--
+** Intuit Inc.  **
+** ABCS Interfaces **
+** Version: 1.00 **
+** Date: May, 2010 **
+ 
+Copyright (c) 2010, Intuit Inc. All rights reserved
+ 
+    XML Schema 
+    Name://integration/AIA/AIAComponents/functional/AIAComponents/ApplicationObjectLibrary/Intuit/V1/schemas/CommonComponents.xsd
+
+Domain: Account
+Source of Truth, Perforce Location: wcgbosp4.bos.intuit.com_1666\//integration/AIA/AIAComponents/functional/AIAComponents/ApplicationObjectLibrary/Intuit/V1/schemas/
+ 
+-->
+<xsd:schema xmlns="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.intuit.com/iep/ABCSImpl/CommonComponents/V1"
+            elementFormDefault="unqualified" attributeFormDefault="unqualified"
+            version="1.0">
+ <!-- ====================================================================== -->
+ <!-- ==============      Data Types     ====================== -->
+ <!-- ====================================================================== -->
+ <xsd:complexType name="ErrorType">
+  <xsd:annotation>
+   <xsd:documentation>A data type to represent the error information.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="Category">
+    <xsd:annotation>
+     <xsd:documentation>The category of the error. i.e. Functional, Input,
+                        Operational, Transitory</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+     <xsd:annotation>
+      <xsd:documentation>The category of the error. i.e.
+                         SYSTEM,INPUT,BUSINESS_LOGIC</xsd:documentation>
+     </xsd:annotation>
+     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Functional"/>
+      <xsd:enumeration value="Input"/>
+      <xsd:enumeration value="Operational"/>
+      <xsd:enumeration value="Transitory"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element name="Code" type="xsd:string"/>
+   <xsd:element name="Description" type="xsd:string"/>
+   <xsd:element name="Source" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="HeaderType">
+  <xsd:annotation>
+   <xsd:documentation>A data type to represent the header information that can
+                      be supplied to DigiComms.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="TransactionId" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="CreationDateTime" type="xsd:dateTime" minOccurs="0"/>
+   <xsd:element name="CallerSystem" type="xsd:string"/>
+   <xsd:element name="SourceSystem" type="xsd:string"/>
+   <xsd:element name="Endpoint" type="xsd:string" minOccurs="0"/>
+  </xsd:sequence>
+  <xsd:attribute name="ServiceVersion" type="xsd:string" use="required"/>
+ </xsd:complexType>
+ <xsd:complexType name="ResponseTypeType">
+  <xsd:annotation>
+   <xsd:documentation>A data type to represent the response returned by
+                      SalesOrder.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:choice>
+   <xsd:element name="Success" type="xsd:string"/>
+   <xsd:element name="Error" type="ErrorType"/>
+  </xsd:choice>
+ </xsd:complexType>
+ <!-- ====================================================================== -->
+ <!--  =====       Identification                                                                                         =====      -->
+ <!-- ====================================================================== -->
+ <xsd:complexType name="BillingProfileIdType">
+  <xsd:annotation>
+   <xsd:documentation>A data type to represent an id with the scheme name.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:simpleContent>
+   <xsd:extension base="String30Type">
+    <xsd:attribute name="SchemeName" type="BillingProfileIdSchemeType"
+                   use="required"/>
+   </xsd:extension>
+  </xsd:simpleContent>
+ </xsd:complexType>
+ <xsd:simpleType name="BillingProfileIdSchemeType">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="Siebel"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:complexType name="EntitlementIdType">
+  <xsd:annotation>
+   <xsd:documentation>Entitlement Id</xsd:documentation>
+  </xsd:annotation>
+  <xsd:simpleContent>
+   <xsd:extension base="xsd:string">
+    <xsd:attribute name="SchemeName" use="required">
+     <xsd:annotation>
+      <xsd:documentation>Scheme Name e.g. ERS for EOC</xsd:documentation>
+     </xsd:annotation>
+     <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+       <xsd:enumeration value="ERS"/>
+      </xsd:restriction>
+     </xsd:simpleType>
+    </xsd:attribute>
+   </xsd:extension>
+  </xsd:simpleContent>
+ </xsd:complexType>
+ <xsd:complexType name="ItemIdType">
+  <xsd:annotation>
+   <xsd:documentation>Item Id</xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="Id">
+    <xsd:annotation>
+     <xsd:documentation>Item Id</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+     <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+       <xsd:attribute name="schemeName">
+        <xsd:annotation>
+         <xsd:documentation>Scheme Name</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+         <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="PIM"/>
+         </xsd:restriction>
+        </xsd:simpleType>
+       </xsd:attribute>
+      </xsd:extension>
+     </xsd:simpleContent>
+    </xsd:complexType>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="LicenseIdType">
+  <xsd:annotation>
+   <xsd:documentation>License Id</xsd:documentation>
+  </xsd:annotation>
+  <xsd:simpleContent>
+   <xsd:extension base="xsd:string">
+    <xsd:attribute name="SchemeName" use="required">
+     <xsd:annotation>
+      <xsd:documentation>Scheme Name e.g. ERS</xsd:documentation>
+     </xsd:annotation>
+     <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+       <xsd:enumeration value="ERS"/>
+      </xsd:restriction>
+     </xsd:simpleType>
+    </xsd:attribute>
+   </xsd:extension>
+  </xsd:simpleContent>
+ </xsd:complexType>
+ <!-- ====================================================================== -->
+ <!--  =====       Common Components                                                                           =====      -->
+ <!-- ====================================================================== -->
+ <xsd:simpleType name="ActionTypeType">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="ADD"/>
+   <xsd:enumeration value="NONE"/>
+   <xsd:enumeration value="UPDATE"/>
+   <xsd:enumeration value="RESUME"/>
+   <xsd:enumeration value="SUSPEND"/>
+   <xsd:enumeration value="DELETE"/>
+  </xsd:restriction>
+  <!-- These are action codes/types of an order -->
+ </xsd:simpleType>
+ <xsd:complexType name="CCInfoType">
+  <xsd:annotation>
+   <xsd:documentation>The credit card information </xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="AccountType" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>Credit card account type.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="AccountNumber" type="xsd:string" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>The credit card account token (PCI Compliant).</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="AccountName" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>The full name of the cardcholder, as it appears on the
+                        card (Name on Card)</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="ExpirationMonth">
+    <xsd:annotation>
+     <xsd:documentation>Expiration month.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:integer"/>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element name="ExpirationYear">
+    <xsd:annotation>
+     <xsd:documentation>Expiration year.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:integer"/>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element name="CID" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>The card ID used for CVV2 credit card authorization. It
+                        is typically a 3 digit number located on the back side
+                        of the card (for American Express, it is 4 digits on the
+                        front side). It is required only if CVV2 authorization
+                        level is used.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:simpleType name="CreditCardAccountType">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="Visa"/>
+   <xsd:enumeration value="MasterCard"/>
+   <xsd:enumeration value="American Express"/>
+   <xsd:enumeration value="Discover"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:complexType name="ECheckInfoType">
+  <xsd:annotation>
+   <xsd:documentation>General bank account information that is used for eCheck
+                      payment method.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="AccountType" default="Checking">
+    <xsd:annotation>
+     <xsd:documentation>The bank account type. </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Checking"/>
+      <xsd:enumeration value="Savings"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element name="AccountNumber" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>The bank account number.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="RoutingNumber" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>The bank account's routing number.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="AccountName" type="xsd:string" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>The full name of the account holder. Is this required?</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="BankName" type="xsd:string" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>The name of the bank. Is this required?</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="CheckNumber" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>A check number associated with the payment.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="BranchLocation" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>The branch location of the bank providing this account.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="EFTInfoType">
+  <xsd:annotation>
+   <xsd:documentation>General bank account information that is used for eCheck
+                      payment method.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="AccountType" type="xsd:string">
+      <xsd:annotation>
+         <xsd:documentation>The bank account type.</xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>   
+   <xsd:element name="AccountNumber" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>The bank account number.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="RoutingNumber" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>The bank account's routing number.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="AccountName" type="xsd:string" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>The full name of the account holder.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <!-- DBILL-4522-NGP-Changes -->
+ <xsd:complexType name="WalletInfoType">
+  <xsd:annotation>
+   <xsd:documentation>The Wallet information </xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element type="xsd:string" name="PaymentToken" minOccurs="0"
+                maxOccurs="1"/>
+   <xsd:element type="xsd:string" name="Type" minOccurs="0" maxOccurs="1"/>
+   <xsd:element name="RelatedWalletInformation" maxOccurs="unbounded"
+                minOccurs="0">
+    <xsd:complexType>
+     <xsd:sequence>
+      <xsd:element type="xsd:string" name="PaymentToken"/>
+      <xsd:element type="xsd:string" name="Type"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+     <xsd:element type="xsd:string" name="WalletPaymentMethod" minOccurs="0"
+                maxOccurs="1"/>
+   <xsd:element type="xsd:string" name="WalletDescription" minOccurs="0"
+                maxOccurs="1"/>				
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:element name="StoredCredential" type="StoredCredentialType"/>
+ <xsd:complexType name="StoredCredentialType">
+  <xsd:sequence>
+   <xsd:element name="CardUsageType" type="xsd:string" minOccurs="0"
+                maxOccurs="1"/>
+   <xsd:element name="ChargeInitiatedBy" type="xsd:string" minOccurs="0"
+                maxOccurs="1"/>				
+   <!-- Not to be used while creating Order payloads -->			
+   <xsd:element name="IsReusable" type="xsd:string" minOccurs="0"
+                maxOccurs="1"/>
+   <xsd:element name="IsOneTimeUse" type="xsd:string" minOccurs="0"
+                maxOccurs="1"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="PaymentAddressType">
+  <xsd:sequence>
+   <xsd:element name="AddressId" type="xsd:string"/>
+   <xsd:element name="LineOne" type="xsd:string"/>
+   <xsd:element name="LineTwo" type="xsd:string"/>
+   <xsd:element name="CityName" type="xsd:string"/>
+   <xsd:element name="StateName" type="xsd:string"/>
+   <xsd:element name="CountyName" type="xsd:string"/>
+   <xsd:element name="CountryCode" type="xsd:string" default="US"/>
+   <xsd:element name="PostalCode" type="xsd:string"/>
+   <xsd:element name="GEOCodeID" type="xsd:string"/>
+  </xsd:sequence>
+ </xsd:complexType>
+ <!-- DBILL-4522-NGP-Changes-ENDS -->
+ <xsd:simpleType name="OrderNumberType">
+  <xsd:annotation>
+   <xsd:documentation>Order Number is a numeric value, not to exceed 15 digits
+                      in length, must begin with a three digit prefix assigned
+                      to the order source. It is the responsiblity of the source
+                      system to guarantee uniquness</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="4"/>
+   <xsd:maxLength value="15"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:complexType name="PaymentMethodType">
+  <xsd:choice>
+   <xsd:element name="CCInfo" type="CCInfoType">
+    <xsd:annotation>
+     <xsd:documentation>The credit card account information provided for
+                        authorization and/or payment. Required if Payment
+                        MethodId is Credit Card</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="EFTInfo" type="EFTInfoType">
+    <xsd:annotation>
+     <xsd:documentation>The EFT account information provided for authorization
+                        and/or payment. Required if Payment MethodId is EFT.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <!--DBILL-4522-NGP-Changes -->
+   <xsd:element name="WalletInfo" type="WalletInfoType">
+    <xsd:annotation>
+     <xsd:documentation>The Wallet account information provided for
+                        authorization and/or payment. Required if Payment
+                        MethodId is Wallet.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <!--DBILL-4522-NGP-Changes-ENDS -->
+  </xsd:choice>
+ </xsd:complexType>
+ <xsd:complexType name="PostalAddressType">
+  <xsd:sequence>
+   <xsd:element name="AddressLine" type="String200Type" maxOccurs="5">
+    <xsd:annotation>
+     <xsd:documentation>The lines of the address. The first AddressLine is
+                        typically the number and street.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="City" type="String64Type">
+    <xsd:annotation>
+     <xsd:documentation>The city of the address.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="StateOrProvince" type="String2Type">
+    <xsd:annotation>
+     <xsd:documentation>The state or the province of the address, depending on
+                        which is pertinent. Required for all US addresses.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="Country" type="String2Type">
+    <xsd:annotation>
+     <xsd:documentation>The country of the address.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="PostalCode" type="String30Type">
+    <xsd:annotation>
+     <xsd:documentation>The postal code or zip code of the address, if
+                        applicable. Required for all US addresses.</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="PostalCodeExtension" type="String4Type" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>The postal code extension of the address, if applicable</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="QuantityType">
+  <xsd:annotation>
+   <xsd:documentation>Quantity</xsd:documentation>
+  </xsd:annotation>
+  <xsd:simpleContent>
+   <xsd:extension base="xsd:nonNegativeInteger">
+    <xsd:attribute name="uom" use="required">
+     <xsd:annotation>
+      <xsd:documentation>Unit of Measure Count by unit (e.g. Each) or Time-based
+                         (e.g. Day, Month and Year).</xsd:documentation>
+     </xsd:annotation>
+     <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+       <xsd:enumeration value="Day"/>
+       <xsd:enumeration value="Each"/>
+       <xsd:enumeration value="Month"/>
+       <xsd:enumeration value="Year"/>
+      </xsd:restriction>
+     </xsd:simpleType>
+    </xsd:attribute>
+   </xsd:extension>
+  </xsd:simpleContent>
+ </xsd:complexType>
+ <xsd:complexType name="TransactionAttributeType">
+  <xsd:annotation>
+   <xsd:documentation>Transaction Attributes</xsd:documentation>
+  </xsd:annotation>
+  <xsd:sequence>
+   <xsd:element name="Name" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>Attribute Name</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="Value" type="xsd:string">
+    <xsd:annotation>
+     <xsd:documentation>Attribute Value</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element name="AttributeActionType" type="ActionTypeType" minOccurs="0">
+    <xsd:annotation>
+     <xsd:documentation>Action Type for the transaction attribute, needed only
+                        in MACD order</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:simpleType name="TypeCodeType">
+  <xsd:restriction base="xsd:string">
+   <xsd:enumeration value="WEBORDER"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <!-- ==================================================================== -->
+ <!--  =====       String Types                                                                                         =====      -->
+ <!-- ====================================================================== -->
+ <xsd:simpleType name="String1Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 1</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="1"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String2Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 2.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="2"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String4Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 4.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="4"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String15Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 15.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="55"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String25Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 25.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="25"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String30Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 30.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="30"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String40Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 40.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="40"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String50Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 50.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="50"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String64Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 64.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="64"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String80Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 80.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="80"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String100Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 100.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="100"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String150Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 150.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="150"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String200Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 200.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="200"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String255Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 255.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="255"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+ <xsd:simpleType name="String1050Type">
+  <xsd:annotation>
+   <xsd:documentation>Reperesents the non empty string of max length 1050.</xsd:documentation>
+  </xsd:annotation>
+  <xsd:restriction base="xsd:string">
+   <xsd:minLength value="1"/>
+   <xsd:maxLength value="1050"/>
+  </xsd:restriction>
+ </xsd:simpleType>
+</xsd:schema>

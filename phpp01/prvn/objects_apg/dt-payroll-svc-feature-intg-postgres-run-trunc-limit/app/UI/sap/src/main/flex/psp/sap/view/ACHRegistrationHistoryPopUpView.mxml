@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:controls="psp.sap.view.controls.*"
+         width="600"
+         verticalScrollPolicy="auto" clipContent="true"
+         creationComplete="onCreationComplete();"
+         verticalGap="0"
+         paddingLeft="5"
+         paddingRight="5">
+    <mx:Script>
+        <![CDATA[
+
+        import psp.sap.formatters.SAPDateFormatters;
+        import psp.sap.viewmodel.ACHRegistrationHistoryPopUpViewModel;
+
+        private var mViewModel:ACHRegistrationHistoryPopUpViewModel;
+        private var mTempViewModel:ACHRegistrationHistoryPopUpViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():ACHRegistrationHistoryPopUpViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:ACHRegistrationHistoryPopUpViewModel):void {
+            if (mCreationComplete) {
+                mViewModel = value;
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+
+        public function getFormattedDate(item:Object, column:DataGridColumn):String {
+            return SAPDateFormatters.dateTimeFormatMedium.format(item[column.dataField]);
+        }
+
+        public function getRegisteredOrNot(item:Object, column:DataGridColumn):String {
+            return (item[column.dataField] as Boolean) ? "Registered" : "Not Registered";
+        }
+        ]]>
+    </mx:Script>
+    <mx:Label text="{viewModel.paymentTemplate.getSimplifiedName()} ACH Registration History" styleName="heading" id="headerLabel"
+              paddingLeft="2"
+              paddingBottom="3"
+              paddingTop="5"/>
+    <controls:SAPDataGrid id="achRegistrationHistoryGrid"
+                          dataProvider="{viewModel.achRegistrationHistory}"
+                          width="100%" maxRows="6"
+                          selectable="false">
+        <controls:columns>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Changed On"
+                               width="170"
+                               dataField="modifiedDate" labelFunction="getFormattedDate"
+                               paddingLeft="5"
+                               draggable="false"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Registered"
+                               width="100"
+                               dataField="isEnabled"
+                               labelFunction="getRegisteredOrNot"
+                               paddingLeft="5"
+                               draggable="false"/>
+            <mx:DataGridColumn sortable="true"
+                               headerText="Modified By"
+                               width="120"
+                               dataField="changedBy"
+                               paddingLeft="5"
+                               draggable="false"/>
+        </controls:columns>
+    </controls:SAPDataGrid>
+</mx:VBox>

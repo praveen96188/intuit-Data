@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:pspui="psp.sap.view.*"
+        height="100%" width="100%">
+
+    <mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+            import mx.controls.Alert;
+            import psp.sap.model.SettlementTypeEnum;
+            import psp.sap.viewmodel.PayrollTransactionIssueReissueRefundPageViewModel;
+            import psp.sap.model.SettlementType;
+            import psp.sap.application.SAP;
+
+
+            private var mViewModel:PayrollTransactionIssueReissueRefundPageViewModel;
+
+
+            [Bindable]
+            public function get viewModel():PayrollTransactionIssueReissueRefundPageViewModel {
+                return mViewModel;
+            }
+
+            public function set viewModel(value:PayrollTransactionIssueReissueRefundPageViewModel):void {
+                if(value != null) {
+                    mViewModel = value;
+                }
+            }
+
+            public function save():void {
+                Alert.show(	"Are you sure you want to issue a refund for this transaction?",
+                        SAP.instance.applicationTitle,
+                        Alert.OK | Alert.CANCEL,
+                        this,
+                        function(e:CloseEvent):void {
+                            if(e.detail == Alert.OK) {
+                                viewModel.save();
+                            }
+                        },
+                        null,
+                        Alert.OK);
+            }
+        ]]>
+	</mx:Script>
+
+    <mx:VBox verticalGap="0" width="100%">
+        <pspui:PayrollSettlementView
+                id="payrollSettlementView"
+                width="100%"
+                viewModel="{this.viewModel}" />
+
+        <mx:Spacer height="5"/>
+
+        <mx:HBox horizontalAlign="right" width="400">
+            <mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()"/>
+            <mx:Button id="saveButton" label="Save" click="save()" enabled="{viewModel.canSave}" width="{cancelButton.width}"/>
+        </mx:HBox>
+    </mx:VBox>
+
+</mx:VBox>

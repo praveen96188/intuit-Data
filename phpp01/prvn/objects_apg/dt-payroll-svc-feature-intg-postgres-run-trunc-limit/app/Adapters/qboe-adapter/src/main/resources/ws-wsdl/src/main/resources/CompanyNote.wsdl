@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+	targetNamespace="intuit.osp.pse.dd.wsapi.xsd.companynote"
+	xmlns:apachesoap="http://xml.apache.org/xml-soap"
+	xmlns:impl="intuit.osp.pse.dd.wsapi.xsd.companynote"
+	xmlns:intf="intuit.osp.pse.dd.wsapi.xsd.companynote"
+	xmlns:tns2="http://base.wsf.common.osp.intuit"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!--WSDL created by Apache Axis version: 1.2.1
+		Built on Jun 14, 2005 (09:15:57 EDT)-->
+	<wsdl:types>
+		<schema targetNamespace="http://base.wsf.common.osp.intuit"
+			xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://xml.apache.org/xml-soap" />
+			<import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+			<complexType name="WSException">
+				<sequence />
+			</complexType>
+		</schema>
+	</wsdl:types>
+
+	<wsdl:message name="WSException">
+		<wsdl:part name="fault" type="tns2:WSException" />
+	</wsdl:message>
+
+	<wsdl:message name="queryRequest">
+		<wsdl:part name="requestDocument" type="apachesoap:Element" />
+	</wsdl:message>
+
+	<wsdl:message name="addRequest">
+		<wsdl:part name="requestDocument" type="apachesoap:Element" />
+	</wsdl:message>
+
+	<wsdl:message name="queryResponse">
+		<wsdl:part name="queryReturn" type="apachesoap:Element" />
+	</wsdl:message>
+
+	<wsdl:message name="addResponse">
+		<wsdl:part name="addReturn" type="apachesoap:Element" />
+	</wsdl:message>
+
+	<wsdl:portType name="CompanyNote">
+		<wsdl:operation name="add" parameterOrder="requestDocument">
+			<wsdl:input message="impl:addRequest" name="addRequest" />
+			<wsdl:output message="impl:addResponse" name="addResponse" />
+			<wsdl:fault message="impl:WSException" name="WSException" />
+		</wsdl:operation>
+		<wsdl:operation name="query" parameterOrder="requestDocument">
+			<wsdl:input message="impl:queryRequest" name="queryRequest" />
+			<wsdl:output message="impl:queryResponse" name="queryResponse" />
+			<wsdl:fault message="impl:WSException" name="WSException" />
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="CompanyNoteSoapBinding" type="impl:CompanyNote">
+		<wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+
+		<wsdl:operation name="add">
+			<wsdlsoap:operation soapAction="" />
+			<wsdl:input name="addRequest">
+				<wsdlsoap:body namespace="intuit.osp.pse.dd.wsapi.xsd.companynoteadd.CompanyNoteAdd" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="addResponse">
+				<wsdlsoap:body namespace="intuit.osp.pse.dd.wsapi.xsd.companynoteaddrs.CompanyNoteAddRs" use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="WSException">
+				<wsdlsoap:fault name="WSException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+
+		<wsdl:operation name="query">
+			<wsdlsoap:operation soapAction="" />
+			<wsdl:input name="queryRequest">
+				<wsdlsoap:body namespace="intuit.osp.pse.dd.wsapi.xsd.companynotequery.CompanyNoteQuery" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="queryResponse">
+				<wsdlsoap:body namespace="intuit.osp.pse.dd.wsapi.xsd.companynotequeryrs.CompanyNoteQueryRs" use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="WSException">
+				<wsdlsoap:fault name="WSException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="CompanyNote">
+		<wsdl:port binding="impl:CompanyNoteSoapBinding" name="CompanyNote">
+			<wsdlsoap:address location="${wsdlsoap.address.location.root}/services/CompanyNote" />
+		</wsdl:port>
+	</wsdl:service>
+
+</wsdl:definitions>

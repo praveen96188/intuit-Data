@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<controls:SizeableTitleWindow
+		showCloseButton="false"
+        xmlns:pspui="psp.sap.view.*"
+        xmlns:controls="psp.sap.view.controls.*"
+        xmlns="*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        alpha="1.0" backgroundColor="#ffffff"  
+        borderStyle="solid" cornerRadius="10"
+        creationComplete="onCreationComplete()"
+        horizontalAlign="center" height="205" width="425">
+	<mx:Script>
+		<![CDATA[
+			import mx.formatters.CurrencyFormatter;
+			private var mNumberOfPages:Number = 1;
+			private var mPagesComplete:Number = 0;
+		
+			[Bindable]
+			public var progressText:String = "";
+	
+			[Bindable]
+			public function get numberOfPages():Number {
+				return mNumberOfPages;
+			}
+			
+			public function set numberOfPages(value:Number):void {
+				mNumberOfPages = value;
+				updateProgress();
+			}
+		
+			[Bindable]
+			public function get pagesComplete():Number {
+				return mPagesComplete;
+			}
+			
+			public function set pagesComplete(value:Number):void {
+				mPagesComplete = value;
+				updateProgress();
+			}
+			
+			protected function updateProgress():void {
+				if(myProgress != null)
+					myProgress.setProgress(pagesComplete, numberOfPages);
+			}
+			
+			public function onCreationComplete():void {
+				updateProgress();
+				if(progressText == "") {
+					progressText = "Exporting...";
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id="progressTextLabel" text="{progressText}" fontWeight="bold" fontFamily="Verdana" color="#000000" fontSize="22"/>
+	<mx:VBox verticalAlign="middle" height="80" alpha="1.0" width="370" horizontalScrollPolicy="off" cornerRadius="7" borderStyle="solid" backgroundColor="#555555" dropShadowEnabled="true" color="#FFFFFF" fontFamily="Arial" fontSize="14" fontWeight="bold">
+		<mx:Label text=""/>
+		<mx:VBox paddingLeft="5" paddingRight="5" width="100%" horizontalAlign="center">
+		<mx:ProgressBar indeterminate="false" minimum="0" maximum="{numberOfPages}" id="myProgress" mode="manual" trackHeight="20" width="264" height="38" enabled="true" label=" " barColor="#000000"/>
+		</mx:VBox>
+	</mx:VBox>
+</controls:SizeableTitleWindow>

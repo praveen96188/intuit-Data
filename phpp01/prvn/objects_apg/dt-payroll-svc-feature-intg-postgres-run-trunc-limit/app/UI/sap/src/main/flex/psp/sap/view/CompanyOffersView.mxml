@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	xmlns="*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:pspui="psp.sap.view.*"
+	xmlns:controls="psp.sap.view.controls.*" 
+	width="100%" height="100%"	
+	creationComplete="onCreationComplete()">
+
+	<mx:Script>
+		<![CDATA[
+        import mx.collections.ArrayCollection;
+        import mx.controls.Alert;
+        import mx.controls.RadioButton;
+        import mx.events.CloseEvent;
+        import mx.logging.ILogger;
+
+        import psp.sap.application.ClientLoggingTarget;
+        import psp.sap.model.Offer;
+        import psp.sap.viewmodel.CompanyOffersViewModel;
+
+        private var logger:ILogger = ClientLoggingTarget.getLogger(this);
+
+        private var mTempViewModel:CompanyOffersViewModel;
+        private var mViewModel:CompanyOffersViewModel;
+        private var mCreationComplete:Boolean = false;
+
+        [Bindable]
+        public function get viewModel():CompanyOffersViewModel {
+            return mViewModel;
+        }
+
+        public function set viewModel(value:CompanyOffersViewModel):void {
+            if (mCreationComplete) {
+                removeViewModelListeners();
+                mViewModel = value;
+                addViewModelListeners();
+            }
+            else {
+                mTempViewModel = value;
+            }
+        }
+
+        private function removeViewModelListeners():void {
+            if (mViewModel != null) {
+                mViewModel.expirationDateRangeValidator.listener = null;
+            }
+        }
+
+        private function addViewModelListeners():void {
+            if (mViewModel != null) {
+                mViewModel.claimedExpirationDateRangeValidator.listener = this.claimedExpirationDate;
+                mViewModel.expirationDateRangeValidator.listener = this.expirationDate;
+            }
+        }
+
+        protected function set onOffersLoaded(value:ArrayCollection):void {
+            viewModel.selectedOffer = null;
+
+            // this is a hack, setting the selection does not deselect the radio buttons
+            // like it should so we se the selection to null and deselect all of the
+            // buttons individually
+            availableOffersGroup.selection = null;
+            for (var i:int = 0; i < value.length; i++) {
+                availableOffersGroup.getRadioButtonAt(i).selected = false;
+            }
+        }
+
+        private function confirmClaimOffer():void {
+            var msgString:String =
+                    "Are you sure you want to claim the offer " + viewModel.selectedOffer.offerCd
+                            + " for this company?";
+
+            Alert.show(
+                    msgString,
+                    "Claim Offer Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK) {
+                            viewModel.save(); // claim offer
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        private function confirmUpdateOffer():void {
+            var currentOffer:Offer = viewModel.companyOffers.getItemAt(0) as Offer;
+            var msgString:String =
+                    "Are you sure you want to update the offer " + currentOffer.offerCd
+                            + " for this company?";
+
+            Alert.show(
+                    msgString,
+                    "Update Offer Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK) {
+                            viewModel.updateOffer(); // claim offer
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        public function onAvailableOfferChange(e:Event):void {
+            var rb:RadioButton = e.currentTarget as RadioButton;
+            viewModel.selectedOffer = rb.value as Offer;
+        }
+
+        public function formatEffectiveDate(item:Object, dgc:DataGridColumn):String {
+            return viewModel.dateFormatter.format(item.effectiveDate);
+        }
+
+        public function formatExpirationDate(item:Object, dgc:DataGridColumn):String {
+            return viewModel.dateFormatter.format(item.expirationDate);
+        }
+
+        public function removeOffer(event:ActionLinkEvent):void {
+            var link:ActionLink = event.currentTarget as ActionLink;
+            var msgString:String =
+                    "Are you sure you want to remove the offer " + link.data.name
+                            + " for this company?";
+
+            Alert.show(
+                    msgString,
+                    "Remove Offer Confirmation",
+                    Alert.OK | Alert.CANCEL,
+                    null,
+                    function(evt_obj:CloseEvent):void {
+                        if (evt_obj.detail == Alert.OK) {
+                            viewModel.removeOffer(link.data.offerCd);
+                        }
+                    },
+                    null,
+                    Alert.OK);
+        }
+
+        public function onCreationComplete():void {
+            mCreationComplete = true;
+            viewModel = mTempViewModel;
+        }
+		]]>
+	</mx:Script>
+
+
+	<controls:DataLoadFade id="postLoadFadeIn" target="{dataContainer}" isLoading="{viewModel.isDataLoading}" />
+	
+			
+	<mx:VBox id="dataContainer" 
+			width="100%"
+			visible="{!viewModel.isDataLoading}"
+			includeInLayout="{!viewModel.isDataLoading}"
+			verticalGap="0"
+			>
+		<mx:VBox 
+			styleName="grayDataGridVBox" 
+			verticalScrollPolicy="off" 
+			horizontalScrollPolicy="off">							
+			<mx:HBox textAlign="left" verticalAlign="middle">
+            	<mx:Label text="Offer In Effect" styleName="grayDataGridHeading"/>
+            </mx:HBox>
+			<controls:SAPDataGrid
+				id="currentOfferGrid"
+                sortableColumns="false"
+				width="750" 
+				dataProvider="{viewModel.companyOffers}" 
+				maxRows="5"
+				selectable="false"
+				visible="{viewModel.hasCurrentOffer}"
+				includeInLayout="{viewModel.hasCurrentOffer}">
+			<controls:columns>
+					<mx:DataGridColumn
+							width="150"
+							headerText="Offer Code Name"
+							textAlign="center" 
+							dataField="name">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn 
+							width="300"
+							headerText="Offer Description"
+							textAlign="center"  
+							dataField="description">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+							width="150"
+							headerText="Effective Date"
+							textAlign="center"
+							dataField="effectiveDate"
+							labelFunction="formatEffectiveDate">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+							width="150"
+							headerText="Expiration Date"
+							textAlign="center"
+							dataField="expirationDate"
+							labelFunction="formatExpirationDate">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+							width="140"
+							headerText=""
+							textAlign="center"
+							sortable="false"
+							draggable="false"
+							dataField="name">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:VBox
+										verticalScrollPolicy="off"
+										horizontalScrollPolicy="off">																		
+										<pspui:ActionLink
+											id="removeOfferLink"
+                                            label="Remove Offer"
+											actionClick="outerDocument.removeOffer" 
+											data="{data}"/>
+									</mx:VBox>
+								</mx:Component>
+							</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</controls:columns>
+			</controls:SAPDataGrid>
+			<mx:Label id="noCurrentOfferLabel" 
+                text="No current offers in effect on this company"
+				paddingLeft="5"
+				paddingRight="5"
+				paddingTop="5" 
+				visible="{!viewModel.hasCurrentOffer}"
+				includeInLayout="{!viewModel.hasCurrentOffer} "/>
+		</mx:VBox>
+		
+		<mx:Spacer height="10" />
+        <mx:VBox
+                id="claimedExpirationDateBox"
+                visible="{viewModel.showClaimedExpirationDate}"
+                includeInLayout="{viewModel.showClaimedExpirationDate}"
+                styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="450">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox verticalAlign="middle"  width="100%" styleName="padderBox">
+                        <mx:Spacer width="1" />
+                        <controls:RequiredLabel dataField="claimedExpirationDate" validator="{viewModel.claimedExpirationDateRangeValidator}" text="Claimed Offer Expiration Date" width="262"/>
+                        <mx:HBox horizontalGap="0">
+                            <!-- for alignment -->
+                            <mx:Label textAlign="right" text=" " width="50"/>
+                            <pspui:SAPDateField width="100" id="claimedExpirationDate" editable="true"/>
+                        </mx:HBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+					
+			<mx:Spacer height="10" />
+			<mx:HBox width="{offerSelection.width}" horizontalAlign="right">
+				<mx:Button label="Cancel" click="viewModel.cancel()" width="100" />
+				<mx:Button label="Save" click="confirmUpdateOffer()" enabled="{viewModel.canUpdate}" width="100" />
+			</mx:HBox>	
+		</mx:VBox>
+		
+		<mx:Spacer height="40" />
+		
+		<mx:VBox
+			id="offerSelection" 
+			styleName="grayDataGridVBox" 
+			verticalScrollPolicy="off" 
+			horizontalScrollPolicy="off">							
+			<mx:HBox textAlign="left" verticalAlign="middle">
+            	<mx:Label text="Available Offers: Choose New Offer" styleName="grayDataGridHeading"/>
+            </mx:HBox>					
+			<mx:RadioButtonGroup 
+				id="availableOffersGroup"/>
+			<controls:SAPDataGrid id="availableOffersGrid"
+				width="780" 
+				dataProvider="{viewModel.offers}" 
+				maxRows="10"
+				selectable="false"
+				visible="{viewModel.offers.length > 0}"
+				includeInLayout="{viewModel.offers.length > 0}">
+				<controls:columns>
+					<mx:DataGridColumn
+							width="30"
+							headerText=""
+							sortable="false">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:HBox horizontalAlign="center" >
+										<mx:RadioButton 
+											id="offerCodeButton"
+                                            enabled="{Offer(data).openToUser}"
+                                            toolTip="{Offer(data).openToUser ? null : 'Restricted offer'}"
+											group="{outerDocument.availableOffersGroup}" 
+											value="{data}"
+										    change="outerDocument.onAvailableOfferChange(event)"/>
+                                        <mx:Script><![CDATA[
+                                            import psp.sap.model.Offer;
+                                            ]]></mx:Script>
+                                    </mx:HBox>
+								</mx:Component>
+							</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+							width="180"
+							headerText="Offer Code Name"
+							textAlign="center" 
+							dataField="name">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:Label text="{Offer(data).name}"
+                                          color="{Offer(data).openToUser ? 0x000000 : 0xBBBBBB}"
+                                          toolTip="{Offer(data).openToUser ? null : 'Restricted offer'}"
+                                          textAlign="center"
+                                          width="100%"><mx:Script><![CDATA[
+                                    import psp.sap.model.Offer;
+                                    ]]></mx:Script></mx:Label>
+                            </mx:Component>
+                        </mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn 
+							width="300"
+							headerText="Offer Description"
+							textAlign="center"  
+							dataField="description">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+							width="150"
+							headerText="Effective Date"
+							textAlign="center"
+							dataField="effectiveDate"
+							labelFunction="formatEffectiveDate">
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+							width="150"
+							headerText="Expiration Date"
+							textAlign="center"
+							dataField="expirationDate"
+							labelFunction="formatExpirationDate">
+					</mx:DataGridColumn>
+				</controls:columns>
+			</controls:SAPDataGrid>
+			<mx:Label id="noAvailableOfferLabel"
+                text="There are no offers available for this company"
+				paddingLeft="5"
+				paddingRight="5"
+				paddingTop="5" 
+				visible="{!(viewModel.offers.length > 0)}"
+				includeInLayout="{!(viewModel.offers.length > 0)}"/>
+		</mx:VBox>
+
+		<mx:Spacer height="10" />
+        <mx:VBox
+                id="expirationDateBox"
+                visible="{viewModel.showExpirationDate}"
+                includeInLayout="{viewModel.showExpirationDate}"
+                styleName="padderBox">
+            <mx:VBox styleName="ddGrayMiniBoxStyle" width="450">
+                <mx:VBox horizontalGap="0" verticalAlign="middle" borderStyle="none" verticalGap="0" width="100%">
+                    <mx:HBox verticalAlign="middle"  width="100%" styleName="padderBox">
+                        <mx:Spacer width="1" />
+                        <controls:RequiredLabel dataField="expirationDate" text="Offer Expiration Date" width="262"/>
+                        <mx:HBox horizontalGap="0">
+                            <!-- for alignment -->
+                            <mx:Label textAlign="right" text=" " width="50"/>
+                            <pspui:SAPDateField width="100" id="expirationDate" editable="true"/>
+                        </mx:HBox>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:VBox>
+        </mx:VBox>					
+		<mx:Spacer height="10" />
+		<mx:HBox width="{offerSelection.width}" horizontalAlign="right">
+			<mx:Button id="cancelButton" label="Cancel" click="viewModel.cancel()" width="100" />
+			<mx:Button id="saveButton" label="Save" click="confirmClaimOffer()" enabled="{viewModel.canSave}" width="100" />
+		</mx:HBox>	
+					
+	</mx:VBox>	
+	
+	<mx:Binding source="viewModel.expirationDate" destination="expirationDate.text"/>
+    <mx:Binding source="expirationDate.text" destination="viewModel.expirationDate"/>
+    
+	<mx:Binding source="viewModel.claimedExpirationDate" destination="claimedExpirationDate.text"/>
+    <mx:Binding source="claimedExpirationDate.text" destination="viewModel.claimedExpirationDate"/>
+
+    <mx:Binding source="viewModel.offers" destination="onOffersLoaded"/>
+         
+    <mx:Binding source="viewModel.expirationDateRangeValidator.validDateRange" destination="expirationDate.selectableRange" />
+    <mx:Binding source="viewModel.claimedExpirationDateRangeValidator.validDateRange" destination="claimedExpirationDate.selectableRange" />
+    
+    <mx:Binding source="viewModel.selectedOffer" destination="availableOffersGroup.selectedValue"/>
+</mx:VBox>
